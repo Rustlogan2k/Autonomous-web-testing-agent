@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Northwind Supply — Order, step 4 of 4</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; max-width: 52rem; }
+    nav a { display: inline-block; margin-right: 1rem; }
+    .card { border: 1px solid #ccc; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+    footer { margin-top: 3rem; font-size: 0.85rem; color: #555; }
+    footer a { margin-right: 0.8rem; }
+    .hidden { display: none; }
+    .crumb { color: #666; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a id="nav-home" href="index.html">Home</a>
+    <a id="nav-catalog" href="catalog.html">Catalog</a>
+    <a id="nav-support" href="support.html">Support</a>
+    <a id="nav-about" href="about.html">About</a>
+  </nav>
+  <p class="crumb">Step 4 of 4</p>
+  <h1>Review your order</h1>
+  <div class="card">
+    <p>Product: <span id="r-product">&mdash;</span></p>
+    <p>Quantity: <span id="r-quantity">&mdash;</span></p>
+    <p>Contact: <span id="r-email">&mdash;</span></p>
+    <p><a id="place-order" href="#">Place order</a></p>
+    <a id="back-3" href="order-3.html">Back</a>
+    <a id="cancel-4" href="index.html">Cancel order</a>
+  </div>
+  <footer>
+    <a id="f-terms" href="terms.html">Terms</a>
+    <a id="f-privacy" href="privacy.html">Privacy</a>
+    <a id="f-status" href="status.html">Status</a>
+    <a id="f-contact" href="support.html">Contact us</a>
+  </footer>
+
+  <script>
+    function params() { return new URLSearchParams(window.location.search); }
+    function carry(extra) {
+      const p = params();
+      for (const k in extra) { p.set(k, extra[k]); }
+      return p.toString();
+    }
+    function reveal(link, href) {
+      link.setAttribute('href', href);
+      link.classList.remove('hidden');
+    }
+  </script>
+  <script>
+    const p = params();
+    document.getElementById('r-product').textContent = p.get('product') || '(none)';
+    document.getElementById('r-quantity').textContent = p.get('quantity') || '(none)';
+    document.getElementById('r-email').textContent = p.get('email') || '(none)';
+    document.getElementById('place-order').setAttribute('href', 'receipt.html?' + p.toString());
+  </script>
+</body>
+</html>

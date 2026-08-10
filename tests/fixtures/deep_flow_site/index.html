@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Northwind Supply — Home</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; max-width: 52rem; }
+    nav a { display: inline-block; margin-right: 1rem; }
+    .card { border: 1px solid #ccc; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+    footer { margin-top: 3rem; font-size: 0.85rem; color: #555; }
+    footer a { margin-right: 0.8rem; }
+    .hidden { display: none; }
+    .crumb { color: #666; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a id="nav-home" href="index.html">Home</a>
+    <a id="nav-catalog" href="catalog.html">Catalog</a>
+    <a id="nav-support" href="support.html">Support</a>
+    <a id="nav-about" href="about.html">About</a>
+  </nav>
+  <!-- NOTE: purpose lives in comments only. Rendered text reaches the LLM judge's
+       prompt, and telling it that this is a fixture with a seeded bug biases it toward
+       reporting one. This site must read as an ordinary small ordering app.
+
+       This is the DEEP-FLOW fixture. Unlike toy_site (where nearly every bug sits one
+       or two steps from the landing page), the single seeded bug here is reachable
+       only after completing a four-stage ordering flow IN ORDER. Each stage reveals
+       the next control only once its own input is valid, so the action space grows
+       with progress and shrinks back on Cancel.
+
+       That is the point: it is the regime where uniform-random exploration decays
+       exponentially in sequence length, and therefore the only regime in which RL's
+       actual claim — credit assignment over a multi-step flow — can be tested at all.
+       See answer_key.json. -->
+  <h1>Northwind Supply</h1>
+  <p>Bulk stationery and office consumables for small teams.</p>
+  <div class="card">
+    <h2>Place an order</h2>
+    <p>Four short steps. You can go back at any point.</p>
+    <a id="start-order" href="order-1.html">Start order</a>
+  </div>
+  <div class="card">
+    <h2>Popular this week</h2>
+    <a id="pop-a4" href="catalog.html">A4 paper, 5 reams</a>
+    <a id="pop-pens" href="catalog.html">Ballpoint pens, box of 50</a>
+    <a id="pop-folders" href="catalog.html">Suspension folders</a>
+  </div>
+  <footer>
+    <a id="f-terms" href="terms.html">Terms</a>
+    <a id="f-privacy" href="privacy.html">Privacy</a>
+    <a id="f-status" href="status.html">Status</a>
+    <a id="f-contact" href="support.html">Contact us</a>
+  </footer>
+
+</body>
+</html>

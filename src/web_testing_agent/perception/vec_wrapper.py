@@ -20,7 +20,7 @@ from __future__ import annotations
 import numpy as np
 from gymnasium import spaces
 
-from ..envs.types import EPISODE_CONTEXT_DIM
+from ..envs.types import EPISODE_CONTEXT_DIM, MAX_ACTIONS
 from ..utils.logging import get_logger
 from .encoders.base import HashEmbeddingEncoder, PerceptionEncoder
 from .fusion import FUSED_DIM, NETWORK_DIM, STRUCTURAL_DIM, VISUAL_DIM
@@ -47,11 +47,30 @@ def default_encoders() -> dict[str, PerceptionEncoder]:
     }
 
 
+def action_mask(num_valid: int | None) -> np.ndarray:
+    """A 100-wide 0/1 mask over the action space.
+
+    Valid actions are always the leading slots — `_resolve_action` accepts
+    `0 <= a < len(action_specs)` and treats everything above it as NO_OP — so a count
+    is a complete description of the mask and no per-slot vector has to cross the
+    process boundary.
+
+    `None` (an env or a rollout that predates this) yields an all-valid mask rather
+    than an all-invalid one: a policy that masked everything would have no legal action
+    at all, whereas an all-valid mask degrades exactly to the old unmasked behaviour.
+    """
+    mask = np.zeros(MAX_ACTIONS, dtype=np.float32)
+    count = MAX_ACTIONS if num_valid is None else max(0, min(int(num_valid), MAX_ACTIONS))
+    mask[:count] = 1.0
+    return mask
+
+
 def encode_modalities(
     encoders: dict[str, PerceptionEncoder],
     screenshots: list,
     pages: list[dict],
     contexts: list | None = None,
+    valid_counts: list | None = None,
 ) -> np.ndarray:
     """Encode a batch of observations into the concatenated pre-fusion feature vector.
 
@@ -85,6 +104,17 @@ def encode_modalities(
             raise ValueError(f"episode_context must have width {EPISODE_CONTEXT_DIM}, got {vector.shape}")
         normalized.append(vector)
     parts.append(np.stack(normalized))
+
+    # The action mask rides in the observation because that is the only channel an SB3
+    # policy can read. SB3's DQN has no masking hook: `q_net(obs)` sees the observation
+    # and nothing else, and epsilon-greedy samples from `action_space` directly. Putting
+    # the mask anywhere but here — in `info`, on the env, in a global — leaves it
+    # unreachable from the two places that have to consult it.
+    #
+    # It sits last so slicing it off is a fixed `[..., -MAX_ACTIONS:]` regardless of
+    # what the encoders upstream are configured to emit.
+    counts = list(valid_counts) if valid_counts is not None else [None] * len(screenshots)
+    parts.append(np.stack([action_mask(count) for count in counts]))
     return np.concatenate(parts, axis=1).astype(np.float32)
 
 
@@ -109,7 +139,11 @@ class SemanticPerceptionWrapper(VecEnvWrapper):  # type: ignore[misc]
         if missing:
             raise ValueError(f"SemanticPerceptionWrapper is missing encoder(s): {sorted(missing)}")
 
-        self.feature_dim = sum(self.encoders[name].output_dim for name in MODALITIES) + EPISODE_CONTEXT_DIM
+        self.feature_dim = (
+            sum(self.encoders[name].output_dim for name in MODALITIES)
+            + EPISODE_CONTEXT_DIM
+            + MAX_ACTIONS
+        )
         observation_space = spaces.Box(
             low=-np.inf, high=np.inf, shape=(self.feature_dim,), dtype=np.float32
         )
@@ -131,7 +165,8 @@ class SemanticPerceptionWrapper(VecEnvWrapper):  # type: ignore[misc]
         infos = getattr(self.venv, "reset_infos", None) or [{} for _ in range(self.num_envs)]
         pages = [info.get("page", {}) if isinstance(info, dict) else {} for info in infos]
         contexts = [info.get("episode_context") if isinstance(info, dict) else None for info in infos]
-        return self._encode(obs, pages, contexts)
+        counts = [info.get("num_valid_actions") if isinstance(info, dict) else None for info in infos]
+        return self._encode(obs, pages, contexts, counts)
 
     def step_wait(self):  # noqa: ANN201 - SB3 returns a 4-tuple whose type it does not export
         obs, rewards, dones, infos = self.venv.step_wait()
@@ -143,6 +178,7 @@ class SemanticPerceptionWrapper(VecEnvWrapper):  # type: ignore[misc]
         # page text — a silent modality mismatch on every episode boundary.
         pages: list[dict] = []
         contexts: list = []
+        counts: list = []
         for index, info in enumerate(infos):
             info = info if isinstance(info, dict) else {}
             if dones[index] and index < len(reset_infos) and isinstance(reset_infos[index], dict):
@@ -151,8 +187,9 @@ class SemanticPerceptionWrapper(VecEnvWrapper):  # type: ignore[misc]
                 source = info
             pages.append(source.get("page", {}))
             contexts.append(source.get("episode_context"))
+            counts.append(source.get("num_valid_actions"))
 
-        encoded = self._encode(obs, pages, contexts)
+        encoded = self._encode(obs, pages, contexts, counts)
 
         # Any wrapper that changes the observation space must also convert the raw
         # `terminal_observation` SB3 stashes in `info`, or the replay buffer receives an
@@ -166,13 +203,15 @@ class SemanticPerceptionWrapper(VecEnvWrapper):  # type: ignore[misc]
                     [screenshot],
                     [info.get("page", {})],
                     [info.get("episode_context")],
+                    [info.get("num_valid_actions")],
                 )[0]
 
         return encoded, rewards, dones, infos
 
-    def _encode(self, obs, pages: list[dict], contexts: list) -> np.ndarray:
+    def _encode(self, obs, pages: list[dict], contexts: list, counts: list | None = None) -> np.ndarray:
         screenshots = list(obs["screenshot"]) if isinstance(obs, dict) else list(obs)
         safe = [
             c if c is not None else np.zeros(EPISODE_CONTEXT_DIM, dtype=np.float32) for c in contexts
         ]
-        return encode_modalities(self.encoders, screenshots, pages, safe)
+        counts = counts if counts is not None else [None] * len(screenshots)
+        return encode_modalities(self.encoders, screenshots, pages, safe, counts)

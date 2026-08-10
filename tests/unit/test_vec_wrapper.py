@@ -10,12 +10,14 @@ import numpy as np
 import pytest
 from gymnasium import spaces
 
-from web_testing_agent.envs.types import EPISODE_CONTEXT_DIM, SCREENSHOT_SHAPE
+from web_testing_agent.envs.types import EPISODE_CONTEXT_DIM, MAX_ACTIONS, SCREENSHOT_SHAPE
 from web_testing_agent.perception.fusion import NETWORK_DIM, STRUCTURAL_DIM, VISUAL_DIM
 from web_testing_agent.perception.vec_wrapper import SemanticPerceptionWrapper, default_encoders
 
 # +EPISODE_CONTEXT_DIM: history features ride alongside the three encoded modalities.
-FEATURE_DIM = VISUAL_DIM + STRUCTURAL_DIM + NETWORK_DIM + EPISODE_CONTEXT_DIM
+# +MAX_ACTIONS: the valid-action mask, which rides here because the observation is the
+# only channel an SB3 policy can read (see agents.masked_dqn).
+FEATURE_DIM = VISUAL_DIM + STRUCTURAL_DIM + NETWORK_DIM + EPISODE_CONTEXT_DIM + MAX_ACTIONS
 
 
 def _frame(fill: int) -> np.ndarray:
@@ -133,3 +135,47 @@ def _structural_input(page: dict) -> str:
     from web_testing_agent.perception.normalization import preprocess_for_structural_encoder
 
     return preprocess_for_structural_encoder(page["html"])
+
+
+# --- action mask ------------------------------------------------------------------
+
+
+def test_the_mask_marks_exactly_the_valid_leading_slots():
+    """Valid actions are always the leading slots: `_resolve_action` accepts
+    0 <= a < len(action_specs) and treats everything above as NO_OP, so a count fully
+    describes the mask and no per-slot vector has to cross the process boundary."""
+    from web_testing_agent.perception.vec_wrapper import action_mask
+
+    mask = action_mask(7)
+    assert mask.shape == (MAX_ACTIONS,)
+    assert mask[:7].all() and not mask[7:].any()
+
+
+def test_a_missing_count_yields_an_all_valid_mask():
+    """Degrading to all-valid reproduces the old unmasked behaviour; degrading to
+    all-invalid would leave a policy with no legal action at all."""
+    from web_testing_agent.perception.vec_wrapper import action_mask
+
+    assert action_mask(None).all()
+
+
+def test_the_mask_is_clamped_to_the_action_space():
+    from web_testing_agent.perception.vec_wrapper import action_mask
+
+    assert action_mask(10_000).all()
+    assert not action_mask(0).any()
+    assert not action_mask(-5).any()
+
+
+def test_the_mask_is_the_trailing_slice_of_the_observation():
+    """agents.masked_dqn slices it as a fixed [..., -MAX_ACTIONS:], so its position
+    must not depend on how the encoders upstream are configured."""
+    from web_testing_agent.perception.vec_wrapper import encode_modalities
+
+    encoded = encode_modalities(
+        default_encoders(), [np.zeros(SCREENSHOT_SHAPE, dtype=np.uint8)],
+        [{"html": "<html></html>", "network": "[]"}], [None], [4],
+    )
+    assert encoded.shape == (1, FEATURE_DIM)
+    assert encoded[0, -MAX_ACTIONS:][:4].all()
+    assert not encoded[0, -MAX_ACTIONS:][4:].any()

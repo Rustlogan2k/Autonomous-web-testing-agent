@@ -247,6 +247,10 @@ class WebTestingEnv(gym.Env, ABC):
             "page": self._page_info(self._last_raw_obs),
             "episode_context": self._episode_context(self._state_key(self._last_raw_obs), None),
             "baseline_errors": len(self.error_baseline),
+            # Present on reset as well as step. A masked policy reads this on every
+            # observation, and the first observation of an episode is no exception —
+            # omitting it here would leave step 0 masked against a stale or empty count.
+            "num_valid_actions": len(self._action_specs),
             # Recorded so a corpus states whether its episodes began authenticated. A
             # trace that silently differs in session state is not comparable with one
             # that does not, and the difference is invisible in the pages themselves.

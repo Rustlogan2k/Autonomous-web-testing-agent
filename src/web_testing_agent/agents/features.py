@@ -17,7 +17,7 @@ import torch
 from gymnasium import spaces
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 
-from ..envs.types import EPISODE_CONTEXT_DIM
+from ..envs.types import EPISODE_CONTEXT_DIM, MAX_ACTIONS
 from ..perception.fusion import FUSED_DIM, NETWORK_DIM, STRUCTURAL_DIM, VISUAL_DIM, FusionMLP
 
 
@@ -39,8 +39,9 @@ class FusionFeaturesExtractor(BaseFeaturesExtractor):
         structural_dim: int = STRUCTURAL_DIM,
         network_dim: int = NETWORK_DIM,
         context_dim: int = EPISODE_CONTEXT_DIM,
+        mask_dim: int = MAX_ACTIONS,
     ) -> None:
-        expected = visual_dim + structural_dim + network_dim + context_dim
+        expected = visual_dim + structural_dim + network_dim + context_dim + mask_dim
         if observation_space.shape != (expected,):
             raise ValueError(
                 f"FusionFeaturesExtractor expects Box({expected},) from "
@@ -51,7 +52,12 @@ class FusionFeaturesExtractor(BaseFeaturesExtractor):
             raise ValueError(f"features_dim must exceed context_dim ({context_dim}), got {features_dim}")
 
         super().__init__(observation_space, features_dim)
-        self._splits = (visual_dim, structural_dim, network_dim, context_dim)
+        # The trailing action mask is carried by the observation only so the *policy*
+        # can reach it (see `perception.vec_wrapper.encode_modalities`). It is a
+        # statement about which outputs are legal, not evidence about the page, so it is
+        # split off and discarded here — feeding it to the Q-head would invite the
+        # network to infer page identity from how many controls happen to be on it.
+        self._splits = (visual_dim, structural_dim, network_dim, context_dim, mask_dim)
         self.fusion = FusionMLP(
             visual_dim=visual_dim,
             structural_dim=structural_dim,
@@ -60,5 +66,5 @@ class FusionFeaturesExtractor(BaseFeaturesExtractor):
         )
 
     def forward(self, observations: torch.Tensor) -> torch.Tensor:
-        visual, structural, network, context = torch.split(observations, self._splits, dim=-1)
+        visual, structural, network, context, _mask = torch.split(observations, self._splits, dim=-1)
         return torch.cat([self.fusion(visual, structural, network), context], dim=-1)

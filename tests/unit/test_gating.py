@@ -134,3 +134,37 @@ def test_every_decision_carries_a_reason():
     for action_type in ActionType:
         for changed in (True, False):
             assert gate(action_type, state_changed=changed).reason
+
+
+# --- masked DQN -------------------------------------------------------------------
+
+
+def test_masked_q_network_never_lets_an_invalid_action_win():
+    import torch
+    from web_testing_agent.agents.masked_dqn import _MASKED_Q
+
+    q = torch.tensor([[1.0, 5.0, 9.0, 2.0]])
+    mask = torch.tensor([[1.0, 1.0, 0.0, 0.0]])
+    masked = torch.where(mask > 0.5, q, torch.full_like(q, _MASKED_Q))
+    assert int(masked.argmax()) == 1  # 9.0 sits in an invalid slot and must not win
+
+
+def test_the_masked_sentinel_is_finite():
+    """A true -inf survives argmax but produces NaN the moment it reaches a subtraction
+    in the Huber loss, which poisons the weights rather than merely biasing the choice."""
+    import math
+    from web_testing_agent.agents.masked_dqn import _MASKED_Q
+
+    assert math.isfinite(_MASKED_Q)
+    assert _MASKED_Q < -1e6
+
+
+def test_split_mask_returns_the_trailing_action_slots():
+    import numpy as np
+    from web_testing_agent.agents.masked_dqn import split_mask
+    from web_testing_agent.envs.types import MAX_ACTIONS
+
+    obs = np.arange(1670 + MAX_ACTIONS, dtype=np.float32)[None, :]
+    features, mask = split_mask(obs)
+    assert features.shape == (1, 1670)
+    assert mask.shape == (1, MAX_ACTIONS)

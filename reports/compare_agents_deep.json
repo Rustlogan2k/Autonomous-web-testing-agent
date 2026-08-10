@@ -1,0 +1,270 @@
+{
+  "site": "deep",
+  "args": {
+    "site": "deep",
+    "train_steps": 4000,
+    "episode_steps": 40,
+    "eval_episodes": 5,
+    "seed": 0,
+    "out": "reports\\compare_agents_deep.json"
+  },
+  "results": {
+    "dqn_unmasked": {
+      "label": "dqn_unmasked",
+      "target_url": "http://127.0.0.1:50507/index.html",
+      "episodes": 5,
+      "steps": 200,
+      "wall_clock_s": 68.27,
+      "steps_per_second": 2.93,
+      "total_reward": -55.95,
+      "mean_episode_reward": -11.19,
+      "episode_rewards": [
+        -11.5,
+        -11.5,
+        -11.5,
+        -11.5,
+        -9.95
+      ],
+      "unique_states": 6,
+      "valid_action_rate": 0.89,
+      "exec_success_rate": 1.0,
+      "noop_steps": 22,
+      "distinct_findings": 1,
+      "trigger_counts": {
+        "broken_navigation": 49
+      },
+      "findings": [
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:50507/catalog.html",
+          "action": "CLICK",
+          "element": "Pens and markers",
+          "detail": "http://127.0.0.1:50507/catalog.html",
+          "first_seen_step": 7,
+          "times_seen": 49
+        }
+      ],
+      "flow": {
+        "max_depth": 1,
+        "mean_depth": 0.11,
+        "reached_receipt": 0,
+        "reached_review": 0
+      },
+      "train_seconds": 1379.3
+    },
+    "dqn_masked": {
+      "label": "dqn_masked",
+      "target_url": "http://127.0.0.1:50507/index.html",
+      "episodes": 5,
+      "steps": 200,
+      "wall_clock_s": 67.62,
+      "steps_per_second": 2.957,
+      "total_reward": -121.7,
+      "mean_episode_reward": -24.34,
+      "episode_rewards": [
+        -27.55,
+        -27.55,
+        -17.1,
+        -21.95,
+        -27.55
+      ],
+      "unique_states": 6,
+      "valid_action_rate": 1.0,
+      "exec_success_rate": 1.0,
+      "noop_steps": 0,
+      "distinct_findings": 0,
+      "trigger_counts": {},
+      "findings": [],
+      "flow": {
+        "max_depth": 1,
+        "mean_depth": 0.33,
+        "reached_receipt": 0,
+        "reached_review": 0
+      },
+      "train_seconds": 1354.9
+    },
+    "random_unmasked": {
+      "label": "random_unmasked",
+      "target_url": "http://127.0.0.1:50507/index.html",
+      "episodes": 5,
+      "steps": 200,
+      "wall_clock_s": 62.44,
+      "steps_per_second": 3.203,
+      "total_reward": -144.05,
+      "mean_episode_reward": -28.81,
+      "episode_rewards": [
+        -29.4,
+        -32.25,
+        -31.4,
+        -28.6,
+        -22.4
+      ],
+      "unique_states": 7,
+      "valid_action_rate": 0.185,
+      "exec_success_rate": 0.98,
+      "noop_steps": 166,
+      "distinct_findings": 3,
+      "trigger_counts": {
+        "broken_navigation": 3
+      },
+      "findings": [
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:50507/support.html",
+          "action": "CLICK",
+          "element": "Delivery times",
+          "detail": "http://127.0.0.1:50507/support.html",
+          "first_seen_step": 179,
+          "times_seen": 1
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:50507/support.html",
+          "action": "CLICK",
+          "element": "Support",
+          "detail": "http://127.0.0.1:50507/support.html",
+          "first_seen_step": 187,
+          "times_seen": 1
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:50507/support.html",
+          "action": "CLICK",
+          "element": "Returns",
+          "detail": "http://127.0.0.1:50507/support.html",
+          "first_seen_step": 194,
+          "times_seen": 1
+        }
+      ],
+      "flow": {
+        "max_depth": 0,
+        "mean_depth": 0.0,
+        "reached_receipt": 0,
+        "reached_review": 0
+      }
+    },
+    "random_masked": {
+      "label": "random_masked",
+      "target_url": "http://127.0.0.1:50507/index.html",
+      "episodes": 5,
+      "steps": 200,
+      "wall_clock_s": 66.62,
+      "steps_per_second": 3.002,
+      "total_reward": 36.55,
+      "mean_episode_reward": 7.31,
+      "episode_rewards": [
+        8.45,
+        10.75,
+        8.8,
+        2.55,
+        6.0
+      ],
+      "unique_states": 9,
+      "valid_action_rate": 1.0,
+      "exec_success_rate": 0.935,
+      "noop_steps": 12,
+      "distinct_findings": 10,
+      "trigger_counts": {
+        "broken_navigation": 20
+      },
+      "findings": [
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:50507/catalog.html",
+          "action": "CLICK",
+          "element": "Catalog",
+          "detail": "http://127.0.0.1:50507/catalog.html",
+          "first_seen_step": 3,
+          "times_seen": 2
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:50507/terms.html",
+          "action": "CLICK",
+          "element": "Terms",
+          "detail": "http://127.0.0.1:50507/terms.html",
+          "first_seen_step": 10,
+          "times_seen": 1
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:50507/support.html",
+          "action": "CLICK",
+          "element": "Returns",
+          "detail": "http://127.0.0.1:50507/support.html",
+          "first_seen_step": 16,
+          "times_seen": 2
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:50507/catalog.html",
+          "action": "CLICK",
+          "element": "Filing",
+          "detail": "http://127.0.0.1:50507/catalog.html",
+          "first_seen_step": 30,
+          "times_seen": 3
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:50507/support.html",
+          "action": "CLICK",
+          "element": "Delivery times",
+          "detail": "http://127.0.0.1:50507/support.html",
+          "first_seen_step": 58,
+          "times_seen": 2
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:50507/support.html",
+          "action": "CLICK",
+          "element": "Contact us",
+          "detail": "http://127.0.0.1:50507/support.html",
+          "first_seen_step": 59,
+          "times_seen": 3
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:50507/about.html",
+          "action": "CLICK",
+          "element": "About",
+          "detail": "http://127.0.0.1:50507/about.html",
+          "first_seen_step": 85,
+          "times_seen": 3
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:50507/support.html",
+          "action": "CLICK",
+          "element": "Invoices",
+          "detail": "http://127.0.0.1:50507/support.html",
+          "first_seen_step": 119,
+          "times_seen": 1
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:50507/status.html",
+          "action": "CLICK",
+          "element": "Status",
+          "detail": "http://127.0.0.1:50507/status.html",
+          "first_seen_step": 131,
+          "times_seen": 2
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:50507/privacy.html",
+          "action": "CLICK",
+          "element": "Privacy",
+          "detail": "http://127.0.0.1:50507/privacy.html",
+          "first_seen_step": 188,
+          "times_seen": 1
+        }
+      ],
+      "flow": {
+        "max_depth": 1,
+        "mean_depth": 0.04,
+        "reached_receipt": 0,
+        "reached_review": 0
+      }
+    }
+  }
+}
