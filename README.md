@@ -84,7 +84,7 @@ Five ideas do the work.
 | **Application Profile** — schema for source-derived intent, sliced per window | Built |
 | **Ground-truth fixtures** — 10-bug toy site, 6-bug seeded Gitea, 4-gate deep-flow site | Built |
 | **Build-definition security gate** — rejects privilege escalation in uploaded compose files | Built |
-| Semantic perception encoders (CLIP / CodeBERT / MiniLM) | **Seam built, encoders not — now the binding constraint** |
+| **Semantic perception encoders** — CLIP / CodeBERT / MiniLM, frozen, batched, cached | Built (~5% step overhead, 951 MB VRAM) |
 | Repo profiler (extract intent from source automatically) | Not built |
 | Auto-deploy runner | Not built |
 | Bug report engine | Not built |
@@ -110,9 +110,11 @@ Five ideas do the work.
 The masked agent reaches three times the mean depth of the unmasked one — **and no policy gets past stage 1.** Two causes, neither of them the masking:
 
 1. **The novelty bonus rewards breadth where this flow needs depth.** Reaching a static footer page pays the same as advancing a stage and is far easier. `random_masked` maximises exactly that and earns the best reward while going nowhere; `dqn_masked` earns the worst while going furthest. Reward and objective point in different directions, visible here as a rank inversion across policies.
-2. **The agent cannot see semantics.** The perception encoders are still deterministic hash stubs, so two near-identical pages have unrelated observations and "this is a Continue link" is not representable at all.
+2. **The agent could not see semantics** — the encoders were deterministic hash stubs at the time, so "this is a Continue link" was not representable at all.
 
-This does not show RL cannot chain flows — the agent was never given an observation capable of supporting the inference. It does establish that **the perception layer is the binding constraint**, which is why it is listed above as a prerequisite rather than an extension.
+**Cause 2 was then tested and rejected.** With the real CLIP/CodeBERT/MiniLM encoders in place the masked agent gets *worse*, not better — mean flow depth 0.33 → 0.00, still nothing past stage 1. The likely reason is that a content hash is a near-perfect state *identifier* while semantic embeddings deliberately make similar pages similar, and on a 12-page fixture at 4,000 steps memorisation beats generalisation. So the experiment cannot separate "semantic encoders do not help" from "do not help at this scale", and their value on a large target remains untested rather than disproven.
+
+That leaves **cause 1 as the only one with evidence behind it**: the exploration bonus rewards breadth where the flow needs depth. A depth-aware term is the next RL change worth making.
 
 **On a real application, the hard part was never the judge.** Pointed at a live Gitea, the pipeline produced a stream of confident, well-argued, wrong findings. Thirteen defects were found and fixed across two passes; **none was in the judge**. Every one had the same shape — the input stated something true about the *test harness* as though it were true about the *application*, and the model reasoned correctly from a false premise:
 
@@ -234,7 +236,7 @@ reports/             Measured results
 ## Limitations
 
 - **Source grounding is not yet demonstrated.** The Application Profile schema and consumer exist and measurably help precision, but profiles are currently hand-authored; the extractor that would derive them from a repository is not built. "The code defines X, testing observed Y" is the goal, not a claim.
-- **Semantic perception is stubbed**, and is now the binding constraint on the RL half. The fusion architecture, normalization, batching wrapper and features extractor are built; the visual and structural encoders are not, so the agent observes a deterministic content hash rather than a semantic embedding.
+- **Semantic perception is built but unproven.** The encoders run at ~5% step overhead, and CodeBERT needed two corrections to be usable at all (mean pooling and a fixed centering vector — the spec's `[CLS]` gives pairwise cosine ~0.99 across every page). On the small fixtures they measurably *hurt* the RL agent; whether they help on a large, diverse target is untested.
 - **The RL contribution is an open question**, and on current evidence a negative one. See above.
 - **Small n on the real target.** Six seeded bugs and two control windows is enough to be honest with, not enough to be confident with.
 - **Auto-deploy is gated but not built.** Uploaded build definitions are validated; the sandboxed runner that would execute them is not, and a passing policy check is not a sandbox.
