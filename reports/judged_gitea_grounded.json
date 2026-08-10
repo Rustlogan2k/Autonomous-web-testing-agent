@@ -1,0 +1,182 @@
+{
+  "target": "http://localhost:3000/",
+  "episodes": 1,
+  "steps_per_episode": 14,
+  "seed": 0,
+  "wall_clock_s": 99.2,
+  "rollout": {
+    "label": "judged-random",
+    "target_url": "http://localhost:3000/",
+    "episodes": 1,
+    "steps": 14,
+    "wall_clock_s": 99.09,
+    "steps_per_second": 0.141,
+    "total_reward": -1.5,
+    "mean_episode_reward": -1.5,
+    "episode_rewards": [
+      -1.5
+    ],
+    "unique_states": 1,
+    "valid_action_rate": 1.0,
+    "exec_success_rate": 0.8571,
+    "noop_steps": 2,
+    "distinct_findings": 0,
+    "trigger_counts": {},
+    "findings": []
+  },
+  "judge": {
+    "judge": "ollama/gpt-oss:120b-cloud",
+    "grounded": true,
+    "profile": {
+      "name": "Gitea",
+      "provenance": "manual"
+    },
+    "calls": 9,
+    "failed_calls": 0,
+    "judge_seconds": 92.9,
+    "seconds_per_call": 10.32,
+    "gate": {
+      "steps": 14,
+      "judged": 9,
+      "skipped": 5,
+      "judged_fraction": 0.643,
+      "reasons": {
+        "activated a control that promises an effect": 8,
+        "idle no-op": 2,
+        "the page changed": 1,
+        "action did not execute and changed nothing": 1,
+        "SCROLL promises no effect and changed nothing": 1,
+        "RESIZE_VIEWPORT promises no effect and changed nothing": 1
+      }
+    },
+    "positives": 0
+  },
+  "verdicts": [
+    {
+      "episode": 1,
+      "step": 1,
+      "seconds": 11.95,
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "observed": "Clicking the 'contributing' link opened https://github.com/go-gitea/gitea in a new browser tab; the current page URL remained '/' unchanged.",
+      "expected": "The link should open the external URL in a new tab, leaving the current page unchanged, which is the intended behaviour for external links.",
+      "discrepancy": "none",
+      "evidence": "NEW TAB    : this link opens in a separate tab (https://github.com/go-gitea/gitea). The page it was clicked from is not supposed to change, and the test harness does not follow the new tab.",
+      "error": null
+    },
+    {
+      "episode": 1,
+      "step": 2,
+      "seconds": 9.84,
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "observed": "Click on 'contributing' opened the link in a separate tab; the current page URL remained '/'",
+      "expected": "The link should open in a new tab (or window) leaving the current page unchanged, which is the intended behavior for external links",
+      "discrepancy": "none",
+      "evidence": "NEW TAB    : this link opens in a separate tab (https://github.com/go-gitea/gitea).",
+      "error": null
+    },
+    {
+      "episode": 1,
+      "step": 3,
+      "seconds": 8.42,
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "observed": "Clicking the 'packaged' link opened a new tab to https://docs.gitea.com/installation/install-from-package and left the current page URL unchanged at /",
+      "expected": "The link should open in a new tab (or otherwise navigate) without changing the current page, which is the intended behavior for external documentation links",
+      "discrepancy": "none",
+      "evidence": "NEW TAB    : this link opens in a separate tab (https://docs.gitea.com/installation/install-from-package). The page it was clicked from is not supposed to change, and the test harness does not follow the new tab.",
+      "error": null
+    },
+    {
+      "episode": 1,
+      "step": 4,
+      "seconds": 8.39,
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 0.0,
+      "observed": "BROWSER_BACK failed with no in-app history to go back; URL remained '/'",
+      "expected": "When there is no navigation history, a browser back action should do nothing and keep the URL unchanged",
+      "discrepancy": "none",
+      "evidence": "FAILED     : no in-app history to go back",
+      "error": null
+    },
+    {
+      "episode": 1,
+      "step": 6,
+      "seconds": 10.17,
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 0.0,
+      "observed": "The click opened the link in a new tab (https://code.gitea.io/gitea) and the current page URL remained '/' with no visible change.",
+      "expected": "The link should open (new tab or same tab) without altering the current page, which is acceptable behavior.",
+      "discrepancy": "none",
+      "evidence": "NEW TAB    : this link opens in a separate tab (https://code.gitea.io/gitea). The page it was clicked from is not supposed to change, and the test harness does not follow the new tab.",
+      "error": null
+    },
+    {
+      "episode": 1,
+      "step": 6,
+      "seconds": 10.39,
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "observed": "Clicking the 'run the binary' link opened a new tab to https://docs.gitea.com/installation/install-from-binary/ and left the current page URL unchanged",
+      "expected": "The link should open in a new tab (or external window) and the current page should remain unchanged",
+      "discrepancy": "none",
+      "evidence": "NEW TAB    : this link opens in a separate tab (https://docs.gitea.com/installation/install-from-binary/). The page it was clicked from is not supposed to change, and the test harness does not follow the new tab.",
+      "error": null
+    },
+    {
+      "episode": 1,
+      "step": 6,
+      "seconds": 9.47,
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 0.0,
+      "observed": "Clicking 'Powered by Gitea' opened a new tab to https://about.gitea.com and left the current page unchanged",
+      "expected": "The link should open a new tab to https://about.gitea.com without changing the current page",
+      "discrepancy": "none",
+      "evidence": "NEW TAB    : this link opens in a separate tab (https://about.gitea.com). The page it was clicked from is not supposed to change, and the test harness does not follow the new tab. Nothing is known about where it leads \u2014 this is NOT a dead control and NOT a broken link.",
+      "error": null
+    },
+    {
+      "episode": 1,
+      "step": 6,
+      "seconds": 13.78,
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 0.0,
+      "observed": "CLICK on 'packaged' opened a new tab to https://docs.gitea.com/installation/install-from-package/ and the current page URL remained '/'",
+      "expected": "The link should open in a new tab and the current page should remain unchanged",
+      "discrepancy": "none",
+      "evidence": "NEW TAB    : this link opens in a separate tab (https://docs.gitea.com/installation/install-from-package/). The page it was clicked from is not supposed to change, and the test harness does not follow the new tab.",
+      "error": null
+    },
+    {
+      "episode": 1,
+      "step": 6,
+      "seconds": 10.45,
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 0.0,
+      "observed": "Clicking the link opened a new tab to https://code.gitea.io/gitea/ and the current page URL remained unchanged.",
+      "expected": "The link should open in a new tab (or external window) without changing the current page, as defined for external links.",
+      "discrepancy": "none",
+      "evidence": "NEW TAB    : this link opens in a separate tab (https://code.gitea.io/gitea/). The page it was clicked from is not supposed to change, and the test harness does not follow the new tab.",
+      "error": null
+    }
+  ]
+}

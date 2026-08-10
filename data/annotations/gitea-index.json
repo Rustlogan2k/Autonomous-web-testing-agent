@@ -1,0 +1,7 @@
+{
+  "run_id": "gitea",
+  "corpora": {
+    "random": "data\\annotations\\gitea-random"
+  },
+  "incomplete_scripts": []
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acme Widgets — Widgets</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; max-width: 40rem; }
+    button { display: block; margin: 0.6rem 0; padding: 0.5rem 1rem; }
+    #spinner { display: none; margin-top: 1rem; color: #666; }
+    #filler { height: 1600px; background: linear-gradient(#fff, #eee); margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <h1>Widgets</h1>
+  <a href="index.html">← Home</a>
+
+  <button id="btn-working" type="button">Increment counter</button>
+  <p>Counter: <span id="counter">0</span></p>
+
+  <!-- BUG-02: labelled as an action, wired to nothing at all. -->
+  <button id="btn-export" type="button">Export data</button>
+
+  <!-- BUG-04: throws an uncaught TypeError on every click. -->
+  <button id="btn-report" type="button">Generate report</button>
+
+  <!-- BUG-07: shows a spinner and then never finishes. -->
+  <button id="btn-sync" type="button">Sync now</button>
+  <div id="spinner" style="display: block;">Syncing… 2026-08-06T18:07:13.053Z</div>
+
+  <p>Scroll down for the archive link.</p>
+  <div id="filler"></div>
+  <!-- Only reachable after SCROLL: exercises viewport-aware action prioritization. -->
+  <a href="archive.html" id="link-archive">Open archive</a>
+
+  <script>
+    let counter = 0;
+    document.getElementById('btn-working').addEventListener('click', function () {
+      counter += 1;
+      document.getElementById('counter').textContent = String(counter);
+    });
+
+    // BUG-02: no listener is registered for #btn-export.
+
+    document.getElementById('btn-report').addEventListener('click', function () {
+      // BUG-04: `reportBuilder` is never defined; this raises a TypeError that surfaces
+      // as an uncaught page error / console error.
+      window.reportBuilder.build();
+    });
+
+    document.getElementById('btn-sync').addEventListener('click', function () {
+      // BUG-07: the spinner appears and the DOM keeps churning indefinitely, so the
+      // page never settles — the "loading spinner never goes away" bug.
+      document.getElementById('spinner').style.display = 'block';
+      setInterval(function () {
+        const node = document.getElementById('spinner');
+        node.textContent = 'Syncing… ' + new Date().toISOString();
+      }, 100);
+    });
+  </script>
+
+
+</body></html>

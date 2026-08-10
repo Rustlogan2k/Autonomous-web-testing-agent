@@ -1,0 +1,141 @@
+{
+  "site": "toy_validation_site",
+  "version": 1,
+  "purpose": "Ground-truth answer key for the seeded-bug fixture. Used to measure bug-discovery rate and false-positive rate for the DQN pipeline, the flat-vs-action-conditioned Q-network A/B test, and the random-policy baseline.",
+  "entry_point": "index.html",
+  "detectability_legend": {
+    "deterministic": "One of the implemented deterministic triggers should fire on its own.",
+    "llm_required": "No deterministic trigger fires; only a semantic judge comparing intent to observed behaviour can catch it. These measure what the LLM reward model actually adds.",
+    "cross_step": "Requires comparing state across two or more steps (e.g. submit then inspect, or toggle then refresh)."
+  },
+  "bugs": [
+    {
+      "id": "BUG-01",
+      "title": "Signup silently drops the email address",
+      "pages": ["signup.html", "confirm.html"],
+      "type": "broken_flow",
+      "severity": 0.8,
+      "detectability": ["llm_required", "cross_step"],
+      "repro": "Fill username and email on signup.html, submit, observe confirm.html.",
+      "expected": "The confirmation echoes the email address that was entered.",
+      "actual": "The email field shows '(not provided)'; the value was never included in the submission.",
+      "expected_triggers": []
+    },
+    {
+      "id": "BUG-02",
+      "title": "'Export data' button does nothing",
+      "pages": ["widgets.html"],
+      "type": "dead_control",
+      "severity": 0.5,
+      "detectability": ["llm_required"],
+      "repro": "Click #btn-export.",
+      "expected": "Some visible response (download, dialog, status change).",
+      "actual": "No listener is registered; the DOM is unchanged and no request is made.",
+      "expected_triggers": []
+    },
+    {
+      "id": "BUG-03",
+      "title": "Pricing nav link 404s",
+      "pages": ["index.html"],
+      "type": "broken_navigation",
+      "severity": 0.6,
+      "detectability": ["deterministic"],
+      "repro": "Click #nav-pricing.",
+      "expected": "A pricing page loads.",
+      "actual": "pricing.html does not exist; the document request returns 404.",
+      "expected_triggers": ["unexpected_http_errors", "document_http_error", "broken_navigation"]
+    },
+    {
+      "id": "BUG-04",
+      "title": "'Generate report' throws an uncaught TypeError",
+      "pages": ["widgets.html"],
+      "type": "js_error",
+      "severity": 0.7,
+      "detectability": ["deterministic"],
+      "repro": "Click #btn-report.",
+      "expected": "A report is generated.",
+      "actual": "window.reportBuilder is undefined; an uncaught TypeError reaches the console.",
+      "expected_triggers": ["console_errors"]
+    },
+    {
+      "id": "BUG-05",
+      "title": "Age validation is declared but never enforced",
+      "pages": ["signup.html", "confirm.html"],
+      "type": "validation_bypass",
+      "severity": 0.6,
+      "detectability": ["llm_required", "cross_step"],
+      "repro": "Type a boundary_max age (999999999) into #age and submit. Requires the form's `novalidate` attribute to be present, otherwise the browser rejects the submission itself and the application bug is masked.",
+      "expected": "min=13/max=120 is enforced; submission is rejected.",
+      "actual": "The form is `novalidate` and the submit handler never validates, so the out-of-range value is accepted and echoed back.",
+      "expected_triggers": []
+    },
+    {
+      "id": "BUG-06",
+      "title": "Signup form double-submits under rapid clicks",
+      "pages": ["signup.html"],
+      "type": "race_condition",
+      "severity": 0.7,
+      "detectability": ["llm_required", "cross_step"],
+      "repro": "RAPID_CLICK #submit-signup.",
+      "expected": "The button disables after the first submit; exactly one account is created.",
+      "actual": "The submission counter increments once per click.",
+      "expected_triggers": []
+    },
+    {
+      "id": "BUG-07",
+      "title": "'Sync now' spinner never completes",
+      "pages": ["widgets.html"],
+      "type": "hang",
+      "severity": 0.7,
+      "detectability": ["deterministic"],
+      "repro": "Click #btn-sync.",
+      "expected": "Sync finishes and the spinner is removed.",
+      "actual": "A 100ms interval mutates the DOM forever; the page never reaches quiescence.",
+      "expected_triggers": ["slow_response"]
+    },
+    {
+      "id": "BUG-08",
+      "title": "Primary call-to-action is hidden on mobile viewports",
+      "pages": ["index.html"],
+      "type": "ui_regression",
+      "severity": 0.6,
+      "detectability": ["llm_required", "cross_step"],
+      "repro": "RESIZE_VIEWPORT to mobile (375px) and observe index.html.",
+      "expected": "Signup remains reachable at all viewport widths.",
+      "actual": "A max-width:600px media query sets display:none on both #cta-signup and #nav-signup — every route into the signup flow — so the flow cannot be started on a phone. Hiding only one of the two would be ordinary responsive design and not a defect; the bug is that no route survives.",
+      "expected_triggers": []
+    },
+    {
+      "id": "BUG-09",
+      "title": "Dark mode preference does not persist",
+      "pages": ["settings.html"],
+      "type": "state_persistence",
+      "severity": 0.5,
+      "detectability": ["llm_required", "cross_step"],
+      "repro": "Check #opt-darkmode, click #btn-save, then REFRESH.",
+      "expected": "The checkbox is still checked after reload.",
+      "actual": "Written as 'pref.darkMode', read back as 'pref.darkmode'; the setting silently resets.",
+      "expected_triggers": []
+    },
+    {
+      "id": "BUG-10",
+      "title": "'Back to Widgets' link navigates to the home page",
+      "pages": ["archive.html"],
+      "type": "broken_navigation",
+      "severity": 0.4,
+      "detectability": ["llm_required"],
+      "repro": "Scroll down on widgets.html, open the archive, click #link-back-widgets.",
+      "expected": "Returns to widgets.html.",
+      "actual": "Navigates to index.html; the URL changes, so no deterministic trigger fires.",
+      "expected_triggers": []
+    }
+  ],
+  "notes": {
+    "deterministic_coverage": "3 of 10 bugs (BUG-03, BUG-04, BUG-07) are reachable by the deterministic triggers alone. That ratio is the point: it is the headroom the LLM reward model has to justify itself, and the baseline any 'LLM adds value' claim must beat.",
+    "false_positive_watch": [
+      "REFRESH keeping the same URL is correct behaviour, not broken navigation.",
+      "#btn-working, the signup happy path, and the archive record links are all correct and must not be reported.",
+      "Reaching archive.html requires SCROLL first — it is off-screen on load, so it also exercises viewport-aware action prioritization."
+    ]
+  }
+}

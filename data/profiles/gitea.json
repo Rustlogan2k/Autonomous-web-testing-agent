@@ -1,0 +1,82 @@
+{
+  "name": "Gitea",
+  "app_type": "self-hosted git forge (repository hosting, issues, pull requests, packages)",
+  "summary": "A Git hosting service. Anonymous visitors may browse public repositories, explore listings and read issues; anything that writes requires an account. Registration and sign-in are the only anonymous write flows.",
+  "auth": "Session cookie from POST /user/login. Anonymous browsing is enabled, so public read routes need no session; every write route redirects (303) to /user/login instead.",
+  "provenance": "manual",
+  "notes": "Hand-authored stand-in for the Repo Profiler (PROJECT_CONTEXT.md 3.0b), which does not exist yet. It exists to test whether source-level intent improves judgment before weeks are spent on tree-sitter extraction. Entries marked 'observed:' were verified against the running container (gitea/gitea:1.21, localhost:3000) at authoring time; entries marked 'gitea:' name the file in Gitea's source tree that declares the rule, without line numbers, which is the level of provenance a hand-authored profile can honestly claim. It was written from the application and its source layout only, deliberately before reading the individual judge verdicts from the previous scoring run, so that it could not be tuned to suppress specific findings.",
+
+  "routes": [
+    {"path": "/", "purpose": "landing page for anonymous visitors; the signed-in dashboard once a session exists", "auth": "anonymous", "source": "gitea: routers/web/web.go"},
+    {"path": "/explore/repos", "purpose": "paginated listing of public repositories, with a keyword search box and sort/filter controls that submit as query parameters", "auth": "anonymous", "source": "observed: GET /explore/repos"},
+    {"path": "/explore/users", "purpose": "paginated listing of public user accounts", "auth": "anonymous", "source": "observed: GET /explore/users"},
+    {"path": "/explore/organizations", "purpose": "paginated listing of public organizations", "auth": "anonymous", "source": "observed: GET /explore/organizations"},
+    {"path": "/user/login", "purpose": "sign-in form; on success sets a session cookie and redirects to the dashboard", "auth": "anonymous", "source": "gitea: routers/web/auth/auth.go"},
+    {"path": "/user/sign_up", "purpose": "account registration form", "auth": "anonymous", "source": "gitea: routers/web/auth/auth.go"},
+    {"path": "/user/forgot_password", "purpose": "password reset request form", "auth": "anonymous", "source": "gitea: routers/web/auth/auth.go"},
+    {"path": "/{owner}/{repo}", "purpose": "repository home: file browser for the default branch, README, and the repository tab bar", "auth": "anonymous", "source": "observed: GET /tester/notes"},
+    {"path": "/{owner}/{repo}/issues", "purpose": "issue list for the repository, filterable by state and label", "auth": "anonymous", "source": "observed: GET /tester/notes/issues"},
+    {"path": "/{owner}/{repo}/pulls", "purpose": "pull request list", "auth": "anonymous", "source": "gitea: routers/web/web.go"},
+    {"path": "/{owner}/{repo}/forks", "purpose": "list of repositories forked from this one", "auth": "anonymous", "source": "observed: GET /tester/notes/forks"},
+    {"path": "/{owner}/{repo}/stars", "purpose": "list of users who starred this repository", "auth": "anonymous", "source": "observed: GET /tester/notes/stars"},
+    {"path": "/{owner}/{repo}/watchers", "purpose": "list of users watching this repository", "auth": "anonymous", "source": "gitea: routers/web/web.go"},
+    {"path": "/{owner}/{repo}/packages", "purpose": "packages published against this repository", "auth": "anonymous", "source": "observed: GET /tester/notes/packages"},
+    {"path": "/{owner}/{repo}/releases", "purpose": "tagged releases", "auth": "anonymous", "source": "gitea: routers/web/web.go"},
+    {"path": "/{owner}/{repo}/activity", "purpose": "contribution and activity charts over a selectable period", "auth": "anonymous", "source": "gitea: routers/web/web.go"},
+    {"path": "/{owner}/{repo}/issues/new", "purpose": "create an issue — requires a session", "auth": "authenticated", "source": "observed: GET /tester/notes/issues/new -> 303 /user/login"},
+    {"path": "/repo/create", "purpose": "create a repository — requires a session", "auth": "authenticated", "source": "observed: GET /repo/create -> 303 /user/login"},
+    {"path": "/api/swagger", "purpose": "interactive API documentation. This is Swagger UI, a vendored third-party console rendered over Gitea's OpenAPI spec — not a Gitea application screen", "auth": "anonymous", "source": "observed: GET /api/swagger"},
+    {"path": "/assets/*", "purpose": "static assets: bundles, licence text, images", "auth": "anonymous", "source": "observed: GET /assets/licenses.txt"}
+  ],
+
+  "rules": [
+    {"field": "user_name", "route": "/user/sign_up", "rule": "required; must be a valid username (alphanumerics, dash, underscore, dot; may not start or end with a separator); max 40 characters; must be unique", "source": "gitea: services/forms/user_form.go (RegisterForm.UserName binding \"Required;Username;MaxSize(40)\")"},
+    {"field": "email", "route": "/user/sign_up", "rule": "required; must be a syntactically valid email address; max 254 characters; must be unique. The input is type=email, so the browser also validates it", "source": "gitea: services/forms/user_form.go (RegisterForm.Email binding \"Required;Email;MaxSize(254)\") + observed: <input id=\"email\" type=\"email\" required>"},
+    {"field": "password", "route": "/user/sign_up", "rule": "required; must satisfy the instance password policy (default minimum length 6); max 255 characters", "source": "gitea: services/forms/user_form.go (RegisterForm.Password) + modules/setting/service.go (MinPasswordLength)"},
+    {"field": "retype", "route": "/user/sign_up", "rule": "required; must equal password, otherwise registration is rejected with a mismatch error", "source": "gitea: routers/web/auth/auth.go (SignUpPost) + observed: <input id=\"retype\" required>"},
+    {"field": "_csrf", "route": "/user/sign_up", "rule": "required hidden token; a POST without a matching token is rejected", "source": "observed: <input type=\"hidden\" name=\"_csrf\">"},
+    {"field": "user_name", "route": "/user/login", "rule": "required; accepts either a username or an email address", "source": "gitea: services/forms/auth_form.go (SignInForm.UserName binding \"Required;MaxSize(254)\")"},
+    {"field": "password", "route": "/user/login", "rule": "required; an incorrect username or password re-renders the form with a generic error and never reveals which of the two was wrong", "source": "gitea: routers/web/auth/auth.go (SignInPost)"},
+    {"field": "q", "route": "/explore/repos", "rule": "optional search keyword; max 255 characters. An empty or unmatched keyword yields an empty result list, which is a valid result and not an error", "source": "observed: <input type=\"search\" name=\"q\" maxlength=\"255\">"}
+  ],
+
+  "flows": [
+    {
+      "name": "register an account",
+      "routes": ["/user/sign_up"],
+      "steps": ["open /user/sign_up", "enter username, email, password and matching retype", "submit"],
+      "outcome": "On success the account is created and the visitor is signed in or sent to /user/login. On failure the form is re-rendered on /user/sign_up with an error message naming the offending field, and the entered username and email are preserved so they do not have to be retyped. The password fields are always cleared.",
+      "source": "gitea: routers/web/auth/auth.go (SignUpPost)"
+    },
+    {
+      "name": "sign in",
+      "routes": ["/user/login"],
+      "steps": ["open /user/login", "enter username or email and password", "submit"],
+      "outcome": "On success a session cookie is set and the visitor is redirected away from /user/login. On failure the form is re-rendered with a generic 'username or password is incorrect' error and the URL stays /user/login.",
+      "source": "gitea: routers/web/auth/auth.go (SignInPost)"
+    },
+    {
+      "name": "browse a repository",
+      "routes": ["/{owner}/{repo}", "/{owner}/{repo}/issues", "/{owner}/{repo}/forks", "/{owner}/{repo}/stars", "/{owner}/{repo}/packages", "/{owner}/{repo}/releases"],
+      "steps": ["open the repository home", "select a tab from the repository tab bar"],
+      "outcome": "Each tab renders its own page at its own URL, keeping the repository header and tab bar. A tab whose underlying collection is empty renders that page with an empty list or an explanatory empty-state message — it does not error and does not fall back to another tab.",
+      "source": "observed: GET /tester/notes/{forks,stars,packages}"
+    },
+    {
+      "name": "search public repositories",
+      "routes": ["/explore/repos"],
+      "steps": ["open /explore/repos", "type a keyword into the search box", "submit or change a sort/filter control"],
+      "outcome": "The page reloads at /explore/repos with the keyword and sort as query parameters and the listing filtered accordingly. A keyword matching nothing produces an empty listing, which is correct.",
+      "source": "observed: GET /explore/repos"
+    }
+  ],
+
+  "behaviours": [
+    {"description": "This session is ANONYMOUS. Every write control (New Issue, New Repository, Fork, Star, Watch, comment box) responds by redirecting to /user/login. Landing on the sign-in page after clicking one is intended, not a broken link and not a dead control.", "route": "*", "source": "observed: GET /tester/notes/issues/new and /repo/create both return 303 to /user/login"},
+    {"description": "A repository sub-tab whose collection is empty (no forks, stars, watchers, packages or releases) renders the repository header and tab bar with an empty list or a short empty-state sentence. An empty list is the correct answer, not a failed page load.", "route": "/{owner}/{repo}/*", "source": "observed: /tester/notes/forks and /tester/notes/stars render empty lists; /tester/notes/packages renders 'There are no packages yet.'"},
+    {"description": "Every page has a footer with the Gitea version, ~30 language links, and links to the Gitea project's own site and docs. The language links reload the current page in another locale, which correctly changes most visible text.", "route": "*", "source": "observed: footer of every rendered page"},
+    {"description": "The repository header shows counters (Watch 1, Star 0, Fork 0). A counter reading 0 is correct for a repository nobody has starred or forked; it does not mean a control failed.", "route": "/{owner}/{repo}/*", "source": "observed: /tester/notes header"},
+    {"description": "/api/swagger is Swagger UI, a vendored third-party API console rendered over Gitea's OpenAPI spec. Its controls (Authorize, Try it out, expanding an endpoint) drive that widget and its own client-side validation — they are not Gitea application flows.", "route": "/api/swagger", "source": "observed: GET /api/swagger"},
+    {"description": "Gitea renders progressively: headers, tab bars and metadata are server-rendered while some counters and dropdown menus are hydrated by JavaScript. A dropdown listing no items until it is opened is normal.", "route": "*", "source": "observed: rendered markup contains collapsed menu entries"}
+  ]
+}

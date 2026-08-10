@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><title>Smoke Test Site</title></head>
+<body>
+  <h1>Functional Env Smoke Test</h1>
+  <form id="signup" onsubmit="return false;">
+    <input type="text" name="username" placeholder="Username">
+    <input type="email" name="email" placeholder="Email">
+    <select name="country">
+      <option value="us">United States</option>
+      <option value="uk">United Kingdom</option>
+      <option value="in">India</option>
+    </select>
+    <label><input type="checkbox" name="agree"> I agree</label>
+    <button type="submit" id="submit-btn">Submit</button>
+  </form>
+
+  <p><a href="/submit.html" id="ok-link">Go to submit page</a></p>
+  <p><a href="/missing.html" id="broken-link">Broken link</a></p>
+  <!-- Opens a popup rather than navigating this tab: must be adopted as the active
+       page, and must NOT be reported as a broken link just because the URL is unchanged. -->
+  <p><a href="/submit.html" id="popup-link" target="_blank">Open submit page in a new tab</a></p>
+  <p><a href="#section-two" id="fragment-link">Jump to section two</a></p>
+  <p><button id="error-btn" onclick="throw new Error('boom - intentional smoke-test error')">Trigger JS error</button></p>
+
+  <div style="height: 2000px;">Filler content for scroll testing.</div>
+  <!-- Off-screen on load: only reachable after SCROLL, so it exercises the
+       viewport-aware action prioritization. -->
+  <h2 id="section-two">Section two</h2>
+  <p><button id="below-fold-btn" type="button">Below-the-fold button</button></p>
+</body>
+</html>

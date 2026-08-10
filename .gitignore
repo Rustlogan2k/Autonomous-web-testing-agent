@@ -1,0 +1,99 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+# Per-machine Claude Code permissions; project-level .claude config stays tracked.
+.claude/settings.local.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ML Models (large files -- use Git LFS or download via script)
+models/pretrained/
+models/checkpoints/*.pt
+models/checkpoints/*.pth
+# Stable-Baselines3 writes .zip, not .pt -- without this the two toy DQN checkpoints
+# are 31 MB of the repo, and PROJECT_CONTEXT 9 item 2b says those runs have to be
+# re-run anyway before any state-coverage figure from them can be cited.
+models/checkpoints/*.zip
+models/reward_model/*.bin
+*.safetensors
+*.gguf
+
+# --- Data --------------------------------------------------------------------
+# Policy: commit what a claim rests on and what cannot be regenerated from a clone;
+# ignore what is bulky and reproducible. The previous rules had this exactly
+# inverted -- `data/annotations/*.json` dropped the tiny corpus index files while
+# 13 MB of page blobs and screenshots were committed.
+data/training_logs/
+
+# Application Profiles are inputs, not outputs: they are hand-authored today and
+# will be profiler-generated later, and the judge cannot be grounded without them.
+# (Explicit, so no future data/ rule can swallow them by accident.)
+!data/profiles/
+!data/profiles/*.json
+
+# Trace corpora captured against a real target need a running container
+# (`docker compose up gitea` + `scripts/setup_gitea.py`) and take ~3 minutes to
+# recapture, so they are regenerable and stay out. The toy corpora do NOT: their
+# fixture site lives in this repo, and they are the evidence for the headline
+# 10/10-vs-3/10 result, so a clone can replay that claim offline. ~800 KB.
+data/annotations/*/
+!data/annotations/toy-scripted/
+!data/annotations/toy-random/
+
+# Screenshots are captured for possible visual work but the judge is text-only and
+# never reads them -- 2.3 MB of the toy corpora's 3 MB.
+data/annotations/*/screenshots/
+
+# Logs
+logs/
+*.log
+wandb/
+
+# Reports (generated)
+# The JSON reports are deliberately NOT ignored: they embed their own verdicts and
+# usage, so they remain readable after the corpus that produced them is deleted, and
+# they are the measured results this project reports.
+reports/*.html
+reports/*.pdf
+# Scratch logs from piping a run to a file; the real output is the JSON beside it.
+reports/_*.log
+reports/_*.json
+
+# Environment variables
+.env
+.env.local
+
+# Internal working document. Kept local deliberately: it is the running design and
+# decision log (including negative results, dead ends and open risks) rather than
+# project documentation. README.md is the public description.
+PROJECT_CONTEXT.md
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Docker
+docker-compose.override.yml
+
+# Playwright
+playwright-report/
+test-results/

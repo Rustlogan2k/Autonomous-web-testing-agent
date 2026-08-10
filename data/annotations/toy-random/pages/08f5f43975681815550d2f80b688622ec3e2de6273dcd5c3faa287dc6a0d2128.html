@@ -1,0 +1,50 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acme Widgets — Settings</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; max-width: 40rem; }
+    label { display: block; margin: 0.6rem 0; }
+    .saved { color: #060; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Account settings</h1>
+  <a href="index.html">← Home</a>
+
+  <label>
+    <input type="checkbox" id="opt-newsletter" name="newsletter" style=""> Email me the newsletter
+  </label>
+
+  <label>
+    <input type="checkbox" id="opt-darkmode" name="darkmode" style=""> Use dark mode
+  </label>
+
+  <label for="display-name">Display name</label>
+  <input type="text" id="display-name" name="display_name" style="" value="12345">
+
+  <button type="button" id="btn-save">Save settings</button>
+  <p class="saved" id="save-status">Settings saved.</p>
+
+  <script>
+    const newsletter = document.getElementById('opt-newsletter');
+    const darkmode = document.getElementById('opt-darkmode');
+    const displayName = document.getElementById('display-name');
+
+    // Restore previously saved settings on load.
+    newsletter.checked = localStorage.getItem('pref.newsletter') === 'true';
+    // BUG-09: dark mode is *written* to 'pref.darkMode' below but read back from
+    // 'pref.darkmode' here — the setting silently resets on every refresh.
+    darkmode.checked = localStorage.getItem('pref.darkmode') === 'true';
+    displayName.value = localStorage.getItem('pref.displayName') || '';
+
+    document.getElementById('btn-save').addEventListener('click', function () {
+      localStorage.setItem('pref.newsletter', String(newsletter.checked));
+      localStorage.setItem('pref.darkMode', String(darkmode.checked));
+      localStorage.setItem('pref.displayName', displayName.value);
+      document.getElementById('save-status').textContent = 'Settings saved.';
+    });
+  </script>
+
+
+</body></html>

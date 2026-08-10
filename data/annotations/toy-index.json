@@ -1,0 +1,8 @@
+{
+  "run_id": "toy",
+  "corpora": {
+    "scripted": "data\\annotations\\toy-scripted",
+    "random": "data\\annotations\\toy-random"
+  },
+  "incomplete_scripts": []
+}

@@ -1,0 +1,789 @@
+{
+  "run_id": "toy",
+  "judge": "ollama/qwen2.5:7b-instruct",
+  "window_steps": 6,
+  "usage": {
+    "model": "ollama/qwen2.5:7b-instruct",
+    "calls": 39,
+    "prompt_tokens": 49243,
+    "output_tokens": 6962,
+    "wall_clock_s": 723.7,
+    "seconds_per_call": 18.56,
+    "num_ctx": 8192,
+    "prompts_over_context": 0,
+    "schema_ignored": 0
+  },
+  "corpora": {
+    "scripted": {
+      "corpus": "scripted",
+      "judge": "ollama/qwen2.5:7b-instruct",
+      "windows": 39,
+      "failed_calls": 0,
+      "positive_verdicts": 25,
+      "episodes_scored": 10,
+      "detected": {
+        "BUG-01": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "BUG-02": [
+          11
+        ],
+        "BUG-03": [
+          15
+        ],
+        "BUG-04": [
+          20
+        ],
+        "BUG-05": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "BUG-06": [
+          25,
+          26,
+          27,
+          28
+        ],
+        "BUG-07": [
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        "BUG-08": [
+          38,
+          40
+        ],
+        "BUG-09": [
+          44,
+          45,
+          46
+        ],
+        "BUG-10": [
+          51
+        ]
+      },
+      "missed": [],
+      "recall": 1.0,
+      "control_windows": 7,
+      "control_positives": 2,
+      "false_positive_rate": 0.286,
+      "false_positive_episodes": {
+        "10": 2
+      },
+      "unattributed_windows": 0,
+      "unattributed_positives": 0,
+      "unattributed_rate": 0.0,
+      "bug_windows": 32,
+      "bug_positives": 23,
+      "discrimination": 0.433,
+      "window_steps": 6,
+      "skip_idle": true,
+      "wall_clock_s": 724.7,
+      "judgments": [
+        {
+          "episode": 1,
+          "global_step": 1,
+          "script": "signup_drops_email_and_skips_age_validation",
+          "expected_bugs": [
+            "BUG-01",
+            "BUG-05"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 1,
+          "observed": "The URL changed from /index.html to /signup.html, and the form controls for age, email, and username were initialized as expected.",
+          "expected": "Upon clicking 'Sign up', the application should navigate to the signup page and initialize the necessary form fields with appropriate constraints.",
+          "discrepancy": "No discrepancy observed. The application behaved correctly by navigating to /signup.html and initializing the form controls as required.",
+          "evidence": "",
+          "error": null
+        },
+        {
+          "episode": 1,
+          "global_step": 2,
+          "script": "signup_drops_email_and_skips_age_validation",
+          "expected_bugs": [
+            "BUG-01",
+            "BUG-05"
+          ],
+          "is_bug": true,
+          "bug_type": "validation_bypass",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 2,
+          "observed": "The 'username' field was populated with 'Test User Input', but no observable change occurred on the page.",
+          "expected": "A correct application should have validated the input according to the declared constraints and possibly shown some form of feedback, such as highlighting the field or displaying a success message.",
+          "discrepancy": "The username field accepted an empty value despite declaring it as required. No validation error was displayed, and no change in text or state was observed.",
+          "evidence": "No observable change; the page still displays 'Username | Email address | Age | Country | Choose\u2026 | India | United Kingdom | United States | Submissions this session: | 0'.",
+          "error": null
+        },
+        {
+          "episode": 1,
+          "global_step": 3,
+          "script": "signup_drops_email_and_skips_age_validation",
+          "expected_bugs": [
+            "BUG-01",
+            "BUG-05"
+          ],
+          "is_bug": true,
+          "bug_type": "validation_bypass",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 3,
+          "observed": "The 'email' field was filled with a valid value, but there is no observable change in the form state or page content.",
+          "expected": "The application should validate the email input and either show an error if it's invalid or proceed to the next step if it's valid.",
+          "discrepancy": "There is no validation feedback for the 'email' field, even though a valid email was entered.",
+          "evidence": "No observable change in form state or page content after typing a valid email into the 'email' field.",
+          "error": null
+        },
+        {
+          "episode": 1,
+          "global_step": 4,
+          "script": "signup_drops_email_and_skips_age_validation",
+          "expected_bugs": [
+            "BUG-01",
+            "BUG-05"
+          ],
+          "is_bug": true,
+          "bug_type": "validation_bypass",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 4,
+          "observed": "age: empty -> filled",
+          "expected": "The application should validate the input and either keep the field empty or show an error, as the entered value '999999999' is outside the allowed range [13, 120].",
+          "discrepancy": "The age field accepted a value that is out of its valid range.",
+          "evidence": "The form state shows the age field was filled with an invalid value '999999999', which should not be allowed given the declared constraints [type=number min=13 max=120].",
+          "error": null
+        },
+        {
+          "episode": 1,
+          "global_step": 5,
+          "script": "signup_drops_email_and_skips_age_validation",
+          "expected_bugs": [
+            "BUG-01",
+            "BUG-05"
+          ],
+          "is_bug": true,
+          "bug_type": "validation_bypass",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 5,
+          "observed": "country: unselected -> selected",
+          "expected": "The application should validate the input and display an error since the age value '999999999' is out of the allowed range [13, 120]. The country selection should not proceed if the age is invalid.",
+          "discrepancy": "The application allows the user to select a country even though the age input is invalid (out of range).",
+          "evidence": "When typing '999999999' into the age field, no error message was shown, and the user could still proceed to select a country.",
+          "error": null
+        },
+        {
+          "episode": 1,
+          "global_step": 6,
+          "script": "signup_drops_email_and_skips_age_validation",
+          "expected_bugs": [
+            "BUG-01",
+            "BUG-05"
+          ],
+          "is_bug": true,
+          "bug_type": "state_persistence",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 6,
+          "observed": "The 'Create account' button was clicked, but the form fields did not persist their values after navigation to /confirm.html.",
+          "expected": "All filled form fields should have been retained upon successful submission and redirection to the confirmation page.",
+          "discrepancy": "The application did not retain the user's input for username, age, and country when navigating to the confirmation page. This is unexpected behavior as it could lead to confusion or loss of data entry.",
+          "evidence": "In STEP 6, after clicking 'Create account', the form state shows that all fields (age: filled -> absent; country: selected -> absent; email: filled -> absent; username: filled -> absent) are cleared on the confirmation page /confirm.html?",
+          "error": null
+        },
+        {
+          "episode": 2,
+          "global_step": 10,
+          "script": "export_button_is_dead",
+          "expected_bugs": [
+            "BUG-02"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 1,
+          "observed": "The URL changed from /index.html to /widgets.html, and the page title changed from 'Acme Widgets \u2014 Home' to 'Acme Widgets \u2014 Widgets'. The text on the page was updated to include a navigation link back to the home page, an increment counter, export data, generate report, sync now, syncing status message, and instructions to scroll down for more content.",
+          "expected": "Upon clicking the 'Widgets' link, the application should navigate to /widgets.html and update the title and visible text accordingly. The navigation links and other elements should be correctly displayed as expected.",
+          "discrepancy": "No discrepancy observed in this step. The page navigated correctly and updated its content as expected.",
+          "evidence": "",
+          "error": null
+        },
+        {
+          "episode": 2,
+          "global_step": 11,
+          "script": "export_button_is_dead",
+          "expected_bugs": [
+            "BUG-02"
+          ],
+          "is_bug": true,
+          "bug_type": "dead_control",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 2,
+          "observed": "The 'Export data' button was clicked, but no observable change occurred on the page.",
+          "expected": "A correct application should have responded to the click by performing an export action, such as showing a download dialog or updating the UI with export status information.",
+          "discrepancy": "Clicking the 'Export data' button did not cause any visible changes or network requests.",
+          "evidence": "NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action",
+          "error": null
+        },
+        {
+          "episode": 3,
+          "global_step": 15,
+          "script": "pricing_link_404s",
+          "expected_bugs": [
+            "BUG-03"
+          ],
+          "is_bug": true,
+          "bug_type": "broken_navigation",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 1,
+          "observed": "The application navigated to /pricing.html but received a 404 error, resulting in an 'Error response' page being displayed.",
+          "expected": "A correct application should handle the 404 error gracefully by either redirecting to a default or error page, displaying a more user-friendly message, or handling the navigation appropriately without showing an unhelpful error message.",
+          "discrepancy": "The application displays an unhelpful and generic 'Error response' page with an error code and message instead of providing a better user experience or redirecting to a default error page.",
+          "evidence": "The console shows a failed resource load with status 404, and the text on the page is replaced with an uninformative 'Error response' message.",
+          "error": null
+        },
+        {
+          "episode": 4,
+          "global_step": 19,
+          "script": "generate_report_throws",
+          "expected_bugs": [
+            "BUG-04"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 1,
+          "observed": "The URL changed from /index.html to /widgets.html, and the page title changed from 'Acme Widgets \u2014 Home' to 'Acme Widgets \u2014 Widgets'. The text on the page was updated to include a navigation link back to the home page, an increment counter, export data, generate report, sync now, syncing status message, and instructions to scroll down for more content.",
+          "expected": "Upon clicking the 'Widgets' link, the application should navigate to /widgets.html and update the title and visible text accordingly. The navigation links and other elements should be correctly displayed as expected.",
+          "discrepancy": "No discrepancy observed in this step. The page navigated correctly and updated its content as expected.",
+          "evidence": "",
+          "error": null
+        },
+        {
+          "episode": 4,
+          "global_step": 20,
+          "script": "generate_report_throws",
+          "expected_bugs": [
+            "BUG-04"
+          ],
+          "is_bug": true,
+          "bug_type": "dead_control",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 2,
+          "observed": "The 'Generate report' button was clicked, but no observable change occurred on the page.",
+          "expected": "A correct application should have processed the click event and generated a report, which could be reflected in visible text changes or new elements appearing on the page.",
+          "discrepancy": "Clicking the 'Generate report' button did not cause any change to the page content or state.",
+          "evidence": "NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action",
+          "error": null
+        },
+        {
+          "episode": 5,
+          "global_step": 24,
+          "script": "signup_double_submits",
+          "expected_bugs": [
+            "BUG-06"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 1,
+          "observed": "The URL changed from /index.html to /signup.html, and the form controls for age, email, and username were initialized as expected.",
+          "expected": "Upon clicking 'Sign up', the application should navigate to the signup page and initialize the necessary form fields with appropriate constraints.",
+          "discrepancy": "No discrepancy observed. The application behaved correctly by navigating to /signup.html and initializing the form controls as required.",
+          "evidence": "",
+          "error": null
+        },
+        {
+          "episode": 5,
+          "global_step": 25,
+          "script": "signup_double_submits",
+          "expected_bugs": [
+            "BUG-06"
+          ],
+          "is_bug": true,
+          "bug_type": "validation_bypass",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 2,
+          "observed": "The 'username' field was populated with 'Test User Input'. No other changes were observed.",
+          "expected": "The application should validate that the entered username meets the required constraints, such as being non-empty, but no observable change or error message indicates validation failure or success.",
+          "discrepancy": "No validation feedback is provided for the entered username 'Test User Input'. A correct application would either show a validation error if the input does not meet the requirements (e.g., it's empty) or accept the valid input without issue.",
+          "evidence": "The form state shows that the 'username' field has been filled, but there are no visible changes to indicate whether this value is accepted or rejected by the application. The constraints declare [type=text required], so an empty username should trigger a validation error.",
+          "error": null
+        },
+        {
+          "episode": 5,
+          "global_step": 26,
+          "script": "signup_double_submits",
+          "expected_bugs": [
+            "BUG-06"
+          ],
+          "is_bug": true,
+          "bug_type": "validation_bypass",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 3,
+          "observed": "The 'email' field was filled with a valid value, but there is no observable change in the form state or page content.",
+          "expected": "The application should validate the email input and either show an error if it's invalid or proceed to the next step if it's valid.",
+          "discrepancy": "No validation feedback or further progression of the form was observed after typing a valid email address into the 'email' field.",
+          "evidence": "The constraints for the 'email' field declare [type=email required], but no error message or change in state is shown, and the form does not proceed to the next step.",
+          "error": null
+        },
+        {
+          "episode": 5,
+          "global_step": 27,
+          "script": "signup_double_submits",
+          "expected_bugs": [
+            "BUG-06"
+          ],
+          "is_bug": true,
+          "bug_type": "validation_bypass",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 4,
+          "observed": "age: empty -> filled",
+          "expected": "The form should have validated the input, as the value '42' is within the valid range for the age field.",
+          "discrepancy": "The application accepted an invalid age (42) without any validation error or feedback.",
+          "evidence": "The constraints for the age field declare [type=number min=13 max=120], but no error was shown when '42' was entered, and the form allowed submission with this value.",
+          "error": null
+        },
+        {
+          "episode": 5,
+          "global_step": 28,
+          "script": "signup_double_submits",
+          "expected_bugs": [
+            "BUG-06"
+          ],
+          "is_bug": true,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 5,
+          "observed": "Rapid clicking on 'Create account' resulted in a timeout error, and the form fields were cleared after navigation to /confirm.html.",
+          "expected": "The application should have processed the form submission correctly without clearing the form fields or timing out.",
+          "discrepancy": "Form fields (username, email, age) are cleared upon navigation to the confirmation page despite a successful form submission. This suggests that the form handling is not properly saving and displaying the submitted data.",
+          "evidence": "The form state shows that all filled fields were cleared after navigating to /confirm.html: `age: filled -> absent; country: unselected -> absent; email: filled -> absent; username: filled -> absent`",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 32,
+          "script": "sync_spinner_never_completes",
+          "expected_bugs": [
+            "BUG-07"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 1,
+          "observed": "The URL changed from /index.html to /widgets.html, and the page title changed from 'Acme Widgets \u2014 Home' to 'Acme Widgets \u2014 Widgets'. The text on the page was updated to include a navigation link back to the home page, an increment counter, export data, generate report, sync now, syncing status message, and instructions to scroll down for more content.",
+          "expected": "Upon clicking the 'Widgets' link, the application should navigate to /widgets.html and update the title and visible text accordingly. The navigation links and other elements should be correctly displayed as expected.",
+          "discrepancy": "No discrepancy observed in this step. The page navigated correctly and updated its content as expected.",
+          "evidence": "",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 33,
+          "script": "sync_spinner_never_completes",
+          "expected_bugs": [
+            "BUG-07"
+          ],
+          "is_bug": true,
+          "bug_type": "race_condition",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 2,
+          "observed": "The 'Sync now' button was clicked, and the text changed from 'Syncing...' to 'Syncing\u2026 2026-08-06T18:07:09.954Z'. The page was still mutating after 3 seconds.",
+          "expected": "Upon clicking 'Sync now', the button should transition to a loading state and eventually display a timestamp indicating when the sync completed successfully or provide an error message if something went wrong. The page should settle down without continuous mutation.",
+          "discrepancy": "The page continued to mutate after the expected state change, which is unusual for a synchronous action like 'Sync now'. This suggests that either the application is not properly handling the completion of the sync or there might be an infinite loop or race condition causing ongoing updates.",
+          "evidence": "NOT SETTLED: the page was still mutating after 3.0s",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 34,
+          "script": "sync_spinner_never_completes",
+          "expected_bugs": [
+            "BUG-07"
+          ],
+          "is_bug": true,
+          "bug_type": "race_condition",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 3,
+          "observed": "The page is still mutating with new 'Syncing\u2026' messages being added after 3 seconds, even though no further action was taken by the user.",
+          "expected": "The page should have stopped mutating and settled to a final state after the initial sync attempt completed or failed.",
+          "discrepancy": "The application is continuing to update the 'Syncing\u2026' text repeatedly without any user interaction, which suggests a race condition where repeated rapid activations are being processed more than once when they should be guarded against.",
+          "evidence": "NOT SETTLED: the page was still mutating after 3.0s",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 35,
+          "script": "sync_spinner_never_completes",
+          "expected_bugs": [
+            "BUG-07"
+          ],
+          "is_bug": true,
+          "bug_type": "race_condition",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 4,
+          "observed": "The page is still mutating with 'Syncing\u2026' messages, but no final state or error is observed.",
+          "expected": "After multiple attempts to sync, the application should either complete the sync process and display a success message or fail gracefully with an appropriate error message.",
+          "discrepancy": "The application continues to show 'Syncing\u2026' messages without completing the sync process or providing any feedback on its status. This suggests that the sync operation is stuck in an infinite loop or not properly handling completion states.",
+          "evidence": "Repeated attempts to sync (STEP 3 and STEP 4) did not result in a final state or error message, only additional 'Syncing\u2026' messages.",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 36,
+          "script": "sync_spinner_never_completes",
+          "expected_bugs": [
+            "BUG-07"
+          ],
+          "is_bug": true,
+          "bug_type": "race_condition",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 5,
+          "observed": "The page is still mutating with 'Syncing\u2026' messages, but no network requests or visible changes to the content have occurred.",
+          "expected": "After clicking 'Sync now', the application should complete the sync process and either show a success message or an error if something went wrong. The page should stabilize without continuous mutation.",
+          "discrepancy": "The page is continuously updating with 'Syncing\u2026' messages, indicating that the sync operation is still in progress, but no network requests are observed to confirm the actual state of data synchronization. This suggests a potential race condition or an infinite loop in the syncing logic.",
+          "evidence": "NOT SETTLED: the page was still mutating after 3.0s",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 37,
+          "script": "sync_spinner_never_completes",
+          "expected_bugs": [
+            "BUG-07"
+          ],
+          "is_bug": true,
+          "bug_type": "race_condition",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 6,
+          "observed": "The application is still syncing in the background, with the last sync message being 'Syncing\u2026 2026-08-06T18:07:22.464Z'.",
+          "expected": "After the initial click on 'Sync now', the application should complete the sync process and either show a success message or stop updating the syncing status.",
+          "discrepancy": "The page is continuously updating with new syncing messages, indicating that the sync operation is still ongoing. This suggests that the sync process did not complete as expected, leading to an indefinite loop of syncing messages.",
+          "evidence": "NOT SETTLED: the page was still mutating after 3.0s",
+          "error": null
+        },
+        {
+          "episode": 7,
+          "global_step": 38,
+          "script": "cta_hidden_on_mobile",
+          "expected_bugs": [
+            "BUG-08"
+          ],
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 1,
+          "observed": "a#nav-signup, a#cta-signup",
+          "expected": "These links should still be visible on mobile view as they are important navigation elements.",
+          "discrepancy": "On resizing to the mobile viewport, the navigation and call-to-action links (signup) became hidden. This is unexpected behavior as these links are crucial for user navigation.",
+          "evidence": "In STEP 1, the links a#nav-signup and a#cta-signup were hidden when the viewport was resized to 'mobile'.",
+          "error": null
+        },
+        {
+          "episode": 7,
+          "global_step": 40,
+          "script": "cta_hidden_on_mobile",
+          "expected_bugs": [
+            "BUG-08"
+          ],
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 3,
+          "observed": "RESIZE_VIEWPORT with value 'desktop' resulted in previously hidden links `a#nav-signup` and `a#cta-signup` becoming visible.",
+          "expected": "The application should ensure that all navigation links remain accessible regardless of viewport size changes, as hiding essential navigation elements can degrade user experience and accessibility.",
+          "discrepancy": "Hiding the `a#nav-signup` and `a#cta-signup` links upon resizing to a desktop viewport is inconsistent with maintaining consistent visibility across different screen sizes.",
+          "evidence": "The links were hidden during the mobile viewport resize but then shown again when switching back to a desktop viewport, suggesting that the application does not properly handle viewport changes in terms of navigation link visibility.",
+          "error": null
+        },
+        {
+          "episode": 8,
+          "global_step": 43,
+          "script": "dark_mode_does_not_persist",
+          "expected_bugs": [
+            "BUG-09"
+          ],
+          "is_bug": false,
+          "bug_type": "state_persistence",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 1,
+          "observed": "The URL changed from /index.html to /settings.html, and the page title updated to 'Acme Widgets \u2014 Settings'. The form controls for darkmode, display_name, and newsletter were added, along with relevant text.",
+          "expected": "Upon clicking on 'Settings', the application should navigate to the settings page (/settings.html), update the page title to 'Acme Widgets \u2014 Settings', and initialize the form controls with appropriate default values (darkmode off, display_name empty, newsletter off). The additional text should be displayed as expected.",
+          "discrepancy": "The form controls for darkmode, display_name, and newsletter were added but their initial states are not specified. Typically, a correct application would initialize these fields based on the user's previous settings or default values.",
+          "evidence": "No specific evidence of incorrect behavior is observed in this step; however, the absence of initial state for form controls suggests potential issues.",
+          "error": null
+        },
+        {
+          "episode": 8,
+          "global_step": 44,
+          "script": "dark_mode_does_not_persist",
+          "expected_bugs": [
+            "BUG-09"
+          ],
+          "is_bug": true,
+          "bug_type": "dead_control",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 2,
+          "observed": "darkmode checkbox was clicked, but no observable change occurred in the page.",
+          "expected": "The dark mode setting should have been applied to the interface, changing the color scheme of the page.",
+          "discrepancy": "No visual changes were observed despite the form state showing that darkmode is now on.",
+          "evidence": "url: /settings.html (unchanged), form state: darkmode: off -> on, text added: 'Use dark mode' (promises an effect but no change).",
+          "error": null
+        },
+        {
+          "episode": 8,
+          "global_step": 45,
+          "script": "dark_mode_does_not_persist",
+          "expected_bugs": [
+            "BUG-09"
+          ],
+          "is_bug": true,
+          "bug_type": "dead_control",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 3,
+          "observed": "The URL did not change, no network request was made, and the dark mode setting was not applied.",
+          "expected": "The application should have navigated to a new page or updated the current page with the saved settings, including applying the dark mode theme.",
+          "discrepancy": "Clicking 'Save settings' did not change the URL or apply the dark mode setting as expected. The form state showed that darkmode was set to on, but no observable changes were made to the UI or network requests.",
+          "evidence": "url        : /settings.html (unchanged)",
+          "error": null
+        },
+        {
+          "episode": 8,
+          "global_step": 46,
+          "script": "dark_mode_does_not_persist",
+          "expected_bugs": [
+            "BUG-09"
+          ],
+          "is_bug": true,
+          "bug_type": "state_persistence",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 4,
+          "observed": "The `darkmode` setting reverts to off after refreshing the page, even though it was set to on in the previous step.",
+          "expected": "The `darkmode` setting should persist its state across refreshes unless explicitly changed.",
+          "discrepancy": "The application reverts the `darkmode` setting to off upon refreshing, which is inconsistent with user expectations and the current form state.",
+          "evidence": "At step 3, `darkmode` was set to on. After refreshing in step 4, it reverts to off.",
+          "error": null
+        },
+        {
+          "episode": 9,
+          "global_step": 50,
+          "script": "archive_back_link_goes_home",
+          "expected_bugs": [
+            "BUG-10"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 1,
+          "observed": "The URL changed from /index.html to /widgets.html, and the page title changed from 'Acme Widgets \u2014 Home' to 'Acme Widgets \u2014 Widgets'. New text was added, including navigation links and counter-related text.",
+          "expected": "Upon clicking on 'Widgets', the application should navigate to the widgets page and display relevant content. The URL and title changes are expected, and new text related to widgets should be visible.",
+          "discrepancy": "No discrepancy observed in this step.",
+          "evidence": "The URL changed as expected from /index.html to /widgets.html, and the title updated accordingly to 'Acme Widgets \u2014 Widgets'. New text was added, which is consistent with navigating to a widgets page.",
+          "error": null
+        },
+        {
+          "episode": 9,
+          "global_step": 51,
+          "script": "archive_back_link_goes_home",
+          "expected_bugs": [
+            "BUG-10"
+          ],
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 2,
+          "observed": "The page did not change after scrolling.",
+          "expected": "A correct application should update the viewport to show more content if scrolled, but no new content or changes were observed.",
+          "discrepancy": "Scrolling did not reveal any additional content or cause a reflow of elements on the page.",
+          "evidence": "NO OBSERVABLE CHANGE",
+          "error": null
+        },
+        {
+          "episode": 9,
+          "global_step": 52,
+          "script": "archive_back_link_goes_home",
+          "expected_bugs": [
+            "BUG-10"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 3,
+          "observed": "The URL changed from /widgets.html to /archive.html, and the page title and visible text updated accordingly.",
+          "expected": "Upon clicking 'Open archive', the application should navigate to the archive page and display the appropriate content without any issues.",
+          "discrepancy": "No specific discrepancy is observed in this step. The navigation and text updates are as expected based on the provided interactions.",
+          "evidence": "",
+          "error": null
+        },
+        {
+          "episode": 9,
+          "global_step": 53,
+          "script": "archive_back_link_goes_home",
+          "expected_bugs": [
+            "BUG-10"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 4,
+          "observed": "The user clicked 'Back to Widgets' which navigated back to the home page, and all text was correctly restored as it was before navigating to the archive.",
+          "expected": "Navigating back should restore the previous state of the application without any unintended changes or missing elements.",
+          "discrepancy": "No discrepancy observed. The navigation back to the home page from the archive page successfully restored all the text and content as expected.",
+          "evidence": "The title changed from 'Acme Widgets \u2014 Archive' to 'Acme Widgets \u2014 Home', and the text on the home page was correctly restored, including the navigation links and descriptions.",
+          "error": null
+        },
+        {
+          "episode": 10,
+          "global_step": 57,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 1,
+          "observed": "The URL changed from /index.html to /widgets.html, and the page title changed from 'Acme Widgets \u2014 Home' to 'Acme Widgets \u2014 Widgets'. The text on the page was updated to include a counter, export data, generate report, sync now, archive link, and open archive button.",
+          "expected": "The URL should change to reflect the new page content, the title should update accordingly, and the relevant widgets-related text should be displayed. The navigation links should remain consistent with the current context.",
+          "discrepancy": "No significant discrepancy is observed in this step as the expected changes occurred: the URL updated to /widgets.html, the title changed to 'Acme Widgets \u2014 Widgets', and the appropriate content related to widgets was added.",
+          "evidence": "",
+          "error": null
+        },
+        {
+          "episode": 10,
+          "global_step": 58,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 2,
+          "observed": "The counter incremented from '0' to '1'. No other changes were observed.",
+          "expected": "The counter should increment by 1 when the 'Increment counter' button is clicked, and no other elements should change state or content.",
+          "discrepancy": "No observable change in any element except for the counter text which correctly incremented.",
+          "evidence": "The text changed from '0' to '1', but no other changes were observed. The expected behavior was that only the counter would update, and this is what happened.",
+          "error": null
+        },
+        {
+          "episode": 10,
+          "global_step": 59,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 3,
+          "observed": "The counter incremented twice as expected, showing '2' after two clicks.",
+          "expected": "After clicking the 'Increment counter' button twice, the text should show '2'.",
+          "discrepancy": "No discrepancy observed; the counter incremented correctly with each click.",
+          "evidence": "",
+          "error": null
+        },
+        {
+          "episode": 10,
+          "global_step": 60,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "is_bug": true,
+          "bug_type": "state_persistence",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 4,
+          "observed": "The counter value resets to 0 after refreshing the page.",
+          "expected": "The counter should retain its last incremented value (in this case, 2) upon page refresh.",
+          "discrepancy": "State persistence is not maintained; the counter reverts to 0 on refresh.",
+          "evidence": "After clicking 'Increment counter' twice and then refreshing the page, the text changes from '2' to '0'.",
+          "error": null
+        },
+        {
+          "episode": 10,
+          "global_step": 61,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "is_bug": true,
+          "bug_type": "state_persistence",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 5,
+          "observed": "SCROLL",
+          "expected": "The counter value should remain at 0, as expected after a refresh.",
+          "discrepancy": "After scrolling, the counter value is reset to 0 instead of retaining its last value (2).",
+          "evidence": "In STEP 4, the counter was at '2' before refreshing. After refreshing in STEP 5 and then scrolling, the counter resets to '0'.",
+          "error": null
+        },
+        {
+          "episode": 10,
+          "global_step": 62,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 6,
+          "observed": "The URL changed from /widgets.html to /archive.html, and the page title and visible text updated accordingly.",
+          "expected": "Upon clicking 'Open archive', the application should navigate to the archive page and update the UI to reflect the new content without any unexpected changes or errors.",
+          "discrepancy": "No discrepancies observed. The application correctly navigated to /archive.html, updated the title and visible text as expected.",
+          "evidence": "",
+          "error": null
+        },
+        {
+          "episode": 10,
+          "global_step": 64,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "is_bug": false,
+          "bug_type": "state_persistence",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 6,
+          "observed": "The application navigated back from /archive.html to /widgets.html, restoring the page content as it was before the navigation.",
+          "expected": "The application should restore the state of the /widgets.html page exactly as it was before navigating to /archive.html. This includes the counter value and all visible text elements.",
+          "discrepancy": "The 'Increment counter' label shows the count as 0, which is correct since that was the state when the explorer navigated away from this page. However, there are no network requests or changes in the UI that would indicate any interaction with the widget data or settings.",
+          "evidence": "No new network requests were made during the BROWSER_BACK action, and the counter value correctly reflects the previous state (0).",
+          "error": null
+        }
+      ]
+    }
+  }
+}

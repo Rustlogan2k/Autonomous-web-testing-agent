@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acme Widgets — Archive</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; max-width: 40rem; }
+    li { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+  <h1>Archive</h1>
+  <p>Older records.</p>
+  <ul>
+    <li><a href="confirm.html?username=archived&amp;age=30&amp;country=in">Record 001</a></li>
+    <li><a href="confirm.html?username=archived2&amp;age=41&amp;country=uk">Record 002</a></li>
+  </ul>
+
+  <!-- BUG-10: labelled as a return to Widgets, actually navigates to the home page. -->
+  <a href="index.html" id="link-back-widgets">&larr; Back to Widgets</a>
+</body>
+</html>

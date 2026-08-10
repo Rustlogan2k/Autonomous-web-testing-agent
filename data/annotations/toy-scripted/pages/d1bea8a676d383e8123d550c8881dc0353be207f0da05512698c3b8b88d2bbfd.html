@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acme Widgets — Confirmation</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; max-width: 40rem; }
+    dt { font-weight: 600; margin-top: 0.5rem; }
+    dd { margin: 0 0 0 1rem; }
+    .missing { color: #a00; }
+  </style>
+</head>
+<body>
+  <h1>Account created</h1>
+  <p>Thanks for signing up. Here is what we recorded:</p>
+
+  <dl>
+    <dt>Username</dt><dd id="out-username">Test User Input</dd>
+    <dt>Email address</dt><dd id="out-email" class="missing">(not provided)</dd>
+    <dt>Age</dt><dd id="out-age">42</dd>
+    <dt>Country</dt><dd id="out-country" class="missing">(not provided)</dd>
+  </dl>
+
+  <a href="index.html">Back to home</a>
+  <a href="settings.html">Account settings</a>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const show = (id, value) => {
+      const node = document.getElementById(id);
+      if (value) {
+        node.textContent = value;
+      } else {
+        // The visible symptom of BUG-01: the confirmation claims to echo back what was
+        // submitted, but the email arrives empty because signup.html dropped it.
+        node.textContent = '(not provided)';
+        node.className = 'missing';
+      }
+    };
+    show('out-username', params.get('username'));
+    show('out-email', params.get('email'));
+    show('out-age', params.get('age'));
+    show('out-country', params.get('country'));
+  </script>
+
+
+</body></html>

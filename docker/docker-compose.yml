@@ -1,0 +1,125 @@
+# ============================================================================
+# Docker Compose -- Training Target Applications
+# ============================================================================
+# Usage:
+#   cd docker
+#   docker compose up -d dvwa          # Start DVWA only (Agent A training)
+#   docker compose up -d opencart      # Start OpenCart (Agent B training)
+#   docker compose up -d               # Start everything
+#   docker compose down                # Stop all
+# ============================================================================
+
+services:
+  # === Agent A Training Targets ===
+
+  dvwa:
+    image: vulnerables/web-dvwa:latest
+    container_name: wta-dvwa
+    ports:
+      - "4280:80"
+    environment:
+      - MYSQL_HOSTNAME=dvwa-db
+      - MYSQL_DATABASE=dvwa
+      - MYSQL_USERNAME=dvwa
+      - MYSQL_PASSWORD=p@ssw0rd
+    depends_on:
+      - dvwa-db
+    restart: unless-stopped
+
+  dvwa-db:
+    image: mysql:8.0
+    container_name: wta-dvwa-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=dvwa
+      - MYSQL_USER=dvwa
+      - MYSQL_PASSWORD=p@ssw0rd
+    volumes:
+      - dvwa-db-data:/var/lib/mysql
+    restart: unless-stopped
+
+  webgoat:
+    image: webgoat/webgoat:2023.8
+    container_name: wta-webgoat
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    restart: unless-stopped
+
+  # === Agent B Training Targets ===
+
+  opencart:
+    image: bitnami/opencart:4.0
+    container_name: wta-opencart
+    ports:
+      - "8090:8080"
+      - "8443:8443"
+    environment:
+      - OPENCART_HOST=localhost:8090
+      - OPENCART_DATABASE_HOST=opencart-db
+      - OPENCART_DATABASE_PORT_NUMBER=3306
+      - OPENCART_DATABASE_USER=opencart
+      - OPENCART_DATABASE_PASSWORD=opencart_pass
+      - OPENCART_DATABASE_NAME=opencart
+    depends_on:
+      - opencart-db
+    restart: unless-stopped
+
+  opencart-db:
+    image: mysql:8.0
+    container_name: wta-opencart-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=opencart
+      - MYSQL_USER=opencart
+      - MYSQL_PASSWORD=opencart_pass
+    volumes:
+      - opencart-db-data:/var/lib/mysql
+    restart: unless-stopped
+
+  # Agent B's first real target. Configured to boot straight into the application:
+  # without INSTALL_LOCK a fresh Gitea serves its installation wizard at /install, so
+  # the agent would spend its whole episode exploring a configuration form rather than
+  # the app under test. Run `python scripts/setup_gitea.py` after `compose up` to
+  # create the admin user and seed a repository — an empty Gitea has almost no surface
+  # to explore, and "found nothing" would be a property of the fixture, not a result.
+  gitea:
+    image: gitea/gitea:1.21
+    container_name: wta-gitea
+    ports:
+      - "3000:3000"
+      - "2222:22"
+    environment:
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__database__PATH=/data/gitea/gitea.db
+      - GITEA__security__INSTALL_LOCK=true
+      - GITEA__server__ROOT_URL=http://localhost:3000/
+      - GITEA__server__OFFLINE_MODE=true
+      # Anonymous browsing stays on so the explorer has surface without auth
+      # (session bootstrap is unbuilt — see §9 item 10), and registration stays on
+      # because the signup flow is a genuine multi-step form with real validation,
+      # which is exactly what the judge needs to be exercised against.
+      - GITEA__service__REQUIRE_SIGNIN_VIEW=false
+      - GITEA__service__DISABLE_REGISTRATION=false
+    volumes:
+      - gitea-data:/data
+    restart: unless-stopped
+
+  nextcloud:
+    image: nextcloud:28
+    container_name: wta-nextcloud
+    ports:
+      - "8081:80"
+    environment:
+      - SQLITE_DATABASE=nextcloud
+      - NEXTCLOUD_ADMIN_USER=admin
+      - NEXTCLOUD_ADMIN_PASSWORD=admin
+    volumes:
+      - nextcloud-data:/var/www/html
+    restart: unless-stopped
+
+volumes:
+  dvwa-db-data:
+  opencart-db-data:
+  gitea-data:
+  nextcloud-data:

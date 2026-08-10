@@ -1,0 +1,155 @@
+{
+  "corpus": "scripted",
+  "target": "http://127.0.0.1:63281/index.html",
+  "seed": 0,
+  "purpose": "judge accuracy \u2014 known ground truth per episode",
+  "episode_labels": {
+    "1": {
+      "script": "signup_drops_email_and_skips_age_validation",
+      "bugs": [
+        "BUG-01",
+        "BUG-05"
+      ],
+      "first_global_step": 1,
+      "last_global_step": 9
+    },
+    "2": {
+      "script": "export_button_is_dead",
+      "bugs": [
+        "BUG-02"
+      ],
+      "first_global_step": 10,
+      "last_global_step": 14
+    },
+    "3": {
+      "script": "pricing_link_404s",
+      "bugs": [
+        "BUG-03"
+      ],
+      "first_global_step": 15,
+      "last_global_step": 18
+    },
+    "4": {
+      "script": "generate_report_throws",
+      "bugs": [
+        "BUG-04"
+      ],
+      "first_global_step": 19,
+      "last_global_step": 23
+    },
+    "5": {
+      "script": "signup_double_submits",
+      "bugs": [
+        "BUG-06"
+      ],
+      "first_global_step": 24,
+      "last_global_step": 31
+    },
+    "6": {
+      "script": "sync_spinner_never_completes",
+      "bugs": [
+        "BUG-07"
+      ],
+      "first_global_step": 32,
+      "last_global_step": 37
+    },
+    "7": {
+      "script": "cta_hidden_on_mobile",
+      "bugs": [
+        "BUG-08"
+      ],
+      "first_global_step": 38,
+      "last_global_step": 42
+    },
+    "8": {
+      "script": "dark_mode_does_not_persist",
+      "bugs": [
+        "BUG-09"
+      ],
+      "first_global_step": 43,
+      "last_global_step": 49
+    },
+    "9": {
+      "script": "archive_back_link_goes_home",
+      "bugs": [
+        "BUG-10"
+      ],
+      "first_global_step": 50,
+      "last_global_step": 56
+    },
+    "10": {
+      "script": "happy_path",
+      "bugs": [],
+      "first_global_step": 57,
+      "last_global_step": 67
+    }
+  },
+  "script_fidelity": [
+    {
+      "script": "signup_drops_email_and_skips_age_validation",
+      "steps": 7,
+      "matched": 7,
+      "missed": []
+    },
+    {
+      "script": "export_button_is_dead",
+      "steps": 3,
+      "matched": 3,
+      "missed": []
+    },
+    {
+      "script": "pricing_link_404s",
+      "steps": 2,
+      "matched": 2,
+      "missed": []
+    },
+    {
+      "script": "generate_report_throws",
+      "steps": 3,
+      "matched": 3,
+      "missed": []
+    },
+    {
+      "script": "signup_double_submits",
+      "steps": 6,
+      "matched": 6,
+      "missed": []
+    },
+    {
+      "script": "sync_spinner_never_completes",
+      "steps": 4,
+      "matched": 4,
+      "missed": []
+    },
+    {
+      "script": "cta_hidden_on_mobile",
+      "steps": 3,
+      "matched": 3,
+      "missed": []
+    },
+    {
+      "script": "dark_mode_does_not_persist",
+      "steps": 5,
+      "matched": 5,
+      "missed": []
+    },
+    {
+      "script": "archive_back_link_goes_home",
+      "steps": 5,
+      "matched": 5,
+      "missed": []
+    },
+    {
+      "script": "happy_path",
+      "steps": 9,
+      "matched": 9,
+      "missed": []
+    }
+  ],
+  "run_id": "toy-scripted",
+  "episodes": 10,
+  "steps": 67,
+  "distinct_pages": 23,
+  "screenshots": true,
+  "wall_clock_s": 51.0
+}

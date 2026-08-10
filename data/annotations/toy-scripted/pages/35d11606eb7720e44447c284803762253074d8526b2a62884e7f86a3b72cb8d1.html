@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acme Widgets — Home</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; max-width: 50rem; }
+    nav a { display: inline-block; margin-right: 1rem; }
+    .card { border: 1px solid #ccc; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+    /* BUG-08: every route into the signup flow is hidden below 600px, so the flow is
+       genuinely unreachable on a mobile viewport.
+
+       Both links are required. An earlier version hid only #cta-signup while
+       #nav-signup — pointing at the same page — stayed visible, so signup remained
+       perfectly reachable and nothing was actually broken. A judge correctly declined
+       to report it: "a responsive design may hide desktop-only elements on mobile".
+       Hiding a duplicate link is ordinary responsive design; hiding the last route to
+       a flow is the regression this bug is supposed to represent. */
+    @media (max-width: 600px) { #cta-signup, #nav-signup { display: none; } }
+  </style>
+</head>
+<body>
+  <!-- NOTE: keep every description of this site's purpose in HTML comments, never in
+       rendered copy. Visible text reaches the LLM judge's prompt, and telling it that
+       it is looking at a fixture with known seeded bugs biases it toward reporting
+       them — which inflates recall and the false-positive rate at the same time and
+       makes the measurement worthless. This site must read as an ordinary small app.
+
+       Purpose: a deliberately small app with a known set of seeded functional bugs,
+       so the reward signal, the judge and the DQN pipeline can be validated against
+       answer_key.json before being pointed at a real target. -->
+  <h1>Acme Widgets</h1>
+  <p>Tools for managing your widgets, reports and account preferences.</p>
+
+  <nav>
+    <a href="signup.html" id="nav-signup">Sign up</a>
+    <a href="widgets.html" id="nav-widgets">Widgets</a>
+    <a href="settings.html" id="nav-settings">Settings</a>
+    <!-- BUG-03: link to a page that does not exist -->
+    <a href="pricing.html" id="nav-pricing">Pricing</a>
+  </nav>
+
+  <div class="card">
+    <h2>Get started</h2>
+    <p>Create an account to continue.</p>
+    <a href="signup.html" id="cta-signup">Create account</a>
+  </div>
+
+  <div class="card">
+    <h2>About</h2>
+    <p>Acme Widgets keeps your account, your widget inventory and your reports in one
+       place. Sign in to get started, or adjust how the app behaves under Settings.</p>
+  </div>
+
+
+</body></html>

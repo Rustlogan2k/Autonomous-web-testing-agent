@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acme Widgets — Sign up</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; max-width: 40rem; }
+    label { display: block; margin: 0.75rem 0 0.25rem; }
+    input, select { padding: 0.4rem; width: 100%; box-sizing: border-box; }
+    button { margin-top: 1rem; padding: 0.5rem 1rem; }
+    .count { color: #666; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Create your account</h1>
+  <a href="index.html">← Home</a>
+
+  <!-- `novalidate` is load-bearing, not an oversight: it is what makes BUG-05 real.
+       The markup below declares min=13/max=120 and `required`, but with native
+       constraint validation off, the submit handler is the only thing that could
+       enforce them - and it doesn't. Without this attribute Chromium blocks the
+       submission before the handler ever runs, which silently hides BUG-01, BUG-05
+       and BUG-06 behind a browser-enforced guard the application does not have.
+       Real forms disable native validation this way constantly, to control styling. -->
+  <form id="signup-form" novalidate="">
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username" required="" style="" value="a">
+
+    <label for="email">Email address</label>
+    <input type="email" id="email" name="email" required="" style="" value="tester@example.com">
+
+    <label for="age">Age</label>
+    <input type="number" id="age" name="age" min="13" max="120" style="" value="">
+
+    <label for="country">Country</label>
+    <select id="country" name="country">
+      <option value="" selected="">Choose…</option>
+      <option value="in">India</option>
+      <option value="uk">United Kingdom</option>
+      <option value="us">United States</option>
+    </select>
+
+    <button type="submit" id="submit-signup">Create account</button>
+  </form>
+
+  <p class="count">Submissions this session: <span id="submit-count">0</span></p>
+
+  <script>
+    let submissions = 0;
+
+    document.getElementById('signup-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      // BUG-06: no submit guard, so RAPID_CLICK double-submits the registration.
+      submissions += 1;
+      document.getElementById('submit-count').textContent = String(submissions);
+
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+      const age = document.getElementById('age').value;
+      const country = document.getElementById('country').value;
+
+      // BUG-05: age is validated in the markup (min=13) but never on submit, so an
+      // out-of-range age is accepted silently.
+
+      const params = new URLSearchParams();
+      params.set('username', username);
+      // BUG-01: `email` is collected and then silently dropped — it never reaches the
+      // confirmation page, so the account is created without the address the user gave.
+      params.set('age', age);
+      params.set('country', country);
+
+      window.location.href = 'confirm.html?' + params.toString();
+    });
+  </script>
+
+
+</body></html>

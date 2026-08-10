@@ -1,0 +1,709 @@
+{
+  "run_id": "toy",
+  "judge": "ollama/llama3:8b",
+  "window_steps": 6,
+  "usage": {
+    "model": "ollama/llama3:8b",
+    "calls": 39,
+    "prompt_tokens": 42331,
+    "output_tokens": 3786,
+    "wall_clock_s": 341.9,
+    "seconds_per_call": 8.77,
+    "num_ctx": 8192,
+    "prompts_over_context": 0
+  },
+  "corpora": {
+    "scripted": {
+      "corpus": "scripted",
+      "judge": "ollama/llama3:8b",
+      "windows": 39,
+      "failed_calls": 0,
+      "positive_verdicts": 1,
+      "episodes_scored": 10,
+      "detected": {
+        "BUG-03": [
+          15
+        ]
+      },
+      "missed": [
+        "BUG-01",
+        "BUG-02",
+        "BUG-04",
+        "BUG-05",
+        "BUG-06",
+        "BUG-07",
+        "BUG-08",
+        "BUG-09",
+        "BUG-10"
+      ],
+      "recall": 0.1,
+      "control_windows": 7,
+      "control_positives": 0,
+      "false_positive_rate": 0.0,
+      "false_positive_episodes": {},
+      "unattributed_windows": 0,
+      "unattributed_positives": 0,
+      "unattributed_rate": 0.0,
+      "window_steps": 6,
+      "skip_idle": true,
+      "wall_clock_s": 342.2,
+      "judgments": [
+        {
+          "episode": 1,
+          "global_step": 1,
+          "script": "signup_drops_email_and_skips_age_validation",
+          "expected_bugs": [
+            "BUG-01",
+            "BUG-05"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 5,
+          "expected": "the application should not allow submission with empty fields",
+          "actual": "the application allows submission with empty fields",
+          "evidence": "STEP 1: form state : age: absent -> empty; country: absent -> unselected; email: absent -> empty; username: absent -> empty",
+          "error": null
+        },
+        {
+          "episode": 1,
+          "global_step": 2,
+          "script": "signup_drops_email_and_skips_age_validation",
+          "expected_bugs": [
+            "BUG-01",
+            "BUG-05"
+          ],
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 2,
+          "expected": "none",
+          "actual": "none",
+          "evidence": "The application correctly updated the form state with the provided username value.",
+          "error": null
+        },
+        {
+          "episode": 1,
+          "global_step": 3,
+          "script": "signup_drops_email_and_skips_age_validation",
+          "expected_bugs": [
+            "BUG-01",
+            "BUG-05"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 3,
+          "expected": "tester@example.com",
+          "actual": "tester@example.com",
+          "evidence": "The email field was filled with 'tester@example.com' in STEP 2 and remained the same in STEP 3.",
+          "error": null
+        },
+        {
+          "episode": 1,
+          "global_step": 4,
+          "script": "signup_drops_email_and_skips_age_validation",
+          "expected_bugs": [
+            "BUG-01",
+            "BUG-05"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 4,
+          "expected": "age should be rejected due to being out of range (999999999 is greater than the max value)",
+          "actual": "age was accepted",
+          "evidence": "STEP 4: action = TYPE on 'age' with value '999999999', selector = [id='age'], url = /signup.html, form state = age: empty -> filled, constraints = age declares [type=number min=13 max=120]",
+          "error": null
+        },
+        {
+          "episode": 1,
+          "global_step": 5,
+          "script": "signup_drops_email_and_skips_age_validation",
+          "expected_bugs": [
+            "BUG-01",
+            "BUG-05"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 5,
+          "expected": "us",
+          "actual": "us",
+          "evidence": "The selected country is still 'us' after the action.",
+          "error": null
+        },
+        {
+          "episode": 1,
+          "global_step": 6,
+          "script": "signup_drops_email_and_skips_age_validation",
+          "expected_bugs": [
+            "BUG-01",
+            "BUG-05"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 6,
+          "expected": "username=Test+User+Input&age=999999999&country=us",
+          "actual": "username=Test+User+Input&age=999999999&country=us",
+          "evidence": "The username, age, and country values are correctly echoed back in the confirmation page.",
+          "error": null
+        },
+        {
+          "episode": 2,
+          "global_step": 10,
+          "script": "export_button_is_dead",
+          "expected_bugs": [
+            "BUG-02"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 1,
+          "expected": "The application should not change the counter value when the 'Widgets' link is clicked.",
+          "actual": "The counter value remains at 0.",
+          "evidence": "text added: Counter: | 0",
+          "error": null
+        },
+        {
+          "episode": 2,
+          "global_step": 11,
+          "script": "export_button_is_dead",
+          "expected_bugs": [
+            "BUG-02"
+          ],
+          "is_bug": false,
+          "bug_type": "dead_control",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 2,
+          "expected": "Export data",
+          "actual": "NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action",
+          "evidence": "STEP 2: CLICK on 'Export data'",
+          "error": null
+        },
+        {
+          "episode": 3,
+          "global_step": 15,
+          "script": "pricing_link_404s",
+          "expected_bugs": [
+            "BUG-03"
+          ],
+          "is_bug": true,
+          "bug_type": "broken_navigation",
+          "severity": 1.0,
+          "confidence": 0.9,
+          "step": 1,
+          "expected": "/pricing.html",
+          "actual": "/pricing.html",
+          "evidence": "Failed to load resource: the server responded with a status of 404 (File not found)",
+          "error": null
+        },
+        {
+          "episode": 4,
+          "global_step": 19,
+          "script": "generate_report_throws",
+          "expected_bugs": [
+            "BUG-04"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 1,
+          "expected": "The application should not change the counter value when the 'Widgets' link is clicked.",
+          "actual": "The counter value remains at 0.",
+          "evidence": "text added: Counter: | 0",
+          "error": null
+        },
+        {
+          "episode": 4,
+          "global_step": 20,
+          "script": "generate_report_throws",
+          "expected_bugs": [
+            "BUG-04"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 2,
+          "expected": "the report should be generated",
+          "actual": "no observable change",
+          "evidence": "STEP 2: CLICK on 'Generate report' \u2014 NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action",
+          "error": null
+        },
+        {
+          "episode": 5,
+          "global_step": 24,
+          "script": "signup_double_submits",
+          "expected_bugs": [
+            "BUG-06"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 5,
+          "expected": "the application should not allow submission of an empty username",
+          "actual": "the application allows submission of an empty username",
+          "evidence": "STEP 1: form state : age: absent -> empty; country: absent -> unselected; email: absent -> empty; username: absent -> empty",
+          "error": null
+        },
+        {
+          "episode": 5,
+          "global_step": 25,
+          "script": "signup_double_submits",
+          "expected_bugs": [
+            "BUG-06"
+          ],
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 2,
+          "expected": "The application should not have any issues with this action.",
+          "actual": "The application correctly updates the form state.",
+          "evidence": "form state : username: empty -> filled",
+          "error": null
+        },
+        {
+          "episode": 5,
+          "global_step": 26,
+          "script": "signup_double_submits",
+          "expected_bugs": [
+            "BUG-06"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 3,
+          "expected": "email: empty -> filled",
+          "actual": "email: empty -> filled",
+          "evidence": "The email field was supposed to be filled with 'tester@example.com' but it remains empty.",
+          "error": null
+        },
+        {
+          "episode": 5,
+          "global_step": 27,
+          "script": "signup_double_submits",
+          "expected_bugs": [
+            "BUG-06"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 4,
+          "expected": "age should be validated as a number between 13 and 120",
+          "actual": "age is accepted with value '42'",
+          "evidence": "STEP 4: action = TYPE on 'age' with value '42'; selector = [id='age']; url = /signup.html (unchanged); form state = age: empty -> filled; constraints = age declares [type=number min=13 max=120]",
+          "error": null
+        },
+        {
+          "episode": 5,
+          "global_step": 28,
+          "script": "signup_double_submits",
+          "expected_bugs": [
+            "BUG-06"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 5,
+          "expected": "The application should have processed the form submission correctly.",
+          "actual": "The application failed to process the form submission due to a timeout.",
+          "evidence": "FAILED : timeout: Locator.click: Timeout 5000ms exceeded.\nCall log:\n- waiting for locator(\"[id=\"submit-signup\"]\").first",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 32,
+          "script": "sync_spinner_never_completes",
+          "expected_bugs": [
+            "BUG-07"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 1,
+          "expected": "The application should not change the counter value when the 'Widgets' link is clicked.",
+          "actual": "The counter value remains at 0.",
+          "evidence": "text added: Counter: | 0",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 33,
+          "script": "sync_spinner_never_completes",
+          "expected_bugs": [
+            "BUG-07"
+          ],
+          "is_bug": false,
+          "bug_type": "js_error",
+          "severity": 0.0,
+          "confidence": 0.0,
+          "step": 2,
+          "expected": "the page was still mutating after 3.1s",
+          "actual": "the page was still mutating after 3.1s",
+          "evidence": "STEP 2: NOT SETTLED: the page was still mutating after 3.1s",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 34,
+          "script": "sync_spinner_never_completes",
+          "expected_bugs": [
+            "BUG-07"
+          ],
+          "is_bug": false,
+          "bug_type": "js_error",
+          "severity": 1.0,
+          "confidence": 0.5,
+          "step": 3,
+          "expected": "the page should have settled before the next action",
+          "actual": "the page was still mutating after 3.0s",
+          "evidence": "STEP 3: NOT SETTLED: the page was still mutating after 3.0s",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 35,
+          "script": "sync_spinner_never_completes",
+          "expected_bugs": [
+            "BUG-07"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.5,
+          "step": 4,
+          "expected": "Syncing\u2026 2026-08-06T05:39:52.309Z",
+          "actual": "Syncing\u2026 2026-08-06T05:39:49.210Z",
+          "evidence": "The timestamp of the 'Syncing...' text changed from STEP 2 to STEP 4, indicating that the application did not correctly persist the syncing state.",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 36,
+          "script": "sync_spinner_never_completes",
+          "expected_bugs": [
+            "BUG-07"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 5,
+          "expected": "Syncing\u2026 2026-08-06T05:39:55.407Z",
+          "actual": "Syncing\u2026 2026-08-06T05:39:52.309Z",
+          "evidence": "The timestamp of the 'Syncing...' text changed from STEP 5 to STEP 4, indicating that the application did not correctly persist the syncing state.",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 37,
+          "script": "sync_spinner_never_completes",
+          "expected_bugs": [
+            "BUG-07"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 6,
+          "expected": "Syncing\u2026 2026-08-06T05:39:58.608Z",
+          "actual": "Syncing\u2026 2026-08-06T05:39:58.608Z",
+          "evidence": "The 'Sync now' button was clicked in STEP 2 and the page has been updating its timestamp every second since then, indicating that the operation is still in progress.",
+          "error": null
+        },
+        {
+          "episode": 7,
+          "global_step": 38,
+          "script": "cta_hidden_on_mobile",
+          "expected_bugs": [
+            "BUG-08"
+          ],
+          "is_bug": false,
+          "bug_type": "ui_regression",
+          "severity": 0.0,
+          "confidence": 0.0,
+          "step": 1,
+          "expected": "a#cta-signup",
+          "actual": "hidden",
+          "evidence": "STEP 1: RESIZE_VIEWPORT with value 'mobile' | now hidden : a#cta-signup",
+          "error": null
+        },
+        {
+          "episode": 7,
+          "global_step": 40,
+          "script": "cta_hidden_on_mobile",
+          "expected_bugs": [
+            "BUG-08"
+          ],
+          "is_bug": false,
+          "bug_type": "ui_regression",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 3,
+          "expected": "a#cta-signup should not have been shown after resizing to desktop",
+          "actual": "a#cta-signup was shown after resizing to desktop",
+          "evidence": "STEP 3: action = RESIZE_VIEWPORT with value 'desktop'; url = /index.html (unchanged); now shown = a#cta-signup",
+          "error": null
+        },
+        {
+          "episode": 8,
+          "global_step": 43,
+          "script": "dark_mode_does_not_persist",
+          "expected_bugs": [
+            "BUG-09"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 1,
+          "expected": "The application should not change the display name field to empty when navigating to settings page.",
+          "actual": "The display name field is set to empty.",
+          "evidence": "form state : darkmode: absent -> off; display_name: absent -> empty; newsletter: absent -> off",
+          "error": null
+        },
+        {
+          "episode": 8,
+          "global_step": 44,
+          "script": "dark_mode_does_not_persist",
+          "expected_bugs": [
+            "BUG-09"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.5,
+          "step": 2,
+          "expected": "The application should reflect the change in the form state.",
+          "actual": "The application correctly reflects the change in the form state.",
+          "evidence": "form state : darkmode: off -> on",
+          "error": null
+        },
+        {
+          "episode": 8,
+          "global_step": 45,
+          "script": "dark_mode_does_not_persist",
+          "expected_bugs": [
+            "BUG-09"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 3,
+          "expected": "Settings saved.",
+          "actual": "Settings saved.",
+          "evidence": "The 'Save settings' button is supposed to save the changes made to the settings, and it does so correctly in this case.",
+          "error": null
+        },
+        {
+          "episode": 8,
+          "global_step": 46,
+          "script": "dark_mode_does_not_persist",
+          "expected_bugs": [
+            "BUG-09"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 4,
+          "expected": "darkmode: on",
+          "actual": "darkmode: off",
+          "evidence": "form state : darkmode: on -> off",
+          "error": null
+        },
+        {
+          "episode": 9,
+          "global_step": 50,
+          "script": "archive_back_link_goes_home",
+          "expected_bugs": [
+            "BUG-10"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 1,
+          "expected": "The application should not change the counter value without user interaction.",
+          "actual": "The counter starts at 0.",
+          "evidence": "text added: Counter: | 0",
+          "error": null
+        },
+        {
+          "episode": 9,
+          "global_step": 51,
+          "script": "archive_back_link_goes_home",
+          "expected_bugs": [
+            "BUG-10"
+          ],
+          "is_bug": false,
+          "bug_type": "ui_regression",
+          "severity": 1.0,
+          "confidence": 0.5,
+          "step": 2,
+          "expected": "the page should not change after scrolling",
+          "actual": "the page is byte-identical after this action",
+          "evidence": "STEP 2: NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action",
+          "error": null
+        },
+        {
+          "episode": 9,
+          "global_step": 52,
+          "script": "archive_back_link_goes_home",
+          "expected_bugs": [
+            "BUG-10"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 3,
+          "expected": "The selected record should be displayed after clicking 'Open archive'.",
+          "actual": "The page remains at the same level (archive list) and does not display a specific record.",
+          "evidence": "STEP 3: text added : Acme Widgets \u2014 Archive | Archive | Older records. | Record 001 | Record 002 | \u2190 Back to Widgets",
+          "error": null
+        },
+        {
+          "episode": 9,
+          "global_step": 53,
+          "script": "archive_back_link_goes_home",
+          "expected_bugs": [
+            "BUG-10"
+          ],
+          "is_bug": false,
+          "bug_type": "broken_navigation",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 4,
+          "expected": "/archive.html -> /widgets.html",
+          "actual": "/archive.html -> /index.html",
+          "evidence": "The link '\u2190 Back to Widgets' is supposed to take the user back to the widgets page, but instead it takes them back to the home page.",
+          "error": null
+        },
+        {
+          "episode": 10,
+          "global_step": 57,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 0.0,
+          "confidence": 0.0,
+          "step": 1,
+          "expected": "none",
+          "actual": "none",
+          "evidence": "none",
+          "error": null
+        },
+        {
+          "episode": 10,
+          "global_step": 58,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 2,
+          "expected": "the counter should not increment without user input",
+          "actual": "the counter incremented when the 'Increment counter' button was clicked",
+          "evidence": "STEP 2: action = CLICK on 'Increment counter'; selector = [id=\"btn-working\"]; url = /widgets.html (unchanged); text added = 1; text gone = 0",
+          "error": null
+        },
+        {
+          "episode": 10,
+          "global_step": 59,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 3,
+          "expected": "Counter should be incremented correctly.",
+          "actual": "The counter is incremented correctly.",
+          "evidence": "STEP 1: The initial value of the counter was 0. STEP 2: After clicking 'Increment counter' once, the value became 1. STEP 3: After clicking 'Increment counter' again, the value became 2. This suggests that the application is correctly updating the counter.",
+          "error": null
+        },
+        {
+          "episode": 10,
+          "global_step": 60,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 4,
+          "expected": "The counter should remain at 2 after refresh.",
+          "actual": "The counter resets to 0.",
+          "evidence": "STEP 4: action = REFRESH, url = /widgets.html (unchanged), text added = 0, text gone = 2",
+          "error": null
+        },
+        {
+          "episode": 10,
+          "global_step": 61,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "is_bug": false,
+          "bug_type": "ui_regression",
+          "severity": 1.0,
+          "confidence": 0.8,
+          "step": 5,
+          "expected": "the page should not change after scrolling",
+          "actual": "the page is byte-identical after this action",
+          "evidence": "STEP 5: NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action",
+          "error": null
+        },
+        {
+          "episode": 10,
+          "global_step": 62,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "is_bug": false,
+          "bug_type": "broken_navigation",
+          "severity": 1.0,
+          "confidence": 0.5,
+          "step": 6,
+          "expected": "/archive.html",
+          "actual": "/widgets.html",
+          "evidence": "The link 'Open archive' leads to /widgets.html instead of the expected /archive.html.",
+          "error": null
+        },
+        {
+          "episode": 10,
+          "global_step": 64,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 0.5,
+          "step": 6,
+          "expected": "Counter: | 2",
+          "actual": "Counter: | 0",
+          "evidence": "STEP 1: text added : 2; STEP 6: text actual : 0",
+          "error": null
+        }
+      ]
+    }
+  }
+}

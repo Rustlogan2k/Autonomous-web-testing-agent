@@ -1,0 +1,151 @@
+{
+  "corpus": "random",
+  "target": "http://127.0.0.1:63281/index.html",
+  "seed": 0,
+  "policy": "RandomPolicy(valid_only=True)",
+  "purpose": "false-positive rate under ordinary exploration",
+  "rollout": {
+    "label": "random-valid-only",
+    "target_url": "http://127.0.0.1:63281/index.html",
+    "episodes": 4,
+    "steps": 160,
+    "wall_clock_s": 72.83,
+    "steps_per_second": 2.197,
+    "total_reward": 38.8,
+    "mean_episode_reward": 9.7,
+    "episode_rewards": [
+      21.45,
+      2.65,
+      11.95,
+      2.75
+    ],
+    "unique_states": 21,
+    "valid_action_rate": 1.0,
+    "exec_success_rate": 0.9375,
+    "noop_steps": 12,
+    "distinct_findings": 12,
+    "trigger_counts": {
+      "broken_navigation": 3,
+      "console_error": 9,
+      "document_http_error": 5,
+      "http_error": 5,
+      "slow_response": 1
+    },
+    "findings": [
+      {
+        "trigger": "console_error",
+        "url": "http://127.0.0.1:63281/widgets.html",
+        "action": "CLICK",
+        "element": "Generate report",
+        "detail": "Cannot read properties of undefined (reading 'build')",
+        "first_seen_step": 11,
+        "times_seen": 4
+      },
+      {
+        "trigger": "console_error",
+        "url": "http://127.0.0.1:63281/pricing.html",
+        "action": "CLICK",
+        "element": "Pricing",
+        "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "first_seen_step": 15,
+        "times_seen": 3
+      },
+      {
+        "trigger": "http_error",
+        "url": "http://127.0.0.1:63281/pricing.html",
+        "action": "CLICK",
+        "element": "Pricing",
+        "detail": "404 http://127.0.0.1:63281/pricing.html",
+        "first_seen_step": 15,
+        "times_seen": 3
+      },
+      {
+        "trigger": "document_http_error",
+        "url": "http://127.0.0.1:63281/pricing.html",
+        "action": "CLICK",
+        "element": "Pricing",
+        "detail": "",
+        "first_seen_step": 15,
+        "times_seen": 3
+      },
+      {
+        "trigger": "broken_navigation",
+        "url": "http://127.0.0.1:63281/pricing.html",
+        "action": "CLICK",
+        "element": "Pricing",
+        "detail": "http://127.0.0.1:63281/pricing.html",
+        "first_seen_step": 15,
+        "times_seen": 3
+      },
+      {
+        "trigger": "console_error",
+        "url": "http://127.0.0.1:63281/pricing.html",
+        "action": "BROWSER_FORWARD",
+        "element": "BROWSER_FORWARD",
+        "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "first_seen_step": 17,
+        "times_seen": 1
+      },
+      {
+        "trigger": "http_error",
+        "url": "http://127.0.0.1:63281/pricing.html",
+        "action": "BROWSER_FORWARD",
+        "element": "BROWSER_FORWARD",
+        "detail": "404 http://127.0.0.1:63281/pricing.html",
+        "first_seen_step": 17,
+        "times_seen": 1
+      },
+      {
+        "trigger": "document_http_error",
+        "url": "http://127.0.0.1:63281/pricing.html",
+        "action": "BROWSER_FORWARD",
+        "element": "BROWSER_FORWARD",
+        "detail": "",
+        "first_seen_step": 17,
+        "times_seen": 1
+      },
+      {
+        "trigger": "console_error",
+        "url": "http://127.0.0.1:63281/pricing.html",
+        "action": "REFRESH",
+        "element": "REFRESH",
+        "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "first_seen_step": 20,
+        "times_seen": 1
+      },
+      {
+        "trigger": "http_error",
+        "url": "http://127.0.0.1:63281/pricing.html",
+        "action": "REFRESH",
+        "element": "REFRESH",
+        "detail": "404 http://127.0.0.1:63281/pricing.html",
+        "first_seen_step": 20,
+        "times_seen": 1
+      },
+      {
+        "trigger": "document_http_error",
+        "url": "http://127.0.0.1:63281/pricing.html",
+        "action": "REFRESH",
+        "element": "REFRESH",
+        "detail": "",
+        "first_seen_step": 20,
+        "times_seen": 1
+      },
+      {
+        "trigger": "slow_response",
+        "url": "http://127.0.0.1:63281/widgets.html",
+        "action": "CLICK",
+        "element": "Sync now",
+        "detail": "3.0s without quiescence",
+        "first_seen_step": 117,
+        "times_seen": 1
+      }
+    ]
+  },
+  "run_id": "toy-random",
+  "episodes": 4,
+  "steps": 160,
+  "distinct_pages": 43,
+  "screenshots": true,
+  "wall_clock_s": 72.97
+}
