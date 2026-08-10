@@ -13,73 +13,85 @@
   "results": {
     "dqn_unmasked": {
       "label": "dqn_unmasked",
-      "target_url": "http://127.0.0.1:64095/index.html",
+      "target_url": "http://127.0.0.1:62842/index.html",
       "episodes": 5,
       "steps": 200,
-      "wall_clock_s": 78.83,
-      "steps_per_second": 2.537,
-      "total_reward": -76.25,
-      "mean_episode_reward": -15.25,
+      "wall_clock_s": 76.31,
+      "steps_per_second": 2.621,
+      "total_reward": -65.25,
+      "mean_episode_reward": -13.05,
       "episode_rewards": [
-        -15.25,
-        -15.25,
-        -15.25,
-        -15.25,
-        -15.25
+        -13.05,
+        -13.05,
+        -13.05,
+        -13.05,
+        -13.05
       ],
-      "unique_states": 4,
-      "valid_action_rate": 0.65,
+      "unique_states": 7,
+      "valid_action_rate": 0.575,
       "exec_success_rate": 1.0,
-      "noop_steps": 70,
+      "noop_steps": 85,
       "distinct_findings": 0,
       "trigger_counts": {},
       "findings": [],
       "flow": {
         "max_depth": 1,
-        "mean_depth": 0.15,
+        "mean_depth": 0.17,
         "reached_receipt": 0,
         "reached_review": 0
       },
-      "train_seconds": 1490.5
+      "train_seconds": 1766.1
     },
     "dqn_masked": {
       "label": "dqn_masked",
-      "target_url": "http://127.0.0.1:64095/index.html",
+      "target_url": "http://127.0.0.1:62842/index.html",
       "episodes": 5,
       "steps": 200,
-      "wall_clock_s": 91.33,
-      "steps_per_second": 2.19,
-      "total_reward": -142.75,
-      "mean_episode_reward": -28.55,
+      "wall_clock_s": 75.28,
+      "steps_per_second": 2.657,
+      "total_reward": -122.25,
+      "mean_episode_reward": -24.45,
       "episode_rewards": [
-        -28.55,
-        -28.55,
-        -28.55,
-        -28.55,
-        -28.55
+        -24.45,
+        -24.45,
+        -24.45,
+        -24.45,
+        -24.45
       ],
-      "unique_states": 2,
+      "unique_states": 4,
       "valid_action_rate": 1.0,
       "exec_success_rate": 1.0,
-      "noop_steps": 100,
-      "distinct_findings": 0,
-      "trigger_counts": {},
-      "findings": [],
+      "noop_steps": 0,
+      "distinct_findings": 1,
+      "trigger_counts": {
+        "broken_navigation": 85
+      },
+      "findings": [
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:62842/support.html",
+          "action": "CLICK",
+          "element": "Support",
+          "detail": "http://127.0.0.1:62842/support.html",
+          "first_seen_step": 8,
+          "times_seen": 85
+        }
+      ],
       "flow": {
         "max_depth": 0,
         "mean_depth": 0.0,
         "reached_receipt": 0,
         "reached_review": 0
       },
-      "train_seconds": 1670.5
+      "train_seconds": 1561.7
     },
     "random_unmasked": {
       "label": "random_unmasked",
-      "target_url": "http://127.0.0.1:64095/index.html",
+      "target_url": "http://127.0.0.1:62842/index.html",
       "episodes": 5,
       "steps": 200,
-      "wall_clock_s": 79.17,
-      "steps_per_second": 2.526,
+      "wall_clock_s": 65.78,
+      "steps_per_second": 3.04,
       "total_reward": -144.05,
       "mean_episode_reward": -28.81,
       "episode_rewards": [
@@ -100,28 +112,28 @@
       "findings": [
         {
           "trigger": "broken_navigation",
-          "url": "http://127.0.0.1:64095/support.html",
+          "url": "http://127.0.0.1:62842/support.html",
           "action": "CLICK",
           "element": "Delivery times",
-          "detail": "http://127.0.0.1:64095/support.html",
+          "detail": "http://127.0.0.1:62842/support.html",
           "first_seen_step": 179,
           "times_seen": 1
         },
         {
           "trigger": "broken_navigation",
-          "url": "http://127.0.0.1:64095/support.html",
+          "url": "http://127.0.0.1:62842/support.html",
           "action": "CLICK",
           "element": "Support",
-          "detail": "http://127.0.0.1:64095/support.html",
+          "detail": "http://127.0.0.1:62842/support.html",
           "first_seen_step": 187,
           "times_seen": 1
         },
         {
           "trigger": "broken_navigation",
-          "url": "http://127.0.0.1:64095/support.html",
+          "url": "http://127.0.0.1:62842/support.html",
           "action": "CLICK",
           "element": "Returns",
-          "detail": "http://127.0.0.1:64095/support.html",
+          "detail": "http://127.0.0.1:62842/support.html",
           "first_seen_step": 194,
           "times_seen": 1
         }
@@ -135,11 +147,11 @@
     },
     "random_masked": {
       "label": "random_masked",
-      "target_url": "http://127.0.0.1:64095/index.html",
+      "target_url": "http://127.0.0.1:62842/index.html",
       "episodes": 5,
       "steps": 200,
-      "wall_clock_s": 90.16,
-      "steps_per_second": 2.218,
+      "wall_clock_s": 70.97,
+      "steps_per_second": 2.818,
       "total_reward": 36.55,
       "mean_episode_reward": 7.31,
       "episode_rewards": [
@@ -160,91 +172,91 @@
       "findings": [
         {
           "trigger": "broken_navigation",
-          "url": "http://127.0.0.1:64095/catalog.html",
+          "url": "http://127.0.0.1:62842/catalog.html",
           "action": "CLICK",
           "element": "Catalog",
-          "detail": "http://127.0.0.1:64095/catalog.html",
+          "detail": "http://127.0.0.1:62842/catalog.html",
           "first_seen_step": 3,
           "times_seen": 2
         },
         {
           "trigger": "broken_navigation",
-          "url": "http://127.0.0.1:64095/terms.html",
+          "url": "http://127.0.0.1:62842/terms.html",
           "action": "CLICK",
           "element": "Terms",
-          "detail": "http://127.0.0.1:64095/terms.html",
+          "detail": "http://127.0.0.1:62842/terms.html",
           "first_seen_step": 10,
           "times_seen": 1
         },
         {
           "trigger": "broken_navigation",
-          "url": "http://127.0.0.1:64095/support.html",
+          "url": "http://127.0.0.1:62842/support.html",
           "action": "CLICK",
           "element": "Returns",
-          "detail": "http://127.0.0.1:64095/support.html",
+          "detail": "http://127.0.0.1:62842/support.html",
           "first_seen_step": 16,
           "times_seen": 2
         },
         {
           "trigger": "broken_navigation",
-          "url": "http://127.0.0.1:64095/catalog.html",
+          "url": "http://127.0.0.1:62842/catalog.html",
           "action": "CLICK",
           "element": "Filing",
-          "detail": "http://127.0.0.1:64095/catalog.html",
+          "detail": "http://127.0.0.1:62842/catalog.html",
           "first_seen_step": 30,
           "times_seen": 3
         },
         {
           "trigger": "broken_navigation",
-          "url": "http://127.0.0.1:64095/support.html",
+          "url": "http://127.0.0.1:62842/support.html",
           "action": "CLICK",
           "element": "Delivery times",
-          "detail": "http://127.0.0.1:64095/support.html",
+          "detail": "http://127.0.0.1:62842/support.html",
           "first_seen_step": 58,
           "times_seen": 2
         },
         {
           "trigger": "broken_navigation",
-          "url": "http://127.0.0.1:64095/support.html",
+          "url": "http://127.0.0.1:62842/support.html",
           "action": "CLICK",
           "element": "Contact us",
-          "detail": "http://127.0.0.1:64095/support.html",
+          "detail": "http://127.0.0.1:62842/support.html",
           "first_seen_step": 59,
           "times_seen": 3
         },
         {
           "trigger": "broken_navigation",
-          "url": "http://127.0.0.1:64095/about.html",
+          "url": "http://127.0.0.1:62842/about.html",
           "action": "CLICK",
           "element": "About",
-          "detail": "http://127.0.0.1:64095/about.html",
+          "detail": "http://127.0.0.1:62842/about.html",
           "first_seen_step": 85,
           "times_seen": 3
         },
         {
           "trigger": "broken_navigation",
-          "url": "http://127.0.0.1:64095/support.html",
+          "url": "http://127.0.0.1:62842/support.html",
           "action": "CLICK",
           "element": "Invoices",
-          "detail": "http://127.0.0.1:64095/support.html",
+          "detail": "http://127.0.0.1:62842/support.html",
           "first_seen_step": 119,
           "times_seen": 1
         },
         {
           "trigger": "broken_navigation",
-          "url": "http://127.0.0.1:64095/status.html",
+          "url": "http://127.0.0.1:62842/status.html",
           "action": "CLICK",
           "element": "Status",
-          "detail": "http://127.0.0.1:64095/status.html",
+          "detail": "http://127.0.0.1:62842/status.html",
           "first_seen_step": 131,
           "times_seen": 2
         },
         {
           "trigger": "broken_navigation",
-          "url": "http://127.0.0.1:64095/privacy.html",
+          "url": "http://127.0.0.1:62842/privacy.html",
           "action": "CLICK",
           "element": "Privacy",
-          "detail": "http://127.0.0.1:64095/privacy.html",
+          "detail": "http://127.0.0.1:62842/privacy.html",
           "first_seen_step": 188,
           "times_seen": 1
         }
