@@ -49,6 +49,7 @@ from web_testing_agent.envs import WebFunctionalEnv  # noqa: E402
 from web_testing_agent.envs.types import EPISODE_CONTEXT_DIM, MAX_ACTIONS  # noqa: E402
 from web_testing_agent.evaluation import RandomPolicy, run_rollout  # noqa: E402
 from web_testing_agent.perception.fusion import FUSED_DIM  # noqa: E402
+from web_testing_agent.perception.encoders.models import semantic_encoders  # noqa: E402
 from web_testing_agent.perception.vec_wrapper import (  # noqa: E402
     SemanticPerceptionWrapper,
     default_encoders,
@@ -83,6 +84,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--episode-steps", type=int, default=40)
     parser.add_argument("--eval-episodes", type=int, default=5)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument(
+        "--encoders", choices=["hash", "semantic"], default="semantic",
+        help="'semantic' loads the real CLIP/CodeBERT/MiniLM encoders; 'hash' uses the "
+             "deterministic stubs, which carry no semantics and are what the 2026-08-10 "
+             "null result was measured on.",
+    )
     parser.add_argument("--out", type=Path, default=None)
     return parser.parse_args()
 
@@ -179,6 +186,11 @@ def main() -> None:
     if not site.is_dir():
         raise SystemExit(f"Fixture not found: {site}")
 
+    # Loaded once and shared by training and evaluation. Two separate instances would
+    # be two separate caches and, worse, two copies of the models in 6 GB of VRAM.
+    build_encoders = semantic_encoders if args.encoders == "semantic" else default_encoders
+    encoders = build_encoders()
+
     results: dict[str, dict] = {}
     with serve_directory(site) as origin:
         base_url = f"{origin}/index.html"
@@ -192,7 +204,7 @@ def main() -> None:
                     WebFunctionalEnv(base_url=base_url, max_steps=args.episode_steps, headless=True)
                 )
             ])
-            venv = SemanticPerceptionWrapper(venv, encoders=default_encoders())
+            venv = SemanticPerceptionWrapper(venv, encoders=encoders)
             started = time.monotonic()
             model = build_agent(masked, venv, args.seed, args.train_steps)
             try:
@@ -200,7 +212,6 @@ def main() -> None:
             finally:
                 venv.close()
             train_s = time.monotonic() - started
-            encoders = default_encoders()
             report, flow = evaluate(base_url, name, lambda env: TrainedPolicy(model, encoders), args)
             results[name] = {**report.to_dict(), "flow": flow, "train_seconds": round(train_s, 1)}
             logger.info("{}: {}", name, flow)
@@ -214,7 +225,8 @@ def main() -> None:
             logger.info("{}: {}", label, flow)
 
     print("\n" + "=" * 88)
-    print(f"{args.site} fixture — {args.eval_episodes} episodes x {args.episode_steps} steps, seed {args.seed}")
+    print(f"{args.site} fixture — {args.eval_episodes} episodes x {args.episode_steps} steps, "
+          f"seed {args.seed}, encoders={args.encoders}")
     print("=" * 88)
     header = f"{'policy':<18}{'reward':>9}{'valid%':>9}{'states':>8}{'finds':>7}{'maxD':>6}{'meanD':>7}{'done':>6}"
     print(header)
@@ -228,8 +240,9 @@ def main() -> None:
         )
     print("\nmaxD/meanD = deepest / mean stage of the 5-stage order flow; done = steps on the receipt page.")
 
-    out = args.out or REPORTS / f"compare_agents_{args.site}.json"
-    out.write_text(json.dumps({"site": args.site, "args": vars(args) | {"out": str(out)},
+    out = args.out or REPORTS / f"compare_agents_{args.site}_{args.encoders}.json"
+    out.write_text(json.dumps({"site": args.site, "encoders": args.encoders,
+                               "args": vars(args) | {"out": str(out)},
                                "results": results}, indent=2, default=str), encoding="utf-8")
     logger.info("Wrote {}", out)
 
