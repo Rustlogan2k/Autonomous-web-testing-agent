@@ -1,0 +1,7 @@
+{
+  "run_id": "gseed",
+  "corpora": {
+    "scripted": "data\\annotations\\gseed-scripted"
+  },
+  "incomplete_scripts": []
+}

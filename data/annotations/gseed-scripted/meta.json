@@ -1,0 +1,112 @@
+{
+  "corpus": "scripted",
+  "target": "http://localhost:3000/explore/repos",
+  "seed": 0,
+  "purpose": "judge accuracy \u2014 known ground truth per episode",
+  "episode_labels": {
+    "1": {
+      "script": "organizations_tab_opens_user_listing",
+      "bugs": [
+        "GITEA-01"
+      ],
+      "first_global_step": 1,
+      "last_global_step": 4
+    },
+    "2": {
+      "script": "export_results_is_dead",
+      "bugs": [
+        "GITEA-02"
+      ],
+      "first_global_step": 5,
+      "last_global_step": 8
+    },
+    "3": {
+      "script": "account_unreachable_on_narrow_viewport",
+      "bugs": [
+        "GITEA-03"
+      ],
+      "first_global_step": 9,
+      "last_global_step": 13
+    },
+    "4": {
+      "script": "search_box_cleared_after_searching",
+      "bugs": [
+        "GITEA-04"
+      ],
+      "first_global_step": 14,
+      "last_global_step": 18
+    },
+    "5": {
+      "script": "user_listing_throws",
+      "bugs": [
+        "GITEA-05"
+      ],
+      "first_global_step": 19,
+      "last_global_step": 23
+    },
+    "6": {
+      "script": "repository_home_never_settles",
+      "bugs": [
+        "GITEA-06"
+      ],
+      "first_global_step": 24,
+      "last_global_step": 28
+    },
+    "7": {
+      "script": "happy_path",
+      "bugs": [],
+      "first_global_step": 29,
+      "last_global_step": 36
+    }
+  },
+  "script_fidelity": [
+    {
+      "script": "organizations_tab_opens_user_listing",
+      "steps": 2,
+      "matched": 2,
+      "missed": []
+    },
+    {
+      "script": "export_results_is_dead",
+      "steps": 2,
+      "matched": 2,
+      "missed": []
+    },
+    {
+      "script": "account_unreachable_on_narrow_viewport",
+      "steps": 3,
+      "matched": 3,
+      "missed": []
+    },
+    {
+      "script": "search_box_cleared_after_searching",
+      "steps": 3,
+      "matched": 3,
+      "missed": []
+    },
+    {
+      "script": "user_listing_throws",
+      "steps": 3,
+      "matched": 3,
+      "missed": []
+    },
+    {
+      "script": "repository_home_never_settles",
+      "steps": 3,
+      "matched": 3,
+      "missed": []
+    },
+    {
+      "script": "happy_path",
+      "steps": 6,
+      "matched": 6,
+      "missed": []
+    }
+  ],
+  "run_id": "gseed-scripted",
+  "episodes": 7,
+  "steps": 36,
+  "distinct_pages": 19,
+  "screenshots": false,
+  "wall_clock_s": 34.33
+}

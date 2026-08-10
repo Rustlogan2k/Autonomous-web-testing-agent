@@ -12,7 +12,7 @@ import io
 import json
 import time
 from abc import ABC, abstractmethod
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from typing import Any
 
 import gymnasium as gym
@@ -141,6 +141,7 @@ class WebTestingEnv(gym.Env, ABC):
         headless: bool = True,
         render_mode: str | None = None,
         repetition_window: int = 20,
+        setup_actions: list[dict] | None = None,
     ) -> None:
         super().__init__()
         if render_mode is not None and render_mode not in self.metadata["render_modes"]:
@@ -149,6 +150,10 @@ class WebTestingEnv(gym.Env, ABC):
         self.base_url = base_url
         self.max_steps = max_steps
         self.render_mode = render_mode
+        # Replayed at the start of every episode, before the first observation. Same
+        # step schema as a repro script; see `_run_setup_actions`.
+        self.setup_actions = list(setup_actions or [])
+        self._bootstrap_steps = 0
         self._base_domain = BrowserSession.domain_of(base_url)
 
         self._browser = BrowserSession(headless=headless)
@@ -213,6 +218,15 @@ class WebTestingEnv(gym.Env, ABC):
         # A landing page that never settles is the app's own baseline, not a discovery.
         self._page_settled = self._browser.wait_settled()
 
+        # Session bootstrap runs here: after the landing page, before the first
+        # observation is captured. Its steps are deliberately *not* counted against
+        # max_steps and never reach the reward — logging in is test setup, not a
+        # discovery, and paying an agent for it would make "log in again" a reward
+        # source. Every episode starts from a fresh context, so without this the agent
+        # spends its whole budget re-finding the login form on any app whose interesting
+        # surface is behind one.
+        self._bootstrap_steps = self._run_setup_actions()
+
         self._last_raw_obs = self._capture_raw_observation()
         # Errors seen while merely loading the landing page are this app's baseline
         # noise (favicons, sourcemaps, optional bundles), not bugs the agent found.
@@ -233,6 +247,11 @@ class WebTestingEnv(gym.Env, ABC):
             "page": self._page_info(self._last_raw_obs),
             "episode_context": self._episode_context(self._state_key(self._last_raw_obs), None),
             "baseline_errors": len(self.error_baseline),
+            # Recorded so a corpus states whether its episodes began authenticated. A
+            # trace that silently differs in session state is not comparable with one
+            # that does not, and the difference is invisible in the pages themselves.
+            "bootstrap_steps": self._bootstrap_steps,
+            "authenticated": bool(self.setup_actions) and self._bootstrap_steps > 0,
         }
         return self._to_gym_obs(self._last_raw_obs), info
 
@@ -384,6 +403,71 @@ class WebTestingEnv(gym.Env, ABC):
             self._carried_network_events.extend(self._network_recorder.drain())
         self._attach_page_listeners(adopted)
         return True, ""
+
+    def _run_setup_actions(self) -> int:
+        """Execute the session-bootstrap macro, returning how many steps landed.
+
+        Steps use the same schema as a repro script (`{"type": ..., "id"/"text": ...,
+        "params": {...}}`) and are resolved against the live action space by the same
+        matcher, so a login macro is written exactly like a repro path and needs no
+        second selector language.
+
+        A failed bootstrap is logged loudly rather than raised. An episode that silently
+        started anonymous when it was meant to be authenticated produces a corpus in
+        which every authenticated finding is missing, and that is indistinguishable
+        downstream from a judge that found nothing.
+        """
+        if not self.setup_actions:
+            return 0
+        from ..evaluation.scripted import ScriptedPolicy  # local: evaluation imports envs
+
+        completed = 0
+        for position, step in enumerate(self.setup_actions):
+            specs = self._build_action_specs()
+            # A literal value is pulled out before matching and applied after. The action
+            # registry only ever generates TYPE actions with *generated* values (one per
+            # value category), because that is what an explorer needs — but a login macro
+            # needs one exact string, and no generated action will ever equal it. Kept
+            # here rather than in the registry so the agent's action space is unchanged:
+            # a slot that types a real password is not something the policy should be
+            # able to choose.
+            literal = (step.get("params") or {}).get("value")
+            match_step = step
+            if literal is not None:
+                params = {k: v for k, v in step["params"].items() if k not in ("value", "category")}
+                match_step = {**step, "params": params}
+            index = ScriptedPolicy._match(match_step, specs)
+            if index is None:
+                logger.warning(
+                    "[episode {}] session bootstrap step {} {} did not match any action on {}; "
+                    "the episode will run unauthenticated",
+                    self._episode_id, position, step, self._browser.page.url if self._browser.page else "?",
+                )
+                continue
+            spec = specs[index]
+            if literal is not None:
+                spec = replace(spec, params={**spec.params, "value": literal})
+            try:
+                self._execute_action(spec)
+            except Exception as exc:  # noqa: BLE001 - setup failure must not crash the run
+                logger.warning("[episode {}] bootstrap step {} raised: {}", self._episode_id, position, exc)
+                continue
+            self._browser.wait_settled()
+            completed += 1
+
+        self._page_settled = self._browser.wait_settled()
+        # Anything the login flow logged or requested is setup noise, not a finding.
+        self._console_buffer = []
+        self._page_error_buffer = []
+        if self._network_recorder is not None:
+            self._network_recorder.drain()
+        self._carried_network_events = []
+        logger.info(
+            "[episode {}] session bootstrap: {}/{} steps -> {}",
+            self._episode_id, completed, len(self.setup_actions),
+            self._browser.page.url if self._browser.page else "?",
+        )
+        return completed
 
     def _start_reward_model_episode(self) -> None:
         """Signal a new episode to whatever judge the subclass owns.

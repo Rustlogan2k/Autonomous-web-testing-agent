@@ -1,0 +1,75 @@
+{
+  "target": "Gitea 1.21 with seeded defects (scripts/seed_gitea_bugs.py --install)",
+  "base_url": "http://localhost:3000/explore/repos",
+  "notes": [
+    "Steps match on visible label (`text`) rather than DOM id: Gitea's explore tabs, footer links and repository tab bar carry no ids at all. Label matching is the weaker selector, so check `script_fidelity` in meta.json after every capture — a silently skipped step produces a corpus missing the bug it was written to capture.",
+    "Entry point is /explore/repos rather than / because five of the six defects live on or one click from the explore pages, and starting there keeps each episode short enough that the window (K=6) still contains the whole repro.",
+    "happy_path is the negative control: every step is correct Gitea behaviour drawn from the answer key's false_positive_watch. Any bug reported during it is a false positive. It deliberately avoids repository home pages, which carry GITEA-06."
+  ],
+  "scripts": [
+    {
+      "name": "organizations_tab_opens_user_listing",
+      "bugs": ["GITEA-01"],
+      "steps": [
+        {"type": "CLICK", "text": "Organizations"},
+        {"type": "NO_OP"}
+      ]
+    },
+    {
+      "name": "export_results_is_dead",
+      "bugs": ["GITEA-02"],
+      "steps": [
+        {"type": "CLICK", "text": "Export results"},
+        {"type": "NO_OP"}
+      ]
+    },
+    {
+      "name": "account_unreachable_on_narrow_viewport",
+      "bugs": ["GITEA-03"],
+      "steps": [
+        {"type": "RESIZE_VIEWPORT", "params": {"preset": "mobile"}},
+        {"type": "NO_OP"},
+        {"type": "RESIZE_VIEWPORT", "params": {"preset": "desktop"}}
+      ]
+    },
+    {
+      "name": "search_box_cleared_after_searching",
+      "bugs": ["GITEA-04"],
+      "steps": [
+        {"type": "TYPE", "text": "q", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "text": "Search"},
+        {"type": "NO_OP"}
+      ]
+    },
+    {
+      "name": "user_listing_throws",
+      "bugs": ["GITEA-05"],
+      "steps": [
+        {"type": "CLICK", "text": "Users"},
+        {"type": "NO_OP"},
+        {"type": "NO_OP"}
+      ]
+    },
+    {
+      "name": "repository_home_never_settles",
+      "bugs": ["GITEA-06"],
+      "steps": [
+        {"type": "CLICK", "text": "tester / notes"},
+        {"type": "NO_OP"},
+        {"type": "NO_OP"}
+      ]
+    },
+    {
+      "name": "happy_path",
+      "bugs": [],
+      "steps": [
+        {"type": "CLICK", "text": "Repositories"},
+        {"type": "NO_OP"},
+        {"type": "REFRESH"},
+        {"type": "SCROLL", "params": {"direction": "down"}},
+        {"type": "CLICK", "text": "Register"},
+        {"type": "NO_OP"}
+      ]
+    }
+  ]
+}

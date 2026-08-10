@@ -1,0 +1,48 @@
+{{/*
+	SEEDED-BUG OVERRIDE of Gitea's templates/explore/navbar.tmpl.
+
+	Installed by scripts/seed_gitea_bugs.py into $GITEA_CUSTOM/templates, which is
+	Gitea's own supported customization path — no fork, no rebuild, and removing the
+	directory restores stock behaviour exactly.
+
+	Two bugs live here. Both are invisible to the deterministic triggers: every page
+	involved returns HTTP 200, logs nothing to the console and settles normally.
+
+	  GITEA-01  broken_navigation  the "Organizations" tab is labelled Organizations
+	                               and points at /explore/users.
+
+	  The mismatch is deliberately on the *Organizations* tab rather than the Users tab.
+	  Putting it on Users would have made /explore/users unreachable from the navigation,
+	  and GITEA-05 (an uncaught TypeError on that page) would then be unreachable for any
+	  explorer that only follows links — a seeded bug nobody can reach is not ground
+	  truth, it is a permanent miss that looks like a judge failure.
+	  GITEA-02  dead_control       "Export results" promises an export and is wired to
+	                               nothing at all.
+
+	Ground truth: tests/fixtures/gitea_bugs/answer_key.json
+*/}}
+<div class="ui secondary pointing tabular top attached borderless menu new-menu navbar">
+	<div class="new-menu-inner">
+		<a class="{{if .PageIsExploreRepositories}}active {{end}}item" href="{{AppSubUrl}}/explore/repos">
+			{{svg "octicon-repo"}} {{ctx.Locale.Tr "explore.repos"}}
+		</a>
+		{{if not .UsersIsDisabled}}
+			<a class="{{if .PageIsExploreUsers}}active {{end}}item" href="{{AppSubUrl}}/explore/users">
+				{{svg "octicon-person"}} {{ctx.Locale.Tr "explore.users"}}
+			</a>
+		{{end}}
+		{{/* GITEA-01: label says Organizations, destination is the user listing. */}}
+		<a class="{{if .PageIsExploreOrganizations}}active {{end}}item" href="{{AppSubUrl}}/explore/users">
+			{{svg "octicon-organization"}} {{ctx.Locale.Tr "explore.organizations"}}
+		</a>
+		{{if and (not $.UnitTypeCode.UnitGlobalDisabled) .IsRepoIndexerEnabled}}
+		<a class="{{if .PageIsExploreCode}}active {{end}}item" href="{{AppSubUrl}}/explore/code">
+			{{svg "octicon-code"}} {{ctx.Locale.Tr "explore.code"}}
+		</a>
+		{{end}}
+		{{/* GITEA-02: no href, no form, no handler. Clicking it does nothing whatsoever. */}}
+		<button id="export-results" class="item" type="button">
+			{{svg "octicon-download"}} Export results
+		</button>
+	</div>
+</div>

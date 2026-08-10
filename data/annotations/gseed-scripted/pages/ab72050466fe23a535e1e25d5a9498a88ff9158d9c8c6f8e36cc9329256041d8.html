@@ -1,0 +1,343 @@
+<!DOCTYPE html><html lang="en-US" class="theme-auto"><head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Register - Gitea: Git with a cup of tea</title>
+	<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiR2l0ZWE6IEdpdCB3aXRoIGEgY3VwIG9mIHRlYSIsInNob3J0X25hbWUiOiJHaXRlYTogR2l0IHdpdGggYSBjdXAgb2YgdGVhIiwic3RhcnRfdXJsIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwLyIsImljb25zIjpbeyJzcmMiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAvYXNzZXRzL2ltZy9sb2dvLnBuZyIsInR5cGUiOiJpbWFnZS9wbmciLCJzaXplcyI6IjUxMng1MTIifSx7InNyYyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMC9hc3NldHMvaW1nL2xvZ28uc3ZnIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJzaXplcyI6IjUxMng1MTIifV19">
+	<meta name="author" content="Gitea - Git with a cup of tea">
+	<meta name="description" content="Gitea (Git with a cup of tea) is a painless self-hosted Git service written in Go">
+	<meta name="keywords" content="go,git,self-hosted,gitea">
+	<meta name="referrer" content="no-referrer">
+
+
+	<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+	<link rel="alternate icon" href="/assets/img/favicon.png" type="image/png">
+	
+<script>
+	
+	window.addEventListener('error', function(e) {window._globalHandlerErrors=window._globalHandlerErrors||[]; window._globalHandlerErrors.push(e);});
+	window.addEventListener('unhandledrejection', function(e) {window._globalHandlerErrors=window._globalHandlerErrors||[]; window._globalHandlerErrors.push(e);});
+	window.config = {
+		appUrl: 'http:\/\/localhost:3000\/',
+		appSubUrl: '',
+		assetVersionEncoded: encodeURIComponent('1.21.11'), 
+		assetUrlPrefix: '\/assets',
+		runModeIsProd:  true ,
+		customEmojis: {"codeberg":":codeberg:","git":":git:","gitea":":gitea:","github":":github:","gitlab":":gitlab:","gogs":":gogs:"},
+		csrfToken: 'iQ9q6DOId2wpXCb4JhGmSfI3pKw6MTc4NjMzNTAzMjM0MzU2Mzg4Ng',
+		pageData: {},
+		notificationSettings: {"EventSourceUpdateTime":10000,"MaxTimeout":60000,"MinTimeout":10000,"TimeoutStep":10000}, 
+		enableTimeTracking:  true ,
+		
+		mermaidMaxSourceCharacters:  5000 ,
+		
+		i18n: {
+			copy_success: "Copied!",
+			copy_error: "Copy failed",
+			error_occurred: "An error occurred",
+			network_error: "Network error",
+			remove_label_str: "Remove item \"%s\"",
+			modal_confirm: "Confirm",
+			modal_cancel: "Cancel",
+		},
+	};
+	
+	window.config.pageData = window.config.pageData || {};
+</script>
+<script src="/assets/js/webcomponents.js?v=1.21.11"></script>
+
+	<noscript>
+		<style>
+			.dropdown:hover > .menu { display: block; }
+			.ui.secondary.menu .dropdown.item > .menu { margin-top: 0; }
+		</style>
+	</noscript>
+	
+	<meta property="og:title" content="Gitea: Git with a cup of tea">
+	<meta property="og:type" content="website">
+	<meta property="og:image" content="/assets/img/logo.png">
+	<meta property="og:url" content="http://localhost:3000/">
+	<meta property="og:description" content="Gitea (Git with a cup of tea) is a painless self-hosted Git service written in Go">
+
+<meta property="og:site_name" content="Gitea: Git with a cup of tea">
+
+	<link rel="stylesheet" href="/assets/css/index.css?v=1.21.11">
+
+	<link rel="stylesheet" href="/assets/css/theme-auto.css?v=1.21.11">
+
+
+	
+<style>
+ 
+@media (max-width: 600px) {
+	#navbar .item[href*="/user/sign_up"],
+	#navbar .item[href*="/user/login"],
+	#navbar-expand-toggle {
+		display: none !important;
+	}
+}
+</style>
+<script>
+(function () {
+	var path = window.location.pathname;
+
+	
+
+	if (path === '/explore/repos') {
+		window.addEventListener('DOMContentLoaded', function () {
+			var box = document.querySelector('input[name="q"]');
+			if (box && box.value) { box.value = ''; }
+		});
+	}
+
+	
+
+	if (path === '/explore/users') {
+		setTimeout(function () {
+			var missing = null;
+			missing.render();
+		}, 120);
+	}
+
+	
+
+	var parts = path.split('/').filter(Boolean);
+	var reserved = ['explore', 'user', 'admin', 'api', 'assets', 'repo', 'org', 'notifications'];
+	if (parts.length === 2 && reserved.indexOf(parts[0]) === -1) {
+		window.addEventListener('DOMContentLoaded', function () {
+			var pulse = document.createElement('span');
+			pulse.id = 'sync-status';
+			pulse.setAttribute('style', 'position:absolute;left:-9999px;');
+			document.body.appendChild(pulse);
+			setInterval(function () {
+				pulse.textContent = 'syncing ' + Date.now();
+			}, 100);
+		});
+	}
+})();
+</script>
+
+</head>
+<body>
+	
+	
+
+	<div class="full height">
+		<noscript>This website requires JavaScript.</noscript>
+
+		
+
+		
+			
+
+
+<nav id="navbar" aria-label="Navigation Bar">
+	<div class="navbar-left ui secondary menu">
+		
+		<a class="item" id="navbar-logo" href="/" aria-label="Home">
+			<img width="30" height="30" src="/assets/img/logo.svg" alt="Logo" aria-hidden="true">
+		</a>
+
+		
+		<div class="ui secondary menu item navbar-mobile-right">
+			
+			<button class="item gt-w-auto ui icon mini button gt-p-3 gt-m-0" id="navbar-expand-toggle" data-hidden="true"><svg viewBox="0 0 16 16" class="svg octicon-three-bars" aria-hidden="true" width="16" height="16"><path d="M1 2.75A.75.75 0 0 1 1.75 2h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 2.75Zm0 5A.75.75 0 0 1 1.75 7h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 7.75ZM1.75 12h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Z"></path></svg></button>
+		</div>
+
+		
+		
+			<a class="item" href="/explore/repos">Explore</a>
+		
+
+		
+
+		
+			<a class="item" target="_blank" rel="noopener noreferrer" href="https://docs.gitea.com">Help</a>
+		
+	</div>
+
+	
+	<div class="navbar-right ui secondary menu">
+		
+			
+				<a class="item active" href="/user/sign_up">
+					<svg viewBox="0 0 16 16" class="svg octicon-person" aria-hidden="true" width="16" height="16"><path d="M10.561 8.073a6.005 6.005 0 0 1 3.432 5.142.75.75 0 1 1-1.498.07 4.5 4.5 0 0 0-8.99 0 .75.75 0 0 1-1.498-.07 6.004 6.004 0 0 1 3.431-5.142 3.999 3.999 0 1 1 5.123 0ZM10.5 5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path></svg> Register
+				</a>
+			
+			<a class="item" rel="nofollow" href="/user/login?redirect_to=%2fuser%2fsign_up">
+				<svg viewBox="0 0 16 16" class="svg octicon-sign-in" aria-hidden="true" width="16" height="16"><path d="M2 2.75C2 1.784 2.784 1 3.75 1h2.5a.75.75 0 0 1 0 1.5h-2.5a.25.25 0 0 0-.25.25v10.5c0 .138.112.25.25.25h2.5a.75.75 0 0 1 0 1.5h-2.5A1.75 1.75 0 0 1 2 13.25Zm6.56 4.5h5.69a.75.75 0 0 1 0 1.5H8.56l1.97 1.97a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L6.22 8.53a.75.75 0 0 1 0-1.06l3.25-3.25a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734Z"></path></svg> Sign In
+			</a>
+		
+	</div>
+</nav>
+
+		
+
+
+
+<div role="main" aria-label="Register" class="page-content user signin">
+	
+
+	<div class="ui middle very relaxed page grid">
+		<div class="ui container column fluid">
+	<h4 class="ui top attached header center">
+		
+			Register
+		
+	</h4>
+	<div class="ui attached segment">
+		<form class="ui form" action="/user/sign_up" method="post">
+			<input type="hidden" name="_csrf" value="iQ9q6DOId2wpXCb4JhGmSfI3pKw6MTc4NjMzNTAzMjM0MzU2Mzg4Ng" style="" data-hidden="true">
+			
+			
+
+
+
+
+			
+			
+				<div class="required inline field ">
+					<label for="user_name">Username</label>
+					<input id="user_name" type="text" name="user_name" value="" autofocus="" required="" dir="auto" style="">
+				</div>
+				<div class="required inline field ">
+					<label for="email">Email Address</label>
+					<input id="email" name="email" type="email" value="" required="" dir="auto" style="">
+				</div>
+
+				
+					<div class="required inline field ">
+						<label for="password">Password</label>
+						<input id="password" name="password" type="password" value="" autocomplete="new-password" required="" dir="auto" style="">
+					</div>
+					<div class="required inline field ">
+						<label for="retype">Confirm Password</label>
+						<input id="retype" name="retype" type="password" value="" autocomplete="new-password" required="" dir="auto" style="">
+					</div>
+				
+
+				
+
+
+				<div class="inline field">
+					<label></label>
+					<button class="ui primary button">
+						
+							Register Account
+						
+					</button>
+				</div>
+
+				
+				<div class="inline field">
+					<label></label>
+					<a href="/user/login">Already have an account? Sign in now!</a>
+				</div>
+				
+			
+
+			
+		</form>
+	</div>
+</div>
+
+	</div>
+</div>
+
+
+	
+
+	</div>
+
+	
+
+	<footer class="page-footer" role="group" aria-label="Footer">
+	<div class="left-links" role="contentinfo" aria-label="About Software">
+		<a target="_blank" rel="noopener noreferrer" href="https://about.gitea.com">Powered by Gitea</a>
+		
+			Version:
+			
+				1.21.11
+			
+		
+		
+			Page: <strong>1ms</strong>
+			Template: <strong>1ms</strong>
+		
+	</div>
+	<div class="right-links" role="group" aria-label="Links">
+		<div class="ui dropdown upward language" tabindex="0" role="menu" aria-haspopup="" aria-controls="_aria_auto_id_0" aria-expanded="false">
+			<span class="flex-text-inline"><svg viewBox="0 0 16 16" class="svg octicon-globe" aria-hidden="true" width="14" height="14"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM5.78 8.75a9.64 9.64 0 0 0 1.363 4.177c.255.426.542.832.857 1.215.245-.296.551-.705.857-1.215A9.64 9.64 0 0 0 10.22 8.75Zm4.44-1.5a9.64 9.64 0 0 0-1.363-4.177c-.307-.51-.612-.919-.857-1.215a9.927 9.927 0 0 0-.857 1.215A9.64 9.64 0 0 0 5.78 7.25Zm-5.944 1.5H1.543a6.507 6.507 0 0 0 4.666 5.5c-.123-.181-.24-.365-.352-.552-.715-1.192-1.437-2.874-1.581-4.948Zm-2.733-1.5h2.733c.144-2.074.866-3.756 1.58-4.948.12-.197.237-.381.353-.552a6.507 6.507 0 0 0-4.666 5.5Zm10.181 1.5c-.144 2.074-.866 3.756-1.58 4.948-.12.197-.237.381-.353.552a6.507 6.507 0 0 0 4.666-5.5Zm2.733-1.5a6.507 6.507 0 0 0-4.666-5.5c.123.181.24.365.353.552.714 1.192 1.436 2.874 1.58 4.948Z"></path></svg> English</span>
+			<div class="menu language-menu" tabindex="-1" id="_aria_auto_id_0" role="">
+				
+					<a lang="id-ID" data-url="/?lang=id-ID" class="item " id="_aria_auto_id_1" role="menuitem" tabindex="-1" data-hidden="true">Bahasa Indonesia</a>
+				
+					<a lang="de-DE" data-url="/?lang=de-DE" class="item " id="_aria_auto_id_2" role="menuitem" tabindex="-1" data-hidden="true">Deutsch</a>
+				
+					<a lang="en-US" data-url="/?lang=en-US" class="item active selected" id="_aria_auto_id_3" role="menuitem" tabindex="-1" data-hidden="true">English</a>
+				
+					<a lang="es-ES" data-url="/?lang=es-ES" class="item " id="_aria_auto_id_4" role="menuitem" tabindex="-1" data-hidden="true">Español</a>
+				
+					<a lang="fr-FR" data-url="/?lang=fr-FR" class="item " id="_aria_auto_id_5" role="menuitem" tabindex="-1" data-hidden="true">Français</a>
+				
+					<a lang="it-IT" data-url="/?lang=it-IT" class="item " id="_aria_auto_id_6" role="menuitem" tabindex="-1" data-hidden="true">Italiano</a>
+				
+					<a lang="lv-LV" data-url="/?lang=lv-LV" class="item " id="_aria_auto_id_7" role="menuitem" tabindex="-1" data-hidden="true">Latviešu</a>
+				
+					<a lang="hu-HU" data-url="/?lang=hu-HU" class="item " id="_aria_auto_id_8" role="menuitem" tabindex="-1" data-hidden="true">Magyar nyelv</a>
+				
+					<a lang="nl-NL" data-url="/?lang=nl-NL" class="item " id="_aria_auto_id_9" role="menuitem" tabindex="-1" data-hidden="true">Nederlands</a>
+				
+					<a lang="pl-PL" data-url="/?lang=pl-PL" class="item " id="_aria_auto_id_10" role="menuitem" tabindex="-1" data-hidden="true">Polski</a>
+				
+					<a lang="pt-PT" data-url="/?lang=pt-PT" class="item " id="_aria_auto_id_11" role="menuitem" tabindex="-1" data-hidden="true">Português de Portugal</a>
+				
+					<a lang="pt-BR" data-url="/?lang=pt-BR" class="item " id="_aria_auto_id_12" role="menuitem" tabindex="-1" data-hidden="true">Português do Brasil</a>
+				
+					<a lang="fi-FI" data-url="/?lang=fi-FI" class="item " id="_aria_auto_id_13" role="menuitem" tabindex="-1" data-hidden="true">Suomi</a>
+				
+					<a lang="sv-SE" data-url="/?lang=sv-SE" class="item " id="_aria_auto_id_14" role="menuitem" tabindex="-1" data-hidden="true">Svenska</a>
+				
+					<a lang="tr-TR" data-url="/?lang=tr-TR" class="item " id="_aria_auto_id_15" role="menuitem" tabindex="-1" data-hidden="true">Türkçe</a>
+				
+					<a lang="cs-CZ" data-url="/?lang=cs-CZ" class="item " id="_aria_auto_id_16" role="menuitem" tabindex="-1" data-hidden="true">Čeština</a>
+				
+					<a lang="el-GR" data-url="/?lang=el-GR" class="item " id="_aria_auto_id_17" role="menuitem" tabindex="-1" data-hidden="true">Ελληνικά</a>
+				
+					<a lang="bg-BG" data-url="/?lang=bg-BG" class="item " id="_aria_auto_id_18" role="menuitem" tabindex="-1" data-hidden="true">Български</a>
+				
+					<a lang="ru-RU" data-url="/?lang=ru-RU" class="item " id="_aria_auto_id_19" role="menuitem" tabindex="-1" data-hidden="true">Русский</a>
+				
+					<a lang="uk-UA" data-url="/?lang=uk-UA" class="item " id="_aria_auto_id_20" role="menuitem" tabindex="-1" data-hidden="true">Українська</a>
+				
+					<a lang="fa-IR" data-url="/?lang=fa-IR" class="item " id="_aria_auto_id_21" role="menuitem" tabindex="-1" data-hidden="true">فارسی</a>
+				
+					<a lang="ml-IN" data-url="/?lang=ml-IN" class="item " id="_aria_auto_id_22" role="menuitem" tabindex="-1" data-hidden="true">മലയാളം</a>
+				
+					<a lang="ja-JP" data-url="/?lang=ja-JP" class="item " id="_aria_auto_id_23" role="menuitem" tabindex="-1" data-hidden="true">日本語</a>
+				
+					<a lang="zh-CN" data-url="/?lang=zh-CN" class="item " id="_aria_auto_id_24" role="menuitem" tabindex="-1" data-hidden="true">简体中文</a>
+				
+					<a lang="zh-TW" data-url="/?lang=zh-TW" class="item " id="_aria_auto_id_25" role="menuitem" tabindex="-1" data-hidden="true">繁體中文（台灣）</a>
+				
+					<a lang="zh-HK" data-url="/?lang=zh-HK" class="item " id="_aria_auto_id_26" role="menuitem" tabindex="-1" data-hidden="true">繁體中文（香港）</a>
+				
+					<a lang="ko-KR" data-url="/?lang=ko-KR" class="item " id="_aria_auto_id_27" role="menuitem" tabindex="-1" data-hidden="true">한국어</a>
+				
+			</div>
+		</div>
+		<a href="/assets/licenses.txt">Licenses</a>
+		<a href="/api/swagger">API</a>
+		
+	</div>
+</footer>
+
+
+
+
+	<script src="/assets/js/index.js?v=1.21.11" onerror="alert('Failed to load asset files from ' + this.src + '. Please make sure the asset files can be accessed.')"></script>
+
+	
+	
+
+
+
+</body></html>

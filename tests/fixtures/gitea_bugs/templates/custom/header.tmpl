@@ -1,0 +1,74 @@
+{{/*
+	SEEDED-BUG INJECTION via Gitea's custom/header.tmpl hook (rendered into <head> on
+	every page). Installed by scripts/seed_gitea_bugs.py; deleting the directory
+	restores stock Gitea exactly.
+
+	Four bugs, page-scoped in JS so each has one reproducible location:
+
+	  GITEA-03  ui_regression     below 600px the navbar's Register and Sign In links
+	                              and the mobile menu toggle are all hidden, so an
+	                              account becomes unreachable with nothing replacing it.
+	  GITEA-04  broken_flow       on /explore/repos the search box is cleared after a
+	                              search, so the results no longer say what produced
+	                              them and refining a query means retyping it.
+	  GITEA-05  js_error          uncaught TypeError on /explore/users.       [deterministic]
+	  GITEA-06  hang              runaway setInterval on a repository home.   [deterministic]
+
+	GITEA-05 and GITEA-06 exist to anchor the deterministic baseline on a real
+	application: they are the two a console-error and a stuck-page trigger can catch
+	without a language model, which is what the judge has to beat.
+
+	Ground truth: tests/fixtures/gitea_bugs/answer_key.json
+*/}}
+<style>
+/* GITEA-03: no hamburger, no Register, no Sign In. Nothing replaces them. */
+@media (max-width: 600px) {
+	#navbar .item[href*="/user/sign_up"],
+	#navbar .item[href*="/user/login"],
+	#navbar-expand-toggle {
+		display: none !important;
+	}
+}
+</style>
+<script>
+(function () {
+	var path = window.location.pathname;
+
+	/* GITEA-04: blank the search input once results have rendered. The query is still
+	   applied -- the listing below is genuinely filtered -- so the page looks right
+	   until you notice the box no longer holds what you typed. */
+	if (path === '/explore/repos') {
+		window.addEventListener('DOMContentLoaded', function () {
+			var box = document.querySelector('input[name="q"]');
+			if (box && box.value) { box.value = ''; }
+		});
+	}
+
+	/* GITEA-05: a genuine uncaught TypeError, thrown asynchronously so it surfaces as a
+	   console error rather than halting page construction. */
+	if (path === '/explore/users') {
+		setTimeout(function () {
+			var missing = null;
+			missing.render();
+		}, 120);
+	}
+
+	/* GITEA-06: a repository home page that never stops mutating, so the DOM-quiescence
+	   wait never succeeds -- the same shape as a spinner that never resolves.
+	   Scoped to /{owner}/{repo} only: two path segments, neither a known top-level
+	   route, so explore/user/admin pages are unaffected. */
+	var parts = path.split('/').filter(Boolean);
+	var reserved = ['explore', 'user', 'admin', 'api', 'assets', 'repo', 'org', 'notifications'];
+	if (parts.length === 2 && reserved.indexOf(parts[0]) === -1) {
+		window.addEventListener('DOMContentLoaded', function () {
+			var pulse = document.createElement('span');
+			pulse.id = 'sync-status';
+			pulse.setAttribute('style', 'position:absolute;left:-9999px;');
+			document.body.appendChild(pulse);
+			setInterval(function () {
+				pulse.textContent = 'syncing ' + Date.now();
+			}, 100);
+		});
+	}
+})();
+</script>

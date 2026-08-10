@@ -31,9 +31,10 @@ for _stream in (sys.stdout, sys.stderr):
         _stream.reconfigure(encoding="utf-8", errors="replace")
 
 from web_testing_agent.annotation import load_trace  # noqa: E402
-from web_testing_agent.envs.types import ActionType  # noqa: E402
 from web_testing_agent.judge import build_windows  # noqa: E402
-from web_testing_agent.reward.gating import GateStats, should_judge  # noqa: E402
+# The same decision the offline scorer and the live reward path use. Two copies would
+# drift, and the drift would silently make this script measure a gate nobody runs.
+from web_testing_agent.reward.gating import GateStats, decide_for_record as decide  # noqa: E402
 
 ANNOTATIONS = REPO_ROOT / "data" / "annotations"
 
@@ -45,23 +46,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--report", type=Path, default=None, help="a scored judge report to check losses against")
     parser.add_argument("--seconds-per-call", type=float, default=8.0)
     return parser.parse_args()
-
-
-def decide(record) -> object:  # noqa: ANN001 - annotation.trace.StepRecord
-    """Gate decision for one recorded step, from the fields the recorder preserved."""
-    raw = record.action.get("type", "NO_OP")
-    try:
-        action_type = ActionType(raw)
-    except ValueError:
-        action_type = ActionType.NO_OP
-    return should_judge(
-        action_type,
-        exec_success=bool(record.exec.get("success", False)),
-        blocked=bool(record.exec.get("left_application")),
-        state_changed=record.state_changed,
-        triggered=record.triggered,
-        settled=record.settled,
-    )
 
 
 def main() -> None:

@@ -128,6 +128,28 @@ def should_judge(
     return GateDecision(True, "unclassified action, judged by default")
 
 
+def decide_for_record(record) -> GateDecision:  # noqa: ANN001 - annotation.trace.StepRecord
+    """The same gate, applied to a *captured* step rather than a live one.
+
+    Exists so the offline scorer, the gate-replay script and the live reward path all
+    ask one function. Two copies of this decision would drift, and the drift would be
+    invisible: the offline number would silently stop describing the shipped pipeline,
+    which is the exact failure mode this project has already hit with window rendering.
+    """
+    try:
+        action_type = ActionType(record.action.get("type", "NO_OP"))
+    except ValueError:
+        action_type = ActionType.NO_OP
+    return should_judge(
+        action_type,
+        exec_success=bool(record.exec.get("success", False)),
+        blocked=bool(record.exec.get("left_application")),
+        state_changed=record.state_changed,
+        triggered=record.triggered,
+        settled=record.settled,
+    )
+
+
 @dataclass(slots=True)
 class GateStats:
     """Running tally, so the saving is reported rather than assumed."""

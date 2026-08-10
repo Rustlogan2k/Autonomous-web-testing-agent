@@ -99,3 +99,57 @@ def test_reset_restarts_the_script():
 def test_an_empty_action_space_never_raises():
     policy = ScriptedPolicy([{"type": "CLICK", "id": "btn-export"}])
     assert policy.act({}, {}) == 0
+
+
+# --- selectors for real applications ----------------------------------------------
+
+
+def _spec(index, action_type, element_id=None, selector=None, **params):
+    from web_testing_agent.envs.types import ActionSpec
+    return ActionSpec(index=index, action_type=action_type, description="",
+                      selector=selector, element_id=element_id, params=params)
+
+
+def test_a_step_can_match_on_visible_label():
+    """Gitea's explore tabs, footer links and repository tab bar carry no ids at all,
+    so a repro path there has to name controls the way a person would."""
+    specs = [
+        _spec(1, ActionType.CLICK, element_id="Repositories"),
+        _spec(2, ActionType.CLICK, element_id="Organizations"),
+    ]
+    assert ScriptedPolicy._match({"type": "CLICK", "text": "Organizations"}, specs) == 2
+
+
+def test_label_matching_is_case_insensitive_and_partial():
+    specs = [_spec(3, ActionType.CLICK, element_id="Need an account? Register now.")]
+    assert ScriptedPolicy._match({"type": "CLICK", "text": "register now"}, specs) == 3
+
+
+def test_nth_disambiguates_repeated_labels():
+    """Regression, found building the Gitea login macro.
+
+    Gitea's login page has two controls reading 'Sign In' — the navbar link and the
+    form's submit button. Taking the first navigated to the page the macro was already
+    on, so the bootstrap reported 3/3 steps completed while leaving the session
+    anonymous: a silent failure that would have made every authenticated finding
+    missing from the corpus, indistinguishable from a judge that found nothing.
+    """
+    specs = [
+        _spec(5, ActionType.CLICK, element_id="Sign In", navigational=True),
+        _spec(10, ActionType.CLICK, element_id="Sign In", navigational=False),
+    ]
+    assert ScriptedPolicy._match({"type": "CLICK", "text": "Sign In"}, specs) == 5
+    assert ScriptedPolicy._match({"type": "CLICK", "text": "Sign In", "nth": 1}, specs) == 10
+
+
+def test_nth_past_the_end_matches_nothing():
+    specs = [_spec(5, ActionType.CLICK, element_id="Sign In")]
+    assert ScriptedPolicy._match({"type": "CLICK", "text": "Sign In", "nth": 3}, specs) is None
+
+
+def test_id_still_wins_where_one_exists():
+    specs = [
+        _spec(1, ActionType.CLICK, element_id="Go", selector='[id="a"]'),
+        _spec(2, ActionType.CLICK, element_id="Go", selector='[id="b"]'),
+    ]
+    assert ScriptedPolicy._match({"type": "CLICK", "id": "b"}, specs) == 2

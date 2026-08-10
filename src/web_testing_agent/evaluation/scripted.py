@@ -87,17 +87,43 @@ class ScriptedPolicy:
 
     @staticmethod
     def _match(step: dict, specs: list[ActionSpec]) -> int | None:
+        """Resolve a scripted step to an action index on the current page.
+
+        Two selectors, because two kinds of target exist. `id` is exact and stable and
+        is right whenever the element has one — the toy fixture gives everything an id
+        precisely so its repro paths cannot drift. Real applications mostly do not:
+        Gitea's explore tabs, footer links and repository tab bar carry no ids at all,
+        so a repro path there has to name the control the way a person would, by its
+        visible label. `text` matches case-insensitively against `element_id`, which is
+        the registry's display label.
+
+        Labels are the weaker selector — a copy edit or a locale change breaks them —
+        so a script that uses `text` should be checked against `misses` after capture,
+        which `capture_traces.py` reports loudly.
+        """
         wanted_type = ActionType(step["type"])
         wanted_id = step.get("id")
+        wanted_text = (step.get("text") or "").strip().lower()
         selector = f'[id="{wanted_id}"]' if wanted_id else None
         constraints = step.get("params") or {}
+        # Which of several identical labels to take, 0-based. Real applications repeat
+        # them constantly: Gitea's login page has two controls reading "Sign In" — the
+        # navbar link and the form's submit button — and taking the first silently
+        # navigated to the page the macro was already on, so the login "succeeded"
+        # three steps out of three while leaving the session anonymous.
+        skip = int(step.get("nth", 0))
 
         for spec in specs:
             if spec.action_type is not wanted_type:
                 continue
             if selector is not None and spec.selector != selector:
                 continue
+            if wanted_text and wanted_text not in (spec.element_id or "").strip().lower():
+                continue
             if any(spec.params.get(key) != value for key, value in constraints.items()):
+                continue
+            if skip:
+                skip -= 1
                 continue
             return spec.index
         return None

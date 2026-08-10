@@ -208,10 +208,18 @@ def _build_page_view(url: str, html: str) -> PageView:
         tag = match.group(0)
         ident = _ID_ATTR.search(tag) or _TEXT_ATTR.search(tag)
         name = ident.group(1) if ident else ""
-        if not name or _AUTO_ID.match(name):
-            label = f"{match.group('tag')} (unnamed)"
-        else:
+        if name and not _AUTO_ID.match(name):
             label = f"{match.group('tag')}#{name}"
+        else:
+            # Fall back to what the control *says* before giving up and calling it
+            # unnamed. Collapsing every id-less element into "(unnamed) xN" was added to
+            # stop Gitea's 37 `_aria_auto_id_N` menu entries flooding the budget, but it
+            # also erased the identity of controls that have no id and plenty of meaning.
+            # Measured against seeded ground truth: GITEA-03 hides Register and Sign In
+            # at 375px, and the window said only "now hidden : a (unnamed) x41" — the
+            # judge could not possibly know which links had gone.
+            text = _hidden_label(html, match.start())
+            label = f"{match.group('tag')} {text!r}" if text else f"{match.group('tag')} (unnamed)"
         hidden_counts[label] = hidden_counts.get(label, 0) + 1
     hidden = [
         label if count == 1 else f"{label} x{count}"
@@ -230,6 +238,35 @@ def _build_page_view(url: str, html: str) -> PageView:
         visible_links=_visible_links(html),
         values=_field_values(html),
     )
+
+
+_UNCLOSED_TAG = re.compile(r"<[^>]*$")
+_HIDDEN_LABEL_MAX = 28
+# How far past an opening tag to look for the control's own text. Long enough for a
+# label wrapped in an icon span, short enough not to swallow a whole nav block.
+_HIDDEN_LABEL_WINDOW = 400
+
+
+def _hidden_label(html: str, start: int) -> str:
+    """The visible text of a control that has no usable id.
+
+    Read from the markup immediately following the opening tag, with any nested markup
+    (Gitea wraps most nav labels in an `<svg>` icon) stripped out. Returns "" when the
+    control genuinely has no text, so a decorative icon link stays "(unnamed)" rather
+    than acquiring a misleading name.
+    """
+    segment = html[start : start + _HIDDEN_LABEL_WINDOW]
+    body = segment.split(">", 1)[1] if ">" in segment else ""
+    for closer in ("</a", "</button", "</span"):
+        if closer in body:
+            body = body.split(closer, 1)[0]
+    # Drop a tag the fixed-size window cut in half before stripping complete ones:
+    # `_TAG_STRIP` needs a closing `>`, so a severed `<path d="M2 2.75C2 1.784…` survives
+    # it and is rendered as if it were the control's label. Gitea wraps every nav label
+    # in an inline SVG, so this is the common case rather than an edge one.
+    body = _UNCLOSED_TAG.sub("", body)
+    text = " ".join(_TAG_STRIP.sub(" ", body).split())
+    return text[:_HIDDEN_LABEL_MAX]
 
 
 def _diff_lines(before: list[str], after: list[str]) -> tuple[list[str], list[str]]:
@@ -367,6 +404,18 @@ def render_step(record: StepRecord, index: int) -> str:
     became_shown = [item for item in before.hidden if item not in after.hidden]
     if became_hidden:
         lines.append(f"  now hidden : {', '.join(became_hidden)}")
+        # The complement of "links still reachable", and the half that carries a
+        # *positive* claim. Listing what survives lets a judge rule a hide harmless;
+        # ruling it harmful requires noticing that something is missing from a list,
+        # which is an inference from absence and one that models reliably fail to make.
+        # Measured against seeded ground truth: GITEA-03 hides Register and Sign In at
+        # 375px, the surviving-links line correctly stopped naming them, and the judge
+        # still returned "not a bug" — it had never been told they were gone.
+        # Suppressed across navigations, where every old link vanishes by definition.
+        if not navigated:
+            lost = [item for item in before.visible_links if item not in set(after.visible_links)]
+            if lost:
+                lines.append(f"  NO LONGER reachable: {'; '.join(lost[:_LIST_MAX])}")
         # Hiding something is only a defect relative to what is left. Responsive designs
         # routinely swap nav links for a menu, and a pure delta cannot distinguish that
         # from removing the last route to a flow — measured on BUG-08, where the judge
@@ -377,7 +426,15 @@ def render_step(record: StepRecord, index: int) -> str:
     if became_shown:
         lines.append(f"  now shown  : {', '.join(became_shown)}")
 
-    console = record.after.get("console_errors") or []
+    # Console messages *and* uncaught exceptions. Playwright reports the two on
+    # different events — `console` carries `console.error(...)`, `pageerror` carries a
+    # genuine uncaught throw — and this renderer only ever read the first. The
+    # deterministic trigger has always combined both (`detect_bug_signals`), so an
+    # uncaught TypeError fired the trigger while being completely invisible to the
+    # judge. Measured against seeded ground truth on Gitea: GITEA-05 is a real uncaught
+    # TypeError that the triggers caught and the judge missed, because no line about it
+    # ever reached the window. The most classic bug class there is was unjudgeable.
+    console = list(record.after.get("console_errors") or []) + list(record.after.get("page_errors") or [])
     errors = [
         f"{event.get('status') or 'request failed'} {_elide(str(event.get('url') or ''), _URL_CHARS_MAX)}"
         for event in (record.after.get("network") or [])

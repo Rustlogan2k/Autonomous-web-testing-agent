@@ -1,0 +1,102 @@
+{
+  "site": "Gitea 1.21 (gitea/gitea:1.21) with seeded defects",
+  "version": 1,
+  "purpose": "Ground truth on a REAL application. Every judge accuracy figure in this project so far comes from a 5-page fixture whose bugs were authored alongside the judge; on Gitea there was no ground truth at all, so precision rested on a human reading a handful of verdicts. These six defects are injected through Gitea's own supported customization path ($GITEA_CUSTOM/templates) rather than a fork, so stock behaviour is restored by deleting a directory and the application under test is otherwise genuinely unmodified.",
+  "entry_point": "http://localhost:3000/",
+  "install": "python scripts/seed_gitea_bugs.py --install",
+  "detectability_legend": {
+    "deterministic": "a console-error / HTTP-error / stuck-page trigger fires; reachable without a language model",
+    "llm_required": "every page returns 200, logs nothing and settles; only semantic judgment can find it",
+    "cross_step": "evidence spans more than one transition, so a single before/after pair cannot contain it",
+    "viewport": "only observable at a non-default viewport width"
+  },
+  "bugs": [
+    {
+      "id": "GITEA-01",
+      "title": "The Explore 'Organizations' tab opens the user listing",
+      "pages": ["/explore/repos", "/explore/users"],
+      "type": "broken_navigation",
+      "severity": 0.5,
+      "detectability": ["llm_required"],
+      "repro": "From /explore/repos, click the 'Organizations' tab in the explore navbar.",
+      "expected": "Navigate to /explore/organizations and list organizations.",
+      "actual": "Navigates to /explore/users and lists user accounts. The tab label and its destination disagree.",
+      "expected_triggers": [],
+      "note": "Seeded on the Organizations tab rather than Users deliberately: breaking the Users tab would make /explore/users unreachable by following links, and GITEA-05 lives there. A seeded bug no explorer can reach is a permanent miss dressed up as a judge failure."
+    },
+    {
+      "id": "GITEA-02",
+      "title": "'Export results' does nothing",
+      "pages": ["/explore/repos", "/explore/users", "/explore/organizations"],
+      "type": "dead_control",
+      "severity": 0.5,
+      "detectability": ["llm_required"],
+      "repro": "On any explore page, click the 'Export results' button in the navbar.",
+      "expected": "Produce an export, or at minimum issue a request or show feedback.",
+      "actual": "No navigation, no network request, no DOM change. The control has no handler at all.",
+      "expected_triggers": []
+    },
+    {
+      "id": "GITEA-03",
+      "title": "Registration and sign-in become unreachable on a narrow viewport",
+      "pages": ["/", "/explore/repos"],
+      "type": "ui_regression",
+      "severity": 0.7,
+      "detectability": ["llm_required", "viewport"],
+      "repro": "Resize the viewport to 375px on any page.",
+      "expected": "Sign In and Register stay reachable, directly or via a menu control.",
+      "actual": "Both navbar links and the mobile menu toggle are hidden with nothing replacing them, so no route to an account remains at that width.",
+      "expected_triggers": []
+    },
+    {
+      "id": "GITEA-04",
+      "title": "The repository search box is cleared after searching",
+      "pages": ["/explore/repos"],
+      "type": "broken_flow",
+      "severity": 0.4,
+      "detectability": ["llm_required", "cross_step"],
+      "repro": "On /explore/repos, type a keyword into the search box and submit.",
+      "expected": "The results are filtered and the search box still shows the keyword that produced them.",
+      "actual": "The results are filtered correctly but the box is emptied, so the page no longer states what it is showing and refining the query means retyping it.",
+      "expected_triggers": []
+    },
+    {
+      "id": "GITEA-05",
+      "title": "Uncaught TypeError on the user listing",
+      "pages": ["/explore/users"],
+      "type": "js_error",
+      "severity": 0.6,
+      "detectability": ["deterministic"],
+      "repro": "Open /explore/users and wait for scripts to run.",
+      "expected": "The page renders without console errors.",
+      "actual": "Throws \"Cannot read properties of null (reading 'render')\" about 120ms after load.",
+      "expected_triggers": ["console_error"]
+    },
+    {
+      "id": "GITEA-06",
+      "title": "A repository home page never stops mutating",
+      "pages": ["/{owner}/{repo}"],
+      "type": "hang",
+      "severity": 0.6,
+      "detectability": ["deterministic"],
+      "repro": "Open any repository home page, e.g. /tester/notes.",
+      "expected": "The DOM settles shortly after load.",
+      "actual": "A timer rewrites an element every 100ms forever, so DOM quiescence is never reached — the same signal as a spinner that never resolves.",
+      "expected_triggers": ["slow_response"]
+    }
+  ],
+  "false_positive_watch": [
+    "Anonymous users are redirected to /user/login when they activate any write control (New Issue, New Repository, Fork, Star). That is correct behaviour, not a broken link.",
+    "Repository sub-tabs with empty collections (forks, stars, watchers, packages) render an empty list or an empty-state sentence. An empty list is a correct answer.",
+    "Footer links to docs.gitea.com, github.com and about.gitea.com leave the application; the harness refuses or discards them and the link itself is fine.",
+    "The footer language selector reloads the current page under a different locale, which correctly changes most visible text.",
+    "/api/swagger is a vendored third-party console; its own widget behaviour is not Gitea application behaviour.",
+    "Star/fork/watch counters reading 0 are correct for a repository nobody has starred."
+  ],
+  "notes": [
+    "Deterministic ceiling is 2/6 (GITEA-05, GITEA-06). That is the number the LLM judge has to beat on a real application, and it is the direct analogue of the toy site's 3/10.",
+    "Four of the six are llm_required by construction: every page involved returns HTTP 200, logs nothing to the console and settles normally, so no trigger in reward/functional_triggers.py can fire on them.",
+    "GITEA-03 requires a RESIZE_VIEWPORT action and GITEA-04 requires TYPE then submit then observe, so recall on this key also measures whether the explorer reaches the states at all — report exploration coverage alongside judge recall rather than conflating them.",
+    "GITEA-01 is deliberately close to a false positive: the destination is a real, working page, so the only thing wrong is that it disagrees with the label. A judge that only checks 'did the click go somewhere' will miss it."
+  ]
+}

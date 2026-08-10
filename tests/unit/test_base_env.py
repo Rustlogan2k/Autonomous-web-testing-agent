@@ -280,3 +280,25 @@ def test_no_new_tab_means_nothing_happens():
     session, _ = _session("http://localhost:4280/app", [])
     session.mark_pages()
     assert session.take_new_page(accept=_in_app) == (None, "")
+
+
+# --- session bootstrap ------------------------------------------------------------
+
+
+def test_setup_actions_default_to_none():
+    env = _env()
+    assert env.setup_actions == []
+    assert env._bootstrap_steps == 0
+
+
+def test_setup_actions_are_stored_for_replay_each_episode():
+    """Every episode starts from a fresh browser context, so the macro has to run on
+    every reset rather than once per env."""
+    steps = [{"type": "TYPE", "id": "user_name", "params": {"value": "tester"}}]
+    env = WebFunctionalEnv(base_url="http://localhost:3000/", max_steps=5, setup_actions=steps)
+    assert env.setup_actions == steps
+
+
+def test_a_bootstrap_with_no_actions_does_nothing():
+    env = _env()
+    assert env._run_setup_actions() == 0

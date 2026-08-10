@@ -1,0 +1,15 @@
+{
+  "target": "Gitea 1.21 seeded by scripts/setup_gitea.py",
+  "base_url": "http://localhost:3000/user/login",
+  "purpose": "Session bootstrap for WebFunctionalEnv(setup_actions=...). Replayed at the start of every episode, before the first observation, and not counted against the step budget.",
+  "why": [
+    "Every episode starts from a fresh browser context, so without this the agent must re-discover and re-complete the login form each time — and random exploration essentially never fills three fields and submits, so it never gets past it at all.",
+    "That is not only an exploration cost. Most of Gitea's declared constraints (services/forms/user_form.go) govern forms that only exist behind a session, so an anonymous corpus cannot exercise them, and the declared-constraints half of source grounding cannot be tested against it."
+  ],
+  "credentials": "Matches scripts/setup_gitea.py (ADMIN_USER / ADMIN_PASSWORD). These are throwaway credentials for a local disposable container and are deliberately in the repo so the bootstrap is reproducible; never point this file at anything real.",
+  "setup_actions": [
+    {"type": "TYPE", "id": "user_name", "params": {"category": "literal", "value": "tester"}},
+    {"type": "TYPE", "id": "password", "params": {"category": "literal", "value": "TestPassw0rd!"}},
+    {"type": "CLICK", "text": "Sign In", "nth": 1}
+  ]
+}

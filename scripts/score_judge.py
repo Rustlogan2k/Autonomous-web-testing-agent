@@ -52,6 +52,7 @@ from web_testing_agent.judge import (  # noqa: E402
     summarize,
 )
 from web_testing_agent.intake import ApplicationProfile, window_paths  # noqa: E402
+from web_testing_agent.reward.gating import GateStats, decide_for_record  # noqa: E402
 from web_testing_agent.judge.scoring import is_grounded  # noqa: E402
 from web_testing_agent.judge.validate import summarize_issues, validate_corpus  # noqa: E402
 from web_testing_agent.judge.ollama import (  # noqa: E402
@@ -89,6 +90,13 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--keep-idle", action="store_true", help="also judge idle NO_OP steps")
     parser.add_argument(
+        "--no-gate", dest="gate", action="store_false",
+        help="judge every window instead of only those the live reward path would. "
+             "Use to reproduce a pre-2026-08-10 ungated number; the default matches "
+             "what actually ships.",
+    )
+    parser.set_defaults(gate=True)
+    parser.add_argument(
         "--profile", type=Path, default=None,
         help="Application Profile JSON to ground the judge in (data/profiles/<app>.json). "
              "Omit for the ungrounded arm of the A/B. The profile is sliced per window "
@@ -97,6 +105,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true", help="render prompts, validate them, and exit without calling a model")
     parser.add_argument("--ignore-window-issues", action="store_true",
                         help="score even when the rendered windows fail validation")
+    parser.add_argument(
+        "--answer-key", type=Path, default=None,
+        help="ground truth for this corpus (default: the toy site's). Point at "
+             "tests/fixtures/gitea_bugs/answer_key.json to score a real target.",
+    )
     parser.add_argument("--out", type=Path, default=None)
     return parser.parse_args()
 
@@ -120,6 +133,33 @@ def score_corpus(name: str, path: Path, judge, args: argparse.Namespace, profile
     labels = {int(k): v for k, v in (meta.get("episode_labels") or {}).items()}
     records = list(load_trace(path))
     windows = build_windows(records, window_steps=args.window, skip_idle=not args.keep_idle)
+
+    # The live reward path judges only what the gate lets through, so an offline score
+    # that judges everything is measuring a pipeline that is not the one shipped — and
+    # measuring it *worse*, since the gate's whole purpose is to decline windows whose
+    # verdict is knowable without asking. Gating is therefore the default here, and
+    # `--no-gate` is what you pass to reproduce a historical ungated number.
+    gate_stats = GateStats()
+    gate_skipped: list[dict] = []
+    if args.gate:
+        by_step = {r.global_step: r for r in records}
+        kept = []
+        for window in windows:
+            decision = decide_for_record(by_step[window.focus_global_step])
+            gate_stats.record(decision)
+            if decision.judge:
+                kept.append(window)
+            else:
+                gate_skipped.append(
+                    {"episode": window.episode, "global_step": window.focus_global_step,
+                     "reason": decision.reason}
+                )
+        logger.info(
+            "{}: gate passes {}/{} windows ({:.0%}); {} skipped",
+            name, gate_stats.judged, gate_stats.total, gate_stats.judged_fraction, gate_stats.skipped,
+        )
+        windows = kept
+
     if args.limit:
         windows = windows[: args.limit]
 
@@ -182,7 +222,7 @@ def score_corpus(name: str, path: Path, judge, args: argparse.Namespace, profile
 
     elapsed = time.monotonic() - started
     report = score(judgments, corpus=name, judge=getattr(judge, "name", "?"))
-    answer_key = json.loads(ANSWER_KEY.read_text(encoding="utf-8"))
+    answer_key = json.loads((args.answer_key or ANSWER_KEY).read_text(encoding="utf-8"))
 
     print("\n" + "=" * 72)
     print(summarize(report, answer_key))
@@ -193,6 +233,14 @@ def score_corpus(name: str, path: Path, judge, args: argparse.Namespace, profile
             f"(mean {profile_chars // max(profiled_windows, 1)} chars) "
             f"[{profile.name}, provenance={profile.provenance}]"
         )
+    if args.gate:
+        print(
+            f"judge-call gate       : {gate_stats.judged}/{gate_stats.total} windows judged "
+            f"({gate_stats.judged_fraction:.0%}), {gate_stats.skipped} skipped   "
+            f"<- matches the live reward path"
+        )
+    else:
+        print("judge-call gate       : DISABLED (--no-gate) — this is not what ships")
     print("=" * 72)
 
     return {
@@ -200,6 +248,11 @@ def score_corpus(name: str, path: Path, judge, args: argparse.Namespace, profile
         "window_steps": args.window,
         "skip_idle": not args.keep_idle,
         "wall_clock_s": round(elapsed, 1),
+        # Recorded so a gated score can never be quoted as an ungated one. The two
+        # differ by design and the difference is the point of the gate.
+        "gated": args.gate,
+        "gate": gate_stats.to_dict() if args.gate else {"enabled": False},
+        "gate_skipped": gate_skipped,
         # Recorded on every report so a grounded number can never be quoted as an
         # ungrounded one, and a hand-authored profile can never be quoted as profiler
         # output. Both mistakes are otherwise invisible in the result.

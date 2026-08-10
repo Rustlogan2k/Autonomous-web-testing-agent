@@ -174,8 +174,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--base-url", default=None,
         help="target an already-running application instead of serving the toy fixture. "
-             "Forces --only random: the repro scripts encode the toy site's answer key "
-             "and are meaningless anywhere else.",
+             "Without --scripts this forces --only random, since the built-in repro "
+             "paths encode the toy site's answer key and mean nothing elsewhere.",
+    )
+    parser.add_argument(
+        "--scripts", type=Path, default=None,
+        help="repro paths for a target that is not the toy fixture, e.g. "
+             "tests/fixtures/gitea_bugs/repro_scripts.json. Supplying this is what makes "
+             "a *scripted* corpus — and therefore a recall figure — possible against a "
+             "real application rather than only a false-positive rate.",
     )
     parser.add_argument("--random-episodes", type=int, default=4)
     parser.add_argument("--random-steps", type=int, default=40, help="max steps per random episode")
@@ -186,9 +193,20 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def load_scripts(args: argparse.Namespace) -> list[dict]:
+    """The repro paths to walk: the built-in toy ones, or a target's own file."""
+    if args.scripts is None:
+        return REPRO_SCRIPTS
+    payload = json.loads(args.scripts.read_text(encoding="utf-8"))
+    scripts = payload["scripts"] if isinstance(payload, dict) else payload
+    logger.info("Loaded {} repro script(s) from {}", len(scripts), args.scripts)
+    return scripts
+
+
 def capture_scripted(base_url: str, args: argparse.Namespace) -> dict:
     """One episode per script, all into a single trace, with per-episode ground truth."""
-    longest = max(len(script["steps"]) for script in REPRO_SCRIPTS)
+    scripts = load_scripts(args)
+    longest = max(len(script["steps"]) for script in scripts)
     recorder = TraceRecorder(
         args.out,
         f"{args.run_id}-scripted",
@@ -200,7 +218,7 @@ def capture_scripted(base_url: str, args: argparse.Namespace) -> dict:
     episode_labels: dict[str, dict] = {}
     fidelity: list[dict] = []
     try:
-        for offset, script in enumerate(REPRO_SCRIPTS):
+        for offset, script in enumerate(scripts):
             policy = ScriptedPolicy(script["steps"], name=script["name"])
             # Size the episode to the script. A shared env sized to the longest script
             # would pad every shorter one with idle NO_OP steps — 77 of 110 steps in the
@@ -268,10 +286,16 @@ def main() -> None:
         # An external target has no answer key, so there is nothing for the scripted
         # corpus to be scripted against; forcing it here beats silently producing ten
         # episodes of NO_OP against selectors that do not exist.
-        if args.only == "scripted":
-            raise SystemExit("--only scripted is toy-site specific; use --only random with --base-url")
+        if args.only == "scripted" and args.scripts is None:
+            raise SystemExit(
+                "--only scripted needs repro paths for this target. Pass --scripts "
+                "(e.g. tests/fixtures/gitea_bugs/repro_scripts.json), or use --only random."
+            )
         logger.info("Capturing against external target {}", args.base_url)
-        produced.append(capture_random(args.base_url, args))
+        if args.only in ("scripted", "both") and args.scripts is not None:
+            produced.append(capture_scripted(args.base_url, args))
+        if args.only in ("random", "both"):
+            produced.append(capture_random(args.base_url, args))
     else:
         if not TOY_SITE.is_dir():
             raise SystemExit(f"Toy site fixture not found at {TOY_SITE}")

@@ -33,6 +33,7 @@ class WebFunctionalEnv(WebTestingEnv):
         reward_model: FunctionalRewardModel | None = None,
         reward_weights: FunctionalRewardWeights | None = None,
         repetition_window: int = 20,
+        setup_actions: list[dict] | None = None,
     ) -> None:
         super().__init__(
             base_url=base_url,
@@ -40,6 +41,7 @@ class WebFunctionalEnv(WebTestingEnv):
             headless=headless,
             render_mode=render_mode,
             repetition_window=repetition_window,
+            setup_actions=setup_actions,
         )
         self.reward_model = reward_model or NullRewardModel()
         self.reward_weights = reward_weights or FunctionalRewardWeights()

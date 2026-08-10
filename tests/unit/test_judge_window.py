@@ -475,7 +475,11 @@ def test_framework_generated_hidden_ids_are_collapsed():
         f'<a id="_aria_auto_id_{i}" href="/x" data-hidden="true">m</a>' for i in range(20)
     ) + '<a id="cta-signup" href="/s" data-hidden="true">Sign up</a></body></html>'
     view = page_view("/p", html)
-    assert "a (unnamed) x20" in view.hidden
+    # Still one line for the twenty, which is the point — but labelled by what they say
+    # rather than anonymised. Collapsing protects the budget; anonymising destroyed the
+    # signal, and against seeded ground truth on Gitea that cost GITEA-03: Register and
+    # Sign In disappeared at 375px and the window said only "a (unnamed) x41".
+    assert "a 'm' x20" in view.hidden
     assert "a#cta-signup" in view.hidden, "a meaningful id must survive the collapse"
     assert len(view.hidden) == 2
 
@@ -589,3 +593,68 @@ def test_a_new_tab_click_that_did_change_the_page_reports_the_change(tmp_path):
     text = render_step(corpus.record(1, PLAIN, after, action=_NEW_TAB_ACTION), 1)
     assert "Extra" in text
     assert "NO OBSERVABLE CHANGE" not in text
+
+
+# --- observation defects found by seeded ground truth on Gitea --------------------
+
+
+def test_uncaught_exceptions_reach_the_window(tmp_path):
+    """Regression, GITEA-05.
+
+    Playwright reports console.error() on `console` and a genuine uncaught throw on
+    `pageerror`. The deterministic trigger has always combined both; this renderer read
+    only the first, so an uncaught TypeError fired the trigger while being completely
+    invisible to the judge. The most classic bug class there is was unjudgeable.
+    """
+    corpus = _Corpus(tmp_path)
+    record = corpus.record(
+        1, PLAIN, PLAIN,
+        after={"url": "/a", "path": "/a", "html": corpus.blob(PLAIN),
+               "console_errors": [], "page_errors": ["TypeError: cannot read 'render' of null"],
+               "network": []},
+    )
+    text = render_step(record, 1)
+    assert "TypeError" in text
+
+
+def test_console_and_page_errors_are_both_shown(tmp_path):
+    corpus = _Corpus(tmp_path)
+    record = corpus.record(
+        1, PLAIN, PLAIN,
+        after={"url": "/a", "path": "/a", "html": corpus.blob(PLAIN),
+               "console_errors": ["console side"], "page_errors": ["thrown side"],
+               "network": []},
+    )
+    text = render_step(record, 1)
+    assert "console side" in text and "thrown side" in text
+
+
+def test_a_hidden_link_is_named_by_its_text_when_it_has_no_id():
+    """Regression, GITEA-03. Collapsing every id-less element into '(unnamed) xN'
+    protected the budget from Gitea's 37 _aria_auto_id_N entries, and in doing so
+    erased which links a viewport change had removed."""
+    html = (
+        '<html><body>'
+        '<a href="/user/sign_up" data-hidden="true"><svg viewBox="0 0 16 16">'
+        '<path d="M10.5 5a2.5 2.5 0 1 0-5 0"/></svg> Register</a>'
+        '<a href="/user/login" data-hidden="true">Sign In</a>'
+        '</body></html>'
+    )
+    hidden = page_view("/p", html).hidden
+    assert any("Register" in item for item in hidden)
+    assert any("Sign In" in item for item in hidden)
+
+
+def test_a_hidden_label_never_leaks_markup():
+    """The fixed-size lookahead can sever a tag, and `_TAG_STRIP` needs a closing '>'.
+    Gitea wraps every nav label in an inline SVG, so a severed <path d="..."> was
+    rendered as though it were the control's name."""
+    html = '<html><body><a href="/x" data-hidden="true"><svg><path d="' + "M2 2.75C2 1.784 " * 60 + '"/></svg></a></body></html>'
+    for item in page_view("/p", html).hidden:
+        assert "<" not in item and "path d=" not in item
+
+
+def test_a_decorative_hidden_link_stays_unnamed():
+    """Inventing a name for a control that has none would be worse than admitting it."""
+    html = '<html><body><a href="/x" data-hidden="true"><svg><circle r="2"/></svg></a></body></html>'
+    assert any("(unnamed)" in item for item in page_view("/p", html).hidden)

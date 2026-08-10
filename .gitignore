@@ -59,6 +59,12 @@ data/training_logs/
 data/annotations/*/
 !data/annotations/toy-scripted/
 !data/annotations/toy-random/
+# The seeded-Gitea scripted corpus (~680 KB) is kept for the same reason and a
+# stronger one: it is the only ground-truth measurement against a real application,
+# and regenerating it needs Docker, a seeded Gitea and a template install rather than
+# just serving a folder. Its answer key and the defect templates are committed beside
+# it, so the 4/6-vs-2/6 result is checkable from a clone without running anything.
+!data/annotations/gseed-scripted/
 
 # Screenshots are captured for possible visual work but the judge is text-only and
 # never reads them -- 2.3 MB of the toy corpora's 3 MB.

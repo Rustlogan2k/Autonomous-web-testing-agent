@@ -1,0 +1,356 @@
+{
+  "run_id": "gseed",
+  "judge": "ollama/gpt-oss:120b-cloud",
+  "window_steps": 6,
+  "grounded": false,
+  "profile_path": null,
+  "usage": {
+    "model": "ollama/gpt-oss:120b-cloud",
+    "calls": 14,
+    "prompt_tokens": 27814,
+    "output_tokens": 7054,
+    "wall_clock_s": 111.1,
+    "seconds_per_call": 7.93,
+    "num_ctx": 8192,
+    "prompt_style": "detailed",
+    "prompts_over_context": 0,
+    "schema_ignored": 0
+  },
+  "corpora": {
+    "scripted": {
+      "corpus": "scripted",
+      "judge": "ollama/gpt-oss:120b-cloud",
+      "windows": 14,
+      "failed_calls": 0,
+      "positive_verdicts": 5,
+      "episodes_scored": 7,
+      "detected": {
+        "GITEA-01": [
+          1
+        ],
+        "GITEA-02": [
+          5
+        ],
+        "GITEA-05": [
+          19
+        ],
+        "GITEA-06": [
+          24,
+          28
+        ]
+      },
+      "missed": [
+        "GITEA-03",
+        "GITEA-04"
+      ],
+      "recall": 0.667,
+      "control_windows": 2,
+      "control_positives": 0,
+      "false_positive_rate": 0.0,
+      "false_positive_episodes": {},
+      "unattributed_windows": 0,
+      "unattributed_positives": 0,
+      "unattributed_rate": 0.0,
+      "bug_windows": 12,
+      "bug_positives": 5,
+      "discrimination": 0.417,
+      "checked_positives": 5,
+      "grounded_positives": 5,
+      "evidence_grounded": 1.0,
+      "window_steps": 6,
+      "skip_idle": true,
+      "wall_clock_s": 111.1,
+      "gated": true,
+      "gate": {
+        "steps": 16,
+        "judged": 14,
+        "skipped": 2,
+        "judged_fraction": 0.875,
+        "reasons": {
+          "deterministic trigger fired": 8,
+          "the page changed": 5,
+          "activated a control that promises an effect": 1,
+          "REFRESH promises no effect and changed nothing": 1,
+          "SCROLL promises no effect and changed nothing": 1
+        }
+      },
+      "gate_skipped": [
+        {
+          "episode": 7,
+          "global_step": 31,
+          "reason": "REFRESH promises no effect and changed nothing"
+        },
+        {
+          "episode": 7,
+          "global_step": 32,
+          "reason": "SCROLL promises no effect and changed nothing"
+        }
+      ],
+      "profile": null,
+      "judgments": [
+        {
+          "episode": 1,
+          "global_step": 1,
+          "script": "organizations_tab_opens_user_listing",
+          "expected_bugs": [
+            "GITEA-01"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "broken_navigation",
+          "severity": 1.0,
+          "confidence": 0.95,
+          "step": 1,
+          "observed": "Clicking on the 'Organizations' link navigated from /explore/repos to /explore/users",
+          "expected": "Clicking on 'Organizations' should navigate to the Organizations listing page (e.g., /explore/organizations)",
+          "discrepancy": "The navigation target is incorrect; the link leads to the Users page instead of the Organizations page",
+          "evidence": "url        : /explore/repos -> /explore/users",
+          "error": null
+        },
+        {
+          "episode": 2,
+          "global_step": 5,
+          "script": "export_results_is_dead",
+          "expected_bugs": [
+            "GITEA-02"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "dead_control",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "step": 1,
+          "observed": "Clicking Export results produced no observable change; the page remained byte\u2011identical.",
+          "expected": "Clicking Export results should trigger an export action (e.g., start a file download, send a request, or navigate), resulting in some visible or network effect.",
+          "discrepancy": "The Export results control promises to export data but resulted in no navigation, no request, and no visible change.",
+          "evidence": "NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action",
+          "error": null
+        },
+        {
+          "episode": 3,
+          "global_step": 9,
+          "script": "account_unreachable_on_narrow_viewport",
+          "expected_bugs": [
+            "GITEA-03"
+          ],
+          "grounded": null,
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 0.0,
+          "step": 1,
+          "observed": "Resizing the viewport to mobile hid the top navigation items (Explore, Help, Register, etc.) and displayed language options (English, Espa\u00f1ol, Fran\u00e7ais, Italiano); the URL remained unchanged.",
+          "expected": "On a responsive site, changing to a mobile viewport should adjust the layout, hiding or relocating navigation items and showing appropriate elements; no navigation or errors should occur.",
+          "discrepancy": "none",
+          "evidence": "now hidden : a 'Explore', a 'Help', a 'Register', a (unnamed)\nnow shown  : a 'English', a 'Espa\u00f1ol', a 'Fran\u00e7ais', a 'Italiano'",
+          "error": null
+        },
+        {
+          "episode": 3,
+          "global_step": 11,
+          "script": "account_unreachable_on_narrow_viewport",
+          "expected_bugs": [
+            "GITEA-03"
+          ],
+          "grounded": null,
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 3,
+          "observed": "Resizing the viewport to desktop made the previously hidden navigation links (Explore, Help, Register, etc.) visible again and hid the language selector links (English, Espa\u00f1ol, Fran\u00e7ais, Italiano).",
+          "expected": "A correct application should adjust its layout when the viewport size changes, displaying desktop navigation elements and hiding mobile\u2011specific ones.",
+          "discrepancy": "none",
+          "evidence": "now shown  : a 'Explore', a 'Help', a 'Register', a (unnamed)",
+          "error": null
+        },
+        {
+          "episode": 4,
+          "global_step": 14,
+          "script": "search_box_cleared_after_searching",
+          "expected_bugs": [
+            "GITEA-04"
+          ],
+          "grounded": null,
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 0.0,
+          "step": 1,
+          "observed": "The search input field 'q' changed from empty to containing 'search query'; the URL remained /explore/repos and no navigation or network request occurred.",
+          "expected": "Typing into a text/search field should update the field's value without causing navigation or network activity.",
+          "discrepancy": "none",
+          "evidence": "form state : q: empty -> filled",
+          "error": null
+        },
+        {
+          "episode": 4,
+          "global_step": 15,
+          "script": "search_box_cleared_after_searching",
+          "expected_bugs": [
+            "GITEA-04"
+          ],
+          "grounded": null,
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 0.0,
+          "step": 2,
+          "observed": "Clicking Search navigated to /explore/repos?sort=recentupdate&language=&q=search+query&only_show_relevant=false and displayed \"No matching repositories found.\"",
+          "expected": "A search should navigate to the results page with the query parameters and display matching repositories (or a no\u2011results message).",
+          "discrepancy": "none",
+          "evidence": "url        : /explore/repos -> /explore/repos?sort=recentupdate&language=&q=search+query&only_show_relevant=false",
+          "error": null
+        },
+        {
+          "episode": 5,
+          "global_step": 19,
+          "script": "user_listing_throws",
+          "expected_bugs": [
+            "GITEA-05"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "js_error",
+          "severity": 1.0,
+          "confidence": 0.9,
+          "step": 1,
+          "observed": "Clicking 'Users' navigated to /explore/users but produced a console error: Cannot read properties of null (reading 'render')",
+          "expected": "Clicking 'Users' should navigate to /explore/users without any uncaught JavaScript errors",
+          "discrepancy": "A JavaScript error appeared in the console after the navigation, which a correct application would not generate",
+          "evidence": "console    : Cannot read properties of null (reading 'render')",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 24,
+          "script": "repository_home_never_settles",
+          "expected_bugs": [
+            "GITEA-06"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "hang",
+          "severity": 1.0,
+          "confidence": 0.9,
+          "step": 1,
+          "observed": "After clicking the repository link, the URL changed to /tester/notes, the title and page content updated, but the page remained mutating after 3.2 seconds (NOT SETTLED).",
+          "expected": "The page should finish loading and become settled (no ongoing DOM mutations) shortly after navigation.",
+          "discrepancy": "The page did not become settled within a reasonable time, indicating a possible hang or unfinished script execution.",
+          "evidence": "NOT SETTLED: the page was still mutating after 3.2s",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 25,
+          "script": "repository_home_never_settles",
+          "expected_bugs": [
+            "GITEA-06"
+          ],
+          "grounded": null,
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 0.0,
+          "step": 2,
+          "observed": "No observable change occurred; the URL remained /tester/notes and the page continued mutating after the NO_OP action.",
+          "expected": "A NO_OP action should not cause any visible changes; the page may still be loading, which is acceptable.",
+          "discrepancy": "none",
+          "evidence": "NOT SETTLED: the page was still mutating after 3.0s",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 26,
+          "script": "repository_home_never_settles",
+          "expected_bugs": [
+            "GITEA-06"
+          ],
+          "grounded": null,
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "step": 3,
+          "observed": "NO_OP action performed; URL remained /tester/notes; page continued mutating after 3.0\u202fs with no observable change in text, form state, or layout summarized",
+          "expected": "A NO_OP should not alter the page; URL should stay the same and no visible changes are required",
+          "discrepancy": "none",
+          "evidence": "action     : NO_OP",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 27,
+          "script": "repository_home_never_settles",
+          "expected_bugs": [
+            "GITEA-06"
+          ],
+          "grounded": null,
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 0.0,
+          "step": 4,
+          "observed": "NO_OP action produced no observable change; URL remained /tester/notes and the page continued mutating",
+          "expected": "A NO_OP should not cause any visible change; the page may remain in a mutating state without error",
+          "discrepancy": "none",
+          "evidence": "action     : NO_OP\nurl        : /tester/notes (unchanged)\nNOT SETTLED: the page was still mutating after 3.0s",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 28,
+          "script": "repository_home_never_settles",
+          "expected_bugs": [
+            "GITEA-06"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "hang",
+          "severity": 1.0,
+          "confidence": 0.95,
+          "step": 5,
+          "observed": "The page remained in a mutating (loading) state after the NO_OP action; it was still mutating after 3.0 seconds and did not settle.",
+          "expected": "After a NO_OP (which should have no effect), the page should be settled (no ongoing mutations) if it has finished loading, indicating a stable UI state.",
+          "discrepancy": "The page failed to settle and remained mutating, which a correct application should not do after a period of inactivity.",
+          "evidence": "NOT SETTLED: the page was still mutating after 3.0s",
+          "error": null
+        },
+        {
+          "episode": 7,
+          "global_step": 29,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "grounded": null,
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 0.0,
+          "step": 1,
+          "observed": "URL remained /explore/repos with no reported text, form, or layout changes",
+          "expected": "Clicking a navigation link that points to the current page may refresh or stay on the same page without error",
+          "discrepancy": "none",
+          "evidence": "url        : /explore/repos (unchanged)",
+          "error": null
+        },
+        {
+          "episode": 7,
+          "global_step": 33,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "grounded": null,
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 0.0,
+          "step": 5,
+          "observed": "Clicking 'Register' navigated from /explore/repos to /user/sign_up, displayed the registration form with empty fields and appropriate constraints.",
+          "expected": "The Register link should navigate to the sign\u2011up page and show the registration form.",
+          "discrepancy": "none",
+          "evidence": "url        : /explore/repos -> /user/sign_up",
+          "error": null
+        }
+      ]
+    }
+  }
+}
