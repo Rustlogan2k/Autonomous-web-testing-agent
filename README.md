@@ -100,29 +100,40 @@ Five ideas do the work.
 
 **Action masking works; the deep flow is still unsolved.** The original comparison was not a fair fight: masked random could sample only legal slots and the flat 100-way Q-head structurally could not. That is now fixed and verified — 100% valid actions against 18% for unmasked random, 0/200 invalid actions in a controlled harness. Measured on a four-gate ordering flow whose defect is reachable only after completing every stage in order:
 
-| policy | valid actions | mean flow depth | reward |
-|---|---|---|---|
-| dqn_unmasked | 89% | 0.11 | −11.19 |
-| **dqn_masked** | **100%** | **0.33** | −24.34 |
-| random_unmasked | 18% | 0.00 | −28.81 |
-| random_masked | 100% | 0.04 | **+7.31** |
+Measured over **3 training seeds × 5 episodes**, with residual ε=0.05 exploration at evaluation so the trained policy's episodes can differ from each other. Every cell is median [min–max] across seeds:
 
-> **The two DQN rows in this table are one trajectory each, from one training seed** — see the n=1 note below. The valid-action rates are solid (they are properties of the policy, not of the sample), and no policy passing stage 1 is robust. The depth figures are not, and are being re-measured.
+| policy | valid actions | mean flow depth | reward | distinct findings |
+|---|---|---|---|---|
+| dqn_unmasked | 90% [82–96] | 0.17 [0.00–0.22] | −10.2 [−17.5, −4.0] | 0 [0–1] |
+| **dqn_masked** | **100%** (every seed) | 0.03 [0.03–**0.36**] | −14.6 [−16.0, −9.5] | 1 [0–2] |
+| random_unmasked | 18% [16–18] | 0.00 (every seed) | −28.8 [−29.3, −26.7] | 3 [2–3] |
+| **random_masked** | **100%** (every seed) | 0.04 [0.01–0.04] | **+7.3** [6.6, 8.1] | **10 [10–12]** |
 
-The masked agent reaches three times the mean depth of the unmasked one — **and no policy gets past stage 1.** Two causes, neither of them the masking:
+> An earlier version of this table reported `dqn_masked` at mean depth **0.33** and concluded masking tripled it. That figure was one seed evaluated greedily, which on a static fixture is a single trajectory replayed five times. Re-measured, the same arm spans **0.03 to 0.36** across seeds — the original number was not wrong so much as *unrepresentative*, one draw from a wide distribution reported as the result.
+
+**Masking works, and it does exactly one thing.** 100% valid actions on every seed, against 82–96% unmasked and 16–18% for unmasked random — no spread at all. But the depth medians are 0.03 masked against 0.17 unmasked, with heavily overlapping ranges and near-identical means. **Masking fixes action validity completely and does nothing measurable for depth.**
+
+**No policy gets past stage 1** — `max_depth ≤ 1` and zero receipts across all 24 runs. Two causes, neither of them the masking:
 
 1. **The novelty bonus rewards breadth where this flow needs depth.** Reaching a static footer page pays the same as advancing a stage and is far easier. `random_masked` maximises exactly that and earns the best reward while going nowhere; `dqn_masked` earns the worst while going furthest. Reward and objective point in different directions, visible here as a rank inversion across policies.
 2. **The agent could not see semantics** — the encoders were deterministic hash stubs at the time, so "this is a Continue link" was not representable at all.
 
-**Cause 2 was tested, and the test was not sound.** With the real CLIP/CodeBERT/MiniLM encoders in place the masked agent appeared to get *worse* — mean flow depth 0.33 → 0.00 — and that was written up as the perception hypothesis being disproven. It does not support that, because **the DQN rows were n=1**. Evaluation ran the trained policy greedily against a static fixture, so it is a deterministic function of the page and all five "episodes" replayed one trajectory; the report records `[-24.45] × 5` and averages it. The random rows beside them are genuinely stochastic and *are* five samples. Every arm was also a single training seed, at a budget where DQN variance is large.
+**Cause 2 was tested twice — the first test was not sound, and the second is narrower than the first claimed.** The original run reported mean flow depth 0.33 → 0.00 with real encoders and called the perception hypothesis disproven. That was n=1 (see the note above). Re-run over 3 seeds against the identical hash-stub configuration:
 
-Five identical numbers in a committed report read as precision for five days. They were the tell.
+| | valid actions | mean flow depth | reward |
+|---|---|---|---|
+| dqn_masked, hash stub | 100% | 0.03 [0.03–0.36] | −14.6 [−16.0, −9.5] |
+| dqn_masked, semantic | 100% | 0.01 [0.00–0.10] | **−23.2 [−31.7, −20.7]** |
+| dqn_unmasked, hash stub | 90% [82–96] | 0.17 [0.00–0.22] | −10.2 [−17.5, −4.0] |
+| dqn_unmasked, semantic | **60% [52–87]** | 0.05 [0.03–0.08] | **−19.6 [−22.8, −17.5]** |
 
-The harness is fixed — evaluation keeps the policy's residual exploration (ε=0.05, sampling from the agent's own action space) and the comparison repeats over training seeds, reporting median [min-max] — and a three-seed rerun of both encoder configurations is what the numbers above will be replaced with. On the first seed alone, masked mean depth came out at 0.03 rather than 0.33, which is the swing you would expect if the original figure was one lucky trajectory.
+**Semantic encoders measurably hurt, but not on the metric originally cited.** Return is clearly worse — the seed ranges do not overlap on either arm — and the unmasked agent's valid-action rate collapses from 90% to 60%, which is what you would expect if embeddings that deliberately make similar pages similar also make "which slots are valid here" harder to memorise. **Flow depth is lower too but the ranges overlap and n=3 cannot separate it**, so the specific "0.33 → 0.00" claim is retired rather than confirmed.
 
-**What survives regardless:** no policy under any configuration gets past stage 1, and the mechanism argued for cause 2 is still plausible — a content hash is a near-perfect state *identifier*, while semantic embeddings deliberately make similar pages similar, and on a 12-page fixture at 4,000 steps memorisation beats generalisation. But that is now a hypothesis with no measurement behind it. Semantic perception on a large target is **untested**, not disproven, and it was never disproven.
+The mechanism still looks right: a content hash is a near-perfect state *identifier*, semantic embeddings are deliberately the opposite, and on a 12-page fixture at 4,000 steps memorisation beats generalisation. That predicts encoders should pay off on large diverse targets and cost you here — which is what was measured, and which leaves their value on a real target **untested**, exactly as before. Keep them; do not expect them to move this fixture.
 
-That leaves **cause 1 as the one with evidence behind it**: the exploration bonus rewards breadth where the flow needs depth, visible as a rank inversion where the policy earning the best reward goes nowhere. A depth-aware term is the next RL change worth making.
+**Cause 1 is the one with strong evidence**, now across seeds rather than from one run: `random_masked` earns the best reward on every seed (+6.6 to +8.1) while going essentially nowhere (depth 0.01–0.04). Reward and objective point in different directions, robustly. A depth-aware exploration term is the next RL change worth making.
+
+**And the harder result: masked random beats the DQN on bug discovery by roughly 10×, on every seed, under both encoder configurations** — 10–12 distinct findings against 0–4. This fixture was built precisely to be the regime where RL's real claim (credit assignment over multi-step flows, where random's success probability decays exponentially in sequence length) should finally show. It did not. Masked random wins on the shallow fixture *and* on the deep one, on coverage and on findings. The honest statement is no longer "RL's claim is untested" — it was tested, in the regime chosen to favour it, and it lost.
 
 **On a real application, the hard part was never the judge.** Pointed at a live Gitea, the pipeline produced a stream of confident, well-argued, wrong findings. Fourteen defects have been found and fixed across three passes; **none was in the judge**. Every one had the same shape — the input stated something true about the *test harness* as though it were true about the *application*, and the model reasoned correctly from a false premise:
 
@@ -249,8 +260,8 @@ reports/             Measured results
 ## Limitations
 
 - **Source grounding is not yet demonstrated.** The Application Profile schema and consumer exist and measurably help precision, but profiles are currently hand-authored; the extractor that would derive them from a repository is not built. "The code defines X, testing observed Y" is the goal, not a claim.
-- **Semantic perception is built but unmeasured.** The encoders run at ~5% step overhead, and CodeBERT needed two corrections to be usable at all (mean pooling and a fixed centering vector — the spec's `[CLS]` gives pairwise cosine ~0.99 across every page). Whether they help or hurt is genuinely open: the run that appeared to show them hurting was n=1, and is being redone.
-- **The RL contribution is an open question**, and the two measurements pointing at a negative answer both turned out to be single trajectories from single seeds. They are being rerun. The honest current statement is that RL's contribution here is **unmeasured**, not that it is negative.
+- **Semantic perception measurably hurts at fixture scale, and is untested at any other.** The encoders run at ~5% step overhead, and CodeBERT needed two corrections to be usable at all (mean pooling and a fixed centering vector — the spec's `[CLS]` gives pairwise cosine ~0.99 across every page). Over 3 seeds they cost the agent return and valid-action rate on a 12-page fixture; whether they help on a large, diverse target — the case they were argued for — remains unmeasured.
+- **The RL contribution is measured, and it is negative.** Masked random beats the DQN ~10× on distinct findings on the deep fixture, on every seed and under both encoder configurations, at equal step budget. The remaining uncertainty is `train_toy.py`'s shallow-fixture comparison, which still carries the single-seed evaluation defect and is queued for rerun.
 - **Every policy comparison in this project is cheap to get wrong in the same way.** A greedy policy against a static fixture produces one trajectory no matter how many episodes you ask for, and the resulting identical numbers look like precision. If you extend this work, check that your evaluation can produce a different number twice before you believe any of it.
 - **Small n on the real target.** Six seeded bugs and two control windows is enough to be honest with, not enough to be confident with.
 - **Auto-deploy is gated but not built.** Uploaded build definitions are validated; the sandboxed runner that would execute them is not, and a passing policy check is not a sandbox. The gate also shipped with three bypasses that a review found later — now closed, but the useful signal is that a carefully written, unit-tested gate still missed an entire category, so assume more remain.
