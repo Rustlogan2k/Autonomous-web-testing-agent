@@ -19,7 +19,7 @@ from typing import Protocol
 
 import numpy as np
 
-from ..envs.types import ActionSpec, ActionType
+from ..envs.types import MAX_ACTIONS, ActionSpec, ActionType
 from ..utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -67,28 +67,62 @@ class TrainedPolicy:
     scored by byte-identical harness code. The encoding the wrapper would have done is
     therefore done here instead, via the same `encode_modalities` call — anything else
     would silently compare two different measurement pipelines.
+
+    **`epsilon` is not a knob for making the agent look better.** A greedy policy on a
+    static fixture is a deterministic function of the page, so every evaluation episode
+    replays one trajectory and `episodes=N` reports a single sample N times. That is how
+    the 2026-08-10 deep-flow report came to record five identical episode rewards and
+    average them. The random baseline it is compared against is genuinely stochastic, so
+    leaving this at 0 puts an n=1 row beside an n=5 row in the same table. The default
+    matches the value DQN training ends at.
     """
 
-    def __init__(self, model, encoders: dict, deterministic: bool = True) -> None:  # noqa: ANN001
+    def __init__(
+        self,
+        model,  # noqa: ANN001
+        encoders: dict,
+        deterministic: bool = True,
+        epsilon: float = 0.0,
+        seed: int | None = None,
+    ) -> None:
         from ..perception.vec_wrapper import encode_modalities
 
         self._model = model
         self._encoders = encoders
         self._encode = encode_modalities
         self.deterministic = deterministic
+        self.epsilon = epsilon
+        self._rng = np.random.default_rng(seed)
 
     def reset(self) -> None:
         return None
 
     def act(self, observation: dict, info: dict) -> int:
+        # `num_valid_actions` is passed so the observation matches the one the policy was
+        # trained on. For an unmasked agent the mask is split off and discarded by
+        # `FusionFeaturesExtractor` and this is a no-op; for a masked one it is the
+        # channel masking actually travels through, and omitting it — as this method did
+        # until 2026-08-15 — hands the network an all-valid mask, silently turning the
+        # masking off at evaluation time only.
         features = self._encode(
             self._encoders,
             [observation["screenshot"]],
             [info.get("page", {})],
             [info.get("episode_context")],
+            [info.get("num_valid_actions")],
         )
+        if self.epsilon and self._rng.random() < self.epsilon:
+            # Sampled over the same slots the agent's own exploration would use, so a
+            # masked agent is not evaluated with unmasked exploration or vice versa.
+            specs = info.get("action_specs") or []
+            upper = len(specs) if (specs and getattr(self._model, "masks_actions", False)) else self.num_actions
+            return int(self._rng.integers(0, max(1, upper)))
         action, _ = self._model.predict(features, deterministic=self.deterministic)
         return int(np.asarray(action).reshape(-1)[0])
+
+    @property
+    def num_actions(self) -> int:
+        return int(getattr(self._model.action_space, "n", MAX_ACTIONS))
 
 
 @dataclass

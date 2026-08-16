@@ -56,6 +56,41 @@ def test_page_view_reports_declared_constraints():
     assert "min=13" in view.constraints["age"] and "max=120" in view.constraints["age"]
 
 
+def test_a_constraint_is_never_reported_unless_it_was_declared():
+    """A false declaration is worse than a missing one.
+
+    The judge's validation verdict is "the app accepted what it declared it would
+    reject", so an invented `min`/`max` supplies half the evidence for a bug that does
+    not exist. Three real sources, all measured on captured pages: `min` is a prefix of
+    `minlength`, a utility class like `max-w-full` contains the bare word `max`, and
+    `data-type` looks like `type` to a word-boundary match.
+    """
+    view = page_view(
+        "/p",
+        '<html><body><form>'
+        '<input name="bio" class="max-w-full min-h-0" minlength="3" maxlength="10" data-type="custom">'
+        '</form></body></html>',
+    )
+    # Exactly the two attributes the markup declares — no bare `min`, no bare `max`,
+    # and no `type` borrowed from `data-type`.
+    assert view.constraints["bio"] == "minlength=3 maxlength=10"
+
+
+def test_valueless_and_unquoted_constraints_are_read_correctly():
+    """`required` has no value; `maxlength=10` has one without quotes. Both are legal HTML."""
+    view = page_view("/p", '<html><body><input name="u" required maxlength=10></body></html>')
+    assert view.constraints["u"] == "maxlength=10 required"
+
+
+def test_data_prefixed_attributes_do_not_impersonate_the_real_ones():
+    """`data-name`/`data-value` are not the control's name and value."""
+    view = page_view(
+        "/p",
+        '<html><body><input data-name="decoy" name="real" data-value="nope" value="yes"></body></html>',
+    )
+    assert view.values == {"real": "yes"}
+
+
 def test_page_view_ignores_script_and_style_text():
     html = "<html><body><script>var secret = 1;</script><style>p{color:red}</style><p>Real</p></body></html>"
     assert page_view("/p", html).text == ["Real"]

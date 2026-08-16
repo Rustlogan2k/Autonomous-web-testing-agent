@@ -75,6 +75,12 @@ class MaskedDQN(DQN):
     give back an ordinary unmasked agent while every log line still said "masked".
     """
 
+    # Read by `evaluation.rollout.TrainedPolicy` to decide whether its residual
+    # exploration should sample valid slots only. An attribute rather than an isinstance
+    # check so the evaluation harness does not have to import the agents package, which
+    # would make `evaluation` depend on SB3 being installed.
+    masks_actions = True
+
     def __init__(self, policy, env, **kwargs) -> None:
         if policy not in (MaskedDQNPolicy, "MaskedDQNPolicy"):
             logger.debug("MaskedDQN overrides policy={} with MaskedDQNPolicy", policy)

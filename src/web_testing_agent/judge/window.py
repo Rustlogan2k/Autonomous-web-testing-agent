@@ -39,13 +39,37 @@ _LIST_MAX = 20
 _DIFF_MAX = 12
 _SKIP_TEXT_TAGS = {"script", "style", "noscript", "template"}
 _HIDDEN_TAG = re.compile(r"<(?P<tag>a|button|input|select|textarea)\b[^>]*\bdata-hidden=\"true\"[^>]*>")
-_ID_ATTR = re.compile(r"\bid=\"([^\"]*)\"")
-_TEXT_ATTR = re.compile(r"\b(?:value|name)=\"([^\"]*)\"")
+# An attribute name starts where a hyphen or word character does *not* precede it. `\b`
+# is not enough: it matches inside `data-id`, because the boundary between `-` and `i`
+# is a word boundary, so `data-id="x"` was read as the element's own `id`. Every real
+# framework emits `data-*` on interactive controls, so this fired constantly on Gitea.
+_ATTR_START = r"(?<![-\w])"
+_ID_ATTR = re.compile(rf"{_ATTR_START}id=\"([^\"]*)\"")
+_TEXT_ATTR = re.compile(rf"{_ATTR_START}(?:value|name)=\"([^\"]*)\"")
+_NAME_ATTR = re.compile(rf"{_ATTR_START}name=\"([^\"]*)\"")
+_VALUE_ATTR = re.compile(rf"{_ATTR_START}value=\"([^\"]*)\"")
 _INPUT_TAG = re.compile(r"<(?:input|textarea|select)\b[^>]*>")
 # A validation bug is "the app accepts what it declared it would reject", so the
 # declaration is half the evidence. Without it the judge sees `age: empty -> filled`
 # and has no way to know 999999999 violates anything (BUG-05).
 _CONSTRAINT_ATTRS = ("type", "min", "max", "minlength", "maxlength", "pattern", "required", "step")
+# Matched with both ends anchored, because a bare-name search reported constraints that
+# were never declared — and a false declaration is worse here than a missing one, since
+# "the app accepts what it declared it would reject" is the whole verdict this feeds.
+# Three distinct ways the earlier `\b{attr}(?:="([^"]*)")?` form invented one:
+#   * `min` is a prefix of `minlength`, so `minlength="3"` also emitted a bare `min`
+#   * the optional value group let *any* occurrence match, so `class="max-w-full"`
+#     emitted a bare `max` — 16 times across the 187 captured pages
+#   * `\b` matches after a hyphen, so `data-type="custom"` was rendered as `type=custom`
+# The trailing branch is either a real `="value"` or a lookahead proving the attribute
+# ended there, which is what a valueless boolean like `required` actually looks like.
+_CONSTRAINT_PATTERNS = {
+    attr: re.compile(
+        rf"{_ATTR_START}{attr}"
+        rf"(?:\s*=\s*(?:\"(?P<dq>[^\"]*)\"|'(?P<sq>[^']*)'|(?P<uq>[^\s\"'>]+))|(?=[\s/>]))"
+    )
+    for attr in _CONSTRAINT_ATTRS
+}
 # Framework-generated element ids carry no meaning and differ between renders. Gitea
 # alone puts 20 `_aria_auto_id_N` menu entries in the hidden list of every page, which
 # fills the whole display budget with the fact that a dropdown is closed and would
@@ -106,16 +130,16 @@ def _constraints(html: str) -> dict[str, str]:
     for match in _INPUT_TAG.finditer(html):
         tag = match.group(0)
         ident = _ID_ATTR.search(tag)
-        name = re.search(r'\bname="([^"]*)"', tag)
+        name = _NAME_ATTR.search(tag)
         key = (name or ident).group(1) if (name or ident) else None
         if not key:
             continue
         parts = []
-        for attr in _CONSTRAINT_ATTRS:
-            found = re.search(rf'\b{attr}(?:="([^"]*)")?', tag)
+        for attr, pattern in _CONSTRAINT_PATTERNS.items():
+            found = pattern.search(tag)
             if found is None:
                 continue
-            value = found.group(1)
+            value = found.group("dq") or found.group("sq") or found.group("uq")
             parts.append(f"{attr}={value}" if value else attr)
         if parts:
             declared[key] = " ".join(parts)
@@ -171,8 +195,8 @@ def _field_values(html: str) -> dict[str, str]:
     values: dict[str, str] = {}
     for match in _INPUT_TAG.finditer(html):
         tag = match.group(0)
-        name = re.search(r'\bname="([^"]*)"', tag) or _ID_ATTR.search(tag)
-        value = re.search(r'\bvalue="([^"]*)"', tag)
+        name = _NAME_ATTR.search(tag) or _ID_ATTR.search(tag)
+        value = _VALUE_ATTR.search(tag)
         if name and value:
             values[name.group(1)] = _elide(value.group(1))
     return values

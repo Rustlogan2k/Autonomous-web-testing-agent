@@ -91,7 +91,46 @@ _FORBIDDEN_SERVICE_KEYS: dict[str, str] = {
     "pid": "can share the host PID namespace",
     "privileged_mode": "grants effectively full host root",
     "extra_hosts": "can redirect hostnames to internal addresses",
+    # Membership of the host `docker` group is equivalent to socket access, which is
+    # equivalent to root on the host — the same escalation `/var/run/docker.sock` buys,
+    # obtained without naming a volume at all.
+    "group_add": "can join host groups (docker group == daemon access == host root)",
 }
+
+# Keys that pull service definitions in from a *second* file. Everything this module
+# checks is read from the one document it was handed, so a key that merges in another
+# file's keys after validation defeats every rule above at once: put `privileged: true`
+# in `base.yml`, write `extends: {file: base.yml, service: base}` in the file that gets
+# scanned, and the merged definition that Docker actually runs was never inspected.
+#
+# Blocked rather than followed. Resolving them properly means reimplementing Compose's
+# merge semantics (relative path bases, recursive extends, `include` with overrides,
+# per-key merge-vs-replace rules), and a subtly wrong reimplementation is worse than no
+# support: it would report "clean" about a document that is not the one being run. v1
+# requires a self-contained build definition, which every containerised target in this
+# project already satisfies.
+_MERGE_KEYS: dict[str, str] = {
+    "extends": "merges in a service defined in another file, which this gate never sees",
+    "include": "merges in another compose file, which this gate never sees",
+}
+
+# A "named" volume is only safe because the daemon owns its storage. `driver_opts` with
+# a bind device makes a named volume a host bind mount wearing a different hat:
+#
+#     volumes:
+#       hostroot:
+#         driver: local
+#         driver_opts: {type: none, device: /, o: bind}
+#
+# `hostroot:/host` in a service then passes the per-service volume check — the source is
+# a bare name with no leading slash — while mounting host `/` exactly as `/:/host` would.
+# This is the documented way to create a bind mount through the volume API, so it is a
+# feature being used as intended rather than an obscure trick.
+#
+# Keyed on `device` alone. `o: bind` is the usual companion but is not required —
+# `type: none` with a device behaves identically — and a `local` volume has no legitimate
+# reason to name a host path at all.
+_BIND_DRIVER_OPT = "device"
 
 # Keys whose *value* decides whether they are safe.
 _HOST_NAMESPACE_VALUES = {"host", "shareable"}
@@ -130,9 +169,53 @@ def _is_host_path_mount(volume: Any) -> tuple[bool, str]:
     return False, ""
 
 
+def _bind_backed_volumes(document: dict) -> dict[str, str]:
+    """Top-level named volumes that are really host bind mounts, name -> host path.
+
+    See `_BIND_DRIVER_OPT`. A volume is bind-backed when its `driver_opts` name a device,
+    which is the only way a `local`-driver volume can reach outside the daemon's own
+    storage.
+    """
+    declared = document.get("volumes")
+    if not isinstance(declared, dict):
+        return {}
+    found: dict[str, str] = {}
+    for name, definition in declared.items():
+        if not isinstance(definition, dict):
+            continue
+        opts = definition.get("driver_opts")
+        if isinstance(opts, dict) and opts.get(_BIND_DRIVER_OPT):
+            found[str(name)] = str(opts[_BIND_DRIVER_OPT])
+    return found
+
+
 def validate_compose(document: dict, location: str = "docker-compose.yml") -> PolicyResult:
     """Check a parsed compose document against the sandbox policy."""
     result = PolicyResult()
+
+    # Checked before anything else: if the document merges in another file, no verdict
+    # about the rest of it describes what Docker will actually run.
+    if "include" in document:
+        result.violations.append(
+            PolicyViolation(
+                Severity.BLOCK, location, "include",
+                f"{_MERGE_KEYS['include']} (found {document['include']!r}) — "
+                f"v1 requires a self-contained build definition",
+            )
+        )
+
+    # Named volumes whose storage is a host path. Recorded here so the per-service
+    # volume loop can block a reference to one, where the escalation actually happens.
+    bind_backed = _bind_backed_volumes(document)
+    for name, device in bind_backed.items():
+        result.violations.append(
+            PolicyViolation(
+                Severity.BLOCK, f"{location}:volumes.{name}", "driver_opts",
+                f"named volume {name!r} is a bind mount of host path {device!r} — "
+                f"only daemon-managed named volumes are permitted",
+            )
+        )
+
     services = document.get("services")
     if not isinstance(services, dict) or not services:
         result.violations.append(
@@ -148,6 +231,15 @@ def validate_compose(document: dict, location: str = "docker-compose.yml") -> Po
                 PolicyViolation(Severity.BLOCK, where, "<service>", "service definition is not a mapping")
             )
             continue
+
+        if "extends" in service:
+            result.violations.append(
+                PolicyViolation(
+                    Severity.BLOCK, where, "extends",
+                    f"{_MERGE_KEYS['extends']} (found {service['extends']!r}) — "
+                    f"v1 requires a self-contained build definition",
+                )
+            )
 
         for key, reason in _FORBIDDEN_SERVICE_KEYS.items():
             if key not in service:
@@ -176,6 +268,20 @@ def validate_compose(document: dict, location: str = "docker-compose.yml") -> Po
         for volume in service.get("volumes") or []:
             is_bind, source = _is_host_path_mount(volume)
             if not is_bind:
+                # A bare name is only safe if the top-level declaration behind it is.
+                # Reported against the service as well as the volume so the message
+                # names the container that actually receives the host path.
+                named = volume.split(":", 1)[0] if isinstance(volume, str) else str(
+                    volume.get("source", "") if isinstance(volume, dict) else ""
+                )
+                if named in bind_backed:
+                    result.violations.append(
+                        PolicyViolation(
+                            Severity.BLOCK, where, "volumes",
+                            f"mounts named volume {named!r}, which is declared as a bind "
+                            f"mount of host path {bind_backed[named]!r}",
+                        )
+                    )
                 continue
             critical = any(source.rstrip("/").startswith(path) for path in _CRITICAL_HOST_PATHS)
             result.violations.append(

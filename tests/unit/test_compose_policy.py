@@ -109,6 +109,81 @@ def test_docker_socket_mount_is_reported_as_critical():
     assert "critical host resource" in detail
 
 
+def test_group_add_is_blocked():
+    """Joining the host docker group is daemon access without naming a socket."""
+    result = _check("services:\n  evil:\n    image: alpine\n    group_add: ['docker']\n")
+    assert result.blocked
+    assert "group_add" in _blocked_keys(result)
+
+
+# --- Definitions that reach outside the document being validated -------------------
+#
+# Every rule above reads the one document it was handed. A key that merges in a *second*
+# file after validation defeats all of them at once, and a named volume backed by a host
+# device defeats the "named volumes only" rule using the volume API as documented.
+
+
+def test_extends_is_blocked_because_the_other_file_is_never_scanned():
+    result = _check(
+        "services:\n  app:\n    extends:\n      file: base.yml\n      service: privileged_base\n"
+        "    ports: ['8080:80']\n"
+    )
+    assert result.blocked
+    assert "extends" in _blocked_keys(result)
+
+
+def test_top_level_include_is_blocked():
+    result = _check("include:\n  - dangerous.yml\nservices:\n  app:\n    image: nginx\n    ports: ['80:80']\n")
+    assert result.blocked
+    assert "include" in _blocked_keys(result)
+
+
+def test_named_volume_backed_by_a_host_device_is_blocked():
+    """The documented way to make a named volume a bind mount of host `/`."""
+    result = _check(
+        "services:\n  app:\n    image: nginx\n    ports: ['80:80']\n"
+        "    volumes: ['hostroot:/host']\n"
+        "volumes:\n  hostroot:\n    driver: local\n"
+        "    driver_opts:\n      type: none\n      device: /\n      o: bind\n"
+    )
+    assert result.blocked
+    keys = _blocked_keys(result)
+    # Reported twice on purpose: once against the declaration, once against the service
+    # that receives it, so the message names the container holding the host path.
+    assert "driver_opts" in keys
+    assert "volumes" in keys
+    locations = {v.location for v in result.blocking_violations}
+    assert any(loc.endswith("volumes.hostroot") for loc in locations)
+    assert any(loc.endswith("services.app") for loc in locations)
+
+
+def test_long_syntax_reference_to_a_bind_backed_volume_is_blocked():
+    """`type: volume` passes the bind check, so the declaration is what has to catch it."""
+    result = _check(
+        "services:\n  app:\n    image: nginx\n    ports: ['80:80']\n    volumes:\n"
+        "      - type: volume\n        source: hostroot\n        target: /host\n"
+        "volumes:\n  hostroot:\n    driver: local\n"
+        "    driver_opts: {type: none, device: /, o: bind}\n"
+    )
+    assert result.blocked
+    assert "volumes" in _blocked_keys(result)
+
+
+def test_a_bind_backed_volume_is_blocked_even_without_the_o_flag():
+    """`type: none` + `device` binds without `o: bind`, so the device is what is keyed on."""
+    result = _check(
+        "services:\n  app:\n    image: nginx\n    ports: ['80:80']\n    volumes: ['esc:/mnt']\n"
+        "volumes:\n  esc:\n    driver: local\n    driver_opts: {type: none, device: /etc}\n"
+    )
+    assert result.blocked
+
+
+def test_ordinary_named_volume_declaration_still_passes():
+    """The safe form the gate must not become useless against."""
+    result = _check(SAFE)
+    assert not result.blocked
+
+
 def test_compose_with_no_services_is_blocked():
     assert validate_compose({}).blocked
 

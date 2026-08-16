@@ -79,24 +79,24 @@ Five ideas do the work.
 | **Session bootstrap** — start episodes authenticated, outside the step budget | Built |
 | **Action masking** — masked DQN over the valid-action set | Built and verified |
 | **Deterministic triggers** — the baseline the judge must beat | Built |
-| **Evaluation harness** — policy-agnostic rollouts, deduplicated findings, random baselines | Built |
+| **Evaluation harness** — policy-agnostic rollouts, deduplicated findings, random baselines, multi-seed spreads | Built |
 | **Trace corpus + window validator** — 13 invariants that refuse to score a self-contradicting input | Built |
 | **Application Profile** — schema for source-derived intent, sliced per window | Built |
 | **Ground-truth fixtures** — 10-bug toy site, 6-bug seeded Gitea, 4-gate deep-flow site | Built |
-| **Build-definition security gate** — rejects privilege escalation in uploaded compose files | Built |
+| **Build-definition security gate** — rejects privilege escalation, host bind-mounts, and multi-file merges in uploaded compose files | Built |
 | **Semantic perception encoders** — CLIP / CodeBERT / MiniLM, frozen, batched, cached | Built (~5% step overhead, 951 MB VRAM) |
 | Repo profiler (extract intent from source automatically) | Not built |
 | Auto-deploy runner | Not built |
 | Bug report engine | Not built |
 | Agent A (security testing, PPO + curiosity) | Out of scope |
 
-485 tests (469 without a browser).
+513 tests (497 without a browser).
 
 ---
 
 ## The parts that did not work, and why
 
-**Reinforcement learning has not yet earned its place.** On the shallow fixture, uniform-random exploration over valid actions beat the DQN at equal step budget. Training also produced four distinct reward exploits in five runs — the agent learned to refresh a 404 page 117 times, to do literally nothing, and to end each episode on step one — each a real defect in the reward design, and each found by the optimizer rather than by review or the test suite.
+**Reinforcement learning has not yet earned its place.** On the shallow fixture, uniform-random exploration over valid actions beat the DQN at equal step budget — though that comparison has since been found to share the n=1 evaluation defect described below, so treat it as suggestive until it is rerun. What is not in doubt is the reward work: training produced four distinct reward exploits in five runs — the agent learned to refresh a 404 page 117 times, to do literally nothing, and to end each episode on step one — each a real defect in the reward design, and each found by the optimizer rather than by review or the test suite.
 
 **Action masking works; the deep flow is still unsolved.** The original comparison was not a fair fight: masked random could sample only legal slots and the flat 100-way Q-head structurally could not. That is now fixed and verified — 100% valid actions against 18% for unmasked random, 0/200 invalid actions in a controlled harness. Measured on a four-gate ordering flow whose defect is reachable only after completing every stage in order:
 
@@ -107,16 +107,24 @@ Five ideas do the work.
 | random_unmasked | 18% | 0.00 | −28.81 |
 | random_masked | 100% | 0.04 | **+7.31** |
 
+> **The two DQN rows in this table are one trajectory each, from one training seed** — see the n=1 note below. The valid-action rates are solid (they are properties of the policy, not of the sample), and no policy passing stage 1 is robust. The depth figures are not, and are being re-measured.
+
 The masked agent reaches three times the mean depth of the unmasked one — **and no policy gets past stage 1.** Two causes, neither of them the masking:
 
 1. **The novelty bonus rewards breadth where this flow needs depth.** Reaching a static footer page pays the same as advancing a stage and is far easier. `random_masked` maximises exactly that and earns the best reward while going nowhere; `dqn_masked` earns the worst while going furthest. Reward and objective point in different directions, visible here as a rank inversion across policies.
 2. **The agent could not see semantics** — the encoders were deterministic hash stubs at the time, so "this is a Continue link" was not representable at all.
 
-**Cause 2 was then tested and rejected.** With the real CLIP/CodeBERT/MiniLM encoders in place the masked agent gets *worse*, not better — mean flow depth 0.33 → 0.00, still nothing past stage 1. The likely reason is that a content hash is a near-perfect state *identifier* while semantic embeddings deliberately make similar pages similar, and on a 12-page fixture at 4,000 steps memorisation beats generalisation. So the experiment cannot separate "semantic encoders do not help" from "do not help at this scale", and their value on a large target remains untested rather than disproven.
+**Cause 2 was tested, and the test was not sound.** With the real CLIP/CodeBERT/MiniLM encoders in place the masked agent appeared to get *worse* — mean flow depth 0.33 → 0.00 — and that was written up as the perception hypothesis being disproven. It does not support that, because **the DQN rows were n=1**. Evaluation ran the trained policy greedily against a static fixture, so it is a deterministic function of the page and all five "episodes" replayed one trajectory; the report records `[-24.45] × 5` and averages it. The random rows beside them are genuinely stochastic and *are* five samples. Every arm was also a single training seed, at a budget where DQN variance is large.
 
-That leaves **cause 1 as the only one with evidence behind it**: the exploration bonus rewards breadth where the flow needs depth. A depth-aware term is the next RL change worth making.
+Five identical numbers in a committed report read as precision for five days. They were the tell.
 
-**On a real application, the hard part was never the judge.** Pointed at a live Gitea, the pipeline produced a stream of confident, well-argued, wrong findings. Thirteen defects were found and fixed across two passes; **none was in the judge**. Every one had the same shape — the input stated something true about the *test harness* as though it were true about the *application*, and the model reasoned correctly from a false premise:
+The harness is fixed — evaluation keeps the policy's residual exploration (ε=0.05, sampling from the agent's own action space) and the comparison repeats over training seeds, reporting median [min-max] — and a three-seed rerun of both encoder configurations is what the numbers above will be replaced with. On the first seed alone, masked mean depth came out at 0.03 rather than 0.33, which is the swing you would expect if the original figure was one lucky trajectory.
+
+**What survives regardless:** no policy under any configuration gets past stage 1, and the mechanism argued for cause 2 is still plausible — a content hash is a near-perfect state *identifier*, while semantic embeddings deliberately make similar pages similar, and on a 12-page fixture at 4,000 steps memorisation beats generalisation. But that is now a hypothesis with no measurement behind it. Semantic perception on a large target is **untested**, not disproven, and it was never disproven.
+
+That leaves **cause 1 as the one with evidence behind it**: the exploration bonus rewards breadth where the flow needs depth, visible as a rank inversion where the policy earning the best reward goes nowhere. A depth-aware term is the next RL change worth making.
+
+**On a real application, the hard part was never the judge.** Pointed at a live Gitea, the pipeline produced a stream of confident, well-argued, wrong findings. Fourteen defects have been found and fixed across three passes; **none was in the judge**. Every one had the same shape — the input stated something true about the *test harness* as though it were true about the *application*, and the model reasoned correctly from a false premise:
 
 - a navigation the harness refused, rendered as a broken link
 - a `target="_blank"` link that correctly left its page unchanged, rendered as a dead control
@@ -124,8 +132,11 @@ That leaves **cause 1 as the only one with evidence behind it**: the exploration
 - console errors from a third-party analytics script on someone else's website, attributed to the application under test
 - uncaught exceptions never reaching the judge at all, because Playwright reports them on a different event than `console.error`
 - a password field, deliberately redacted from the observation, whose redaction made typing into it look ignored
+- form constraints the page never declared — `minlength="3"` also emitted a bare `min`, a `max-w-full` CSS class emitted a bare `max`, and `data-type` was read as `type`. This one reached **30.7% of all judge inputs**, including every window of the seeded-Gitea corpus, and **zero** windows of the toy site, whose fixture markup is too clean to contain it
 
 Recall, discrimination and evidence-grounding were all satisfied while these were happening. **No metric caught any of them** — they were found by reading verdicts and disbelieving them. Fixing them took the false-positive rate on Gitea from 16.4% to 8.2% without changing the judge at all.
+
+The last of the fourteen is the cleanest illustration, because its fix was measured as a controlled pair — same model, same prompt, same session, only the renderer differing. Correcting a false premise on 30.7% of inputs changed **nothing**: 6/6 seeded bugs either way, one false positive either way. That is worth stating plainly rather than dressing up. A false premise is not automatically load-bearing, and the honest claim for a fix like this is that the input is now true, not that the output improved.
 
 If there is one transferable lesson here, it is that: **on a new target, the component that needs attention is the observation, not the model.**
 
@@ -141,7 +152,7 @@ cd Autonomous-web-testing-agent
 
 python install.py           # venv, torch, deps, Playwright Chromium
 pip install -e ".[dev]"
-pytest tests/unit -q        # 469 tests, no browser needed
+pytest tests/unit -q        # 497 tests, no browser needed
 ```
 
 **Watch it drive a browser** against the bundled validation site:
@@ -229,6 +240,8 @@ reports/             Measured results
 
 **Uploaded build definitions are parsed and rejected before execution, not merely constrained during it.** A `docker-compose.yml` specifies its own security context — `privileged: true`, `network_mode: host`, a `/:/host` bind mount — and no CPU or memory quota prevents any of them.
 
+**A policy over a parsed document is only as strong as the guarantee that the parsed document is the one that runs.** A later review found three ways past that gate, and they shared a shape: `extends` and `include` merge in a second file *after* validation, and `driver_opts: {device: /}` makes a "named" volume a bind mount of host `/` without writing a host path anywhere the volume check looks. Every per-key rule was correct; the category sat one layer above the one being validated. All three are now blocked, and the lesson generalises past this gate — the fix was refusing constructs that change which document is executed, not adding more rules about keys.
+
 **Reward composition is treated as adversarial.** Every magnitude is a documented, retunable parameter, every term is broken out per-step for diagnosis, and each closed exploit is pinned by a regression test.
 
 ---
@@ -236,10 +249,11 @@ reports/             Measured results
 ## Limitations
 
 - **Source grounding is not yet demonstrated.** The Application Profile schema and consumer exist and measurably help precision, but profiles are currently hand-authored; the extractor that would derive them from a repository is not built. "The code defines X, testing observed Y" is the goal, not a claim.
-- **Semantic perception is built but unproven.** The encoders run at ~5% step overhead, and CodeBERT needed two corrections to be usable at all (mean pooling and a fixed centering vector — the spec's `[CLS]` gives pairwise cosine ~0.99 across every page). On the small fixtures they measurably *hurt* the RL agent; whether they help on a large, diverse target is untested.
-- **The RL contribution is an open question**, and on current evidence a negative one. See above.
+- **Semantic perception is built but unmeasured.** The encoders run at ~5% step overhead, and CodeBERT needed two corrections to be usable at all (mean pooling and a fixed centering vector — the spec's `[CLS]` gives pairwise cosine ~0.99 across every page). Whether they help or hurt is genuinely open: the run that appeared to show them hurting was n=1, and is being redone.
+- **The RL contribution is an open question**, and the two measurements pointing at a negative answer both turned out to be single trajectories from single seeds. They are being rerun. The honest current statement is that RL's contribution here is **unmeasured**, not that it is negative.
+- **Every policy comparison in this project is cheap to get wrong in the same way.** A greedy policy against a static fixture produces one trajectory no matter how many episodes you ask for, and the resulting identical numbers look like precision. If you extend this work, check that your evaluation can produce a different number twice before you believe any of it.
 - **Small n on the real target.** Six seeded bugs and two control windows is enough to be honest with, not enough to be confident with.
-- **Auto-deploy is gated but not built.** Uploaded build definitions are validated; the sandboxed runner that would execute them is not, and a passing policy check is not a sandbox.
+- **Auto-deploy is gated but not built.** Uploaded build definitions are validated; the sandboxed runner that would execute them is not, and a passing policy check is not a sandbox. The gate also shipped with three bypasses that a review found later — now closed, but the useful signal is that a carefully written, unit-tested gate still missed an entire category, so assume more remain.
 - **The hosted judge is not version-pinned.** See the reproducibility caveat above.
 
 ---

@@ -10,10 +10,24 @@ runs against the raw env for all three; the trained policy does its own encoding
 `encode_modalities`, the identical call the training wrapper uses. Anything less than
 that and the comparison measures the harness, not the policy.
 
+**One invocation is one training seed, and one seed does not settle this question.** A
+DQN at a 4,000-step budget varies enough across seeds that a single run cannot separate a
+real difference from initialization noise. Run the seeds separately and compare the
+spread; `--eval-epsilon` (default 0.05) additionally keeps the trained policy's residual
+exploration during evaluation, without which every episode against this static fixture
+is the same trajectory replayed and `--eval-episodes` reports one sample N times.
+
 Usage:
     python scripts/train_toy.py                       # 4000 train steps, 3x40-step eval
     python scripts/train_toy.py --train-steps 20000
     python scripts/train_toy.py --skip-train --model models/checkpoints/dqn_toy.zip
+
+    # three seeds, kept apart so the spread is visible
+    for s in 0 1 2; do
+        python scripts/train_toy.py --seed $s \
+            --model models/checkpoints/dqn_toy_s$s.zip \
+            --out reports/toy_dqn_comparison_s$s.json
+    done
 """
 
 from __future__ import annotations
@@ -94,6 +108,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--episode-steps", type=int, default=40, help="max steps per episode (train and eval)")
     parser.add_argument("--eval-episodes", type=int, default=3)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument(
+        "--eval-epsilon", type=float, default=0.05,
+        help="residual exploration kept during evaluation, matching the value training "
+             "ends at. 0 restores greedy evaluation, under which every episode on this "
+             "static fixture is an identical replay of one trajectory and --eval-episodes "
+             "reports one sample N times, while the random baselines it is compared "
+             "against remain genuinely stochastic.",
+    )
     parser.add_argument("--skip-train", action="store_true", help="load --model instead of training")
     parser.add_argument("--model", type=Path, default=REPO_ROOT / "models" / "checkpoints" / "dqn_toy.zip")
     parser.add_argument("--out", type=Path, default=REPO_ROOT / "reports" / "toy_dqn_comparison.json")
@@ -222,14 +244,20 @@ def main() -> None:
                                   "best_step": keeper.best_step})
                 reports["dqn_final"] = evaluate(
                     base_url, "dqn-final-policy",
-                    lambda env: TrainedPolicy(final_model, default_encoders(), deterministic=True), args,
+                    lambda env: TrainedPolicy(
+                        final_model, default_encoders(), deterministic=True,
+                        epsilon=args.eval_epsilon, seed=args.seed,
+                    ), args,
                 )
 
         # --- evaluate all three, same site / seed / budget ----------------------
         eval_encoders = default_encoders()
         reports["dqn"] = evaluate(
             base_url, "dqn-trained",
-            lambda env: TrainedPolicy(model, eval_encoders, deterministic=True), args,
+            lambda env: TrainedPolicy(
+                model, eval_encoders, deterministic=True,
+                epsilon=args.eval_epsilon, seed=args.seed,
+            ), args,
         )
         reports["random_full"] = evaluate(
             base_url, "random-full-space",
@@ -279,6 +307,7 @@ def main() -> None:
             "eval_episodes": args.eval_episodes,
             "episode_steps": args.episode_steps,
             "seed": args.seed,
+            "eval_epsilon": args.eval_epsilon,
             "reward_model": "NullRewardModel (deterministic triggers only)",
             "encoders": "HashEmbeddingEncoder stand-ins (no semantics)",
             **best_meta,
