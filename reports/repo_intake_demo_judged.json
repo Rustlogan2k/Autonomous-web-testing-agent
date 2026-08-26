@@ -1,0 +1,328 @@
+{
+  "target": "http://127.0.0.1:59978/",
+  "generated_at": "2026-08-26T07:58:41+00:00",
+  "counts": {
+    "total": 14,
+    "deterministic": 5,
+    "judge": 9,
+    "high": 8,
+    "medium": 6,
+    "low": 0,
+    "ungrounded_excluded": 0
+  },
+  "run": {
+    "repository": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\tests\\fixtures\\demo_repo",
+    "build_definition": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\tests\\fixtures\\demo_repo\\Dockerfile",
+    "build_network": "none",
+    "image": "wta-target-14e7fb3a37e5:latest",
+    "episodes": 2,
+    "steps_per_episode": 25,
+    "seed": 0,
+    "judge": "ollama/qwen2.5:7b-instruct",
+    "wall_clock_s": 200.0,
+    "scope_note": "Trusted/controlled repository input, resource-limited execution. NOT a security boundary against a determined attacker: Dockerfile build commands execute before any docker run restriction applies."
+  },
+  "bugs": [
+    {
+      "title": "The link to Pricing resulted in a 404 error and navigation to a non-existent page.",
+      "source": "judge",
+      "severity": 10.0,
+      "bug_type": "broken_navigation",
+      "url": "",
+      "repro": [
+        "Rapidly click Export catalog",
+        "REFRESH",
+        "BROWSER_FORWARD",
+        "BROWSER_BACK",
+        "BROWSER_BACK",
+        "Click Pricing"
+      ],
+      "evidence": "  url        : / -> /pricing.html\n  title      : 'Widget Co \u2014 Home' -> '404 Not Found'\n  page text  : 404 Not Found | 404 Not Found | The requested URL was not found\n  console    : Failed to load resource: the server responded with a status of 404 (Not Found)\n  http errors: 404 /pricing.html",
+      "observed": "Clicking 'Pricing' led to a 404 error, navigating to an undefined URL.",
+      "expected": "Clicking 'Pricing' should navigate to /pricing.html without errors.",
+      "discrepancy": "The link to Pricing resulted in a 404 error and navigation to a non-existent page.",
+      "confidence": 0.95,
+      "grounded": true,
+      "episode": 1,
+      "step": 20,
+      "times_seen": 1
+    },
+    {
+      "title": "A network request or page re-render is expected when typing, but none occurred.",
+      "source": "judge",
+      "severity": 8.0,
+      "bug_type": "dead_control",
+      "url": "",
+      "repro": [
+        "Click Contact",
+        "Type 'Test User Input' into message",
+        "TYPE on name",
+        "TYPE on name",
+        "Type 'a' into message"
+      ],
+      "evidence": "  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action",
+      "observed": "Typing a single character into the 'message' field caused no change.",
+      "expected": "Typing should update the field value.",
+      "discrepancy": "A network request or page re-render is expected when typing, but none occurred.",
+      "confidence": 0.95,
+      "grounded": true,
+      "episode": 2,
+      "step": 6,
+      "times_seen": 1
+    },
+    {
+      "title": "A control that promises to export something did nothing and caused a console error.",
+      "source": "judge",
+      "severity": 8.0,
+      "bug_type": "dead_control",
+      "url": "",
+      "repro": [
+        "Scroll down",
+        "Click Catalog",
+        "BROWSER_FORWARD",
+        "Click Export catalog"
+      ],
+      "evidence": "  console    : Cannot read properties of undefined (reading 'run')",
+      "observed": "Clicking 'Export catalog' produced no change, no navigation, and a console error.",
+      "expected": "'Export catalog' should trigger an export process or request.",
+      "discrepancy": "A control that promises to export something did nothing and caused a console error.",
+      "confidence": 0.95,
+      "grounded": true,
+      "episode": 1,
+      "step": 12,
+      "times_seen": 1
+    },
+    {
+      "title": "Repeated rapid clicks resulted in multiple uncaught console errors without any observable effect on the page.",
+      "source": "judge",
+      "severity": 8.0,
+      "bug_type": "dead_control",
+      "url": "",
+      "repro": [
+        "Click Catalog",
+        "BROWSER_FORWARD",
+        "Click Export catalog",
+        "BROWSER_BACK",
+        "BROWSER_FORWARD",
+        "Rapidly click Export catalog"
+      ],
+      "evidence": "  console    : Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run')",
+      "observed": "Rapid clicking on 'Export catalog' produced multiple console errors but no change in the UI.",
+      "expected": "Clicking a control that promises to export something should either work or provide feedback, even if it fails.",
+      "discrepancy": "Repeated rapid clicks resulted in multiple uncaught console errors without any observable effect on the page.",
+      "confidence": 0.95,
+      "grounded": true,
+      "episode": 1,
+      "step": 15,
+      "times_seen": 1
+    },
+    {
+      "title": "The form fields (message and name) were cleared instead of being initialized with existing values.",
+      "source": "judge",
+      "severity": 7.0,
+      "bug_type": "ui_regression",
+      "url": "",
+      "repro": [
+        "Click Contact"
+      ],
+      "evidence": "  form state : message: absent -> empty; name: absent -> empty",
+      "observed": "Clicking 'Contact' navigated to /contact.html, updated the title, and cleared form fields.",
+      "expected": "Navigating to a contact page should preserve or initialize form fields appropriately.",
+      "discrepancy": "The form fields (message and name) were cleared instead of being initialized with existing values.",
+      "confidence": 0.9,
+      "grounded": true,
+      "episode": 1,
+      "step": 1,
+      "times_seen": 2
+    },
+    {
+      "title": "The page did not change as expected, suggesting a navigation issue.",
+      "source": "judge",
+      "severity": 7.0,
+      "bug_type": "ui_regression",
+      "url": "",
+      "repro": [
+        "Scroll down",
+        "Click Catalog",
+        "BROWSER_FORWARD",
+        "Click Export catalog",
+        "BROWSER_BACK"
+      ],
+      "evidence": "  url        : /catalog.html -> /",
+      "observed": "BROWSING BACK from /catalog.html to / refreshed the title and page text.",
+      "expected": "Navigating back should restore the previous state of the page.",
+      "discrepancy": "The page did not change as expected, suggesting a navigation issue.",
+      "confidence": 0.9,
+      "grounded": true,
+      "episode": 1,
+      "step": 13,
+      "times_seen": 2
+    },
+    {
+      "title": "The navigation back to the home page did not update the content, showing a stale version.",
+      "source": "judge",
+      "severity": 7.0,
+      "bug_type": "state_persistence",
+      "url": "",
+      "repro": [
+        "BROWSER_BACK",
+        "BROWSER_BACK",
+        "Click Pricing",
+        "Scroll down",
+        "BROWSER_FORWARD",
+        "BROWSER_BACK"
+      ],
+      "evidence": "  url        : /pricing.html -> /\n  title      : '404 Not Found' -> 'Widget Co \u2014 Home'\n  page text  : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.",
+      "observed": "Browser back from 404 page navigated to home but did not re-fetch the content.",
+      "expected": "Navigating back should restore the previous state without re-fetching.",
+      "discrepancy": "The navigation back to the home page did not update the content, showing a stale version.",
+      "confidence": 0.9,
+      "grounded": true,
+      "episode": 1,
+      "step": 23,
+      "times_seen": 1
+    },
+    {
+      "title": "Page itself failed to load",
+      "source": "deterministic",
+      "severity": 7.0,
+      "bug_type": "document_http_error",
+      "url": "http://127.0.0.1:59978/pricing.html",
+      "repro": [
+        "Click Pricing"
+      ],
+      "evidence": "",
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 20,
+      "times_seen": 1
+    },
+    {
+      "title": "The back action caused a full navigation, which is unexpected for such a simple operation.",
+      "source": "judge",
+      "severity": 6.0,
+      "bug_type": "ui_regression",
+      "url": "",
+      "repro": [
+        "Scroll up",
+        "Type 'a' into message",
+        "Type 'Test User Input' into name",
+        "Scroll up",
+        "BROWSER_BACK"
+      ],
+      "evidence": "  url        : /contact.html -> /",
+      "observed": "Scrolling and back navigation changed the URL to / and updated the title and page text.",
+      "expected": "Back should revert to the previous state without requiring a scroll.",
+      "discrepancy": "The back action caused a full navigation, which is unexpected for such a simple operation.",
+      "confidence": 0.85,
+      "grounded": true,
+      "episode": 2,
+      "step": 13,
+      "times_seen": 1
+    },
+    {
+      "title": "Link or submit did not navigate",
+      "source": "deterministic",
+      "severity": 6.0,
+      "bug_type": "broken_navigation",
+      "url": "http://127.0.0.1:59978/pricing.html",
+      "repro": [
+        "Click Pricing"
+      ],
+      "evidence": "http://127.0.0.1:59978/pricing.html",
+      "observed": "http://127.0.0.1:59978/pricing.html",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 20,
+      "times_seen": 1
+    },
+    {
+      "title": "The input was processed correctly (as evidenced by the form state change), but there was no observable change on the page, which is unexpected for a user experi",
+      "source": "judge",
+      "severity": 5.0,
+      "bug_type": "ui_regression",
+      "url": "",
+      "repro": [
+        "Type 'a' into message",
+        "Resize the viewport to mobile",
+        "Scroll up",
+        "Type 'a' into message",
+        "Type 'Test User Input' into name"
+      ],
+      "evidence": "  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action",
+      "observed": "Typing into 'name' resulted in a change to the form state but no observable visual change on the page.",
+      "expected": "Typing into a required field should update the form state and potentially trigger some visual feedback or validation message.",
+      "discrepancy": "The input was processed correctly (as evidenced by the form state change), but there was no observable change on the page, which is unexpected for a user experience perspective.",
+      "confidence": 0.8,
+      "grounded": true,
+      "episode": 2,
+      "step": 11,
+      "times_seen": 1
+    },
+    {
+      "title": "Unexpected HTTP error response",
+      "source": "deterministic",
+      "severity": 5.0,
+      "bug_type": "http_error",
+      "url": "http://127.0.0.1:59978/pricing.html",
+      "repro": [
+        "Click Pricing"
+      ],
+      "evidence": "404 http://127.0.0.1:59978/pricing.html",
+      "observed": "404 http://127.0.0.1:59978/pricing.html",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 20,
+      "times_seen": 1
+    },
+    {
+      "title": "JavaScript error logged to the console",
+      "source": "deterministic",
+      "severity": 4.0,
+      "bug_type": "console_error",
+      "url": "http://127.0.0.1:59978/catalog.html",
+      "repro": [
+        "Click Export catalog"
+      ],
+      "evidence": "Cannot read properties of undefined (reading 'run')",
+      "observed": "Cannot read properties of undefined (reading 'run')",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 12,
+      "times_seen": 2
+    },
+    {
+      "title": "JavaScript error logged to the console",
+      "source": "deterministic",
+      "severity": 4.0,
+      "bug_type": "console_error",
+      "url": "http://127.0.0.1:59978/pricing.html",
+      "repro": [
+        "Click Pricing"
+      ],
+      "evidence": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "observed": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 20,
+      "times_seen": 1
+    }
+  ],
+  "ungrounded_excluded": []
+}

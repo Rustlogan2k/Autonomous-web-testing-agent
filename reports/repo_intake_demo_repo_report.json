@@ -1,0 +1,123 @@
+{
+  "target": "http://127.0.0.1:57346/",
+  "generated_at": "2026-08-26T07:55:08+00:00",
+  "counts": {
+    "total": 5,
+    "deterministic": 5,
+    "judge": 0,
+    "high": 1,
+    "medium": 4,
+    "low": 0,
+    "ungrounded_excluded": 0
+  },
+  "run": {
+    "repository": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\tests\\fixtures\\demo_repo",
+    "build_definition": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\tests\\fixtures\\demo_repo\\Dockerfile",
+    "build_network": "none",
+    "image": "wta-target-11e5a410f50a:latest",
+    "episodes": 2,
+    "steps_per_episode": 25,
+    "seed": 0,
+    "judge": "stub",
+    "wall_clock_s": 21.5,
+    "scope_note": "Trusted/controlled repository input, resource-limited execution. NOT a security boundary against a determined attacker: Dockerfile build commands execute before any docker run restriction applies."
+  },
+  "bugs": [
+    {
+      "title": "Page itself failed to load",
+      "source": "deterministic",
+      "severity": 7.0,
+      "bug_type": "document_http_error",
+      "url": "http://127.0.0.1:57346/pricing.html",
+      "repro": [
+        "Click Pricing"
+      ],
+      "evidence": "",
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 20,
+      "times_seen": 1
+    },
+    {
+      "title": "Link or submit did not navigate",
+      "source": "deterministic",
+      "severity": 6.0,
+      "bug_type": "broken_navigation",
+      "url": "http://127.0.0.1:57346/pricing.html",
+      "repro": [
+        "Click Pricing"
+      ],
+      "evidence": "http://127.0.0.1:57346/pricing.html",
+      "observed": "http://127.0.0.1:57346/pricing.html",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 20,
+      "times_seen": 1
+    },
+    {
+      "title": "Unexpected HTTP error response",
+      "source": "deterministic",
+      "severity": 5.0,
+      "bug_type": "http_error",
+      "url": "http://127.0.0.1:57346/pricing.html",
+      "repro": [
+        "Click Pricing"
+      ],
+      "evidence": "404 http://127.0.0.1:57346/pricing.html",
+      "observed": "404 http://127.0.0.1:57346/pricing.html",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 20,
+      "times_seen": 1
+    },
+    {
+      "title": "JavaScript error logged to the console",
+      "source": "deterministic",
+      "severity": 4.0,
+      "bug_type": "console_error",
+      "url": "http://127.0.0.1:57346/catalog.html",
+      "repro": [
+        "Click Export catalog"
+      ],
+      "evidence": "Cannot read properties of undefined (reading 'run')",
+      "observed": "Cannot read properties of undefined (reading 'run')",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 12,
+      "times_seen": 2
+    },
+    {
+      "title": "JavaScript error logged to the console",
+      "source": "deterministic",
+      "severity": 4.0,
+      "bug_type": "console_error",
+      "url": "http://127.0.0.1:57346/pricing.html",
+      "repro": [
+        "Click Pricing"
+      ],
+      "evidence": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "observed": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 20,
+      "times_seen": 1
+    }
+  ],
+  "ungrounded_excluded": []
+}

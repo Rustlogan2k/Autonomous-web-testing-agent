@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Widget Co — Catalog</title></head>
+<body>
+  <h1>Catalog</h1>
+  <a id="nav-home" href="index.html">Home</a>
+  <ul><li>Blue widget</li><li>Red widget</li></ul>
+  <!-- Seeded: the handler references an object that was never defined, so clicking
+       this logs an uncaught TypeError and the button does nothing. -->
+  <button id="btn-export">Export catalog</button>
+  <script>
+    document.getElementById('btn-export').addEventListener('click', function () {
+      window.exporter.run();
+    });
+  </script>
+</body>
+</html>

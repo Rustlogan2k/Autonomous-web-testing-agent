@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Widget Co — Thanks</title></head>
+<body>
+  <h1>Thanks</h1>
+  <a id="nav-home" href="index.html">Home</a>
+  <p id="echo">We received your message.</p>
+  <script>
+    const p = new URLSearchParams(window.location.search);
+    document.getElementById('echo').textContent =
+      'We received your message from ' + (p.get('name') || 'someone') + '.';
+  </script>
+</body>
+</html>
