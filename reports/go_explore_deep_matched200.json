@@ -1,0 +1,84 @@
+{
+  "site": "deep",
+  "args": {
+    "site": "deep",
+    "budget": 200,
+    "explore_steps": 3,
+    "depth_bias": 1.0,
+    "max_route_length": 12,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "out": "reports\\go_explore_deep_matched200.json"
+  },
+  "results_per_seed": [
+    {
+      "seed": 0,
+      "env_steps": 198,
+      "wall_clock_s": 184.6,
+      "unique_states": 8,
+      "distinct_findings": 0,
+      "max_depth": 1,
+      "mean_depth": 0.05,
+      "reached_receipt": 0,
+      "reached_review": 0,
+      "archive_max_depth": 0,
+      "archive": {
+        "cells": 8,
+        "returns_failed": 0,
+        "shorter_routes_found": 9,
+        "max_route_length": 3
+      },
+      "iterations": 66,
+      "returns_attempted": 59,
+      "returns_failed": 0,
+      "cells_discovered": 7
+    },
+    {
+      "seed": 1,
+      "env_steps": 198,
+      "wall_clock_s": 188.2,
+      "unique_states": 9,
+      "distinct_findings": 0,
+      "max_depth": 1,
+      "mean_depth": 0.1,
+      "reached_receipt": 0,
+      "reached_review": 0,
+      "archive_max_depth": 0,
+      "archive": {
+        "cells": 9,
+        "returns_failed": 0,
+        "shorter_routes_found": 3,
+        "max_route_length": 7
+      },
+      "iterations": 66,
+      "returns_attempted": 61,
+      "returns_failed": 0,
+      "cells_discovered": 8
+    },
+    {
+      "seed": 2,
+      "env_steps": 198,
+      "wall_clock_s": 178.1,
+      "unique_states": 11,
+      "distinct_findings": 0,
+      "max_depth": 2,
+      "mean_depth": 0.18,
+      "reached_receipt": 0,
+      "reached_review": 0,
+      "archive_max_depth": 1,
+      "archive": {
+        "cells": 11,
+        "returns_failed": 0,
+        "shorter_routes_found": 5,
+        "max_route_length": 7
+      },
+      "iterations": 66,
+      "returns_attempted": 59,
+      "returns_failed": 0,
+      "cells_discovered": 10
+    }
+  ]
+}

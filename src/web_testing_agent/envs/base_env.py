@@ -245,6 +245,7 @@ class WebTestingEnv(gym.Env, ABC):
             "episode_id": self._episode_id,
             "action_specs": self._action_specs,
             "page": self._page_info(self._last_raw_obs),
+            "state_key": self._state_key(self._last_raw_obs),
             "episode_context": self._episode_context(self._state_key(self._last_raw_obs), None),
             "baseline_errors": len(self.error_baseline),
             # Present on reset as well as step. A masked policy reads this on every
@@ -361,6 +362,11 @@ class WebTestingEnv(gym.Env, ABC):
         info = {
             "step": self._steps_taken,
             "action_spec": spec,
+            # The coarse state identity the exploration bonus is keyed on. Exposed
+            # because an archive-based explorer needs the same notion of "somewhere I
+            # have already been" the reward uses; recomputing it outside the env would
+            # be a second definition free to drift from this one.
+            "state_key": state_key,
             "exec_info": exec_info,
             "network_settled": settled,
             "opened_new_page": opened_new_page,
