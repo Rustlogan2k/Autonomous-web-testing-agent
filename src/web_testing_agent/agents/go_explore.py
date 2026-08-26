@@ -113,12 +113,22 @@ def to_replay_step(spec: ActionSpec) -> dict | None:
     return step
 
 
+def _url_of(info: dict) -> str:
+    return str((info.get("page") or {}).get("url", ""))
+
+
 @dataclass
 class Cell:
     """One archived state, and the cheapest known route back to it."""
 
     key: str
     path: list[dict]
+    # The URL this cell was reached at. Recorded rather than inferred: a caller that
+    # wants to know how deep a cell is (which stage of a flow it represents) was
+    # previously left guessing from the route's contents, which undercounted every time
+    # the final step was not a recognisable stage link. The fingerprint is opaque, so
+    # without this there is no exact answer available downstream.
+    url: str = ""
     # How often this cell has been *chosen as a starting point*, which is what the
     # selection weight decays — not how often it has been seen. A cell reached
     # incidentally a hundred times is still an unexplored springboard.
@@ -166,7 +176,7 @@ class Archive:
     returns_failed: int = 0
     _replaced: int = 0
 
-    def observe(self, key: str, path: list[dict], iteration: int = 0) -> bool:
+    def observe(self, key: str, path: list[dict], iteration: int = 0, url: str = "") -> bool:
         """Record a state. Returns True when it had not been seen before.
 
         A shorter route to a known cell replaces the stored one. Returning is paid for
@@ -175,11 +185,13 @@ class Archive:
         """
         existing = self.cells.get(key)
         if existing is None:
-            self.cells[key] = Cell(key=key, path=list(path), first_seen_iteration=iteration)
+            self.cells[key] = Cell(key=key, path=list(path), url=url, first_seen_iteration=iteration)
             return True
         if len(path) < len(existing.path):
             existing.path = list(path)
             self._replaced += 1
+        if url and not existing.url:
+            existing.url = url
         return False
 
     def select(self, rng: random.Random, depth_bias: float = 1.0) -> Cell | None:
@@ -291,7 +303,7 @@ def run_go_explore(
             route_valid = False
 
         if route_valid:
-            archive.observe(landed, route, iteration)
+            archive.observe(landed, route, iteration, url=_url_of(info))
 
         for _ in range(explore_steps):
             specs = info.get("action_specs") or []
@@ -320,7 +332,7 @@ def run_go_explore(
             # Otherwise the action changed nothing, so `route` still describes where we
             # are and remains usable. A dead control is not a broken route.
 
-            if route_valid and archive.observe(current_key, route, iteration):
+            if route_valid and archive.observe(current_key, route, iteration, url=_url_of(info)):
                 stats.cells_discovered += 1
                 if cell is not None:
                     cell.discoveries += 1

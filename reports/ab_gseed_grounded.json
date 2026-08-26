@@ -1,0 +1,370 @@
+{
+  "run_id": "gseed",
+  "judge": "ollama/qwen2.5:7b-instruct",
+  "window_steps": 6,
+  "grounded": true,
+  "profile_path": "data\\profiles\\gitea.json",
+  "usage": {
+    "model": "ollama/qwen2.5:7b-instruct",
+    "calls": 14,
+    "prompt_tokens": 33554,
+    "output_tokens": 2009,
+    "wall_clock_s": 156.1,
+    "seconds_per_call": 11.15,
+    "num_ctx": 8192,
+    "prompt_style": "compact",
+    "prompts_over_context": 0,
+    "schema_ignored": 0
+  },
+  "corpora": {
+    "scripted": {
+      "corpus": "scripted",
+      "judge": "ollama/qwen2.5:7b-instruct",
+      "windows": 14,
+      "failed_calls": 0,
+      "positive_verdicts": 12,
+      "episodes_scored": 7,
+      "detected": {
+        "GITEA-01": [
+          1
+        ],
+        "GITEA-02": [
+          5
+        ],
+        "GITEA-03": [
+          9,
+          11
+        ],
+        "GITEA-04": [
+          14
+        ],
+        "GITEA-05": [
+          19
+        ],
+        "GITEA-06": [
+          24,
+          25,
+          26,
+          27,
+          28
+        ]
+      },
+      "missed": [],
+      "recall": 1.0,
+      "control_windows": 2,
+      "control_positives": 1,
+      "false_positive_rate": 0.5,
+      "false_positive_episodes": {
+        "7": 1
+      },
+      "unattributed_windows": 0,
+      "unattributed_positives": 0,
+      "unattributed_rate": 0.0,
+      "bug_windows": 12,
+      "bug_positives": 11,
+      "discrimination": 0.417,
+      "checked_positives": 12,
+      "grounded_positives": 12,
+      "evidence_grounded": 1.0,
+      "window_steps": 6,
+      "skip_idle": true,
+      "wall_clock_s": 156.1,
+      "gated": true,
+      "gate": {
+        "steps": 16,
+        "judged": 14,
+        "skipped": 2,
+        "judged_fraction": 0.875,
+        "reasons": {
+          "deterministic trigger fired": 8,
+          "the page changed": 5,
+          "activated a control that promises an effect": 1,
+          "REFRESH promises no effect and changed nothing": 1,
+          "SCROLL promises no effect and changed nothing": 1
+        }
+      },
+      "gate_skipped": [
+        {
+          "episode": 7,
+          "global_step": 31,
+          "reason": "REFRESH promises no effect and changed nothing"
+        },
+        {
+          "episode": 7,
+          "global_step": 32,
+          "reason": "SCROLL promises no effect and changed nothing"
+        }
+      ],
+      "profile": {
+        "name": "Gitea",
+        "provenance": "manual",
+        "windows_grounded": 14,
+        "mean_profile_chars": 1463
+      },
+      "judgments": [
+        {
+          "episode": 1,
+          "global_step": 1,
+          "script": "organizations_tab_opens_user_listing",
+          "expected_bugs": [
+            "GITEA-01"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 0.7,
+          "confidence": 0.9,
+          "step": 1,
+          "observed": "Clicking on 'Organizations' changed the URL to /explore/users, but several elements were hidden and a console error occurred.",
+          "expected": "Navigating to the Organizations tab should render the appropriate content without breaking other parts of the page or causing errors.",
+          "discrepancy": "The page text changed to show user details instead of repository listings. Additionally, there was a console error indicating an issue with rendering.",
+          "evidence": "  console    : Cannot read properties of null (reading 'render')",
+          "error": null
+        },
+        {
+          "episode": 2,
+          "global_step": 5,
+          "script": "export_results_is_dead",
+          "expected_bugs": [
+            "GITEA-02"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "dead_control",
+          "severity": 0.6,
+          "confidence": 0.9,
+          "step": 1,
+          "observed": "Clicking 'Export results' produced no change, no navigation, and no observable effect.",
+          "expected": "Clicking a control labeled 'Export results' should trigger an export action, such as opening a download dialog or redirecting to a new page with the exported data.",
+          "discrepancy": "A control that promises to export results did nothing, so it is not functioning as intended.",
+          "evidence": "  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action",
+          "error": null
+        },
+        {
+          "episode": 3,
+          "global_step": 9,
+          "script": "account_unreachable_on_narrow_viewport",
+          "expected_bugs": [
+            "GITEA-03"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 0.5,
+          "confidence": 0.8,
+          "step": 1,
+          "observed": "Resizing to mobile hid several navigation links and the 'New' button, but left other links reachable.",
+          "expected": "Mobile view should provide a simplified interface while keeping essential navigation options available.",
+          "discrepancy": "The 'Explore', 'Help', 'Register', and unnamed link were hidden, making them unreachable. This could make navigation more difficult for mobile users.",
+          "evidence": "  now hidden : a 'Explore', a 'Help', a 'Register', a (unnamed)",
+          "error": null
+        },
+        {
+          "episode": 3,
+          "global_step": 11,
+          "script": "account_unreachable_on_narrow_viewport",
+          "expected_bugs": [
+            "GITEA-03"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 0.6,
+          "confidence": 0.85,
+          "step": 3,
+          "observed": "Resizing to desktop restored all hidden links except for the language dropdown.",
+          "expected": "Resizing should not affect the visibility of links unless explicitly controlled by the application.",
+          "discrepancy": "The language dropdown links were hidden during mobile view but should have been visible on desktop.",
+          "evidence": "  now hidden : a 'English', a 'Espa\u00f1ol', a 'Fran\u00e7ais', a 'Italiano'",
+          "error": null
+        },
+        {
+          "episode": 4,
+          "global_step": 14,
+          "script": "search_box_cleared_after_searching",
+          "expected_bugs": [
+            "GITEA-04"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 0.7,
+          "confidence": 0.9,
+          "step": 1,
+          "observed": "Typing a search query did not change the URL or update the repository list.",
+          "expected": "Entering a search query should filter the repository list based on the keyword.",
+          "discrepancy": "The search field was filled, but no observable change occurred in the repository list.",
+          "evidence": "  url        : /explore/repos (unchanged)",
+          "error": null
+        },
+        {
+          "episode": 4,
+          "global_step": 15,
+          "script": "search_box_cleared_after_searching",
+          "expected_bugs": [
+            "GITEA-04"
+          ],
+          "grounded": null,
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 0.95,
+          "step": 2,
+          "observed": "Searching for 'search query' resulted in an empty repository list.",
+          "expected": "An empty search keyword should yield an empty result list, which is intended behavior.",
+          "discrepancy": "none",
+          "evidence": "  page text  : No matching repositories found. | Powered by Gitea | Version: 1.21.11 Page:",
+          "error": null
+        },
+        {
+          "episode": 5,
+          "global_step": 19,
+          "script": "user_listing_throws",
+          "expected_bugs": [
+            "GITEA-05"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 0.7,
+          "confidence": 0.9,
+          "step": 1,
+          "observed": "Clicking on 'Users' caused the page to navigate, but several elements were hidden and a console error occurred.",
+          "expected": "Navigating to /explore/users should show relevant content for that tab without breaking other parts of the UI or causing errors.",
+          "discrepancy": "The navigation to /explore/users resulted in some elements being hidden (language options) and a console error, which suggests an issue with rendering.",
+          "evidence": "  now hidden : a 'Latvie\u0161u', a 'Magyar nyelv', a 'Nederlands', a 'Polski', a 'Portugu\u00eas de Portugal', a 'Portugu\u00eas do Brasil', a 'Suomi', a 'Svenska', a 'T\u00fcrk\u00e7e'\n  console    : Cannot read properties of null (reading 'render')",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 24,
+          "script": "repository_home_never_settles",
+          "expected_bugs": [
+            "GITEA-06"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 0.7,
+          "confidence": 0.85,
+          "step": 1,
+          "observed": "Clicking on 'tester / notes' navigated to its repository page, but the page continued to mutate for 3.2 seconds.",
+          "expected": "The page should stabilize after navigation without further mutations.",
+          "discrepancy": "The page is still mutating after 3.2 seconds, which suggests an ongoing issue with rendering or data loading.",
+          "evidence": "  NOT SETTLED: the page was still mutating after 3.2s",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 25,
+          "script": "repository_home_never_settles",
+          "expected_bugs": [
+            "GITEA-06"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 0.7,
+          "confidence": 0.9,
+          "step": 2,
+          "observed": "No observable change was reported for Step 2, even though the page was still mutating.",
+          "expected": "The page should have been fully rendered or settled after the initial click action.",
+          "discrepancy": "The page was still mutating after 3.2 seconds, indicating incomplete rendering or a continuous update loop.",
+          "evidence": "  effect     : the page DID change, but not in the text, form or layout fields summarized here (this is a limit of this summary, not evidence that nothing happened)",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 26,
+          "script": "repository_home_never_settles",
+          "expected_bugs": [
+            "GITEA-06"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 0.7,
+          "confidence": 0.9,
+          "step": 3,
+          "observed": "The page was still mutating after multiple NO_OP actions, indicating ongoing changes without observable effects in the text, form, or layout fields.",
+          "expected": "No-op actions should not cause any visible changes to the page content, form state, or layout.",
+          "discrepancy": "The page continued to mutate even with no operations, suggesting an issue with the application's handling of ongoing mutations.",
+          "evidence": "  effect     : the page DID change, but not in the text, form or layout fields summarized here (this is a limit of this summary, not evidence that nothing happened)",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 27,
+          "script": "repository_home_never_settles",
+          "expected_bugs": [
+            "GITEA-06"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 0.7,
+          "confidence": 0.9,
+          "step": 4,
+          "observed": "The page was still mutating after multiple NO_OP actions, indicating ongoing changes without visible effects in the text, form, or layout fields.",
+          "expected": "NO_OP should not cause any observable change if no action is intended to be performed.",
+          "discrepancy": "The page continued to mutate even though no explicit action was taken, suggesting an unintended side effect or a bug in handling NO_OP actions.",
+          "evidence": "  effect     : the page DID change, but not in the text, form or layout fields summarized here (this is a limit of this summary, not evidence that nothing happened)",
+          "error": null
+        },
+        {
+          "episode": 6,
+          "global_step": 28,
+          "script": "repository_home_never_settles",
+          "expected_bugs": [
+            "GITEA-06"
+          ],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 0.8,
+          "confidence": 0.95,
+          "step": 5,
+          "observed": "The page was still mutating after multiple NO_OP actions without any changes to the text, form, or layout.",
+          "expected": "NO_OP should have no effect on the page state if nothing is happening.",
+          "discrepancy": "The page continued to mutate even with repeated NO_OP actions, suggesting an ongoing background process or infinite loop.",
+          "evidence": "  NOT SETTLED: the page was still mutating after 3.0s",
+          "error": null
+        },
+        {
+          "episode": 7,
+          "global_step": 29,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "grounded": true,
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 0.6,
+          "confidence": 0.85,
+          "step": 1,
+          "observed": "Clicking 'Repositories' did not cause any changes visible in the text, form, or layout fields.",
+          "expected": "Clicking 'Repositories' should navigate to a different page within the explore section.",
+          "discrepancy": "The click on 'Repositories' did not result in navigation as expected; the URL and other fields remained unchanged.",
+          "evidence": "  url        : /explore/repos (unchanged)",
+          "error": null
+        },
+        {
+          "episode": 7,
+          "global_step": 33,
+          "script": "happy_path",
+          "expected_bugs": [],
+          "grounded": null,
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 0.95,
+          "step": 5,
+          "observed": "Clicking 'Register' navigated to /user/sign_up, showing the registration form.",
+          "expected": "Clicking 'Register' should navigate to the sign-up page and display the necessary fields.",
+          "discrepancy": "none",
+          "evidence": "  url        : /explore/repos -> /user/sign_up",
+          "error": null
+        }
+      ]
+    }
+  }
+}

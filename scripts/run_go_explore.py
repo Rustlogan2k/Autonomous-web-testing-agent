@@ -156,15 +156,14 @@ def run_seed(base_url: str, seed: int, args) -> dict:
 
 
 def depth_of_cell(cell) -> int:  # noqa: ANN001
-    """A cell's flow depth, read off the route rather than the fingerprint.
+    """A cell's flow depth, read off the URL it was reached at.
 
-    The fingerprint is opaque, so depth is inferred from how many `Continue`-style
-    stage transitions the stored route contains. Counting route steps that target a
-    stage link is exact here because the fixture reveals exactly one per stage.
+    Previously inferred by counting stage links in the stored route, which undercounted
+    whenever the last step was not a recognisable one: a run whose step stream reached
+    depth 5 reported an archive depth of 3. The cell now records its URL, so this is a
+    lookup rather than an inference.
     """
-    return sum(1 for step in cell.path if str(step.get("id", "")).startswith("to-step")) + (
-        1 if any(str(s.get("id", "")) == "start-order" for s in cell.path) else 0
-    )
+    return depth_of(cell.url)
 
 
 def main() -> None:
