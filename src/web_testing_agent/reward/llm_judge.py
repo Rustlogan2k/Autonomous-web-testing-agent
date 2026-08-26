@@ -155,7 +155,32 @@ class JudgeRewardModel(FunctionalRewardModel):
             return RewardSignal(True, 0.0, "", {"judge_error": verdict.error})
 
         self.verdicts.append(
-            {"episode": self._episode, "step": self._step, "seconds": round(elapsed, 2), **verdict.to_dict()}
+            {
+                # The model's own fields go first and the harness's authoritative ones
+                # overwrite them, never the other way round. `Verdict` carries its own
+                # `step` -- the index *within the window*, 1..WINDOW_STEPS, which is what
+                # the prompt asks the model to name -- and spreading it last silently
+                # replaced the episode step with it. Every verdict logged before
+                # 2026-08-26 therefore reports a number between 1 and 6 as its location,
+                # which is why eight findings in one run all claimed to be at "step 6".
+                # A finding whose location is wrong is not reproducible.
+                **verdict.to_dict(),
+                "episode": self._episode,
+                "step": self._step,
+                "window_step": verdict.step,
+                "seconds": round(elapsed, 2),
+                # The actions that led here, oldest first. A verdict without them names
+                # a defect nobody can reproduce, and the window the judge was shown is
+                # exactly the sequence a reader would have to repeat. Kept as the raw
+                # recorded action dicts rather than prose so the report engine can both
+                # render them for a human and replay them as a script.
+                "repro": [dict(record.action) for record in window.records],
+                # Retained so `is_grounded` can be checked against what the model was
+                # actually shown. Re-rendering the window later is not equivalent — the
+                # renderer changes, and a citation must be checked against the text that
+                # produced it, not against today's version of it.
+                "window_text": rendered,
+            }
         )
         counted = verdict.is_bug and verdict.confidence >= self.min_confidence
         if verdict.is_bug:
@@ -267,6 +292,10 @@ class JudgeRewardModel(FunctionalRewardModel):
                        {"name": self.profile.name, "provenance": self.profile.provenance},
             "calls": self.calls,
             "failed_calls": self.failed_calls,
+            # Surfaced so the bug report can apply the same floor the reward did. A
+            # document that lists a finding the run itself declined to pay for would
+            # disagree with the signal that produced it.
+            "min_confidence": self.min_confidence,
             "judge_seconds": round(self.judge_seconds, 1),
             "seconds_per_call": round(self.judge_seconds / self.calls, 2) if self.calls else 0.0,
             "gate": self.gate_stats.to_dict() if self.gated else {"enabled": False},

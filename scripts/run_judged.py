@@ -33,6 +33,7 @@ for _stream in (sys.stdout, sys.stderr):
 from web_testing_agent.envs.functional_env import WebFunctionalEnv  # noqa: E402
 from web_testing_agent.envs.types import MAX_ACTIONS  # noqa: E402
 from web_testing_agent.evaluation import RandomPolicy, run_rollout  # noqa: E402
+from web_testing_agent.reporting import build_report, render_markdown  # noqa: E402
 from web_testing_agent.intake import ApplicationProfile  # noqa: E402
 from web_testing_agent.judge import OllamaJudge, StubJudge  # noqa: E402
 from web_testing_agent.judge.ollama import DEFAULT_HOST, DEFAULT_NUM_CTX  # noqa: E402
@@ -66,6 +67,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-calls-per-episode", type=int, default=0, help="0 = unlimited")
     parser.add_argument("--min-confidence", type=float, default=0.0)
     parser.add_argument("--out", type=Path, default=None)
+    parser.add_argument(
+        "--report", type=Path, default=None,
+        help="where to write the human-readable bug report (Markdown; a .json twin is "
+             "written beside it). Defaults to <out>_report.md.",
+    )
     return parser.parse_args()
 
 
@@ -141,6 +147,47 @@ def run(base_url: str, args: argparse.Namespace) -> dict:
     }
 
 
+def write_bug_report(payload: dict, out_path: Path) -> Path:
+    """Turn one run's raw output into the document a person actually reads.
+
+    Both producers are passed in together and kept distinguishable by the engine: the
+    rollout's deduplicated deterministic findings, and the judge's verdicts. The
+    confidence floor is the same one the reward path used, so the report cannot claim a
+    finding the run itself declined to pay for.
+    """
+    bug_report = build_report(
+        target=payload["target"],
+        findings=payload["rollout"].get("findings") or [],
+        verdicts=payload.get("verdicts") or [],
+        min_confidence=payload["judge"].get("min_confidence", 0.0),
+        run_meta={
+            "episodes": payload["episodes"],
+            "steps_per_episode": payload["steps_per_episode"],
+            "seed": payload["seed"],
+            "wall_clock_s": payload["wall_clock_s"],
+            "judge": payload["judge"].get("judge"),
+            "judge_calls": payload["judge"].get("calls"),
+        },
+    )
+    out_path.write_text(render_markdown(bug_report), encoding="utf-8")
+    out_path.with_suffix(".json").write_text(
+        json.dumps(bug_report.to_dict(), indent=2, default=str), encoding="utf-8"
+    )
+    counts = bug_report.counts
+    print()
+    print("=" * 74)
+    print("bug report")
+    print("=" * 74)
+    print(f"findings         : {counts['total']} "
+          f"({counts['deterministic']} deterministic, {counts['judge']} judge)")
+    print(f"severity         : {counts['high']} high, {counts['medium']} medium, {counts['low']} low")
+    if counts["ungrounded_excluded"]:
+        print(f"excluded         : {counts['ungrounded_excluded']} verdict(s) whose evidence "
+              f"was not in the window")
+    print(f"written to       : {out_path}")
+    return out_path
+
+
 def main() -> None:
     args = parse_args()
     if args.toy:
@@ -154,6 +201,8 @@ def main() -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
     logger.info("Wrote {}", out)
+
+    write_bug_report(payload, (args.report or out.with_name(out.stem + "_report.md")))
 
 
 if __name__ == "__main__":

@@ -303,3 +303,36 @@ def test_usage_summary_reports_the_gate_and_the_profile_provenance():
     assert summary["calls"] == 1
     assert summary["gate"]["skipped"] == 1
     assert summary["grounded"] is False
+
+
+def test_the_recorded_step_is_the_episode_step_not_the_windows_internal_index():
+    """`Verdict` carries its own `step` and it means something different.
+
+    The prompt asks the model which step of the window it is judging, so `Verdict.step`
+    is 1..WINDOW_STEPS. Spreading `verdict.to_dict()` over the harness's own fields let
+    that overwrite the episode step, and a run of 50 steps produced eight findings all
+    claiming to be at "step 6". A finding whose location is wrong cannot be reproduced,
+    and nothing downstream could detect it -- the number was plausible.
+    """
+    from web_testing_agent.judge.verdict import Verdict
+
+    class _FixedJudge:
+        name = "fixed"
+
+        def judge(self, window_text, profile_text=None):  # noqa: ANN001, ARG002
+            # Always claims to be judging the last step of the window.
+            return Verdict(is_bug=True, bug_type="dead_control", severity=0.5,
+                           confidence=0.9, step=6, evidence="effect     : NO OBSERVABLE CHANGE")
+
+    model = JudgeRewardModel(judge=_FixedJudge(), gated=False)
+    model.start_episode()
+
+    for index in range(9):
+        # Alternate the pages so each step genuinely changes state and is judged.
+        before, after = (PAGE_A, PAGE_B) if index % 2 == 0 else (PAGE_B, PAGE_A)
+        model.score(_obs("/a", before), _spec(), _obs("/b", after), context=_ctx())
+
+    steps = [v["step"] for v in model.verdicts]
+    assert steps == list(range(1, 10)), f"episode steps were overwritten: {steps}"
+    # The model's own answer is kept, just not where the harness's step belongs.
+    assert {v["window_step"] for v in model.verdicts} == {6}

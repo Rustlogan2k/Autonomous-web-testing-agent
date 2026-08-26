@@ -1,0 +1,1622 @@
+{
+  "target": "http://127.0.0.1:62081/index.html",
+  "episodes": 2,
+  "steps_per_episode": 25,
+  "seed": 0,
+  "wall_clock_s": 215.2,
+  "rollout": {
+    "label": "judged-random",
+    "target_url": "http://127.0.0.1:62081/index.html",
+    "episodes": 2,
+    "steps": 50,
+    "wall_clock_s": 215.05,
+    "steps_per_second": 0.233,
+    "total_reward": 150.55,
+    "mean_episode_reward": 75.275,
+    "episode_rewards": [
+      98.45,
+      52.1
+    ],
+    "unique_states": 7,
+    "valid_action_rate": 1.0,
+    "exec_success_rate": 0.94,
+    "noop_steps": 9,
+    "distinct_findings": 11,
+    "trigger_counts": {
+      "broken_navigation": 2,
+      "console_error": 6,
+      "document_http_error": 4,
+      "http_error": 4
+    },
+    "findings": [
+      {
+        "trigger": "console_error",
+        "url": "http://127.0.0.1:62081/widgets.html",
+        "action": "CLICK",
+        "element": "Generate report",
+        "detail": "Cannot read properties of undefined (reading 'build')",
+        "first_seen_step": 11,
+        "times_seen": 2
+      },
+      {
+        "trigger": "console_error",
+        "url": "http://127.0.0.1:62081/pricing.html",
+        "action": "CLICK",
+        "element": "Pricing",
+        "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "first_seen_step": 15,
+        "times_seen": 2
+      },
+      {
+        "trigger": "http_error",
+        "url": "http://127.0.0.1:62081/pricing.html",
+        "action": "CLICK",
+        "element": "Pricing",
+        "detail": "404 http://127.0.0.1:62081/pricing.html",
+        "first_seen_step": 15,
+        "times_seen": 2
+      },
+      {
+        "trigger": "document_http_error",
+        "url": "http://127.0.0.1:62081/pricing.html",
+        "action": "CLICK",
+        "element": "Pricing",
+        "detail": "",
+        "first_seen_step": 15,
+        "times_seen": 2
+      },
+      {
+        "trigger": "broken_navigation",
+        "url": "http://127.0.0.1:62081/pricing.html",
+        "action": "CLICK",
+        "element": "Pricing",
+        "detail": "http://127.0.0.1:62081/pricing.html",
+        "first_seen_step": 15,
+        "times_seen": 2
+      },
+      {
+        "trigger": "console_error",
+        "url": "http://127.0.0.1:62081/pricing.html",
+        "action": "BROWSER_FORWARD",
+        "element": "BROWSER_FORWARD",
+        "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "first_seen_step": 17,
+        "times_seen": 1
+      },
+      {
+        "trigger": "http_error",
+        "url": "http://127.0.0.1:62081/pricing.html",
+        "action": "BROWSER_FORWARD",
+        "element": "BROWSER_FORWARD",
+        "detail": "404 http://127.0.0.1:62081/pricing.html",
+        "first_seen_step": 17,
+        "times_seen": 1
+      },
+      {
+        "trigger": "document_http_error",
+        "url": "http://127.0.0.1:62081/pricing.html",
+        "action": "BROWSER_FORWARD",
+        "element": "BROWSER_FORWARD",
+        "detail": "",
+        "first_seen_step": 17,
+        "times_seen": 1
+      },
+      {
+        "trigger": "console_error",
+        "url": "http://127.0.0.1:62081/pricing.html",
+        "action": "REFRESH",
+        "element": "REFRESH",
+        "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "first_seen_step": 20,
+        "times_seen": 1
+      },
+      {
+        "trigger": "http_error",
+        "url": "http://127.0.0.1:62081/pricing.html",
+        "action": "REFRESH",
+        "element": "REFRESH",
+        "detail": "404 http://127.0.0.1:62081/pricing.html",
+        "first_seen_step": 20,
+        "times_seen": 1
+      },
+      {
+        "trigger": "document_http_error",
+        "url": "http://127.0.0.1:62081/pricing.html",
+        "action": "REFRESH",
+        "element": "REFRESH",
+        "detail": "",
+        "first_seen_step": 20,
+        "times_seen": 1
+      }
+    ]
+  },
+  "judge": {
+    "judge": "ollama/qwen2.5:7b-instruct",
+    "grounded": false,
+    "profile": null,
+    "calls": 22,
+    "failed_calls": 0,
+    "min_confidence": 0.0,
+    "judge_seconds": 193.7,
+    "seconds_per_call": 8.8,
+    "gate": {
+      "steps": 50,
+      "judged": 22,
+      "skipped": 28,
+      "judged_fraction": 0.44,
+      "reasons": {
+        "the page changed": 18,
+        "RESIZE_VIEWPORT promises no effect and changed nothing": 9,
+        "idle no-op": 9,
+        "SCROLL promises no effect and changed nothing": 5,
+        "activated a control that promises an effect": 4,
+        "action did not execute and changed nothing": 3,
+        "REFRESH promises no effect and changed nothing": 1,
+        "TYPE promises no effect and changed nothing": 1
+      }
+    },
+    "positives": 18
+  },
+  "verdicts": [
+    {
+      "is_bug": true,
+      "bug_type": "state_persistence",
+      "severity": 0.4,
+      "confidence": 0.9,
+      "step": 1,
+      "observed": "Clicking 'Settings' navigated to /settings.html with a new title and form state.",
+      "expected": "Navigating to /settings.html should update the page title and initialize the form fields correctly.",
+      "discrepancy": "The darkmode, display_name, and newsletter fields are missing their expected states (off, empty, off).",
+      "evidence": "  form state : darkmode: absent -> off; display_name: absent -> empty; newsletter: absent -> off",
+      "error": null,
+      "episode": 1,
+      "window_step": 1,
+      "seconds": 10.44,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-settings\"]",
+          "element": "Settings",
+          "description": "click 'Settings'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "settings.html"
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : CLICK on 'Settings'\n  selector   : [id=\"nav-settings\"]\n  url        : /index.html -> /settings.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Settings'\n  form state : darkmode: absent -> off; display_name: absent -> empty; newsletter: absent -> off\n  constraints: darkmode declares [type=checkbox]; display_name declares [type=text]; newsletter declares [type=checkbox]\n  page text  : Acme Widgets \u2014 Settings | Account settings | \u2190 Home | Email me the newsletter | Use dark mode | Display name | Save settings\n\nJudge STEP 1."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "dead_control",
+      "severity": 0.6,
+      "confidence": 0.85,
+      "step": 2,
+      "observed": "Clicking 'Save settings' produced a confirmation message but did not navigate to another page.",
+      "expected": "Clicking 'Save settings' should save the form data and navigate to a success or confirmation page.",
+      "discrepancy": "A control that promises to save and redirect did not change the URL, suggesting it failed to execute properly.",
+      "evidence": "url        : /settings.html (unchanged)",
+      "error": null,
+      "episode": 1,
+      "window_step": 2,
+      "seconds": 9.2,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-settings\"]",
+          "element": "Settings",
+          "description": "click 'Settings'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "settings.html"
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"btn-save\"]",
+          "element": "Save settings",
+          "description": "click 'Save settings'",
+          "params": {
+            "navigational": false,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": ""
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : CLICK on 'Settings'\n  selector   : [id=\"nav-settings\"]\n  url        : /index.html -> /settings.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Settings'\n  form state : darkmode: absent -> off; display_name: absent -> empty; newsletter: absent -> off\n  constraints: darkmode declares [type=checkbox]; display_name declares [type=text]; newsletter declares [type=checkbox]\n  page text  : Acme Widgets \u2014 Settings | Account settings | \u2190 Home | Email me the newsletter | Use dark mode | Display name | Save settings\n\nSTEP 2\n  action     : CLICK on 'Save settings'\n  selector   : [id=\"btn-save\"]\n  url        : /settings.html (unchanged)\n  text added : Settings saved.\n\nJudge STEP 2."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "state_persistence",
+      "severity": 0.6,
+      "confidence": 0.85,
+      "step": 3,
+      "observed": "Clicking '\u2190 Home' navigated back to /index.html but did not restore the form state or settings.",
+      "expected": "Navigating back should restore the previous page's state including form inputs and settings.",
+      "discrepancy": "The form state was lost after navigating back, which contradicts expected behavior.",
+      "evidence": "form state : darkmode: absent -> off; display_name: absent -> empty; newsletter: absent -> off",
+      "error": null,
+      "episode": 1,
+      "window_step": 3,
+      "seconds": 9.81,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-settings\"]",
+          "element": "Settings",
+          "description": "click 'Settings'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "settings.html"
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"btn-save\"]",
+          "element": "Save settings",
+          "description": "click 'Save settings'",
+          "params": {
+            "navigational": false,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": ""
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "input, textarea, select, button, a[href] >> nth=0",
+          "element": "\u2190 Home",
+          "description": "click '\u2190 Home'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "index.html"
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : CLICK on 'Settings'\n  selector   : [id=\"nav-settings\"]\n  url        : /index.html -> /settings.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Settings'\n  form state : darkmode: absent -> off; display_name: absent -> empty; newsletter: absent -> off\n  constraints: darkmode declares [type=checkbox]; display_name declares [type=text]; newsletter declares [type=checkbox]\n  page text  : Acme Widgets \u2014 Settings | Account settings | \u2190 Home | Email me the newsletter | Use dark mode | Display name | Save settings\n\nSTEP 2\n  action     : CLICK on 'Save settings'\n  selector   : [id=\"btn-save\"]\n  url        : /settings.html (unchanged)\n  text added : Settings saved.\n\nSTEP 3\n  action     : CLICK on '\u2190 Home'\n  selector   : input, textarea, select, button, a[href] >> nth=0\n  url        : /settings.html -> /index.html\n  title      : 'Acme Widgets \u2014 Settings' -> 'Acme Widgets \u2014 Home'\n  page text  : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started | Create an account to continue. | Create account | About | Acme Widgets keeps your account, your widget inventory and your reports in one place. Sign in to get started, or adjust how the app behaves under Settings.\n\nJudge STEP 3."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "ui_regression",
+      "severity": 0.6,
+      "confidence": 0.85,
+      "step": 4,
+      "observed": "Resizing to mobile hid a#nav-signup and a#cta-signup; the only links left are Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html.",
+      "expected": "Mobile resizing should not make sign-up options unreachable, as they were still reachable before the resize.",
+      "discrepancy": "The sign-up options became unreachable after the resize, which is unexpected behavior.",
+      "evidence": "NO LONGER reachable: Sign up -> signup.html; Create account -> signup.html",
+      "error": null,
+      "episode": 1,
+      "window_step": 4,
+      "seconds": 10.92,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-settings\"]",
+          "element": "Settings",
+          "description": "click 'Settings'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "settings.html"
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"btn-save\"]",
+          "element": "Save settings",
+          "description": "click 'Save settings'",
+          "params": {
+            "navigational": false,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": ""
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "input, textarea, select, button, a[href] >> nth=0",
+          "element": "\u2190 Home",
+          "description": "click '\u2190 Home'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "index.html"
+          }
+        },
+        {
+          "type": "RESIZE_VIEWPORT",
+          "selector": null,
+          "element": "",
+          "description": "resize viewport to mobile",
+          "params": {
+            "preset": "mobile"
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : CLICK on 'Settings'\n  selector   : [id=\"nav-settings\"]\n  url        : /index.html -> /settings.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Settings'\n  form state : darkmode: absent -> off; display_name: absent -> empty; newsletter: absent -> off\n  constraints: darkmode declares [type=checkbox]; display_name declares [type=text]; newsletter declares [type=checkbox]\n  page text  : Acme Widgets \u2014 Settings | Account settings | \u2190 Home | Email me the newsletter | Use dark mode | Display name | Save settings\n\nSTEP 2\n  action     : CLICK on 'Save settings'\n  selector   : [id=\"btn-save\"]\n  url        : /settings.html (unchanged)\n  text added : Settings saved.\n\nSTEP 3\n  action     : CLICK on '\u2190 Home'\n  selector   : input, textarea, select, button, a[href] >> nth=0\n  url        : /settings.html -> /index.html\n  title      : 'Acme Widgets \u2014 Settings' -> 'Acme Widgets \u2014 Home'\n  page text  : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started | Create an account to continue. | Create account | About | Acme Widgets keeps your account, your widget inventory and your reports in one place. Sign in to get started, or adjust how the app behaves under Settings.\n\nSTEP 4\n  action     : RESIZE_VIEWPORT with value 'mobile'\n  url        : /index.html (unchanged)\n  now hidden : a#nav-signup, a#cta-signup\n  NO LONGER reachable: Sign up -> signup.html; Create account -> signup.html\n  links still reachable: Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html\n\nJudge STEP 4."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 0.9,
+      "step": 10,
+      "observed": "Clicking 'Widgets' navigated to /widgets.html and updated the title and page text.",
+      "expected": "Clicking 'Widgets' should navigate to /widgets.html and update the title and page content accordingly.",
+      "discrepancy": "none",
+      "evidence": "url        : /index.html -> /widgets.html",
+      "error": null,
+      "episode": 1,
+      "window_step": 6,
+      "seconds": 8.83,
+      "repro": [
+        {
+          "type": "RESIZE_VIEWPORT",
+          "selector": null,
+          "element": "",
+          "description": "resize viewport to mobile",
+          "params": {
+            "preset": "mobile"
+          }
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll down",
+          "params": {
+            "direction": "down",
+            "amount": 600
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-widgets\"]",
+          "element": "Widgets",
+          "description": "click 'Widgets'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "widgets.html"
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  hidden     : a#nav-signup, a#cta-signup\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : RESIZE_VIEWPORT with value 'mobile'\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : SCROLL\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : CLICK on 'Widgets'\n  selector   : [id=\"nav-widgets\"]\n  url        : /index.html -> /widgets.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Widgets'\n  page text  : Acme Widgets \u2014 Widgets | \u2190 Home | Increment counter | Counter: | 0 | Export data | Generate report | Sync now | Syncing\u2026 | Scroll down for the archive link. | Open archive\n  now shown  : a#nav-signup, a#cta-signup\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "js_error",
+      "severity": 0.8,
+      "confidence": 0.95,
+      "step": 11,
+      "observed": "Clicking 'Generate report' produced no change, no navigation, and a console error.",
+      "expected": "Clicking 'Generate report' should trigger a request to generate a report or show a report.",
+      "discrepancy": "A control that promises to generate a report did nothing and issued an uncaught console error.",
+      "evidence": "console    : Cannot read properties of undefined (reading 'build')",
+      "error": null,
+      "episode": 1,
+      "window_step": 6,
+      "seconds": 9.99,
+      "repro": [
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll down",
+          "params": {
+            "direction": "down",
+            "amount": 600
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-widgets\"]",
+          "element": "Widgets",
+          "description": "click 'Widgets'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "widgets.html"
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"btn-report\"]",
+          "element": "Generate report",
+          "description": "click 'Generate report'",
+          "params": {
+            "navigational": false,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": ""
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  hidden     : a#nav-signup, a#cta-signup\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : SCROLL\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : CLICK on 'Widgets'\n  selector   : [id=\"nav-widgets\"]\n  url        : /index.html -> /widgets.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Widgets'\n  page text  : Acme Widgets \u2014 Widgets | \u2190 Home | Increment counter | Counter: | 0 | Export data | Generate report | Sync now | Syncing\u2026 | Scroll down for the archive link. | Open archive\n  now shown  : a#nav-signup, a#cta-signup\n\nSTEP 6\n  action     : CLICK on 'Generate report'\n  selector   : [id=\"btn-report\"]\n  url        : /widgets.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'build')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "race_condition",
+      "severity": 0.8,
+      "confidence": 0.95,
+      "step": 12,
+      "observed": "Rapid clicking on 'Generate report' produced no change, no navigation, and multiple console errors.",
+      "expected": "Clicking 'Generate report' should trigger a request to generate a report.",
+      "discrepancy": "Repeated rapid clicks issued multiple requests but had no effect, indicating a race condition or unhandled error.",
+      "evidence": "console    : Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build')",
+      "error": null,
+      "episode": 1,
+      "window_step": 6,
+      "seconds": 11.89,
+      "repro": [
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll down",
+          "params": {
+            "direction": "down",
+            "amount": 600
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-widgets\"]",
+          "element": "Widgets",
+          "description": "click 'Widgets'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "widgets.html"
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"btn-report\"]",
+          "element": "Generate report",
+          "description": "click 'Generate report'",
+          "params": {
+            "navigational": false,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": ""
+          }
+        },
+        {
+          "type": "RAPID_CLICK",
+          "selector": "[id=\"btn-report\"]",
+          "element": "Generate report",
+          "description": "rapid-click 'Generate report' x5",
+          "params": {
+            "n": 5,
+            "in_viewport": true
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  hidden     : a#nav-signup, a#cta-signup\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : SCROLL\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : CLICK on 'Widgets'\n  selector   : [id=\"nav-widgets\"]\n  url        : /index.html -> /widgets.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Widgets'\n  page text  : Acme Widgets \u2014 Widgets | \u2190 Home | Increment counter | Counter: | 0 | Export data | Generate report | Sync now | Syncing\u2026 | Scroll down for the archive link. | Open archive\n  now shown  : a#nav-signup, a#cta-signup\n\nSTEP 5\n  action     : CLICK on 'Generate report'\n  selector   : [id=\"btn-report\"]\n  url        : /widgets.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'build')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : RAPID_CLICK on 'Generate report'\n  selector   : [id=\"btn-report\"]\n  url        : /widgets.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "broken_navigation",
+      "severity": 0.6,
+      "confidence": 0.85,
+      "step": 13,
+      "observed": "Clicking '\u2190 Home' navigated back to /index.html but did not cause any observable change.",
+      "expected": "Navigating back should update the URL, title, page text, and visible links accordingly.",
+      "discrepancy": "The navigation did not reflect in the UI despite changing the URL and title.",
+      "evidence": "  url        : /widgets.html -> /index.html",
+      "error": null,
+      "episode": 1,
+      "window_step": 6,
+      "seconds": 9.7,
+      "repro": [
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll down",
+          "params": {
+            "direction": "down",
+            "amount": 600
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-widgets\"]",
+          "element": "Widgets",
+          "description": "click 'Widgets'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "widgets.html"
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"btn-report\"]",
+          "element": "Generate report",
+          "description": "click 'Generate report'",
+          "params": {
+            "navigational": false,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": ""
+          }
+        },
+        {
+          "type": "RAPID_CLICK",
+          "selector": "[id=\"btn-report\"]",
+          "element": "Generate report",
+          "description": "rapid-click 'Generate report' x5",
+          "params": {
+            "n": 5,
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "input, textarea, select, button, a[href] >> nth=0",
+          "element": "\u2190 Home",
+          "description": "click '\u2190 Home'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "index.html"
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  hidden     : a#nav-signup, a#cta-signup\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : SCROLL\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : CLICK on 'Widgets'\n  selector   : [id=\"nav-widgets\"]\n  url        : /index.html -> /widgets.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Widgets'\n  page text  : Acme Widgets \u2014 Widgets | \u2190 Home | Increment counter | Counter: | 0 | Export data | Generate report | Sync now | Syncing\u2026 | Scroll down for the archive link. | Open archive\n  now shown  : a#nav-signup, a#cta-signup\n\nSTEP 4\n  action     : CLICK on 'Generate report'\n  selector   : [id=\"btn-report\"]\n  url        : /widgets.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'build')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : RAPID_CLICK on 'Generate report'\n  selector   : [id=\"btn-report\"]\n  url        : /widgets.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : CLICK on '\u2190 Home'\n  selector   : input, textarea, select, button, a[href] >> nth=0\n  url        : /widgets.html -> /index.html\n  title      : 'Acme Widgets \u2014 Widgets' -> 'Acme Widgets \u2014 Home'\n  page text  : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Settings | Pricing | Get started | Create an account to continue. | Create account | About | Acme Widgets keeps your account, your widget inventory and your reports in one place. Sign in to get started, or adjust how the app behaves under Settings.\n  now hidden : a#nav-signup, a#cta-signup\n  links still reachable: Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "broken_navigation",
+      "severity": 0.8,
+      "confidence": 0.95,
+      "step": 15,
+      "observed": "Clicking 'Pricing' navigated to /pricing.html but resulted in a 404 error.",
+      "expected": "Navigating to '/pricing.html' should load the pricing page without errors.",
+      "discrepancy": "The application failed to load the requested resource, resulting in an error page.",
+      "evidence": "http errors: 404 /pricing.html",
+      "error": null,
+      "episode": 1,
+      "window_step": 6,
+      "seconds": 10.2,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-widgets\"]",
+          "element": "Widgets",
+          "description": "click 'Widgets'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "widgets.html"
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"btn-report\"]",
+          "element": "Generate report",
+          "description": "click 'Generate report'",
+          "params": {
+            "navigational": false,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": ""
+          }
+        },
+        {
+          "type": "RAPID_CLICK",
+          "selector": "[id=\"btn-report\"]",
+          "element": "Generate report",
+          "description": "rapid-click 'Generate report' x5",
+          "params": {
+            "n": 5,
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "input, textarea, select, button, a[href] >> nth=0",
+          "element": "\u2190 Home",
+          "description": "click '\u2190 Home'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "index.html"
+          }
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-pricing\"]",
+          "element": "Pricing",
+          "description": "click 'Pricing'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "pricing.html"
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  hidden     : a#nav-signup, a#cta-signup\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : CLICK on 'Widgets'\n  selector   : [id=\"nav-widgets\"]\n  url        : /index.html -> /widgets.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Widgets'\n  page text  : Acme Widgets \u2014 Widgets | \u2190 Home | Increment counter | Counter: | 0 | Export data | Generate report | Sync now | Syncing\u2026 | Scroll down for the archive link. | Open archive\n  now shown  : a#nav-signup, a#cta-signup\n\nSTEP 2\n  action     : CLICK on 'Generate report'\n  selector   : [id=\"btn-report\"]\n  url        : /widgets.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'build')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : RAPID_CLICK on 'Generate report'\n  selector   : [id=\"btn-report\"]\n  url        : /widgets.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : CLICK on '\u2190 Home'\n  selector   : input, textarea, select, button, a[href] >> nth=0\n  url        : /widgets.html -> /index.html\n  title      : 'Acme Widgets \u2014 Widgets' -> 'Acme Widgets \u2014 Home'\n  page text  : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Settings | Pricing | Get started | Create an account to continue. | Create account | About | Acme Widgets keeps your account, your widget inventory and your reports in one place. Sign in to get started, or adjust how the app behaves under Settings.\n  now hidden : a#nav-signup, a#cta-signup\n  links still reachable: Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html\n\nSTEP 5\n  action     : BROWSER_FORWARD\n  FAILED     : no in-app history to go forward\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : CLICK on 'Pricing'\n  selector   : [id=\"nav-pricing\"]\n  url        : /index.html -> /pricing.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Error response'\n  page text  : Error response | Error response | Error code: 404 | Message: File not found. | Error code explanation: 404 - Nothing matches the given URI.\n  now shown  : a#nav-signup, a#cta-signup\n  console    : Failed to load resource: the server responded with a status of 404 (File not found)\n  http errors: 404 /pricing.html\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "broken_navigation",
+      "severity": 0.8,
+      "confidence": 0.95,
+      "step": 16,
+      "observed": "Navigating back from /pricing.html to /index.html restored the original page state.",
+      "expected": "Going back should restore the previous page state without errors.",
+      "discrepancy": "The back navigation caused a 404 error, indicating that the server could not find the requested resource.",
+      "evidence": "http errors: 404 /pricing.html",
+      "error": null,
+      "episode": 1,
+      "window_step": 6,
+      "seconds": 9.72,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"btn-report\"]",
+          "element": "Generate report",
+          "description": "click 'Generate report'",
+          "params": {
+            "navigational": false,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": ""
+          }
+        },
+        {
+          "type": "RAPID_CLICK",
+          "selector": "[id=\"btn-report\"]",
+          "element": "Generate report",
+          "description": "rapid-click 'Generate report' x5",
+          "params": {
+            "n": 5,
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "input, textarea, select, button, a[href] >> nth=0",
+          "element": "\u2190 Home",
+          "description": "click '\u2190 Home'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "index.html"
+          }
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-pricing\"]",
+          "element": "Pricing",
+          "description": "click 'Pricing'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "pricing.html"
+          }
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        }
+      ],
+      "window_text": "STARTING PAGE: /widgets.html\n  title      : Acme Widgets \u2014 Widgets\n  headings   : Widgets\n  links      : \u2190 Home -> index.html; Open archive -> archive.html\n  text       : Acme Widgets \u2014 Widgets | Widgets | \u2190 Home | Increment counter | Counter: | 0 | Export data | Generate report\n\nSTEP 1\n  action     : CLICK on 'Generate report'\n  selector   : [id=\"btn-report\"]\n  url        : /widgets.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'build')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : RAPID_CLICK on 'Generate report'\n  selector   : [id=\"btn-report\"]\n  url        : /widgets.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : CLICK on '\u2190 Home'\n  selector   : input, textarea, select, button, a[href] >> nth=0\n  url        : /widgets.html -> /index.html\n  title      : 'Acme Widgets \u2014 Widgets' -> 'Acme Widgets \u2014 Home'\n  page text  : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Settings | Pricing | Get started | Create an account to continue. | Create account | About | Acme Widgets keeps your account, your widget inventory and your reports in one place. Sign in to get started, or adjust how the app behaves under Settings.\n  now hidden : a#nav-signup, a#cta-signup\n  links still reachable: Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html\n\nSTEP 4\n  action     : BROWSER_FORWARD\n  FAILED     : no in-app history to go forward\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : CLICK on 'Pricing'\n  selector   : [id=\"nav-pricing\"]\n  url        : /index.html -> /pricing.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Error response'\n  page text  : Error response | Error response | Error code: 404 | Message: File not found. | Error code explanation: 404 - Nothing matches the given URI.\n  now shown  : a#nav-signup, a#cta-signup\n  console    : Failed to load resource: the server responded with a status of 404 (File not found)\n  http errors: 404 /pricing.html\n\nSTEP 6\n  action     : BROWSER_BACK\n  url        : /pricing.html -> /index.html\n  title      : 'Error response' -> 'Acme Widgets \u2014 Home'\n  page text  : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started | Create an account to continue. | Create account | About | Acme Widgets keeps your account, your widget inventory and your reports in one place. Sign in to get started, or adjust how the app behaves under Settings.\n  now hidden : a#nav-signup, a#cta-signup\n  links still reachable: Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "broken_navigation",
+      "severity": 0.8,
+      "confidence": 0.95,
+      "step": 17,
+      "observed": "Navigating forward to /pricing.html resulted in an error page.",
+      "expected": "Forward navigation should return to the previously visited page without errors.",
+      "discrepancy": "The application failed to load the expected page and showed an error instead.",
+      "evidence": "  console    : Failed to load resource: the server responded with a status of 404 (File not found)",
+      "error": null,
+      "episode": 1,
+      "window_step": 6,
+      "seconds": 10.78,
+      "repro": [
+        {
+          "type": "RAPID_CLICK",
+          "selector": "[id=\"btn-report\"]",
+          "element": "Generate report",
+          "description": "rapid-click 'Generate report' x5",
+          "params": {
+            "n": 5,
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "input, textarea, select, button, a[href] >> nth=0",
+          "element": "\u2190 Home",
+          "description": "click '\u2190 Home'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "index.html"
+          }
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-pricing\"]",
+          "element": "Pricing",
+          "description": "click 'Pricing'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "pricing.html"
+          }
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        }
+      ],
+      "window_text": "STARTING PAGE: /widgets.html\n  title      : Acme Widgets \u2014 Widgets\n  headings   : Widgets\n  links      : \u2190 Home -> index.html; Open archive -> archive.html\n  text       : Acme Widgets \u2014 Widgets | Widgets | \u2190 Home | Increment counter | Counter: | 0 | Export data | Generate report\n\nSTEP 1\n  action     : RAPID_CLICK on 'Generate report'\n  selector   : [id=\"btn-report\"]\n  url        : /widgets.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : CLICK on '\u2190 Home'\n  selector   : input, textarea, select, button, a[href] >> nth=0\n  url        : /widgets.html -> /index.html\n  title      : 'Acme Widgets \u2014 Widgets' -> 'Acme Widgets \u2014 Home'\n  page text  : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Settings | Pricing | Get started | Create an account to continue. | Create account | About | Acme Widgets keeps your account, your widget inventory and your reports in one place. Sign in to get started, or adjust how the app behaves under Settings.\n  now hidden : a#nav-signup, a#cta-signup\n  links still reachable: Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html\n\nSTEP 3\n  action     : BROWSER_FORWARD\n  FAILED     : no in-app history to go forward\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : CLICK on 'Pricing'\n  selector   : [id=\"nav-pricing\"]\n  url        : /index.html -> /pricing.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Error response'\n  page text  : Error response | Error response | Error code: 404 | Message: File not found. | Error code explanation: 404 - Nothing matches the given URI.\n  now shown  : a#nav-signup, a#cta-signup\n  console    : Failed to load resource: the server responded with a status of 404 (File not found)\n  http errors: 404 /pricing.html\n\nSTEP 5\n  action     : BROWSER_BACK\n  url        : /pricing.html -> /index.html\n  title      : 'Error response' -> 'Acme Widgets \u2014 Home'\n  page text  : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started | Create an account to continue. | Create account | About | Acme Widgets keeps your account, your widget inventory and your reports in one place. Sign in to get started, or adjust how the app behaves under Settings.\n  now hidden : a#nav-signup, a#cta-signup\n  links still reachable: Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html\n\nSTEP 6\n  action     : BROWSER_FORWARD\n  url        : /index.html -> /pricing.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Error response'\n  page text  : Error response | Error response | Error code: 404 | Message: File not found. | Error code explanation: 404 - Nothing matches the given URI.\n  now shown  : a#nav-signup, a#cta-signup\n  console    : Failed to load resource: the server responded with a status of 404 (File not found)\n  http errors: 404 /pricing.html\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "broken_navigation",
+      "severity": 0.6,
+      "confidence": 0.9,
+      "step": 23,
+      "observed": "Navigating back from /pricing.html to /index.html.",
+      "expected": "Going back should return to the previous page in the browser history.",
+      "discrepancy": "The application did not follow the BROWSER_BACK action, instead showing the starting page again.",
+      "evidence": "url        : /pricing.html -> /index.html",
+      "error": null,
+      "episode": 1,
+      "window_step": 6,
+      "seconds": 9.41,
+      "repro": [
+        {
+          "type": "RESIZE_VIEWPORT",
+          "selector": null,
+          "element": "",
+          "description": "resize viewport to tablet",
+          "params": {
+            "preset": "tablet"
+          }
+        },
+        {
+          "type": "RESIZE_VIEWPORT",
+          "selector": null,
+          "element": "",
+          "description": "resize viewport to desktop",
+          "params": {
+            "preset": "desktop"
+          }
+        },
+        {
+          "type": "REFRESH",
+          "selector": null,
+          "element": "",
+          "description": "REFRESH",
+          "params": {}
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll down",
+          "params": {
+            "direction": "down",
+            "amount": 600
+          }
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        }
+      ],
+      "window_text": "STARTING PAGE: /pricing.html\n  title      : Error response\n  headings   : Error response\n  text       : Error response | Error response | Error code: 404 | Message: File not found. | Error code explanation: 404 - Nothing matches the given URI.\n\nSTEP 1\n  action     : RESIZE_VIEWPORT with value 'tablet'\n  url        : /pricing.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : RESIZE_VIEWPORT with value 'desktop'\n  url        : /pricing.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : REFRESH\n  url        : /pricing.html (unchanged)\n  console    : Failed to load resource: the server responded with a status of 404 (File not found)\n  http errors: 404 /pricing.html\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : SCROLL\n  url        : /pricing.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : BROWSER_FORWARD\n  FAILED     : no in-app history to go forward\n  url        : /pricing.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : BROWSER_BACK\n  url        : /pricing.html -> /index.html\n  title      : 'Error response' -> 'Acme Widgets \u2014 Home'\n  page text  : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started | Create an account to continue. | Create account | About | Acme Widgets keeps your account, your widget inventory and your reports in one place. Sign in to get started, or adjust how the app behaves under Settings.\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "broken_navigation",
+      "severity": 0.8,
+      "confidence": 0.95,
+      "step": 1,
+      "observed": "Clicking 'Pricing' navigated to /pricing.html but resulted in a 404 error.",
+      "expected": "Navigating to '/pricing.html' should load the Pricing page without errors.",
+      "discrepancy": "The navigation failed with a 404 error, indicating the requested resource does not exist.",
+      "evidence": "http errors: 404 /pricing.html",
+      "error": null,
+      "episode": 2,
+      "window_step": 1,
+      "seconds": 7.28,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-pricing\"]",
+          "element": "Pricing",
+          "description": "click 'Pricing'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "pricing.html"
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : CLICK on 'Pricing'\n  selector   : [id=\"nav-pricing\"]\n  url        : /index.html -> /pricing.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Error response'\n  page text  : Error response | Error response | Error code: 404 | Message: File not found. | Error code explanation: 404 - Nothing matches the given URI.\n  console    : Failed to load resource: the server responded with a status of 404 (File not found)\n  http errors: 404 /pricing.html\n\nJudge STEP 1."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "ui_regression",
+      "severity": 0.6,
+      "confidence": 0.85,
+      "step": 4,
+      "observed": "Navigating back from /pricing.html to /index.html changed the URL but not the page content.",
+      "expected": "Going back should restore the previous state of the application, including its content and title.",
+      "discrepancy": "The back navigation did not update the page content, leaving it in an error state.",
+      "evidence": "  url        : /pricing.html -> /index.html",
+      "error": null,
+      "episode": 2,
+      "window_step": 4,
+      "seconds": 7.44,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-pricing\"]",
+          "element": "Pricing",
+          "description": "click 'Pricing'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "pricing.html"
+          }
+        },
+        {
+          "type": "RESIZE_VIEWPORT",
+          "selector": null,
+          "element": "",
+          "description": "resize viewport to tablet",
+          "params": {
+            "preset": "tablet"
+          }
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : CLICK on 'Pricing'\n  selector   : [id=\"nav-pricing\"]\n  url        : /index.html -> /pricing.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Error response'\n  page text  : Error response | Error response | Error code: 404 | Message: File not found. | Error code explanation: 404 - Nothing matches the given URI.\n  console    : Failed to load resource: the server responded with a status of 404 (File not found)\n  http errors: 404 /pricing.html\n\nSTEP 2\n  action     : RESIZE_VIEWPORT with value 'tablet'\n  url        : /pricing.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : NO_OP\n  url        : /pricing.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : BROWSER_BACK\n  url        : /pricing.html -> /index.html\n  title      : 'Error response' -> 'Acme Widgets \u2014 Home'\n  page text  : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started | Create an account to continue. | Create account | About | Acme Widgets keeps your account, your widget inventory and your reports in one place. Sign in to get started, or adjust how the app behaves under Settings.\n\nJudge STEP 4."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 0.9,
+      "step": 5,
+      "observed": "Clicking 'Widgets' navigated to /widgets.html and updated the title and page text.",
+      "expected": "Clicking 'Widgets' should navigate to /widgets.html and update the UI accordingly.",
+      "discrepancy": "none",
+      "evidence": "  url        : /index.html -> /widgets.html",
+      "error": null,
+      "episode": 2,
+      "window_step": 5,
+      "seconds": 6.91,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-pricing\"]",
+          "element": "Pricing",
+          "description": "click 'Pricing'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "pricing.html"
+          }
+        },
+        {
+          "type": "RESIZE_VIEWPORT",
+          "selector": null,
+          "element": "",
+          "description": "resize viewport to tablet",
+          "params": {
+            "preset": "tablet"
+          }
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-widgets\"]",
+          "element": "Widgets",
+          "description": "click 'Widgets'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "widgets.html"
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : CLICK on 'Pricing'\n  selector   : [id=\"nav-pricing\"]\n  url        : /index.html -> /pricing.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Error response'\n  page text  : Error response | Error response | Error code: 404 | Message: File not found. | Error code explanation: 404 - Nothing matches the given URI.\n  console    : Failed to load resource: the server responded with a status of 404 (File not found)\n  http errors: 404 /pricing.html\n\nSTEP 2\n  action     : RESIZE_VIEWPORT with value 'tablet'\n  url        : /pricing.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : NO_OP\n  url        : /pricing.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : BROWSER_BACK\n  url        : /pricing.html -> /index.html\n  title      : 'Error response' -> 'Acme Widgets \u2014 Home'\n  page text  : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started | Create an account to continue. | Create account | About | Acme Widgets keeps your account, your widget inventory and your reports in one place. Sign in to get started, or adjust how the app behaves under Settings.\n\nSTEP 5\n  action     : CLICK on 'Widgets'\n  selector   : [id=\"nav-widgets\"]\n  url        : /index.html -> /widgets.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Widgets'\n  page text  : Acme Widgets \u2014 Widgets | \u2190 Home | Increment counter | Counter: | 0 | Export data | Generate report | Sync now | Syncing\u2026 | Scroll down for the archive link. | Open archive\n\nJudge STEP 5."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "dead_control",
+      "severity": 0.6,
+      "confidence": 0.9,
+      "step": 6,
+      "observed": "Rapidly clicking 'Export data' produced no change, no navigation and no request.",
+      "expected": "Clicking 'Export data' should trigger a download or a modal for export options.",
+      "discrepancy": "A control that promises to export data did nothing, so it is not wired up.",
+      "evidence": "url        : /widgets.html (unchanged)",
+      "error": null,
+      "episode": 2,
+      "window_step": 6,
+      "seconds": 7.23,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-pricing\"]",
+          "element": "Pricing",
+          "description": "click 'Pricing'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "pricing.html"
+          }
+        },
+        {
+          "type": "RESIZE_VIEWPORT",
+          "selector": null,
+          "element": "",
+          "description": "resize viewport to tablet",
+          "params": {
+            "preset": "tablet"
+          }
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-widgets\"]",
+          "element": "Widgets",
+          "description": "click 'Widgets'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "widgets.html"
+          }
+        },
+        {
+          "type": "RAPID_CLICK",
+          "selector": "[id=\"btn-export\"]",
+          "element": "Export data",
+          "description": "rapid-click 'Export data' x5",
+          "params": {
+            "n": 5,
+            "in_viewport": true
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : CLICK on 'Pricing'\n  selector   : [id=\"nav-pricing\"]\n  url        : /index.html -> /pricing.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Error response'\n  page text  : Error response | Error response | Error code: 404 | Message: File not found. | Error code explanation: 404 - Nothing matches the given URI.\n  console    : Failed to load resource: the server responded with a status of 404 (File not found)\n  http errors: 404 /pricing.html\n\nSTEP 2\n  action     : RESIZE_VIEWPORT with value 'tablet'\n  url        : /pricing.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : NO_OP\n  url        : /pricing.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : BROWSER_BACK\n  url        : /pricing.html -> /index.html\n  title      : 'Error response' -> 'Acme Widgets \u2014 Home'\n  page text  : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started | Create an account to continue. | Create account | About | Acme Widgets keeps your account, your widget inventory and your reports in one place. Sign in to get started, or adjust how the app behaves under Settings.\n\nSTEP 5\n  action     : CLICK on 'Widgets'\n  selector   : [id=\"nav-widgets\"]\n  url        : /index.html -> /widgets.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Widgets'\n  page text  : Acme Widgets \u2014 Widgets | \u2190 Home | Increment counter | Counter: | 0 | Export data | Generate report | Sync now | Syncing\u2026 | Scroll down for the archive link. | Open archive\n\nSTEP 6\n  action     : RAPID_CLICK on 'Export data'\n  selector   : [id=\"btn-export\"]\n  url        : /widgets.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "dead_control",
+      "severity": 0.6,
+      "confidence": 0.9,
+      "step": 9,
+      "observed": "Rapid clicking on 'Export data' produced no change.",
+      "expected": "Clicking 'Export data' should trigger an export action, such as a download or a modal dialog.",
+      "discrepancy": "A control that promises to export data did nothing upon rapid clicking.",
+      "evidence": "effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action",
+      "error": null,
+      "episode": 2,
+      "window_step": 6,
+      "seconds": 7.89,
+      "repro": [
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-widgets\"]",
+          "element": "Widgets",
+          "description": "click 'Widgets'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "widgets.html"
+          }
+        },
+        {
+          "type": "RAPID_CLICK",
+          "selector": "[id=\"btn-export\"]",
+          "element": "Export data",
+          "description": "rapid-click 'Export data' x5",
+          "params": {
+            "n": 5,
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "RESIZE_VIEWPORT",
+          "selector": null,
+          "element": "",
+          "description": "resize viewport to mobile",
+          "params": {
+            "preset": "mobile"
+          }
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll up",
+          "params": {
+            "direction": "up",
+            "amount": 600
+          }
+        },
+        {
+          "type": "RAPID_CLICK",
+          "selector": "[id=\"btn-export\"]",
+          "element": "Export data",
+          "description": "rapid-click 'Export data' x5",
+          "params": {
+            "n": 5,
+            "in_viewport": true
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /pricing.html\n  title      : Error response\n  headings   : Error response\n  text       : Error response | Error response | Error code: 404 | Message: File not found. | Error code explanation: 404 - Nothing matches the given URI.\n\nSTEP 1\n  action     : BROWSER_BACK\n  url        : /pricing.html -> /index.html\n  title      : 'Error response' -> 'Acme Widgets \u2014 Home'\n  page text  : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started | Create an account to continue. | Create account | About | Acme Widgets keeps your account, your widget inventory and your reports in one place. Sign in to get started, or adjust how the app behaves under Settings.\n\nSTEP 2\n  action     : CLICK on 'Widgets'\n  selector   : [id=\"nav-widgets\"]\n  url        : /index.html -> /widgets.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Widgets'\n  page text  : Acme Widgets \u2014 Widgets | \u2190 Home | Increment counter | Counter: | 0 | Export data | Generate report | Sync now | Syncing\u2026 | Scroll down for the archive link. | Open archive\n\nSTEP 3\n  action     : RAPID_CLICK on 'Export data'\n  selector   : [id=\"btn-export\"]\n  url        : /widgets.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : RESIZE_VIEWPORT with value 'mobile'\n  url        : /widgets.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : SCROLL\n  url        : /widgets.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : RAPID_CLICK on 'Export data'\n  selector   : [id=\"btn-export\"]\n  url        : /widgets.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 0.9,
+      "step": 11,
+      "observed": "Clicking 'Increment counter' changed the text to '1'.",
+      "expected": "'Increment counter' should update the counter value.",
+      "discrepancy": "none",
+      "evidence": "text gone  : 0\ntext added : 1",
+      "error": null,
+      "episode": 2,
+      "window_step": 6,
+      "seconds": 6.7,
+      "repro": [
+        {
+          "type": "RAPID_CLICK",
+          "selector": "[id=\"btn-export\"]",
+          "element": "Export data",
+          "description": "rapid-click 'Export data' x5",
+          "params": {
+            "n": 5,
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "RESIZE_VIEWPORT",
+          "selector": null,
+          "element": "",
+          "description": "resize viewport to mobile",
+          "params": {
+            "preset": "mobile"
+          }
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll up",
+          "params": {
+            "direction": "up",
+            "amount": 600
+          }
+        },
+        {
+          "type": "RAPID_CLICK",
+          "selector": "[id=\"btn-export\"]",
+          "element": "Export data",
+          "description": "rapid-click 'Export data' x5",
+          "params": {
+            "n": 5,
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"btn-working\"]",
+          "element": "Increment counter",
+          "description": "click 'Increment counter'",
+          "params": {
+            "navigational": false,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": ""
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /widgets.html\n  title      : Acme Widgets \u2014 Widgets\n  headings   : Widgets\n  links      : \u2190 Home -> index.html; Open archive -> archive.html\n  text       : Acme Widgets \u2014 Widgets | Widgets | \u2190 Home | Increment counter | Counter: | 0 | Export data | Generate report\n\nSTEP 1\n  action     : RAPID_CLICK on 'Export data'\n  selector   : [id=\"btn-export\"]\n  url        : /widgets.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : RESIZE_VIEWPORT with value 'mobile'\n  url        : /widgets.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : SCROLL\n  url        : /widgets.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : RAPID_CLICK on 'Export data'\n  selector   : [id=\"btn-export\"]\n  url        : /widgets.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : NO_OP\n  url        : /widgets.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : CLICK on 'Increment counter'\n  selector   : [id=\"btn-working\"]\n  url        : /widgets.html (unchanged)\n  text added : 1\n  text gone  : 0\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "broken_navigation",
+      "severity": 0.6,
+      "confidence": 0.9,
+      "step": 14,
+      "observed": "Clicking '\u2190 Home' changed the URL to /index.html and updated the title and page text.",
+      "expected": "Clicking '\u2190 Home' should navigate to index.html without reloading the page.",
+      "discrepancy": "The navigation did not occur as expected, instead the page was reloaded.",
+      "evidence": "  url        : /widgets.html -> /index.html",
+      "error": null,
+      "episode": 2,
+      "window_step": 6,
+      "seconds": 7.5,
+      "repro": [
+        {
+          "type": "RAPID_CLICK",
+          "selector": "[id=\"btn-export\"]",
+          "element": "Export data",
+          "description": "rapid-click 'Export data' x5",
+          "params": {
+            "n": 5,
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"btn-working\"]",
+          "element": "Increment counter",
+          "description": "click 'Increment counter'",
+          "params": {
+            "navigational": false,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": ""
+          }
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll up",
+          "params": {
+            "direction": "up",
+            "amount": 600
+          }
+        },
+        {
+          "type": "RESIZE_VIEWPORT",
+          "selector": null,
+          "element": "",
+          "description": "resize viewport to desktop",
+          "params": {
+            "preset": "desktop"
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "input, textarea, select, button, a[href] >> nth=0",
+          "element": "\u2190 Home",
+          "description": "click '\u2190 Home'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "index.html"
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /widgets.html\n  title      : Acme Widgets \u2014 Widgets\n  headings   : Widgets\n  links      : \u2190 Home -> index.html; Open archive -> archive.html\n  text       : Acme Widgets \u2014 Widgets | Widgets | \u2190 Home | Increment counter | Counter: | 0 | Export data | Generate report\n\nSTEP 1\n  action     : RAPID_CLICK on 'Export data'\n  selector   : [id=\"btn-export\"]\n  url        : /widgets.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : NO_OP\n  url        : /widgets.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : CLICK on 'Increment counter'\n  selector   : [id=\"btn-working\"]\n  url        : /widgets.html (unchanged)\n  text added : 1\n  text gone  : 0\n\nSTEP 4\n  action     : SCROLL\n  url        : /widgets.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : RESIZE_VIEWPORT with value 'desktop'\n  url        : /widgets.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : CLICK on '\u2190 Home'\n  selector   : input, textarea, select, button, a[href] >> nth=0\n  url        : /widgets.html -> /index.html\n  title      : 'Acme Widgets \u2014 Widgets' -> 'Acme Widgets \u2014 Home'\n  page text  : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Settings | Pricing | Get started | Create an account to continue. | Create account | About | Acme Widgets keeps your account, your widget inventory and your reports in one place. Sign in to get started, or adjust how the app behaves under Settings.\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 0.9,
+      "step": 21,
+      "observed": "Clicking 'Sign up' navigated to /signup.html and populated the form with expected initial values.",
+      "expected": "Clicking 'Sign up' should navigate to /signup.html and initialize the form fields appropriately.",
+      "discrepancy": "none",
+      "evidence": "url        : /index.html -> /signup.html",
+      "error": null,
+      "episode": 2,
+      "window_step": 6,
+      "seconds": 7.33,
+      "repro": [
+        {
+          "type": "RESIZE_VIEWPORT",
+          "selector": null,
+          "element": "",
+          "description": "resize viewport to desktop",
+          "params": {
+            "preset": "desktop"
+          }
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll up",
+          "params": {
+            "direction": "up",
+            "amount": 600
+          }
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-signup\"]",
+          "element": "Sign up",
+          "description": "click 'Sign up'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "signup.html"
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : RESIZE_VIEWPORT with value 'desktop'\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : SCROLL\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : CLICK on 'Sign up'\n  selector   : [id=\"nav-signup\"]\n  url        : /index.html -> /signup.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Sign up'\n  form state : age: absent -> empty; country: absent -> unselected; email: absent -> empty; username: absent -> empty\n  constraints: age declares [type=number min=13 max=120]; email declares [type=email required]; username declares [type=text required]\n  page text  : Acme Widgets \u2014 Sign up | Create your account | \u2190 Home | Username | Email address | Age | Country | Choose\u2026 | India | United Kingdom | United States | Submissions this session:\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "ui_regression",
+      "severity": 0.4,
+      "confidence": 0.85,
+      "step": 22,
+      "observed": "Selecting 'us' for 'country' did not change the URL or form state.",
+      "expected": "Selecting a country should update the selected value in the form.",
+      "discrepancy": "The selection changed the form state but not the URL, which is unexpected behavior.",
+      "evidence": "url        : /signup.html (unchanged)",
+      "error": null,
+      "episode": 2,
+      "window_step": 6,
+      "seconds": 7.3,
+      "repro": [
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll up",
+          "params": {
+            "direction": "up",
+            "amount": 600
+          }
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-signup\"]",
+          "element": "Sign up",
+          "description": "click 'Sign up'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "signup.html"
+          }
+        },
+        {
+          "type": "SELECT",
+          "selector": "[id=\"country\"]",
+          "element": "country",
+          "description": "select 'us' in [id=\"country\"]",
+          "params": {
+            "option": "us",
+            "in_viewport": true
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : SCROLL\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : CLICK on 'Sign up'\n  selector   : [id=\"nav-signup\"]\n  url        : /index.html -> /signup.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Sign up'\n  form state : age: absent -> empty; country: absent -> unselected; email: absent -> empty; username: absent -> empty\n  constraints: age declares [type=number min=13 max=120]; email declares [type=email required]; username declares [type=text required]\n  page text  : Acme Widgets \u2014 Sign up | Create your account | \u2190 Home | Username | Email address | Age | Country | Choose\u2026 | India | United Kingdom | United States | Submissions this session:\n\nSTEP 6\n  action     : SELECT on 'country' with value 'us'\n  selector   : [id=\"country\"]\n  url        : /signup.html (unchanged)\n  form state : country: unselected -> selected\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": true,
+      "bug_type": "validation_bypass",
+      "severity": 0.6,
+      "confidence": 0.9,
+      "step": 25,
+      "observed": "Typing a long username caused no change to the page.",
+      "expected": "The application should validate the input and either update the form or show validation errors.",
+      "discrepancy": "A required field accepted an invalid value without any observable change, which is unexpected behavior.",
+      "evidence": "constraints: username declares [type=text required]",
+      "error": null,
+      "episode": 2,
+      "window_step": 6,
+      "seconds": 7.22,
+      "repro": [
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-signup\"]",
+          "element": "Sign up",
+          "description": "click 'Sign up'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "signup.html"
+          }
+        },
+        {
+          "type": "SELECT",
+          "selector": "[id=\"country\"]",
+          "element": "country",
+          "description": "select 'us' in [id=\"country\"]",
+          "params": {
+            "option": "us",
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"username\"]",
+          "element": "username",
+          "description": "type empty_string into 'username'",
+          "params": {
+            "value": "",
+            "category": "empty_string",
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"username\"]",
+          "element": "username",
+          "description": "type boundary_max into 'username'",
+          "params": {
+            "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            "category": "boundary_max",
+            "in_viewport": true
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Acme Widgets \u2014 Home\n  headings   : Acme Widgets | Get started | About\n  links      : Sign up -> signup.html; Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html; Create account -> signup.html\n  text       : Acme Widgets \u2014 Home | Acme Widgets | Tools for managing your widgets, reports and account preferences. | Sign up | Widgets | Settings | Pricing | Get started\n\nSTEP 1\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : CLICK on 'Sign up'\n  selector   : [id=\"nav-signup\"]\n  url        : /index.html -> /signup.html\n  title      : 'Acme Widgets \u2014 Home' -> 'Acme Widgets \u2014 Sign up'\n  form state : age: absent -> empty; country: absent -> unselected; email: absent -> empty; username: absent -> empty\n  constraints: age declares [type=number min=13 max=120]; email declares [type=email required]; username declares [type=text required]\n  page text  : Acme Widgets \u2014 Sign up | Create your account | \u2190 Home | Username | Email address | Age | Country | Choose\u2026 | India | United Kingdom | United States | Submissions this session:\n\nSTEP 3\n  action     : SELECT on 'country' with value 'us'\n  selector   : [id=\"country\"]\n  url        : /signup.html (unchanged)\n  form state : country: unselected -> selected\n\nSTEP 4\n  action     : TYPE on 'username'\n  selector   : [id=\"username\"]\n  url        : /signup.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : BROWSER_FORWARD\n  FAILED     : no in-app history to go forward\n  url        : /signup.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : TYPE on 'username' with value 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u2026[+1988 chars]'\n  selector   : [id=\"username\"]\n  url        : /signup.html (unchanged)\n  form state : username: empty -> filled\n  constraints: username declares [type=text required]\n  field value: username: '' -> 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u2026[+1988 chars]'\n\nJudge STEP 6."
+    }
+  ]
+}

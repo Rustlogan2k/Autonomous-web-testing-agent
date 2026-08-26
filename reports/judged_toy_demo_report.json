@@ -1,0 +1,544 @@
+{
+  "target": "http://127.0.0.1:62081/index.html",
+  "generated_at": "2026-08-26T07:25:43+00:00",
+  "counts": {
+    "total": 25,
+    "deterministic": 11,
+    "judge": 14,
+    "high": 7,
+    "medium": 18,
+    "low": 0,
+    "ungrounded_excluded": 0
+  },
+  "run": {
+    "episodes": 2,
+    "steps_per_episode": 25,
+    "seed": 0,
+    "wall_clock_s": 215.2,
+    "judge": "ollama/qwen2.5:7b-instruct",
+    "judge_calls": 22
+  },
+  "bugs": [
+    {
+      "title": "A control that promises to generate a report did nothing and issued an uncaught console error.",
+      "source": "judge",
+      "severity": 8.0,
+      "bug_type": "js_error",
+      "url": "",
+      "repro": [
+        "Scroll down",
+        "Click Widgets",
+        "Click Generate report"
+      ],
+      "evidence": "console    : Cannot read properties of undefined (reading 'build')",
+      "observed": "Clicking 'Generate report' produced no change, no navigation, and a console error.",
+      "expected": "Clicking 'Generate report' should trigger a request to generate a report or show a report.",
+      "discrepancy": "A control that promises to generate a report did nothing and issued an uncaught console error.",
+      "confidence": 0.95,
+      "grounded": true,
+      "episode": 1,
+      "step": 11,
+      "times_seen": 1
+    },
+    {
+      "title": "Repeated rapid clicks issued multiple requests but had no effect, indicating a race condition or unhandled error.",
+      "source": "judge",
+      "severity": 8.0,
+      "bug_type": "race_condition",
+      "url": "",
+      "repro": [
+        "Scroll down",
+        "Click Widgets",
+        "Click Generate report",
+        "Rapidly click Generate report"
+      ],
+      "evidence": "console    : Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build') | Cannot read properties of undefined (reading 'build')",
+      "observed": "Rapid clicking on 'Generate report' produced no change, no navigation, and multiple console errors.",
+      "expected": "Clicking 'Generate report' should trigger a request to generate a report.",
+      "discrepancy": "Repeated rapid clicks issued multiple requests but had no effect, indicating a race condition or unhandled error.",
+      "confidence": 0.95,
+      "grounded": true,
+      "episode": 1,
+      "step": 12,
+      "times_seen": 1
+    },
+    {
+      "title": "The application failed to load the requested resource, resulting in an error page.",
+      "source": "judge",
+      "severity": 8.0,
+      "bug_type": "broken_navigation",
+      "url": "",
+      "repro": [
+        "Click Widgets",
+        "Click Generate report",
+        "Rapidly click Generate report",
+        "Click \u2190 Home",
+        "BROWSER_FORWARD",
+        "Click Pricing"
+      ],
+      "evidence": "http errors: 404 /pricing.html",
+      "observed": "Clicking 'Pricing' navigated to /pricing.html but resulted in a 404 error.",
+      "expected": "Navigating to '/pricing.html' should load the pricing page without errors.",
+      "discrepancy": "The application failed to load the requested resource, resulting in an error page.",
+      "confidence": 0.95,
+      "grounded": true,
+      "episode": 1,
+      "step": 15,
+      "times_seen": 3
+    },
+    {
+      "title": "The application failed to load the expected page and showed an error instead.",
+      "source": "judge",
+      "severity": 8.0,
+      "bug_type": "broken_navigation",
+      "url": "",
+      "repro": [
+        "Rapidly click Generate report",
+        "Click \u2190 Home",
+        "BROWSER_FORWARD",
+        "Click Pricing",
+        "BROWSER_BACK",
+        "BROWSER_FORWARD"
+      ],
+      "evidence": "  console    : Failed to load resource: the server responded with a status of 404 (File not found)",
+      "observed": "Navigating forward to /pricing.html resulted in an error page.",
+      "expected": "Forward navigation should return to the previously visited page without errors.",
+      "discrepancy": "The application failed to load the expected page and showed an error instead.",
+      "confidence": 0.95,
+      "grounded": true,
+      "episode": 1,
+      "step": 17,
+      "times_seen": 1
+    },
+    {
+      "title": "Page itself failed to load",
+      "source": "deterministic",
+      "severity": 7.0,
+      "bug_type": "document_http_error",
+      "url": "http://127.0.0.1:62081/pricing.html",
+      "repro": [
+        "Click Pricing"
+      ],
+      "evidence": "",
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 15,
+      "times_seen": 2
+    },
+    {
+      "title": "Page itself failed to load",
+      "source": "deterministic",
+      "severity": 7.0,
+      "bug_type": "document_http_error",
+      "url": "http://127.0.0.1:62081/pricing.html",
+      "repro": [
+        "BROWSER_FORWARD on BROWSER_FORWARD"
+      ],
+      "evidence": "",
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 17,
+      "times_seen": 1
+    },
+    {
+      "title": "Page itself failed to load",
+      "source": "deterministic",
+      "severity": 7.0,
+      "bug_type": "document_http_error",
+      "url": "http://127.0.0.1:62081/pricing.html",
+      "repro": [
+        "REFRESH on REFRESH"
+      ],
+      "evidence": "",
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 20,
+      "times_seen": 1
+    },
+    {
+      "title": "A control that promises to export data did nothing, so it is not wired up.",
+      "source": "judge",
+      "severity": 6.0,
+      "bug_type": "dead_control",
+      "url": "",
+      "repro": [
+        "Click Pricing",
+        "Resize the viewport to tablet",
+        "BROWSER_BACK",
+        "Click Widgets",
+        "Rapidly click Export data"
+      ],
+      "evidence": "url        : /widgets.html (unchanged)",
+      "observed": "Rapidly clicking 'Export data' produced no change, no navigation and no request.",
+      "expected": "Clicking 'Export data' should trigger a download or a modal for export options.",
+      "discrepancy": "A control that promises to export data did nothing, so it is not wired up.",
+      "confidence": 0.9,
+      "grounded": true,
+      "episode": 2,
+      "step": 6,
+      "times_seen": 1
+    },
+    {
+      "title": "A control that promises to export data did nothing upon rapid clicking.",
+      "source": "judge",
+      "severity": 6.0,
+      "bug_type": "dead_control",
+      "url": "",
+      "repro": [
+        "BROWSER_BACK",
+        "Click Widgets",
+        "Rapidly click Export data",
+        "Resize the viewport to mobile",
+        "Scroll up",
+        "Rapidly click Export data"
+      ],
+      "evidence": "effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action",
+      "observed": "Rapid clicking on 'Export data' produced no change.",
+      "expected": "Clicking 'Export data' should trigger an export action, such as a download or a modal dialog.",
+      "discrepancy": "A control that promises to export data did nothing upon rapid clicking.",
+      "confidence": 0.9,
+      "grounded": true,
+      "episode": 2,
+      "step": 9,
+      "times_seen": 1
+    },
+    {
+      "title": "The navigation did not occur as expected, instead the page was reloaded.",
+      "source": "judge",
+      "severity": 6.0,
+      "bug_type": "broken_navigation",
+      "url": "",
+      "repro": [
+        "Rapidly click Export data",
+        "Click Increment counter",
+        "Scroll up",
+        "Resize the viewport to desktop",
+        "Click \u2190 Home"
+      ],
+      "evidence": "  url        : /widgets.html -> /index.html",
+      "observed": "Clicking '\u2190 Home' changed the URL to /index.html and updated the title and page text.",
+      "expected": "Clicking '\u2190 Home' should navigate to index.html without reloading the page.",
+      "discrepancy": "The navigation did not occur as expected, instead the page was reloaded.",
+      "confidence": 0.9,
+      "grounded": true,
+      "episode": 1,
+      "step": 13,
+      "times_seen": 2
+    },
+    {
+      "title": "The application did not follow the BROWSER_BACK action, instead showing the starting page again.",
+      "source": "judge",
+      "severity": 6.0,
+      "bug_type": "broken_navigation",
+      "url": "",
+      "repro": [
+        "Resize the viewport to tablet",
+        "Resize the viewport to desktop",
+        "REFRESH",
+        "Scroll down",
+        "BROWSER_FORWARD",
+        "BROWSER_BACK"
+      ],
+      "evidence": "url        : /pricing.html -> /index.html",
+      "observed": "Navigating back from /pricing.html to /index.html.",
+      "expected": "Going back should return to the previous page in the browser history.",
+      "discrepancy": "The application did not follow the BROWSER_BACK action, instead showing the starting page again.",
+      "confidence": 0.9,
+      "grounded": true,
+      "episode": 1,
+      "step": 23,
+      "times_seen": 1
+    },
+    {
+      "title": "A required field accepted an invalid value without any observable change, which is unexpected behavior.",
+      "source": "judge",
+      "severity": 6.0,
+      "bug_type": "validation_bypass",
+      "url": "",
+      "repro": [
+        "Click Sign up",
+        "Select 'us' in country",
+        "TYPE on username",
+        "BROWSER_FORWARD",
+        "Type 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' into username"
+      ],
+      "evidence": "constraints: username declares [type=text required]",
+      "observed": "Typing a long username caused no change to the page.",
+      "expected": "The application should validate the input and either update the form or show validation errors.",
+      "discrepancy": "A required field accepted an invalid value without any observable change, which is unexpected behavior.",
+      "confidence": 0.9,
+      "grounded": true,
+      "episode": 2,
+      "step": 25,
+      "times_seen": 1
+    },
+    {
+      "title": "A control that promises to save and redirect did not change the URL, suggesting it failed to execute properly.",
+      "source": "judge",
+      "severity": 6.0,
+      "bug_type": "dead_control",
+      "url": "",
+      "repro": [
+        "Click Settings",
+        "Click Save settings"
+      ],
+      "evidence": "url        : /settings.html (unchanged)",
+      "observed": "Clicking 'Save settings' produced a confirmation message but did not navigate to another page.",
+      "expected": "Clicking 'Save settings' should save the form data and navigate to a success or confirmation page.",
+      "discrepancy": "A control that promises to save and redirect did not change the URL, suggesting it failed to execute properly.",
+      "confidence": 0.85,
+      "grounded": true,
+      "episode": 1,
+      "step": 2,
+      "times_seen": 1
+    },
+    {
+      "title": "The sign-up options became unreachable after the resize, which is unexpected behavior.",
+      "source": "judge",
+      "severity": 6.0,
+      "bug_type": "ui_regression",
+      "url": "",
+      "repro": [
+        "Click Settings",
+        "Click Save settings",
+        "Click \u2190 Home",
+        "Resize the viewport to mobile"
+      ],
+      "evidence": "NO LONGER reachable: Sign up -> signup.html; Create account -> signup.html",
+      "observed": "Resizing to mobile hid a#nav-signup and a#cta-signup; the only links left are Widgets -> widgets.html; Settings -> settings.html; Pricing -> pricing.html.",
+      "expected": "Mobile resizing should not make sign-up options unreachable, as they were still reachable before the resize.",
+      "discrepancy": "The sign-up options became unreachable after the resize, which is unexpected behavior.",
+      "confidence": 0.85,
+      "grounded": true,
+      "episode": 1,
+      "step": 4,
+      "times_seen": 1
+    },
+    {
+      "title": "The back navigation did not update the page content, leaving it in an error state.",
+      "source": "judge",
+      "severity": 6.0,
+      "bug_type": "ui_regression",
+      "url": "",
+      "repro": [
+        "Click Pricing",
+        "Resize the viewport to tablet",
+        "BROWSER_BACK"
+      ],
+      "evidence": "  url        : /pricing.html -> /index.html",
+      "observed": "Navigating back from /pricing.html to /index.html changed the URL but not the page content.",
+      "expected": "Going back should restore the previous state of the application, including its content and title.",
+      "discrepancy": "The back navigation did not update the page content, leaving it in an error state.",
+      "confidence": 0.85,
+      "grounded": true,
+      "episode": 2,
+      "step": 4,
+      "times_seen": 1
+    },
+    {
+      "title": "Link or submit did not navigate",
+      "source": "deterministic",
+      "severity": 6.0,
+      "bug_type": "broken_navigation",
+      "url": "http://127.0.0.1:62081/pricing.html",
+      "repro": [
+        "Click Pricing"
+      ],
+      "evidence": "http://127.0.0.1:62081/pricing.html",
+      "observed": "http://127.0.0.1:62081/pricing.html",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 15,
+      "times_seen": 2
+    },
+    {
+      "title": "Unexpected HTTP error response",
+      "source": "deterministic",
+      "severity": 5.0,
+      "bug_type": "http_error",
+      "url": "http://127.0.0.1:62081/pricing.html",
+      "repro": [
+        "Click Pricing"
+      ],
+      "evidence": "404 http://127.0.0.1:62081/pricing.html",
+      "observed": "404 http://127.0.0.1:62081/pricing.html",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 15,
+      "times_seen": 2
+    },
+    {
+      "title": "Unexpected HTTP error response",
+      "source": "deterministic",
+      "severity": 5.0,
+      "bug_type": "http_error",
+      "url": "http://127.0.0.1:62081/pricing.html",
+      "repro": [
+        "BROWSER_FORWARD on BROWSER_FORWARD"
+      ],
+      "evidence": "404 http://127.0.0.1:62081/pricing.html",
+      "observed": "404 http://127.0.0.1:62081/pricing.html",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 17,
+      "times_seen": 1
+    },
+    {
+      "title": "Unexpected HTTP error response",
+      "source": "deterministic",
+      "severity": 5.0,
+      "bug_type": "http_error",
+      "url": "http://127.0.0.1:62081/pricing.html",
+      "repro": [
+        "REFRESH on REFRESH"
+      ],
+      "evidence": "404 http://127.0.0.1:62081/pricing.html",
+      "observed": "404 http://127.0.0.1:62081/pricing.html",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 20,
+      "times_seen": 1
+    },
+    {
+      "title": "The darkmode, display_name, and newsletter fields are missing their expected states (off, empty, off).",
+      "source": "judge",
+      "severity": 4.0,
+      "bug_type": "state_persistence",
+      "url": "",
+      "repro": [
+        "Click Settings"
+      ],
+      "evidence": "  form state : darkmode: absent -> off; display_name: absent -> empty; newsletter: absent -> off",
+      "observed": "Clicking 'Settings' navigated to /settings.html with a new title and form state.",
+      "expected": "Navigating to /settings.html should update the page title and initialize the form fields correctly.",
+      "discrepancy": "The darkmode, display_name, and newsletter fields are missing their expected states (off, empty, off).",
+      "confidence": 0.9,
+      "grounded": true,
+      "episode": 1,
+      "step": 1,
+      "times_seen": 2
+    },
+    {
+      "title": "The selection changed the form state but not the URL, which is unexpected behavior.",
+      "source": "judge",
+      "severity": 4.0,
+      "bug_type": "ui_regression",
+      "url": "",
+      "repro": [
+        "Scroll up",
+        "Click Sign up",
+        "Select 'us' in country"
+      ],
+      "evidence": "url        : /signup.html (unchanged)",
+      "observed": "Selecting 'us' for 'country' did not change the URL or form state.",
+      "expected": "Selecting a country should update the selected value in the form.",
+      "discrepancy": "The selection changed the form state but not the URL, which is unexpected behavior.",
+      "confidence": 0.85,
+      "grounded": true,
+      "episode": 2,
+      "step": 22,
+      "times_seen": 1
+    },
+    {
+      "title": "JavaScript error logged to the console",
+      "source": "deterministic",
+      "severity": 4.0,
+      "bug_type": "console_error",
+      "url": "http://127.0.0.1:62081/widgets.html",
+      "repro": [
+        "Click Generate report"
+      ],
+      "evidence": "Cannot read properties of undefined (reading 'build')",
+      "observed": "Cannot read properties of undefined (reading 'build')",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 11,
+      "times_seen": 2
+    },
+    {
+      "title": "JavaScript error logged to the console",
+      "source": "deterministic",
+      "severity": 4.0,
+      "bug_type": "console_error",
+      "url": "http://127.0.0.1:62081/pricing.html",
+      "repro": [
+        "Click Pricing"
+      ],
+      "evidence": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "observed": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 15,
+      "times_seen": 2
+    },
+    {
+      "title": "JavaScript error logged to the console",
+      "source": "deterministic",
+      "severity": 4.0,
+      "bug_type": "console_error",
+      "url": "http://127.0.0.1:62081/pricing.html",
+      "repro": [
+        "BROWSER_FORWARD on BROWSER_FORWARD"
+      ],
+      "evidence": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "observed": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 17,
+      "times_seen": 1
+    },
+    {
+      "title": "JavaScript error logged to the console",
+      "source": "deterministic",
+      "severity": 4.0,
+      "bug_type": "console_error",
+      "url": "http://127.0.0.1:62081/pricing.html",
+      "repro": [
+        "REFRESH on REFRESH"
+      ],
+      "evidence": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "observed": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 20,
+      "times_seen": 1
+    }
+  ],
+  "ungrounded_excluded": []
+}
