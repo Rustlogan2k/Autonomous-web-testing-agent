@@ -1,4 +1,10 @@
 {
+  "_status": "PARTIALLY INVALID \u2014 captured 2026-08-18, superseded 2026-08-27.",
+  "_invalid_columns": {
+    "distinct_findings": "reads 0 for every seed; a runner bug read a key that did not exist. Corrected value at this budget is 17 (seed 0 only, see go_explore_deep_4000_seed0.json).",
+    "archive_max_depth": "undercounts; inferred stage depth from route contents instead of the cell's URL."
+  },
+  "_valid_columns": "unique_states, max_depth, mean_depth, reached_receipt, reached_review, returns_* are unaffected by those bugs and remain citable.",
   "site": "deep",
   "args": {
     "site": "deep",

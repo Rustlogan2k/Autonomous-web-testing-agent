@@ -1,0 +1,57 @@
+{
+  "_provenance": "RECOVERED FROM LOG, NOT WRITTEN BY THE SCRIPT.",
+  "_why": [
+    "run_go_explore.py writes its JSON only after every seed completes. This run was",
+    "stopped after seed 0 by decision, so the script never wrote its own output and the",
+    "fields below are the ones that reached reports/_ge_4000_v2.log. Fields the script",
+    "would normally record (reached_review, archive_max_depth, trigger_counts, archive",
+    "detail, per-seed wall clock) were not logged and are therefore absent rather than",
+    "estimated."
+  ],
+  "_sample_size": "n=1. This is a SUPPLEMENTARY result and is not comparable with the 3-seed tables. Do not place it in a row beside them without marking the difference.",
+  "site": "deep",
+  "seeds": [0],
+  "config": {
+    "budget_env_steps": 4000,
+    "explore_steps": 3,
+    "depth_bias": 1.0,
+    "max_route_length": 12,
+    "encoders": "none (the env is unencoded; go-explore uses uniform-random valid actions)"
+  },
+  "results_seed0": {
+    "seed": 0,
+    "env_steps": 3999,
+    "unique_states": 21,
+    "max_depth": 5,
+    "mean_depth": 0.38,
+    "distinct_findings": 17,
+    "reached_receipt": 11,
+    "returns_attempted": 1285,
+    "returns_failed": 44,
+    "return_failure_rate": 0.034
+  },
+  "wall_clock": {
+    "elapsed_s": 69449,
+    "elapsed_note": "16:29:16 to 11:46:45 across two calendar days",
+    "idle_gaps_s": 64956,
+    "idle_gaps_note": "three gaps over 2 minutes (388, 150 and 545 minutes) — the machine slept",
+    "compute_s_approx": 4493,
+    "compute_note": "~75 minutes of actual compute, consistent with the 62 minutes the pre-fix Aug 17 run took at the same budget. An earlier claim of 7.5 hours per seed was elapsed time inflated by sleep and is withdrawn."
+  },
+  "comparison_note": [
+    "The matched-budget comparison is the 200-step, 3-seed table in",
+    "go_explore_deep_matched200.json. This file is the 20x-budget supplement: it shows",
+    "what the archive reaches when given room, not that it beats anything at parity.",
+    "At 200 steps go-explore is level with masked random on findings (11 [9-13] vs",
+    "10 [10-12]) and modestly ahead on depth (0.10 vs 0.04)."
+  ],
+  "what_changed_since_the_aug_17_run": [
+    "distinct_findings is now measured (17) rather than 0, which was a bug in the runner",
+    "reading a key that did not exist.",
+    "44 of 1285 returns failed, where the Aug 17 run reported 0. That is not a",
+    "regression: routes are now validated before being archived, so the archive climbs",
+    "deeper (routes of 5-9 steps into the order flow), and a deeper route has more places",
+    "to derail. A 3.4% return-failure rate at depth is the honest cost of the fix, and it",
+    "is exactly what returns_failed exists to surface."
+  ]
+}

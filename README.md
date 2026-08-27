@@ -85,18 +85,19 @@ Five ideas do the work.
 | **Ground-truth fixtures** — 10-bug toy site, 6-bug seeded Gitea, 4-gate deep-flow site | Built |
 | **Build-definition security gate** — rejects privilege escalation, host bind-mounts, and multi-file merges in uploaded compose files | Built |
 | **Semantic perception encoders** — CLIP / CodeBERT / MiniLM, frozen, batched, cached | Built (~5% step overhead, 951 MB VRAM) |
+| **Repo Intake runner** — detect, gate, build, run, health-check, `base_url`, teardown | Built (trusted input; **not** a security boundary) |
+| **Bug report engine** — findings + verdicts to a reproducible report | Built |
+| **Go-Explore explorer** — archive, return-then-explore | Built |
 | Repo profiler (extract intent from source automatically) | Not built |
-| Auto-deploy runner | Not built |
-| Bug report engine | Not built |
 | Agent A (security testing, PPO + curiosity) | Out of scope |
 
-513 tests (497 without a browser).
+582 tests (557 without a browser).
 
 ---
 
 ## The parts that did not work, and why
 
-**Reinforcement learning has not yet earned its place.** On the shallow fixture, uniform-random exploration over valid actions beat the DQN at equal step budget — though that comparison has since been found to share the n=1 evaluation defect described below, so treat it as suggestive until it is rerun. What is not in doubt is the reward work: training produced four distinct reward exploits in five runs — the agent learned to refresh a 404 page 117 times, to do literally nothing, and to end each episode on step one — each a real defect in the reward design, and each found by the optimizer rather than by review or the test suite.
+**Reinforcement learning has not yet earned its place.** On the shallow fixture, uniform-random exploration over valid actions beat the DQN at equal step budget — re-measured over 3 seeds: **masked random 3/3 seeded bugs [2–3] against the DQN's 0/3 [0–1]**, and 15 unique states [14–16] against 6 [6–7]. The single-seed figure this replaces (DQN 1/3) turned out to be the one seed where *every* arm found a bug, unmasked random included, so it never measured the DQN at all. That fixture trains an unmasked head, so it is not a masking comparison; the deep-flow result below is. What is not in doubt is the reward work: training produced four distinct reward exploits in five runs — the agent learned to refresh a 404 page 117 times, to do literally nothing, and to end each episode on step one — each a real defect in the reward design, and each found by the optimizer rather than by review or the test suite.
 
 **Action masking works; the deep flow is still unsolved.** The original comparison was not a fair fight: masked random could sample only legal slots and the flat 100-way Q-head structurally could not. That is now fixed and verified — 100% valid actions against 18% for unmasked random, 0/200 invalid actions in a controlled harness. Measured on a four-gate ordering flow whose defect is reachable only after completing every stage in order:
 
@@ -259,7 +260,7 @@ reports/             Measured results
 
 ## Limitations
 
-- **Source grounding is not yet demonstrated.** The Application Profile schema and consumer exist and measurably help precision, but profiles are currently hand-authored; the extractor that would derive them from a repository is not built. "The code defines X, testing observed Y" is the goal, not a claim.
+- **Source grounding is not demonstrated, and the consumer did not help.** The Application Profile schema and consumer exist, but a controlled A/B with a version-pinned judge — both arms in one session — found the hand-authored profile changed **recall, false positives, discrimination and evidence grounding by nothing**, while altering 10 of 14 verdicts and shifting bug types toward a single category. An earlier result suggesting it halved false positives used an unversioned hosted model and did not reproduce. No source has been read at any point: "the code defines X, testing observed Y" remains a goal, and it now starts from a measured baseline of zero rather than an assumed benefit.
 - **Semantic perception measurably hurts at fixture scale, and is untested at any other.** The encoders run at ~5% step overhead, and CodeBERT needed two corrections to be usable at all (mean pooling and a fixed centering vector — the spec's `[CLS]` gives pairwise cosine ~0.99 across every page). Over 3 seeds they cost the agent return and valid-action rate on a 12-page fixture; whether they help on a large, diverse target — the case they were argued for — remains unmeasured.
 - **The RL contribution is measured, and it is negative.** Masked random beats the DQN ~10× on distinct findings on the deep fixture, on every seed and under both encoder configurations, at equal step budget. The remaining uncertainty is `train_toy.py`'s shallow-fixture comparison, which still carries the single-seed evaluation defect and is queued for rerun.
 - **Every policy comparison in this project is cheap to get wrong in the same way.** A greedy policy against a static fixture produces one trajectory no matter how many episodes you ask for, and the resulting identical numbers look like precision. If you extend this work, check that your evaluation can produce a different number twice before you believe any of it.
