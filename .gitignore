@@ -89,10 +89,12 @@ reports/_*.json
 .env
 .env.local
 
-# Internal working document. Kept local deliberately: it is the running design and
-# decision log (including negative results, dead ends and open risks) rather than
-# project documentation. README.md is the public description.
-PROJECT_CONTEXT.md
+# PROJECT_CONTEXT.md was ignored here until 2026-08-31. It was kept local deliberately
+# -- a running design and decision log rather than project documentation -- and the
+# trade-off was flagged in its own section 10 for weeks: the single most information-dense
+# artifact in the project had no version history, no diff and no reflog, and it lived in a
+# OneDrive-synced folder known to corrupt files. It is now tracked so the complete context
+# travels with the repository, which is what a handover needs.
 
 # Jupyter
 .ipynb_checkpoints/
