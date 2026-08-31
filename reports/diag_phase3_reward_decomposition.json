@@ -1,0 +1,75 @@
+{
+  "_purpose": "Which reward term funds seed 2's order-2<->order-3 oscillation. Equal 40-step budget, real env/tracker/composer, 3 consecutive episodes per arm (run-level novelty decay visible).",
+  "arms": {
+    "OSCILLATE (seed-2 behaviour)": [
+      {
+        "episode": 0,
+        "reward": -1.25,
+        "max_depth": 3,
+        "receipt_steps": 0,
+        "novelty_bonus": 5.0,
+        "reveal_bonus": 3.0,
+        "deterministic_bonus": 0.0,
+        "step_cost": -2.0,
+        "exploration_bonus": 0.75
+      },
+      {
+        "episode": 1,
+        "reward": -3.66,
+        "max_depth": 3,
+        "receipt_steps": 0,
+        "novelty_bonus": 2.59,
+        "reveal_bonus": 3.0,
+        "deterministic_bonus": 0.0,
+        "step_cost": -2.0,
+        "exploration_bonus": -1.66
+      },
+      {
+        "episode": 2,
+        "reward": -4.18,
+        "max_depth": 3,
+        "receipt_steps": 0,
+        "novelty_bonus": 2.07,
+        "reveal_bonus": 3.0,
+        "deterministic_bonus": 0.0,
+        "step_cost": -2.0,
+        "exploration_bonus": -2.18
+      }
+    ],
+    "FLOW (complete, then explore)": [
+      {
+        "episode": 0,
+        "reward": 13.7,
+        "max_depth": 5,
+        "receipt_steps": 1,
+        "novelty_bonus": 14.0,
+        "reveal_bonus": 4.5,
+        "deterministic_bonus": 0.0,
+        "step_cost": -2.0,
+        "exploration_bonus": 15.7
+      },
+      {
+        "episode": 1,
+        "reward": 8.3,
+        "max_depth": 5,
+        "receipt_steps": 1,
+        "novelty_bonus": 8.6,
+        "reveal_bonus": 4.5,
+        "deterministic_bonus": 0.0,
+        "step_cost": -2.0,
+        "exploration_bonus": 10.3
+      },
+      {
+        "episode": 2,
+        "reward": 6.54,
+        "max_depth": 5,
+        "receipt_steps": 1,
+        "novelty_bonus": 6.84,
+        "reveal_bonus": 4.5,
+        "deterministic_bonus": 0.0,
+        "step_cost": -2.0,
+        "exploration_bonus": 8.54
+      }
+    ]
+  }
+}

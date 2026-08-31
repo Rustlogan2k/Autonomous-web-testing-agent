@@ -57,11 +57,18 @@ class FakeImages:
 
 
 class FakeContainer:
-    def __init__(self, status: str = "running") -> None:
+    def __init__(self, status: str = "running", start_error: Exception | None = None) -> None:
         self.id = "c" * 64
         self.status = status
         self.removed = False
+        self.started = False
+        self.start_error = start_error
         self.remove_kwargs: dict = {}
+
+    def start(self) -> None:
+        if self.start_error is not None:
+            raise self.start_error
+        self.started = True
 
     def reload(self) -> None:
         return None
@@ -94,13 +101,30 @@ class FakeNetworks:
 
 
 class FakeContainers:
-    def __init__(self, status: str = "running") -> None:
-        self.status = status
-        self.run_calls: list[tuple[tuple, dict]] = []
+    """Mirrors the split the runner now relies on: `create` then `start`.
 
-    def run(self, *args, **kwargs):
-        self.run_calls.append((args, kwargs))
-        return FakeContainer(self.status)
+    `docker-py`'s `run()` is exactly this pair with nothing between them, which is why a
+    container that fails to start is never handed back to the caller. Modelling the two
+    separately is what lets a test make `start` fail and assert the container is still
+    torn down.
+    """
+
+    def __init__(self, status: str = "running", start_error: Exception | None = None) -> None:
+        self.status = status
+        self.start_error = start_error
+        self.create_calls: list[tuple[tuple, dict]] = []
+        self.created: list["FakeContainer"] = []
+
+    def create(self, *args, **kwargs):
+        self.create_calls.append((args, kwargs))
+        container = FakeContainer(self.status, start_error=self.start_error)
+        self.created.append(container)
+        return container
+
+    # Kept so a test that stubs the old entry point fails loudly rather than silently
+    # exercising a path the runner no longer takes.
+    def run(self, *args, **kwargs):  # noqa: ANN002, ANN003
+        raise AssertionError("the runner must create and start separately, not call run()")
 
 
 class FakeAPI:
@@ -125,10 +149,10 @@ class FakeAPI:
 
 class FakeClient:
     def __init__(self, *, chunks=None, delay: float = 0.0, exposed: int | None = 8080,
-                 status: str = "running") -> None:
+                 status: str = "running", start_error: Exception | None = None) -> None:
         self.api = FakeAPI(chunks, delay)
         self.images = FakeImages(exposed)
-        self.containers = FakeContainers(status)
+        self.containers = FakeContainers(status, start_error=start_error)
         self.networks = FakeNetworks()
 
 
@@ -309,7 +333,7 @@ def test_the_sandbox_arguments_are_all_passed_to_run(repo: Path, healthy_http):
     client = FakeClient()
     with deploy_repository(repo, client=client):
         pass
-    _args, kwargs = client.containers.run_calls[0]
+    _args, kwargs = client.containers.create_calls[0]
     for key, value in SANDBOX_RUN_ARGS.items():
         if key == "network_mode":
             continue  # replaced by the per-run network, asserted separately
@@ -320,7 +344,7 @@ def test_each_run_gets_its_own_network_rather_than_the_shared_default(repo: Path
     client = FakeClient()
     with deploy_repository(repo, client=client):
         pass
-    _args, kwargs = client.containers.run_calls[0]
+    _args, kwargs = client.containers.create_calls[0]
     assert kwargs["network"].startswith("wta-net-")
     assert "network_mode" not in kwargs, "network and network_mode are mutually exclusive"
 
@@ -329,7 +353,7 @@ def test_the_port_is_published_to_loopback_only(repo: Path, healthy_http):
     """Binding 0.0.0.0 would expose an untrusted application to the local network."""
     client = FakeClient()
     with deploy_repository(repo, client=client) as deployment:
-        _args, kwargs = client.containers.run_calls[0]
+        _args, kwargs = client.containers.create_calls[0]
         host_binding = kwargs["ports"]["8080/tcp"]
         assert host_binding[0] == "127.0.0.1"
         assert deployment.base_url == f"http://127.0.0.1:{host_binding[1]}/"
@@ -339,7 +363,7 @@ def test_a_caller_override_relaxes_exactly_one_argument_and_leaves_the_rest(repo
     client = FakeClient()
     with deploy_repository(repo, client=client, run_args={"read_only": False}):
         pass
-    _args, kwargs = client.containers.run_calls[0]
+    _args, kwargs = client.containers.create_calls[0]
     assert kwargs["read_only"] is False
     assert kwargs["cap_drop"] == ["ALL"], "unrelated constraints must not be disturbed"
 
@@ -443,18 +467,9 @@ def test_teardown_runs_when_the_caller_raises_inside_the_with_block(repo: Path, 
 
 def test_teardown_removes_anonymous_volumes_with_the_container(repo: Path, healthy_http):
     client = FakeClient()
-    captured: list[FakeContainer] = []
-    original_run = client.containers.run
-
-    def capturing_run(*args, **kwargs):
-        container = original_run(*args, **kwargs)
-        captured.append(container)
-        return container
-
-    client.containers.run = capturing_run
     with deploy_repository(repo, client=client):
         pass
-    assert captured[0].remove_kwargs == {"force": True, "v": True}
+    assert client.containers.created[0].remove_kwargs == {"force": True, "v": True}
 
 
 def test_teardown_continues_past_a_failure_and_reports_it():
@@ -486,3 +501,223 @@ def test_keep_image_leaves_the_image_but_still_removes_the_container(repo: Path,
         pass
     assert client.images.removed == []
     assert client.networks.created[0].removed is True
+
+
+# --- M5: lifecycle and cleanup guarantees --------------------------------------------
+
+
+def test_a_container_that_fails_to_start_is_still_torn_down(repo: Path):
+    """The leak this split exists to close.
+
+    `docker-py`'s `containers.run()` is `create()` then an unguarded `start()`. When the
+    start fails, `run()` raises without returning the object, so the caller can never
+    register it and the container it already created is orphaned. `SANDBOX_RUN_ARGS` is
+    strict enough to break many real images, so this is a routine failure rather than an
+    exotic one.
+    """
+    client = FakeClient(start_error=RuntimeError("read-only rootfs: cannot start"))
+    with pytest.raises(RuntimeError, match="cannot start"):
+        with deploy_repository(repo, client=client):
+            pass
+
+    assert client.containers.created, "a container was created"
+    assert client.containers.created[0].removed is True, "and it must not be left behind"
+    assert client.networks.created[0].removed is True
+    assert client.images.removed, "the image built for this run goes too"
+
+
+def test_a_container_that_never_started_is_removed_anyway(repo: Path):
+    """The precise invariant: registered on creation, so cleanup does not depend on
+    the start succeeding. A container that never ran still has to be removed."""
+    client = FakeClient(start_error=RuntimeError("boom"))
+    with pytest.raises(RuntimeError):
+        with deploy_repository(repo, client=client):
+            pass
+
+    container = client.containers.created[0]
+    assert container.started is False, "it never started"
+    assert container.removed is True, "and was cleaned up regardless"
+
+
+def test_the_full_lifecycle_yields_a_deployment_and_then_cleans_up(repo: Path, healthy_http):
+    """build -> create -> start -> health check -> yield -> teardown, in one pass."""
+    client = FakeClient()
+    seen: dict = {}
+    with deploy_repository(repo, client=client) as deployment:
+        seen["base_url"] = deployment.base_url
+        seen["container_id"] = deployment.container_id
+        seen["image_tag"] = deployment.image_tag
+        seen["port"] = deployment.container_port
+        assert client.containers.created[0].started is True
+        assert client.containers.created[0].removed is False, "still alive inside the block"
+
+    assert seen["base_url"].startswith("http://127.0.0.1:")
+    assert seen["container_id"] and seen["image_tag"].startswith("wta-target-")
+    assert seen["port"] == 8080
+    assert client.containers.created[0].removed is True
+    assert client.networks.created[0].removed is True
+    assert client.images.removed == [seen["image_tag"]]
+
+
+def test_an_interruption_inside_the_block_still_tears_down(repo: Path, healthy_http):
+    """Ctrl-C is a `BaseException`, so a bare `except` would miss it. `finally` does not.
+
+    An interrupted run is exactly when a leaked container is least likely to be noticed.
+    """
+    client = FakeClient()
+    with pytest.raises(KeyboardInterrupt):
+        with deploy_repository(repo, client=client):
+            raise KeyboardInterrupt
+
+    assert client.containers.created[0].removed is True
+    assert client.networks.created[0].removed is True
+    assert client.images.removed
+
+
+def test_a_network_that_cannot_be_created_still_removes_the_image(repo: Path):
+    """Failing between the build and the container must not strand the image."""
+    client = FakeClient()
+
+    def refuse(*args, **kwargs):  # noqa: ANN002, ANN003
+        raise RuntimeError("no address space available")
+
+    client.networks.create = refuse
+    with pytest.raises(RuntimeError, match="address space"):
+        with deploy_repository(repo, client=client):
+            pass
+
+    assert client.images.removed, "the image built moments earlier must be removed"
+    assert client.containers.created == [], "nothing got as far as a container"
+
+
+def test_teardown_is_reported_but_not_raised_when_removal_fails(repo: Path, healthy_http):
+    """A noisy cleanup must not replace the result of a run that otherwise succeeded."""
+    client = FakeClient()
+    client.images.remove_fails = True
+    with deploy_repository(repo, client=client) as deployment:
+        assert deployment.base_url
+    # No exception escaped; the container and network still went.
+    assert client.containers.created[0].removed is True
+    assert client.networks.created[0].removed is True
+
+
+# --- M5: the pipeline's use of the runner ---------------------------------------------
+#
+# These drive the *real* `run_pipeline` and the *real* `deploy_repository` against the
+# fake daemon above. They live here rather than beside the other pipeline tests because
+# the fakes do, and a second copy of `FakeClient` would be free to drift from this one.
+
+
+class _PipeEnv:
+    def __init__(self) -> None:
+        self.closed = False
+
+    def close(self) -> None:
+        self.closed = True
+
+
+class _PipeRollout:
+    def to_dict(self) -> dict:
+        return {"findings": []}
+
+    def summary(self) -> str:
+        return ""
+
+
+class _PipeRecorder:
+    root = None
+
+    def __init__(self) -> None:
+        self.closed = False
+
+    def close(self, extra=None) -> dict:  # noqa: ANN001, ARG002
+        self.closed = True
+        return {}
+
+
+def _pipeline_deps(client, env, recorder, *, rollout_raises: Exception | None = None):
+    from web_testing_agent.pipeline import PipelineDependencies
+
+    def deployer(repo, settings):
+        # The real context manager, the real teardown, a fake daemon.
+        return deploy_repository(repo, client=client, boot_timeout_s=5)
+
+    def rollout_runner(env_, policy, settings, recorder=None):  # noqa: ARG001
+        if rollout_raises is not None:
+            raise rollout_raises
+        return _PipeRollout()
+
+    return PipelineDependencies(
+        profiler=lambda repo: {"available": True},
+        detector=detect_build_definition,
+        deployer=deployer,
+        env_factory=lambda base_url, settings, model: env,
+        policy_factory=lambda settings: object(),
+        judge_factory=lambda settings: None,
+        recorder_factory=lambda evidence_dir, settings: recorder,
+        rollout_runner=rollout_runner,
+        reporter=lambda **kwargs: type("R", (), {"counts": {}, "to_dict": lambda self: {}})(),
+    )
+
+
+def test_the_whole_pipeline_lifecycle_cleans_up_after_a_successful_run(repo: Path, healthy_http):
+    """repository -> build -> create -> start -> health check -> rollout -> teardown."""
+    from web_testing_agent.pipeline import RunSettings, run_pipeline
+
+    client, env, recorder = FakeClient(), _PipeEnv(), _PipeRecorder()
+    result = run_pipeline(repo, RunSettings(), _pipeline_deps(client, env, recorder))
+
+    assert result.report is not None
+    assert env.closed is True and recorder.closed is True
+    assert client.containers.created[0].started is True
+    assert client.containers.created[0].removed is True
+    assert client.networks.created[0].removed is True
+    assert client.images.removed, "the image built for this run was removed"
+
+
+def test_a_rollout_failure_leaks_no_sandbox_resources(repo: Path, healthy_http):
+    """The browser, the trace handle and the container all outlive an exception unless
+    something closes them — and the container goes last, after the browser stopped
+    pointing at it."""
+    from web_testing_agent.pipeline import RunSettings, run_pipeline
+
+    client, env, recorder = FakeClient(), _PipeEnv(), _PipeRecorder()
+    deps = _pipeline_deps(client, env, recorder, rollout_raises=RuntimeError("browser died"))
+
+    with pytest.raises(RuntimeError, match="browser died"):
+        run_pipeline(repo, RunSettings(), deps)
+
+    assert env.closed is True, "the browser must be closed"
+    assert recorder.closed is True, "the trace handle must be closed"
+    assert client.containers.created[0].removed is True
+    assert client.networks.created[0].removed is True
+    assert client.images.removed
+
+
+def test_a_health_check_failure_leaks_nothing_and_never_reaches_the_rollout(repo: Path):
+    """No `healthy_http` here: the container never answers, so the deploy fails."""
+    from web_testing_agent.pipeline import RunSettings, run_pipeline
+
+    client, env, recorder = FakeClient(status="exited"), _PipeEnv(), _PipeRecorder()
+    with pytest.raises(HealthCheckTimeout):
+        run_pipeline(repo, RunSettings(), _pipeline_deps(client, env, recorder))
+
+    assert client.containers.created[0].removed is True
+    assert client.networks.created[0].removed is True
+    assert client.images.removed
+    assert env.closed is False, "the environment was never built, so nothing to close"
+
+
+def test_a_compose_repository_is_refused_by_the_pipeline_without_building(tmp_path: Path):
+    """M5 keeps the existing policy: compose is detected, gated, and refused."""
+    from web_testing_agent.pipeline import RunSettings, run_pipeline
+
+    (tmp_path / "docker-compose.yml").write_text(
+        "services:\n  web:\n    image: nginx\n", encoding="utf-8")
+    client, env, recorder = FakeClient(), _PipeEnv(), _PipeRecorder()
+
+    with pytest.raises(RepoIntakeError, match="not executed by this runner"):
+        run_pipeline(tmp_path, RunSettings(), _pipeline_deps(client, env, recorder))
+
+    assert client.containers.created == [], "nothing was built or started"
+    assert client.networks.created == []

@@ -1,0 +1,6357 @@
+{
+  "_purpose": "Seed-0 deep-flow diagnostic under the corrected reward.",
+  "config": {
+    "train_steps": 4000,
+    "seed": 0,
+    "window": 100,
+    "reward": "corrected reveal bonus (same-page gates only)"
+  },
+  "complete": true,
+  "training_windows": [
+    {
+      "step": 100,
+      "elapsed_s": 46.5,
+      "window_s": 46.47,
+      "steps_per_s": 2.152,
+      "ms_per_step": 464.7,
+      "timings_net_s": {
+        "env_step": 42.302,
+        "env_reset": 3.415,
+        "obs_construction": 0.263,
+        "action_features": 0.059,
+        "buffer_add": 0.027,
+        "archive_step": 0.005
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 99
+      },
+      "behaviour": {
+        "exec_failures": 5,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.311,
+        "action_types": {
+          "CLICK": 48,
+          "RESIZE_VIEWPORT": 22,
+          "NO_OP": 10,
+          "SCROLL": 7,
+          "BROWSER_FORWARD": 5,
+          "BROWSER_BACK": 5,
+          "REFRESH": 3
+        },
+        "depth_histogram": {
+          "0": 97,
+          "1": 3
+        }
+      },
+      "reward_terms": {
+        "reward": 1.93,
+        "novelty": 10.43,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.5
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 8,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 0
+      },
+      "epsilon": 0.9629,
+      "buffer": 97
+    },
+    {
+      "step": 200,
+      "elapsed_s": 94.4,
+      "window_s": 47.89,
+      "steps_per_s": 2.088,
+      "ms_per_step": 478.9,
+      "timings_net_s": {
+        "env_step": 42.343,
+        "env_reset": 4.813,
+        "obs_construction": 0.278,
+        "action_features": 0.049,
+        "buffer_add": 0.025,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100
+      },
+      "behaviour": {
+        "exec_failures": 2,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.315,
+        "action_types": {
+          "CLICK": 53,
+          "RESIZE_VIEWPORT": 17,
+          "SCROLL": 10,
+          "REFRESH": 9,
+          "NO_OP": 5,
+          "BROWSER_BACK": 4,
+          "BROWSER_FORWARD": 2
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -6.79,
+        "novelty": 2.76,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.2
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 5
+      },
+      "epsilon": 0.9254,
+      "buffer": 197
+    },
+    {
+      "step": 300,
+      "elapsed_s": 139.7,
+      "window_s": 45.36,
+      "steps_per_s": 2.205,
+      "ms_per_step": 453.6,
+      "timings_net_s": {
+        "env_step": 41.518,
+        "env_reset": 3.045,
+        "obs_construction": 0.244,
+        "action_features": 0.051,
+        "buffer_add": 0.024,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100
+      },
+      "behaviour": {
+        "exec_failures": 8,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.311,
+        "action_types": {
+          "CLICK": 49,
+          "RESIZE_VIEWPORT": 18,
+          "BROWSER_FORWARD": 9,
+          "SCROLL": 9,
+          "REFRESH": 7,
+          "NO_OP": 7,
+          "BROWSER_BACK": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -6.82,
+        "novelty": 2.68,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.8
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 8
+      },
+      "epsilon": 0.8879,
+      "buffer": 297
+    },
+    {
+      "step": 400,
+      "elapsed_s": 186.4,
+      "window_s": 46.68,
+      "steps_per_s": 2.142,
+      "ms_per_step": 466.8,
+      "timings_net_s": {
+        "env_step": 42.386,
+        "env_reset": 3.546,
+        "obs_construction": 0.269,
+        "action_features": 0.056,
+        "buffer_add": 0.028,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100
+      },
+      "behaviour": {
+        "exec_failures": 6,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.311,
+        "action_types": {
+          "CLICK": 44,
+          "RESIZE_VIEWPORT": 20,
+          "SCROLL": 12,
+          "BROWSER_FORWARD": 8,
+          "BROWSER_BACK": 7,
+          "REFRESH": 5,
+          "NO_OP": 4
+        },
+        "depth_histogram": {
+          "0": 96,
+          "1": 4
+        }
+      },
+      "reward_terms": {
+        "reward": -6.94,
+        "novelty": 2.46,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.6
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 10
+      },
+      "epsilon": 0.8504,
+      "buffer": 397
+    },
+    {
+      "step": 500,
+      "elapsed_s": 228.6,
+      "window_s": 42.18,
+      "steps_per_s": 2.371,
+      "ms_per_step": 421.8,
+      "timings_net_s": {
+        "env_step": 39.319,
+        "env_reset": 2.267,
+        "obs_construction": 0.21,
+        "action_features": 0.047,
+        "buffer_add": 0.023,
+        "archive_step": 0.002
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100
+      },
+      "behaviour": {
+        "exec_failures": 4,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.304,
+        "action_types": {
+          "CLICK": 51,
+          "RESIZE_VIEWPORT": 15,
+          "SCROLL": 12,
+          "BROWSER_BACK": 9,
+          "NO_OP": 6,
+          "REFRESH": 4,
+          "BROWSER_FORWARD": 3
+        },
+        "depth_histogram": {
+          "0": 91,
+          "1": 9
+        }
+      },
+      "reward_terms": {
+        "reward": -6.57,
+        "novelty": 2.23,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.4
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 11
+      },
+      "epsilon": 0.8129,
+      "buffer": 497
+    },
+    {
+      "step": 600,
+      "elapsed_s": 277.8,
+      "window_s": 49.25,
+      "steps_per_s": 2.03,
+      "ms_per_step": 492.5,
+      "timings_net_s": {
+        "env_step": 44.031,
+        "env_reset": 2.509,
+        "gradient": 0.942,
+        "qnet_forward": 0.67,
+        "obs_construction": 0.233,
+        "buffer_sample": 0.228,
+        "action_features": 0.074,
+        "buffer_add": 0.026,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 48,
+        "qnet_forward": 160,
+        "gradient": 24
+      },
+      "behaviour": {
+        "exec_failures": 5,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.321,
+        "action_types": {
+          "CLICK": 60,
+          "RESIZE_VIEWPORT": 12,
+          "REFRESH": 9,
+          "BROWSER_BACK": 6,
+          "BROWSER_FORWARD": 5,
+          "NO_OP": 5,
+          "SCROLL": 3
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -9.48,
+        "novelty": 1.82,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.5
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 11
+      },
+      "epsilon": 0.7754,
+      "buffer": 597
+    },
+    {
+      "step": 700,
+      "elapsed_s": 327.2,
+      "window_s": 49.37,
+      "steps_per_s": 2.025,
+      "ms_per_step": 493.7,
+      "timings_net_s": {
+        "env_step": 44.142,
+        "env_reset": 2.313,
+        "gradient": 0.991,
+        "qnet_forward": 0.581,
+        "buffer_sample": 0.353,
+        "obs_construction": 0.274,
+        "action_features": 0.06,
+        "buffer_add": 0.027,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 184,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.327,
+        "action_types": {
+          "CLICK": 71,
+          "RESIZE_VIEWPORT": 8,
+          "SCROLL": 7,
+          "BROWSER_BACK": 5,
+          "NO_OP": 4,
+          "REFRESH": 3,
+          "BROWSER_FORWARD": 2
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -10.56,
+        "novelty": 1.64,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 12
+      },
+      "epsilon": 0.7379,
+      "buffer": 697
+    },
+    {
+      "step": 800,
+      "elapsed_s": 376.7,
+      "window_s": 49.48,
+      "steps_per_s": 2.021,
+      "ms_per_step": 494.8,
+      "timings_net_s": {
+        "env_step": 43.186,
+        "env_reset": 3.773,
+        "gradient": 0.869,
+        "qnet_forward": 0.495,
+        "obs_construction": 0.28,
+        "buffer_sample": 0.276,
+        "action_features": 0.055,
+        "buffer_add": 0.025,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 176,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 3,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.324,
+        "action_types": {
+          "CLICK": 71,
+          "REFRESH": 7,
+          "BROWSER_BACK": 7,
+          "RESIZE_VIEWPORT": 6,
+          "SCROLL": 4,
+          "BROWSER_FORWARD": 3,
+          "NO_OP": 2
+        },
+        "depth_histogram": {
+          "0": 91,
+          "1": 9
+        }
+      },
+      "reward_terms": {
+        "reward": -8.73,
+        "novelty": 1.67,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.3
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 14
+      },
+      "epsilon": 0.7004,
+      "buffer": 797
+    },
+    {
+      "step": 900,
+      "elapsed_s": 423.4,
+      "window_s": 46.73,
+      "steps_per_s": 2.14,
+      "ms_per_step": 467.3,
+      "timings_net_s": {
+        "env_step": 42.448,
+        "env_reset": 1.67,
+        "gradient": 0.873,
+        "qnet_forward": 0.522,
+        "obs_construction": 0.287,
+        "buffer_sample": 0.27,
+        "action_features": 0.054,
+        "buffer_add": 0.027,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 184,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 3,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.323,
+        "action_types": {
+          "CLICK": 72,
+          "RESIZE_VIEWPORT": 8,
+          "SCROLL": 5,
+          "REFRESH": 5,
+          "BROWSER_BACK": 3,
+          "NO_OP": 3,
+          "BROWSER_FORWARD": 3,
+          "SELECT": 1
+        },
+        "depth_histogram": {
+          "0": 84,
+          "1": 16
+        }
+      },
+      "reward_terms": {
+        "reward": -3.94,
+        "novelty": 3.16,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -5.3
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 14
+      },
+      "epsilon": 0.6629,
+      "buffer": 897
+    },
+    {
+      "step": 1000,
+      "elapsed_s": 470.4,
+      "window_s": 46.96,
+      "steps_per_s": 2.13,
+      "ms_per_step": 469.6,
+      "timings_net_s": {
+        "env_step": 41.228,
+        "env_reset": 3.754,
+        "gradient": 0.499,
+        "qnet_forward": 0.44,
+        "obs_construction": 0.243,
+        "buffer_sample": 0.239,
+        "action_features": 0.044,
+        "buffer_add": 0.021,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 189,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 2,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.318,
+        "action_types": {
+          "CLICK": 70,
+          "RESIZE_VIEWPORT": 11,
+          "SCROLL": 6,
+          "REFRESH": 5,
+          "BROWSER_BACK": 3,
+          "BROWSER_FORWARD": 2,
+          "NO_OP": 2,
+          "SELECT": 1
+        },
+        "depth_histogram": {
+          "0": 74,
+          "1": 26
+        }
+      },
+      "reward_terms": {
+        "reward": -6.29,
+        "novelty": 1.81,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -5.2
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 1,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 16
+      },
+      "epsilon": 0.6254,
+      "buffer": 997
+    },
+    {
+      "step": 1100,
+      "elapsed_s": 520.0,
+      "window_s": 49.63,
+      "steps_per_s": 2.015,
+      "ms_per_step": 496.3,
+      "timings_net_s": {
+        "env_step": 42.273,
+        "env_reset": 5.06,
+        "gradient": 0.698,
+        "qnet_forward": 0.497,
+        "buffer_sample": 0.247,
+        "obs_construction": 0.23,
+        "action_features": 0.053,
+        "buffer_add": 0.022,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 193,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 3,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.319,
+        "action_types": {
+          "CLICK": 62,
+          "BROWSER_BACK": 11,
+          "RESIZE_VIEWPORT": 10,
+          "SCROLL": 6,
+          "NO_OP": 4,
+          "BROWSER_FORWARD": 3,
+          "REFRESH": 2,
+          "SELECT": 2
+        },
+        "depth_histogram": {
+          "0": 74,
+          "1": 26
+        }
+      },
+      "reward_terms": {
+        "reward": -6.63,
+        "novelty": 1.72,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -5.3
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 24
+      },
+      "epsilon": 0.5879,
+      "buffer": 1097
+    },
+    {
+      "step": 1200,
+      "elapsed_s": 568.0,
+      "window_s": 48.02,
+      "steps_per_s": 2.082,
+      "ms_per_step": 480.2,
+      "timings_net_s": {
+        "env_step": 41.869,
+        "env_reset": 3.684,
+        "gradient": 0.763,
+        "qnet_forward": 0.505,
+        "buffer_sample": 0.262,
+        "obs_construction": 0.258,
+        "action_features": 0.047,
+        "buffer_add": 0.025,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 195,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 2,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.318,
+        "action_types": {
+          "CLICK": 58,
+          "BROWSER_BACK": 18,
+          "RESIZE_VIEWPORT": 12,
+          "REFRESH": 5,
+          "SCROLL": 5,
+          "BROWSER_FORWARD": 2
+        },
+        "depth_histogram": {
+          "0": 89,
+          "1": 11
+        }
+      },
+      "reward_terms": {
+        "reward": -11.05,
+        "novelty": 1.2,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.2
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 26
+      },
+      "epsilon": 0.5504,
+      "buffer": 1197
+    },
+    {
+      "step": 1300,
+      "elapsed_s": 616.2,
+      "window_s": 48.19,
+      "steps_per_s": 2.075,
+      "ms_per_step": 481.9,
+      "timings_net_s": {
+        "env_step": 42.975,
+        "env_reset": 2.727,
+        "qnet_forward": 0.613,
+        "gradient": 0.599,
+        "obs_construction": 0.265,
+        "buffer_sample": 0.259,
+        "action_features": 0.056,
+        "buffer_add": 0.029,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 202,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.32,
+        "action_types": {
+          "CLICK": 55,
+          "BROWSER_BACK": 15,
+          "SCROLL": 7,
+          "RESIZE_VIEWPORT": 7,
+          "REFRESH": 7,
+          "SELECT": 6,
+          "NO_OP": 3
+        },
+        "depth_histogram": {
+          "0": 86,
+          "1": 14
+        }
+      },
+      "reward_terms": {
+        "reward": -8.95,
+        "novelty": 1.9,
+        "reveal": 3.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 28
+      },
+      "epsilon": 0.5129,
+      "buffer": 1297
+    },
+    {
+      "step": 1400,
+      "elapsed_s": 664.7,
+      "window_s": 48.52,
+      "steps_per_s": 2.061,
+      "ms_per_step": 485.2,
+      "timings_net_s": {
+        "env_step": 41.691,
+        "env_reset": 4.093,
+        "gradient": 0.849,
+        "qnet_forward": 0.564,
+        "obs_construction": 0.262,
+        "buffer_sample": 0.255,
+        "action_features": 0.059,
+        "buffer_add": 0.028,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 198,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.309,
+        "action_types": {
+          "CLICK": 45,
+          "SELECT": 19,
+          "BROWSER_BACK": 12,
+          "RESIZE_VIEWPORT": 9,
+          "SCROLL": 7,
+          "NO_OP": 5,
+          "REFRESH": 2,
+          "BROWSER_FORWARD": 1
+        },
+        "depth_histogram": {
+          "0": 59,
+          "1": 41
+        }
+      },
+      "reward_terms": {
+        "reward": -7.23,
+        "novelty": 1.17,
+        "reveal": 3.0,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 31
+      },
+      "epsilon": 0.4754,
+      "buffer": 1397
+    },
+    {
+      "step": 1500,
+      "elapsed_s": 709.3,
+      "window_s": 44.59,
+      "steps_per_s": 2.243,
+      "ms_per_step": 445.9,
+      "timings_net_s": {
+        "env_step": 39.637,
+        "env_reset": 2.306,
+        "gradient": 0.792,
+        "qnet_forward": 0.572,
+        "buffer_sample": 0.272,
+        "obs_construction": 0.237,
+        "action_features": 0.056,
+        "buffer_add": 0.028,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 202,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 2,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.299,
+        "action_types": {
+          "CLICK": 33,
+          "SELECT": 23,
+          "NO_OP": 22,
+          "RESIZE_VIEWPORT": 13,
+          "SCROLL": 5,
+          "BROWSER_FORWARD": 2,
+          "REFRESH": 1,
+          "BROWSER_BACK": 1
+        },
+        "depth_histogram": {
+          "0": 61,
+          "1": 39
+        }
+      },
+      "reward_terms": {
+        "reward": -10.36,
+        "novelty": 1.29,
+        "reveal": 3.0,
+        "deterministic": 0.0,
+        "step_cost": -5.2
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 32
+      },
+      "epsilon": 0.4379,
+      "buffer": 1497
+    },
+    {
+      "step": 1600,
+      "elapsed_s": 760.7,
+      "window_s": 51.4,
+      "steps_per_s": 1.946,
+      "ms_per_step": 514.0,
+      "timings_net_s": {
+        "env_step": 41.254,
+        "env_reset": 6.693,
+        "gradient": 1.16,
+        "qnet_forward": 0.928,
+        "buffer_sample": 0.273,
+        "obs_construction": 0.262,
+        "action_features": 0.057,
+        "buffer_add": 0.027,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 213,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 4,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.309,
+        "action_types": {
+          "CLICK": 41,
+          "SELECT": 36,
+          "TYPE": 5,
+          "NO_OP": 4,
+          "BROWSER_FORWARD": 4,
+          "RESIZE_VIEWPORT": 4,
+          "SCROLL": 2,
+          "BROWSER_BACK": 2,
+          "REFRESH": 2
+        },
+        "depth_histogram": {
+          "0": 33,
+          "1": 61,
+          "2": 6
+        }
+      },
+      "reward_terms": {
+        "reward": -9.6,
+        "novelty": 3.5,
+        "reveal": 3.0,
+        "deterministic": 0.0,
+        "step_cost": -5.4
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 2,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 43
+      },
+      "epsilon": 0.4004,
+      "buffer": 1597
+    },
+    {
+      "step": 1700,
+      "elapsed_s": 805.7,
+      "window_s": 45.0,
+      "steps_per_s": 2.222,
+      "ms_per_step": 450.0,
+      "timings_net_s": {
+        "env_step": 40.404,
+        "env_reset": 1.652,
+        "gradient": 0.97,
+        "qnet_forward": 0.631,
+        "obs_construction": 0.266,
+        "buffer_sample": 0.26,
+        "action_features": 0.051,
+        "buffer_add": 0.026,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 214,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.308,
+        "action_types": {
+          "SELECT": 45,
+          "CLICK": 34,
+          "REFRESH": 7,
+          "RESIZE_VIEWPORT": 4,
+          "SCROLL": 4,
+          "NO_OP": 3,
+          "BROWSER_BACK": 2,
+          "BROWSER_FORWARD": 1
+        },
+        "depth_histogram": {
+          "0": 28,
+          "1": 71,
+          "2": 1
+        }
+      },
+      "reward_terms": {
+        "reward": -9.72,
+        "novelty": 1.58,
+        "reveal": 4.5,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 43
+      },
+      "epsilon": 0.3629,
+      "buffer": 1697
+    },
+    {
+      "step": 1800,
+      "elapsed_s": 854.0,
+      "window_s": 48.3,
+      "steps_per_s": 2.07,
+      "ms_per_step": 483.0,
+      "timings_net_s": {
+        "env_step": 42.949,
+        "env_reset": 2.475,
+        "gradient": 0.825,
+        "qnet_forward": 0.651,
+        "obs_construction": 0.27,
+        "buffer_sample": 0.269,
+        "action_features": 0.058,
+        "buffer_add": 0.026,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 220,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.32,
+        "action_types": {
+          "CLICK": 61,
+          "SELECT": 20,
+          "RESIZE_VIEWPORT": 8,
+          "TYPE": 3,
+          "NO_OP": 2,
+          "SCROLL": 2,
+          "REFRESH": 2,
+          "BROWSER_FORWARD": 1,
+          "BROWSER_BACK": 1
+        },
+        "depth_histogram": {
+          "0": 40,
+          "1": 54,
+          "2": 6
+        }
+      },
+      "reward_terms": {
+        "reward": -14.03,
+        "novelty": 1.82,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 43
+      },
+      "epsilon": 0.3254,
+      "buffer": 1797
+    },
+    {
+      "step": 1900,
+      "elapsed_s": 904.4,
+      "window_s": 50.39,
+      "steps_per_s": 1.985,
+      "ms_per_step": 503.9,
+      "timings_net_s": {
+        "env_step": 43.716,
+        "env_reset": 3.817,
+        "gradient": 0.836,
+        "qnet_forward": 0.605,
+        "obs_construction": 0.307,
+        "buffer_sample": 0.235,
+        "action_features": 0.055,
+        "buffer_add": 0.025,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 209,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 2,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.325,
+        "action_types": {
+          "CLICK": 79,
+          "TYPE": 6,
+          "SCROLL": 5,
+          "RESIZE_VIEWPORT": 4,
+          "REFRESH": 3,
+          "BROWSER_FORWARD": 2,
+          "NO_OP": 1
+        },
+        "depth_histogram": {
+          "0": 61,
+          "1": 33,
+          "2": 6
+        }
+      },
+      "reward_terms": {
+        "reward": -13.13,
+        "novelty": 1.42,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.2
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 49
+      },
+      "epsilon": 0.2879,
+      "buffer": 1897
+    },
+    {
+      "step": 2000,
+      "elapsed_s": 958.4,
+      "window_s": 54.03,
+      "steps_per_s": 1.851,
+      "ms_per_step": 540.3,
+      "timings_net_s": {
+        "env_step": 43.386,
+        "env_reset": 7.462,
+        "gradient": 1.08,
+        "qnet_forward": 0.635,
+        "obs_construction": 0.293,
+        "buffer_sample": 0.25,
+        "action_features": 0.058,
+        "buffer_add": 0.027,
+        "archive_step": 0.004
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 223,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.321,
+        "action_types": {
+          "CLICK": 73,
+          "SCROLL": 15,
+          "TYPE": 5,
+          "SELECT": 3,
+          "RESIZE_VIEWPORT": 2,
+          "BROWSER_BACK": 2
+        },
+        "depth_histogram": {
+          "0": 47,
+          "1": 46,
+          "2": 7
+        }
+      },
+      "reward_terms": {
+        "reward": -14.74,
+        "novelty": 1.06,
+        "reveal": 3.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 3,
+        "return_failures": 0,
+        "replayed_actions": 62
+      },
+      "epsilon": 0.2504,
+      "buffer": 1997
+    },
+    {
+      "step": 2100,
+      "elapsed_s": 1003.1,
+      "window_s": 44.71,
+      "steps_per_s": 2.237,
+      "ms_per_step": 447.1,
+      "timings_net_s": {
+        "env_step": 39.505,
+        "env_reset": 2.28,
+        "gradient": 0.81,
+        "qnet_forward": 0.648,
+        "buffer_sample": 0.304,
+        "obs_construction": 0.223,
+        "action_features": 0.056,
+        "buffer_add": 0.027,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 232,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.291,
+        "action_types": {
+          "SCROLL": 59,
+          "TYPE": 17,
+          "CLICK": 17,
+          "BROWSER_BACK": 2,
+          "RESIZE_VIEWPORT": 2,
+          "BROWSER_FORWARD": 1,
+          "SELECT": 1,
+          "NO_OP": 1
+        },
+        "depth_histogram": {
+          "0": 48,
+          "1": 33,
+          "2": 19
+        }
+      },
+      "reward_terms": {
+        "reward": -18.08,
+        "novelty": 1.37,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 63
+      },
+      "epsilon": 0.2129,
+      "buffer": 2097
+    },
+    {
+      "step": 2200,
+      "elapsed_s": 1050.2,
+      "window_s": 47.1,
+      "steps_per_s": 2.123,
+      "ms_per_step": 471.0,
+      "timings_net_s": {
+        "env_step": 41.821,
+        "env_reset": 2.506,
+        "qnet_forward": 0.751,
+        "gradient": 0.432,
+        "buffer_sample": 0.263,
+        "obs_construction": 0.258,
+        "action_features": 0.056,
+        "buffer_add": 0.048,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 230,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 2,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.314,
+        "action_types": {
+          "CLICK": 55,
+          "RESIZE_VIEWPORT": 22,
+          "TYPE": 16,
+          "NO_OP": 2,
+          "REFRESH": 2,
+          "BROWSER_FORWARD": 2,
+          "SELECT": 1
+        },
+        "depth_histogram": {
+          "0": 40,
+          "1": 41,
+          "2": 19
+        }
+      },
+      "reward_terms": {
+        "reward": -17.16,
+        "novelty": 0.59,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -5.2
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 63
+      },
+      "epsilon": 0.1754,
+      "buffer": 2197
+    },
+    {
+      "step": 2300,
+      "elapsed_s": 1094.7,
+      "window_s": 44.49,
+      "steps_per_s": 2.248,
+      "ms_per_step": 444.9,
+      "timings_net_s": {
+        "env_step": 39.399,
+        "env_reset": 1.649,
+        "gradient": 1.212,
+        "qnet_forward": 0.706,
+        "buffer_sample": 0.284,
+        "obs_construction": 0.22,
+        "action_features": 0.053,
+        "buffer_add": 0.027,
+        "archive_step": 0.004
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 239,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.298,
+        "action_types": {
+          "RESIZE_VIEWPORT": 50,
+          "CLICK": 30,
+          "TYPE": 15,
+          "NO_OP": 3,
+          "SELECT": 1,
+          "SCROLL": 1
+        },
+        "depth_histogram": {
+          "0": 76,
+          "1": 8,
+          "2": 16
+        }
+      },
+      "reward_terms": {
+        "reward": -17.36,
+        "novelty": 0.89,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 63
+      },
+      "epsilon": 0.1379,
+      "buffer": 2297
+    },
+    {
+      "step": 2400,
+      "elapsed_s": 1145.9,
+      "window_s": 51.17,
+      "steps_per_s": 1.954,
+      "ms_per_step": 511.7,
+      "timings_net_s": {
+        "env_step": 43.18,
+        "env_reset": 4.868,
+        "gradient": 1.0,
+        "qnet_forward": 0.726,
+        "obs_construction": 0.234,
+        "buffer_sample": 0.218,
+        "action_features": 0.046,
+        "buffer_add": 0.029,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 237,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.316,
+        "action_types": {
+          "CLICK": 64,
+          "RESIZE_VIEWPORT": 31,
+          "BROWSER_BACK": 2,
+          "REFRESH": 1,
+          "NO_OP": 1,
+          "BROWSER_FORWARD": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -22.26,
+        "novelty": 0.44,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 69
+      },
+      "epsilon": 0.1004,
+      "buffer": 2397
+    },
+    {
+      "step": 2500,
+      "elapsed_s": 1196.4,
+      "window_s": 50.48,
+      "steps_per_s": 1.981,
+      "ms_per_step": 504.8,
+      "timings_net_s": {
+        "env_step": 42.879,
+        "env_reset": 4.026,
+        "gradient": 1.162,
+        "qnet_forward": 0.74,
+        "buffer_sample": 0.32,
+        "obs_construction": 0.25,
+        "action_features": 0.049,
+        "buffer_add": 0.03,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 240,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.32,
+        "action_types": {
+          "CLICK": 68,
+          "RESIZE_VIEWPORT": 28,
+          "BROWSER_BACK": 2,
+          "REFRESH": 1,
+          "SCROLL": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -21.77,
+        "novelty": 0.63,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 75
+      },
+      "epsilon": 0.1,
+      "buffer": 2497
+    },
+    {
+      "step": 2600,
+      "elapsed_s": 1248.4,
+      "window_s": 51.97,
+      "steps_per_s": 1.924,
+      "ms_per_step": 519.7,
+      "timings_net_s": {
+        "env_step": 45.676,
+        "env_reset": 2.466,
+        "gradient": 1.331,
+        "qnet_forward": 0.738,
+        "buffer_sample": 0.346,
+        "obs_construction": 0.288,
+        "action_features": 0.059,
+        "buffer_add": 0.031,
+        "archive_step": 0.004
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 239,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.336,
+        "action_types": {
+          "CLICK": 92,
+          "RESIZE_VIEWPORT": 5,
+          "NO_OP": 1,
+          "SCROLL": 1,
+          "BROWSER_FORWARD": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -23.6,
+        "novelty": 0.25,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 75
+      },
+      "epsilon": 0.1,
+      "buffer": 2597
+    },
+    {
+      "step": 2700,
+      "elapsed_s": 1299.8,
+      "window_s": 51.42,
+      "steps_per_s": 1.945,
+      "ms_per_step": 514.2,
+      "timings_net_s": {
+        "env_step": 44.544,
+        "env_reset": 2.952,
+        "gradient": 1.504,
+        "qnet_forward": 0.719,
+        "obs_construction": 0.404,
+        "buffer_sample": 0.309,
+        "action_features": 0.057,
+        "buffer_add": 0.027,
+        "archive_step": 0.004
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 243,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.328,
+        "action_types": {
+          "CLICK": 72,
+          "REFRESH": 25,
+          "RESIZE_VIEWPORT": 2,
+          "SCROLL": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -21.94,
+        "novelty": 0.46,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 78
+      },
+      "epsilon": 0.1,
+      "buffer": 2697
+    },
+    {
+      "step": 2800,
+      "elapsed_s": 1349.0,
+      "window_s": 49.26,
+      "steps_per_s": 2.03,
+      "ms_per_step": 492.6,
+      "timings_net_s": {
+        "env_step": 43.693,
+        "env_reset": 2.454,
+        "gradient": 0.839,
+        "qnet_forward": 0.673,
+        "obs_construction": 0.305,
+        "buffer_sample": 0.287,
+        "action_features": 0.06,
+        "buffer_add": 0.027,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 236,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.326,
+        "action_types": {
+          "CLICK": 79,
+          "BROWSER_BACK": 10,
+          "REFRESH": 7,
+          "RESIZE_VIEWPORT": 2,
+          "SCROLL": 1,
+          "NO_OP": 1
+        },
+        "depth_histogram": {
+          "0": 95,
+          "1": 5
+        }
+      },
+      "reward_terms": {
+        "reward": -19.03,
+        "novelty": 0.57,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 78
+      },
+      "epsilon": 0.1,
+      "buffer": 2797
+    },
+    {
+      "step": 2900,
+      "elapsed_s": 1398.8,
+      "window_s": 49.79,
+      "steps_per_s": 2.009,
+      "ms_per_step": 497.9,
+      "timings_net_s": {
+        "env_step": 42.755,
+        "env_reset": 3.545,
+        "gradient": 1.096,
+        "qnet_forward": 0.684,
+        "buffer_sample": 0.319,
+        "obs_construction": 0.298,
+        "action_features": 0.059,
+        "buffer_add": 0.027,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 241,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 3,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.317,
+        "action_types": {
+          "CLICK": 48,
+          "BROWSER_BACK": 33,
+          "REFRESH": 18,
+          "RESIZE_VIEWPORT": 1
+        },
+        "depth_histogram": {
+          "0": 86,
+          "1": 13,
+          "2": 1
+        }
+      },
+      "reward_terms": {
+        "reward": -18.7,
+        "novelty": 0.7,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.3
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 82
+      },
+      "epsilon": 0.1,
+      "buffer": 2897
+    },
+    {
+      "step": 3000,
+      "elapsed_s": 1450.3,
+      "window_s": 51.52,
+      "steps_per_s": 1.941,
+      "ms_per_step": 515.2,
+      "timings_net_s": {
+        "env_step": 43.256,
+        "env_reset": 4.426,
+        "gradient": 1.087,
+        "qnet_forward": 0.805,
+        "buffer_sample": 0.352,
+        "obs_construction": 0.335,
+        "action_features": 0.057,
+        "buffer_add": 0.028,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 238,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 8,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.318,
+        "action_types": {
+          "CLICK": 47,
+          "REFRESH": 23,
+          "BROWSER_BACK": 21,
+          "NO_OP": 4,
+          "SELECT": 2,
+          "SCROLL": 2,
+          "RESIZE_VIEWPORT": 1
+        },
+        "depth_histogram": {
+          "0": 64,
+          "1": 34,
+          "2": 2
+        }
+      },
+      "reward_terms": {
+        "reward": -18.56,
+        "novelty": 0.54,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -5.8
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 86
+      },
+      "epsilon": 0.1,
+      "buffer": 2997
+    },
+    {
+      "step": 3100,
+      "elapsed_s": 1501.9,
+      "window_s": 51.56,
+      "steps_per_s": 1.939,
+      "ms_per_step": 515.6,
+      "timings_net_s": {
+        "env_step": 43.678,
+        "env_reset": 3.795,
+        "gradient": 1.622,
+        "qnet_forward": 0.779,
+        "obs_construction": 0.305,
+        "buffer_sample": 0.301,
+        "action_features": 0.059,
+        "buffer_add": 0.027,
+        "archive_step": 0.005
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 239,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.329,
+        "action_types": {
+          "CLICK": 82,
+          "NO_OP": 12,
+          "SCROLL": 2,
+          "RESIZE_VIEWPORT": 2,
+          "BROWSER_BACK": 1,
+          "REFRESH": 1
+        },
+        "depth_histogram": {
+          "0": 56,
+          "1": 44
+        }
+      },
+      "reward_terms": {
+        "reward": -19.91,
+        "novelty": 0.64,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 92
+      },
+      "epsilon": 0.1,
+      "buffer": 3097
+    },
+    {
+      "step": 3200,
+      "elapsed_s": 1551.9,
+      "window_s": 50.01,
+      "steps_per_s": 1.999,
+      "ms_per_step": 500.1,
+      "timings_net_s": {
+        "env_step": 42.773,
+        "env_reset": 4.214,
+        "gradient": 0.846,
+        "qnet_forward": 0.777,
+        "obs_construction": 0.262,
+        "buffer_sample": 0.24,
+        "action_features": 0.054,
+        "buffer_add": 0.027,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 240,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.307,
+        "action_types": {
+          "RESIZE_VIEWPORT": 46,
+          "CLICK": 40,
+          "NO_OP": 9,
+          "SCROLL": 3,
+          "SELECT": 1,
+          "BROWSER_FORWARD": 1
+        },
+        "depth_histogram": {
+          "0": 27,
+          "1": 71,
+          "2": 2
+        }
+      },
+      "reward_terms": {
+        "reward": -17.88,
+        "novelty": 0.47,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 95
+      },
+      "epsilon": 0.1,
+      "buffer": 3197
+    },
+    {
+      "step": 3300,
+      "elapsed_s": 1596.3,
+      "window_s": 44.34,
+      "steps_per_s": 2.255,
+      "ms_per_step": 443.4,
+      "timings_net_s": {
+        "env_step": 39.484,
+        "env_reset": 1.656,
+        "gradient": 0.959,
+        "qnet_forward": 0.691,
+        "buffer_sample": 0.308,
+        "obs_construction": 0.225,
+        "action_features": 0.057,
+        "buffer_add": 0.026,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 240,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.283,
+        "action_types": {
+          "SCROLL": 44,
+          "NO_OP": 34,
+          "RESIZE_VIEWPORT": 10,
+          "CLICK": 9,
+          "SELECT": 1,
+          "BROWSER_FORWARD": 1,
+          "BROWSER_BACK": 1
+        },
+        "depth_histogram": {
+          "0": 54,
+          "1": 46
+        }
+      },
+      "reward_terms": {
+        "reward": -20.94,
+        "novelty": 0.46,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 95
+      },
+      "epsilon": 0.1,
+      "buffer": 3297
+    },
+    {
+      "step": 3400,
+      "elapsed_s": 1644.0,
+      "window_s": 47.72,
+      "steps_per_s": 2.095,
+      "ms_per_step": 477.2,
+      "timings_net_s": {
+        "env_step": 41.616,
+        "env_reset": 3.437,
+        "qnet_forward": 0.692,
+        "gradient": 0.52,
+        "obs_construction": 0.266,
+        "buffer_sample": 0.243,
+        "action_features": 0.058,
+        "buffer_add": 0.033,
+        "archive_step": 0.004
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 240,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.304,
+        "action_types": {
+          "SCROLL": 59,
+          "CLICK": 38,
+          "NO_OP": 2,
+          "RESIZE_VIEWPORT": 1
+        },
+        "depth_histogram": {
+          "0": 62,
+          "1": 37,
+          "2": 1
+        }
+      },
+      "reward_terms": {
+        "reward": -19.47,
+        "novelty": 0.53,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 97
+      },
+      "epsilon": 0.1,
+      "buffer": 3397
+    },
+    {
+      "step": 3500,
+      "elapsed_s": 1688.5,
+      "window_s": 44.47,
+      "steps_per_s": 2.249,
+      "ms_per_step": 444.7,
+      "timings_net_s": {
+        "env_step": 38.901,
+        "env_reset": 2.412,
+        "gradient": 0.927,
+        "qnet_forward": 0.71,
+        "buffer_sample": 0.283,
+        "obs_construction": 0.216,
+        "action_features": 0.058,
+        "buffer_add": 0.027,
+        "archive_step": 0.004
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 237,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 17,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.292,
+        "action_types": {
+          "RESIZE_VIEWPORT": 37,
+          "SCROLL": 23,
+          "CLICK": 19,
+          "BROWSER_FORWARD": 17,
+          "REFRESH": 2,
+          "SELECT": 1,
+          "NO_OP": 1
+        },
+        "depth_histogram": {
+          "0": 92,
+          "1": 7,
+          "2": 1
+        }
+      },
+      "reward_terms": {
+        "reward": -20.14,
+        "novelty": 0.61,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -6.7
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 98
+      },
+      "epsilon": 0.1,
+      "buffer": 3497
+    },
+    {
+      "step": 3600,
+      "elapsed_s": 1738.3,
+      "window_s": 49.84,
+      "steps_per_s": 2.006,
+      "ms_per_step": 498.4,
+      "timings_net_s": {
+        "env_step": 44.474,
+        "env_reset": 2.555,
+        "qnet_forward": 0.733,
+        "gradient": 0.557,
+        "obs_construction": 0.322,
+        "buffer_sample": 0.25,
+        "action_features": 0.056,
+        "buffer_add": 0.026,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 243,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 2,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.33,
+        "action_types": {
+          "CLICK": 79,
+          "SELECT": 11,
+          "RESIZE_VIEWPORT": 8,
+          "BROWSER_FORWARD": 2
+        },
+        "depth_histogram": {
+          "0": 64,
+          "1": 24,
+          "2": 12
+        }
+      },
+      "reward_terms": {
+        "reward": -13.19,
+        "novelty": 0.96,
+        "reveal": 4.5,
+        "deterministic": 0.0,
+        "step_cost": -5.2
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 98
+      },
+      "epsilon": 0.1,
+      "buffer": 3597
+    },
+    {
+      "step": 3700,
+      "elapsed_s": 1788.5,
+      "window_s": 50.18,
+      "steps_per_s": 1.993,
+      "ms_per_step": 501.8,
+      "timings_net_s": {
+        "env_step": 42.506,
+        "env_reset": 4.724,
+        "qnet_forward": 0.692,
+        "gradient": 0.67,
+        "obs_construction": 0.297,
+        "buffer_sample": 0.292,
+        "action_features": 0.06,
+        "buffer_add": 0.026,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 238,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.319,
+        "action_types": {
+          "CLICK": 63,
+          "RESIZE_VIEWPORT": 29,
+          "SELECT": 6,
+          "NO_OP": 1,
+          "SCROLL": 1
+        },
+        "depth_histogram": {
+          "0": 77,
+          "1": 16,
+          "2": 7
+        }
+      },
+      "reward_terms": {
+        "reward": -14.45,
+        "novelty": 0.7,
+        "reveal": 3.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 105
+      },
+      "epsilon": 0.1,
+      "buffer": 3697
+    },
+    {
+      "step": 3800,
+      "elapsed_s": 1841.1,
+      "window_s": 52.59,
+      "steps_per_s": 1.902,
+      "ms_per_step": 525.9,
+      "timings_net_s": {
+        "env_step": 44.709,
+        "env_reset": 3.876,
+        "gradient": 1.478,
+        "qnet_forward": 0.696,
+        "buffer_sample": 0.336,
+        "obs_construction": 0.303,
+        "action_features": 0.062,
+        "buffer_add": 0.027,
+        "archive_step": 0.004
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 239,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.336,
+        "action_types": {
+          "CLICK": 94,
+          "SELECT": 4,
+          "NO_OP": 1,
+          "REFRESH": 1
+        },
+        "depth_histogram": {
+          "0": 88,
+          "1": 9,
+          "2": 3
+        }
+      },
+      "reward_terms": {
+        "reward": -16.85,
+        "novelty": 0.75,
+        "reveal": 3.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 107
+      },
+      "epsilon": 0.1,
+      "buffer": 3797
+    },
+    {
+      "step": 3900,
+      "elapsed_s": 1891.6,
+      "window_s": 50.51,
+      "steps_per_s": 1.98,
+      "ms_per_step": 505.1,
+      "timings_net_s": {
+        "env_step": 43.544,
+        "env_reset": 3.482,
+        "gradient": 1.212,
+        "qnet_forward": 0.675,
+        "buffer_sample": 0.324,
+        "obs_construction": 0.297,
+        "action_features": 0.059,
+        "buffer_add": 0.027,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 234,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.325,
+        "action_types": {
+          "CLICK": 80,
+          "SELECT": 9,
+          "RESIZE_VIEWPORT": 5,
+          "SCROLL": 2,
+          "REFRESH": 2,
+          "NO_OP": 1,
+          "BROWSER_BACK": 1
+        },
+        "depth_histogram": {
+          "0": 73,
+          "1": 18,
+          "2": 9
+        }
+      },
+      "reward_terms": {
+        "reward": -14.48,
+        "novelty": 0.72,
+        "reveal": 3.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 110
+      },
+      "epsilon": 0.1,
+      "buffer": 3897
+    },
+    {
+      "step": 4000,
+      "elapsed_s": 1941.9,
+      "window_s": 50.36,
+      "steps_per_s": 1.986,
+      "ms_per_step": 503.6,
+      "timings_net_s": {
+        "env_step": 43.652,
+        "env_reset": 3.002,
+        "gradient": 1.227,
+        "qnet_forward": 0.713,
+        "buffer_sample": 0.423,
+        "obs_construction": 0.267,
+        "action_features": 0.055,
+        "buffer_add": 0.027,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 240,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.33,
+        "action_types": {
+          "CLICK": 81,
+          "RESIZE_VIEWPORT": 11,
+          "SELECT": 3,
+          "BROWSER_BACK": 2,
+          "SCROLL": 2,
+          "NO_OP": 1
+        },
+        "depth_histogram": {
+          "0": 91,
+          "1": 7,
+          "2": 2
+        }
+      },
+      "reward_terms": {
+        "reward": -17.98,
+        "novelty": 0.42,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 11,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 2
+        },
+        "max_depth": 2,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 111
+      },
+      "epsilon": 0.1,
+      "buffer": 3997
+    }
+  ],
+  "train_seconds": 1942.3,
+  "archive_final": {
+    "cells": 11,
+    "episodes": 101,
+    "returns_attempted": 42,
+    "returns_failed": 0,
+    "cells_discovered": 10,
+    "replayed_actions": 111,
+    "reanchored": 346,
+    "return_failure_rate": 0.0
+  },
+  "archive_cells": [
+    {
+      "page": "index.html",
+      "depth": 0,
+      "route_len": 0,
+      "chosen": 2,
+      "discoveries": 0
+    },
+    {
+      "page": "about.html",
+      "depth": 0,
+      "route_len": 1,
+      "chosen": 3,
+      "discoveries": 0
+    },
+    {
+      "page": "status.html",
+      "depth": 0,
+      "route_len": 1,
+      "chosen": 4,
+      "discoveries": 0
+    },
+    {
+      "page": "privacy.html",
+      "depth": 0,
+      "route_len": 1,
+      "chosen": 5,
+      "discoveries": 0
+    },
+    {
+      "page": "terms.html",
+      "depth": 0,
+      "route_len": 1,
+      "chosen": 3,
+      "discoveries": 0
+    },
+    {
+      "page": "support.html",
+      "depth": 0,
+      "route_len": 1,
+      "chosen": 5,
+      "discoveries": 0
+    },
+    {
+      "page": "catalog.html",
+      "depth": 0,
+      "route_len": 1,
+      "chosen": 3,
+      "discoveries": 0
+    },
+    {
+      "page": "order-1.html",
+      "depth": 1,
+      "route_len": 1,
+      "chosen": 1,
+      "discoveries": 0
+    },
+    {
+      "page": "order-1.html",
+      "depth": 1,
+      "route_len": 2,
+      "chosen": 8,
+      "discoveries": 0
+    },
+    {
+      "page": "order-2.html",
+      "depth": 2,
+      "route_len": 3,
+      "chosen": 6,
+      "discoveries": 0
+    },
+    {
+      "page": "order-2.html",
+      "depth": 2,
+      "route_len": 6,
+      "chosen": 4,
+      "discoveries": 0
+    }
+  ],
+  "archive_max_depth": 2,
+  "eval": {
+    "label": "ac_dqn_corrected",
+    "target_url": "http://127.0.0.1:55045/index.html",
+    "episodes": 5,
+    "steps": 200,
+    "wall_clock_s": 93.08,
+    "steps_per_second": 2.149,
+    "total_reward": -18.949,
+    "mean_episode_reward": -3.79,
+    "episode_rewards": [
+      0.7,
+      -6.658,
+      -3.074,
+      -3.927,
+      -5.99
+    ],
+    "unique_states": 9,
+    "valid_action_rate": 1.0,
+    "exec_success_rate": 1.0,
+    "noop_steps": 1,
+    "distinct_findings": 0,
+    "trigger_counts": {},
+    "findings": [],
+    "mean_depth": 0.93,
+    "max_depth": 2,
+    "depth_histogram": {
+      "0": 59,
+      "1": 96,
+      "2": 45
+    },
+    "flow_completions": 0,
+    "episodes_past_stage_1": 5,
+    "per_episode_max_depth": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "reward_term_totals": {
+      "reward": -18.95,
+      "novelty": 12.8,
+      "reveal": 7.5,
+      "deterministic": 0.0,
+      "step_cost": -10.0
+    },
+    "eval_exec_failures": 0
+  },
+  "eval_trajectory": [
+    {
+      "event": "reset"
+    },
+    {
+      "from": "index.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Start order",
+      "n_actions": 21
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": true,
+      "type": "SCROLL",
+      "element": "",
+      "n_actions": 20
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": true,
+      "type": "NO_OP",
+      "element": "",
+      "n_actions": 24
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": true,
+      "type": "CLICK",
+      "element": "Terms",
+      "n_actions": 19
+    },
+    {
+      "from": "terms.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "RESIZE_VIEWPORT",
+      "element": "",
+      "n_actions": 20
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": true,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 17
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "RESIZE_VIEWPORT",
+      "element": "",
+      "n_actions": 17
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "RESIZE_VIEWPORT",
+      "element": "",
+      "n_actions": 20
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "RESIZE_VIEWPORT",
+      "element": "",
+      "n_actions": 17
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "RESIZE_VIEWPORT",
+      "element": "",
+      "n_actions": 20
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "RESIZE_VIEWPORT",
+      "element": "",
+      "n_actions": 17
+    },
+    {
+      "event": "reset"
+    },
+    {
+      "from": "index.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Start order",
+      "n_actions": 21
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "event": "reset"
+    },
+    {
+      "from": "index.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Start order",
+      "n_actions": 21
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": true,
+      "type": "SCROLL",
+      "element": "",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": true,
+      "type": "TYPE",
+      "element": "quantity",
+      "n_actions": 24
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": true,
+      "type": "CLICK",
+      "element": "Contact us",
+      "n_actions": 20
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": true,
+      "type": "CLICK",
+      "element": "Returns",
+      "n_actions": 20
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "RESIZE_VIEWPORT",
+      "element": "",
+      "n_actions": 20
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "event": "reset"
+    },
+    {
+      "from": "index.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Start order",
+      "n_actions": 21
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": true,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 19
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "RESIZE_VIEWPORT",
+      "element": "",
+      "n_actions": 20
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": true,
+      "type": "CLICK",
+      "element": "Terms",
+      "n_actions": 17
+    },
+    {
+      "from": "terms.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "RESIZE_VIEWPORT",
+      "element": "",
+      "n_actions": 20
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 20
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "RESIZE_VIEWPORT",
+      "element": "",
+      "n_actions": 17
+    },
+    {
+      "event": "reset"
+    },
+    {
+      "from": "index.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Start order",
+      "n_actions": 21
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": true,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 19
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Start an order",
+      "n_actions": 21
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Continue",
+      "n_actions": 20
+    },
+    {
+      "from": "order-2.html",
+      "depth": 2,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Back",
+      "n_actions": 24
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "SELECT",
+      "element": "product",
+      "n_actions": 19
+    }
+  ],
+  "eval_reward_rows": [
+    {
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 2.45,
+      "novelty": 1.0,
+      "reveal": 1.5,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "terms.html",
+      "failed": false
+    },
+    {
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": 0.39721359549995794,
+      "novelty": 0.4472135954999579,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 1.8972135954999578,
+      "novelty": 0.4472135954999579,
+      "reveal": 1.5,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 0.39721359549995794,
+      "novelty": 0.4472135954999579,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 0.17941573387056176,
+      "novelty": 0.22941573387056174,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 1.6857022603955159,
+      "novelty": 0.23570226039551587,
+      "reveal": 1.5,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 0.18570226039551585,
+      "novelty": 0.23570226039551587,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 0.2172612419124244,
+      "novelty": 0.2672612419124244,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": 0.2081988897471611,
+      "novelty": 0.2581988897471611,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": 0.13569533817705187,
+      "novelty": 0.18569533817705186,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 1.6424500897298753,
+      "novelty": 0.19245008972987526,
+      "reveal": 1.5,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 0.14611613513818406,
+      "novelty": 0.19611613513818404,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 0.16821789023599237,
+      "novelty": 0.2182178902359924,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": 0.17360679774997895,
+      "novelty": 0.22360679774997896,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": 0.6571067811865474,
+      "novelty": 0.7071067811865475,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "terms.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": 0.11439898730535729,
+      "novelty": 0.1643989873053573,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 1.6214985851425088,
+      "novelty": 0.17149858514250882,
+      "reveal": 1.5,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 0.12407765595569785,
+      "novelty": 0.17407765595569785,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.1,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.15000000000000002,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.25,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-2.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.3,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    }
+  ]
+}

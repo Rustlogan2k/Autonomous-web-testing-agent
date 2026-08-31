@@ -1,4 +1,12 @@
 {
+  "_status": "PARTIALLY INVALID - captured 2026-08-17, superseded 2026-08-27.",
+  "_invalid_columns": {
+    "distinct_findings": "The `distinct_findings` / `trigger_counts` columns in this file are INVALID. Every broken_navigation firing on the deep_flow_site fixture came from a self-referential link -- an anchor resolving to the page already loaded (nav-support on support.html, sup-returns on support.html, nav-home on index.html). Clicking one reloads and correctly leaves the URL unchanged, which detect_bug_signals read as a broken link. The fixture's deterministic ceiling is 0, so these were never discoveries. Fixed 2026-08-27 in envs/action_registry.py (_is_self_link).",
+    "trigger_counts": "The `distinct_findings` / `trigger_counts` columns in this file are INVALID. Every broken_navigation firing on the deep_flow_site fixture came from a self-referential link -- an anchor resolving to the page already loaded (nav-support on support.html, sup-returns on support.html, nav-home on index.html). Clicking one reloads and correctly leaves the URL unchanged, which detect_bug_signals read as a broken link. The fixture's deterministic ceiling is 0, so these were never discoveries. Fixed 2026-08-27 in envs/action_registry.py (_is_self_link)."
+  },
+  "_valid_columns": "unaffected and still citable: valid_action_rate, unique_states, max_depth, mean_depth, reached_receipt, reached_review, episode_rewards. NOTE that mean_episode_reward shifts slightly under the fix, because each self-link click was also paying a +2.0 broken_navigation bonus the first time it fired at a given (state, element); the ranking it produced is unchanged.",
+  "_superseded_by": "compare_agents_deep_hash_3seed_v2.json",
+  "_claim_this_invalidates": "'masked random finds 10-12 distinct findings to the DQN's 0-4, roughly 10x at equal step budget' (PROJECT_CONTEXT 2026-08-17 entry, README 'the harder result'). That is a count of how many distinct self-links each policy clicked. The underlying exploration-diversity gap is real; the bug-discovery reading of it is not.",
   "site": "deep",
   "encoders": "hash",
   "args": {

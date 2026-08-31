@@ -1,0 +1,138 @@
+# Tests for the non-RL half of the system: repository profiling, the sandbox runner,
+# evidence capture and the bug report.
+#
+# The RL half is deliberately not run here. It needs torch, stable-baselines3 and
+# transformers — none of which are in `requirements-ci.txt` — and a meaningful RL run is
+# measured in hours on a GPU, not minutes on a runner. Those tests are marked
+# `requires_torch` and are not collected when the stack is absent; `tests/conftest.py`
+# prints what it found so a short run explains itself rather than looking truncated.
+#
+# Three jobs, split by what each needs:
+#   portable    — nothing beyond pip. Runs everywhere, on two Python versions.
+#   integration — a Docker daemon and a real Chromium. Linux only.
+#   lint        — ruff, already declared in the project's dev extra.
+
+name: tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  portable:
+    name: portable (py${{ matrix.python }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # `requires-python = ">=3.11,<3.13"`, so both supported versions are covered.
+        # Windows is in the matrix because it is the development platform and the
+        # project has hit real path- and encoding-specific defects there before.
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-ci.txt
+          pip install -e .
+
+      - name: Run the portable suite
+        run: >
+          pytest tests
+          -m "not requires_torch and not requires_docker and not requires_browser"
+          -q
+
+  integration:
+    name: integration (docker + browser)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-ci.txt
+          pip install docker
+          pip install -e .
+
+      - name: Install Chromium
+        run: python -m playwright install --with-deps chromium
+
+      # Docker is preinstalled on the GitHub-hosted Ubuntu runners. The step is a
+      # precondition check rather than a setup step: if the daemon is absent the
+      # `requires_docker` tests would skip silently and the job would pass having tested
+      # nothing, which is the failure mode this whole marker scheme exists to prevent.
+      - name: Check Docker is available
+        run: docker version
+
+      - name: Sandbox lifecycle and browser integration
+        run: pytest tests -m "requires_docker or requires_browser" -q
+
+      # The full non-RL path end to end: profile -> build -> run -> health check ->
+      # rollout -> evidence -> bug report -> teardown, against the committed fixture.
+      # `--judge stub` keeps it deterministic and model-free.
+      - name: End-to-end repository intake
+        run: >
+          python scripts/run_repo.py
+          --repo tests/fixtures/demo_repo
+          --judge stub --episodes 1 --steps 12
+          --out "$RUNNER_TEMP/ci_report.md"
+
+      - name: Fail if the run leaked sandbox resources
+        run: |
+          set -e
+          leaked=0
+          for kind in \
+            "container:$(docker ps -aq --filter 'name=wta-target' | wc -l)" \
+            "image:$(docker images -q --filter 'reference=wta-target-*' | wc -l)" \
+            "network:$(docker network ls -q --filter 'name=wta-net' | wc -l)"; do
+            name="${kind%%:*}"; count="${kind##*:}"
+            echo "$name leaked: $count"
+            [ "$count" -eq 0 ] || leaked=1
+          done
+          exit $leaked
+
+      - name: Upload the report and its evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-intake-report
+          path: |
+            ${{ runner.temp }}/ci_report.md
+            ${{ runner.temp }}/ci_report.json
+            ${{ runner.temp }}/ci_report_evidence/
+          if-no-files-found: warn
+
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install ruff
+      # Non-blocking: the project predates this configuration and has not been swept.
+      # Reported so the count can come down deliberately rather than in one large diff.
+      - run: ruff check src scripts tests --output-format=github || true

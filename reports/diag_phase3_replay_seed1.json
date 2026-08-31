@@ -1,0 +1,19 @@
+{
+  "_purpose": "Is Place order -> receipt collected, stored and sampled? seed 2 only.",
+  "seed": 1,
+  "train_steps": 4000,
+  "final_transition": {
+    "training_steps_on_order4": 0,
+    "training_steps_on_receipt": 0,
+    "tagged_transitions_stored": 0,
+    "buffer_transitions": 4000,
+    "tagged_share_of_buffer_pct": 0.0,
+    "tagged_draws": 0,
+    "total_draws": 56000,
+    "tagged_share_of_draws_pct": 0.0,
+    "per_over_uniform": null,
+    "mean_priority_tagged": null,
+    "mean_priority_other": 0.426902
+  },
+  "q_trace": []
+}

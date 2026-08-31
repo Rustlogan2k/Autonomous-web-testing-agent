@@ -1,0 +1,94 @@
+{
+  "name": "Toy validation site",
+  "app_type": "static five-page fixture (signup, widgets, settings, archive)",
+  "summary": "Five-page static fixture used as the project's labelled ground truth.",
+  "auth": "anonymous",
+  "provenance": "profiler",
+  "notes": "Mechanically extracted from static HTML by intake/extract.py. No LLM, no hand-authored content, no behaviours. On a static site the markup is also the runtime DOM, so many of these rules are visible to the judge through the window as well; this profile is not evidence about server-side intent.",
+  "routes": [
+    {
+      "path": "/archive.html",
+      "purpose": "Acme Widgets \u2014 Archive",
+      "auth": "anonymous",
+      "source": "archive.html:1"
+    },
+    {
+      "path": "/confirm.html",
+      "purpose": "Acme Widgets \u2014 Confirmation",
+      "auth": "anonymous",
+      "source": "confirm.html:1"
+    },
+    {
+      "path": "/index.html",
+      "purpose": "Acme Widgets \u2014 Home",
+      "auth": "anonymous",
+      "source": "index.html:1"
+    },
+    {
+      "path": "/settings.html",
+      "purpose": "Acme Widgets \u2014 Settings",
+      "auth": "anonymous",
+      "source": "settings.html:1"
+    },
+    {
+      "path": "/signup.html",
+      "purpose": "Acme Widgets \u2014 Sign up",
+      "auth": "anonymous",
+      "source": "signup.html:1"
+    },
+    {
+      "path": "/widgets.html",
+      "purpose": "Acme Widgets \u2014 Widgets",
+      "auth": "anonymous",
+      "source": "widgets.html:1"
+    }
+  ],
+  "rules": [
+    {
+      "field": "signup-form",
+      "route": "/signup.html",
+      "rule": "the form declares novalidate, so the browser will not enforce the field constraints above; anything enforcing them has to be the application itself",
+      "source": "signup.html:26"
+    },
+    {
+      "field": "username",
+      "route": "/signup.html",
+      "rule": "is required",
+      "source": "signup.html:28"
+    },
+    {
+      "field": "email",
+      "route": "/signup.html",
+      "rule": "must be a valid email, is required",
+      "source": "signup.html:31"
+    },
+    {
+      "field": "age",
+      "route": "/signup.html",
+      "rule": "must be a valid number, must be between 13 and 120",
+      "source": "signup.html:34"
+    }
+  ],
+  "flows": [
+    {
+      "name": "signup-form on /signup.html",
+      "routes": [
+        "/signup.html",
+        "/signup.html"
+      ],
+      "steps": [
+        "complete signup-form",
+        "submit (GET)"
+      ],
+      "outcome": "the application handles the submission at /signup.html",
+      "source": "signup.html:26"
+    }
+  ],
+  "behaviours": [],
+  "_extraction_stats": {
+    "files": 6,
+    "routes": 6,
+    "rules": 4,
+    "flows": 1
+  }
+}

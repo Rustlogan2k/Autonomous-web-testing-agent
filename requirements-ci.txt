@@ -1,0 +1,32 @@
+# Dependencies for the portable (non-RL) test suite.
+#
+# `requirements.txt` is the *research* environment: it pulls bitsandbytes, trl, peft,
+# datasets, wandb and two CLIP packages, and it does not contain torch at all — the
+# README installs that separately from a CUDA-specific index. None of that is needed to
+# test repository profiling, the sandbox runner, evidence capture or the bug report, and
+# most of it will not install cleanly on a CPU-only CI runner.
+#
+# This file is therefore not a subset chosen by taste. It is the set that was found by
+# building a clean virtualenv and adding packages until
+#
+#     pytest -m "not requires_torch and not requires_docker and not requires_browser"
+#
+# collected and passed: 694 passed, 5 skipped, 25 deselected. Every entry below is here
+# because removing it produced a collection error, and the comment says which component
+# needs it.
+#
+# The deep-learning stack is deliberately absent. Tests that need it are marked
+# `requires_torch` and are not collected when it is missing — see `tests/conftest.py`.
+
+pytest>=8.2.0
+pytest-asyncio>=0.23.0
+
+numpy>=1.26.0            # observations, screenshot hashing
+Pillow>=10.3.0           # TraceRecorder writes evidence frames as PNG
+PyYAML>=6.0              # intake/compose_policy parses build definitions
+python-dotenv>=1.0.0     # configuration loading
+loguru>=0.7.0            # utils/logging, imported by nearly every module
+gymnasium>=1.0.0         # envs/types, reached through evaluation/rollout
+playwright>=1.44.0       # the package only; the Chromium download is a separate step
+                         # (`python -m playwright install chromium`) and only the
+                         # `requires_browser` tests need it

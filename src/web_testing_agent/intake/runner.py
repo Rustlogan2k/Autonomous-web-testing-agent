@@ -469,7 +469,17 @@ def deploy_repository(
         args.pop("network_mode", None)  # `network` and `network_mode` are mutually exclusive
 
         logger.info("running {} with container port {} -> 127.0.0.1:{}", tag, container_port, host_port)
-        container = client.containers.run(
+        # **Created and started separately, so the container is in the teardown ledger
+        # before anything can go wrong with starting it.**
+        #
+        # `docker-py`'s `containers.run()` is `create()` followed by an unguarded
+        # `start()`. When `start()` raises, `run()` never returns the object, so the
+        # caller cannot register it — and the container it already created is left
+        # behind. That is not a rare path here: `SANDBOX_RUN_ARGS` is deliberately strict
+        # enough to break many real images (read-only rootfs, `user=1000:1000`, all
+        # capabilities dropped), and a host port can also be taken between `_free_port`
+        # and this call. Every one of those failures used to leak a container.
+        container = client.containers.create(
             tag,
             detach=True,
             name=f"wta-target-{run_id}",
@@ -477,6 +487,7 @@ def deploy_repository(
             **args,
         )
         created.containers.append(container)
+        container.start()
 
         deployment.container_id = str(getattr(container, "id", "") or "")
         deployment.network_id = str(getattr(network, "id", "") or "")

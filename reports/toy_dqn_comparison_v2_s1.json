@@ -1,0 +1,341 @@
+{
+  "_status": "SUPERSEDED 2026-08-27 (Phase 0b). Captured with an unstable network observation: the HTTP `date` header, a monotonic `timestamp` and a float `duration_ms` survived canonicalization, and a content-hash encoder maps any byte difference to an orthogonal vector, so 384 of 1,664 observation dims were clock jitter on every step that touched the network. DQN training was consequently not reproducible at a fixed seed. The random arms in this file are unaffected (a random policy never reads an observation) and are byte-identical in the successor. Only the DQN rows move.",
+  "_superseded_by": "toy_dqn_comparison_v3_s1.json",
+  "config": {
+    "train_steps": 4000,
+    "eval_episodes": 3,
+    "episode_steps": 40,
+    "seed": 1,
+    "eval_epsilon": 0.05,
+    "reward_model": "NullRewardModel (deterministic triggers only)",
+    "encoders": "HashEmbeddingEncoder stand-ins (no semantics)",
+    "self_link_trigger_fix": true,
+    "arms": {
+      "dqn_unmasked": {
+        "train_seconds": 1856.9,
+        "best_mean_training_return": -16.2,
+        "best_step": 3961
+      },
+      "dqn_masked": {
+        "train_seconds": 2162.7,
+        "best_mean_training_return": 5.0,
+        "best_step": 521
+      }
+    }
+  },
+  "results": {
+    "dqn_unmasked": {
+      "label": "dqn_unmasked-best",
+      "target_url": "http://127.0.0.1:62022/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 57.45,
+      "steps_per_second": 2.089,
+      "total_reward": -18.7,
+      "mean_episode_reward": -6.233,
+      "episode_rewards": [
+        -5.55,
+        -7.3,
+        -5.85
+      ],
+      "unique_states": 8,
+      "valid_action_rate": 0.8417,
+      "exec_success_rate": 1.0,
+      "noop_steps": 19,
+      "distinct_findings": 1,
+      "trigger_counts": {
+        "slow_response": 5
+      },
+      "findings": [
+        {
+          "trigger": "slow_response",
+          "url": "http://127.0.0.1:62022/widgets.html",
+          "action": "CLICK",
+          "element": "Sync now",
+          "detail": "3.0s without quiescence",
+          "first_seen_step": 17,
+          "times_seen": 5
+        }
+      ],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [
+          "BUG-07"
+        ],
+        "recall": 0.333
+      }
+    },
+    "dqn_unmasked_final": {
+      "label": "dqn_unmasked-final",
+      "target_url": "http://127.0.0.1:62022/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 60.33,
+      "steps_per_second": 1.989,
+      "total_reward": -16.3,
+      "mean_episode_reward": -5.433,
+      "episode_rewards": [
+        -3.75,
+        -7.0,
+        -5.55
+      ],
+      "unique_states": 9,
+      "valid_action_rate": 0.85,
+      "exec_success_rate": 1.0,
+      "noop_steps": 18,
+      "distinct_findings": 1,
+      "trigger_counts": {
+        "slow_response": 6
+      },
+      "findings": [
+        {
+          "trigger": "slow_response",
+          "url": "http://127.0.0.1:62022/widgets.html",
+          "action": "CLICK",
+          "element": "Sync now",
+          "detail": "3.1s without quiescence",
+          "first_seen_step": 19,
+          "times_seen": 6
+        }
+      ],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [
+          "BUG-07"
+        ],
+        "recall": 0.333
+      }
+    },
+    "dqn_masked": {
+      "label": "dqn_masked-best",
+      "target_url": "http://127.0.0.1:62022/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 44.06,
+      "steps_per_second": 2.723,
+      "total_reward": -47.75,
+      "mean_episode_reward": -15.917,
+      "episode_rewards": [
+        -12.15,
+        -16.8,
+        -18.8
+      ],
+      "unique_states": 8,
+      "valid_action_rate": 1.0,
+      "exec_success_rate": 1.0,
+      "noop_steps": 0,
+      "distinct_findings": 4,
+      "trigger_counts": {
+        "broken_navigation": 2,
+        "console_error": 2,
+        "document_http_error": 2,
+        "http_error": 2
+      },
+      "findings": [
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:62022/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+          "first_seen_step": 10,
+          "times_seen": 2
+        },
+        {
+          "trigger": "http_error",
+          "url": "http://127.0.0.1:62022/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "404 http://127.0.0.1:62022/pricing.html",
+          "first_seen_step": 10,
+          "times_seen": 2
+        },
+        {
+          "trigger": "document_http_error",
+          "url": "http://127.0.0.1:62022/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "",
+          "first_seen_step": 10,
+          "times_seen": 2
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:62022/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "http://127.0.0.1:62022/pricing.html",
+          "first_seen_step": 10,
+          "times_seen": 2
+        }
+      ],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [
+          "BUG-03"
+        ],
+        "recall": 0.333
+      }
+    },
+    "dqn_masked_final": {
+      "label": "dqn_masked-final",
+      "target_url": "http://127.0.0.1:62022/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 127.95,
+      "steps_per_second": 0.938,
+      "total_reward": -23.95,
+      "mean_episode_reward": -7.983,
+      "episode_rewards": [
+        -8.05,
+        -6.45,
+        -9.45
+      ],
+      "unique_states": 7,
+      "valid_action_rate": 1.0,
+      "exec_success_rate": 0.9833,
+      "noop_steps": 0,
+      "distinct_findings": 1,
+      "trigger_counts": {
+        "slow_response": 26
+      },
+      "findings": [
+        {
+          "trigger": "slow_response",
+          "url": "http://127.0.0.1:62022/widgets.html",
+          "action": "RAPID_CLICK",
+          "element": "Sync now",
+          "detail": "3.0s without quiescence",
+          "first_seen_step": 2,
+          "times_seen": 26
+        }
+      ],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [
+          "BUG-07"
+        ],
+        "recall": 0.333
+      }
+    },
+    "random_full": {
+      "label": "random-full-space",
+      "target_url": "http://127.0.0.1:62022/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 40.05,
+      "steps_per_second": 2.997,
+      "total_reward": -100.8,
+      "mean_episode_reward": -33.6,
+      "episode_rewards": [
+        -35.15,
+        -30.4,
+        -35.25
+      ],
+      "unique_states": 2,
+      "valid_action_rate": 0.1083,
+      "exec_success_rate": 0.9833,
+      "noop_steps": 107,
+      "distinct_findings": 0,
+      "trigger_counts": {},
+      "findings": [],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [],
+        "recall": 0.0
+      }
+    },
+    "random_masked": {
+      "label": "random-valid-only",
+      "target_url": "http://127.0.0.1:62022/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 90.91,
+      "steps_per_second": 1.32,
+      "total_reward": 15.45,
+      "mean_episode_reward": 5.15,
+      "episode_rewards": [
+        0.3,
+        8.95,
+        6.2
+      ],
+      "unique_states": 15,
+      "valid_action_rate": 1.0,
+      "exec_success_rate": 0.925,
+      "noop_steps": 7,
+      "distinct_findings": 6,
+      "trigger_counts": {
+        "broken_navigation": 1,
+        "console_error": 4,
+        "document_http_error": 1,
+        "http_error": 1,
+        "slow_response": 4
+      },
+      "findings": [
+        {
+          "trigger": "slow_response",
+          "url": "http://127.0.0.1:62022/widgets.html",
+          "action": "RAPID_CLICK",
+          "element": "Sync now",
+          "detail": "3.0s without quiescence",
+          "first_seen_step": 4,
+          "times_seen": 4
+        },
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:62022/widgets.html",
+          "action": "CLICK",
+          "element": "Generate report",
+          "detail": "Cannot read properties of undefined (reading 'build')",
+          "first_seen_step": 17,
+          "times_seen": 3
+        },
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:62022/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+          "first_seen_step": 60,
+          "times_seen": 1
+        },
+        {
+          "trigger": "http_error",
+          "url": "http://127.0.0.1:62022/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "404 http://127.0.0.1:62022/pricing.html",
+          "first_seen_step": 60,
+          "times_seen": 1
+        },
+        {
+          "trigger": "document_http_error",
+          "url": "http://127.0.0.1:62022/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "",
+          "first_seen_step": 60,
+          "times_seen": 1
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:62022/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "http://127.0.0.1:62022/pricing.html",
+          "first_seen_step": 60,
+          "times_seen": 1
+        }
+      ],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [
+          "BUG-03",
+          "BUG-04",
+          "BUG-07"
+        ],
+        "recall": 1.0
+      }
+    }
+  }
+}

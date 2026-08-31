@@ -1,0 +1,241 @@
+{
+  "target": "deep_flow_site::deep01-scripted",
+  "generated_at": "2026-08-30T09:42:12+00:00",
+  "counts": {
+    "total": 5,
+    "deterministic": 0,
+    "judge": 5,
+    "high": 2,
+    "medium": 3,
+    "low": 0,
+    "ungrounded_excluded": 0
+  },
+  "run": {
+    "corpus": "deep01-scripted",
+    "judge": "ollama/qwen2.5:7b-instruct",
+    "prompt": "compact",
+    "evidence": {
+      "trace_dir": "C:\\Users\\reach\\AppData\\Local\\Temp\\claude\\c--Users-reach-OneDrive-Code-files-SEM7-RL-web-tester\\153893c5-c1a5-45b6-82ac-c03f5197be2a\\scratchpad\\jv_corpus\\deep01-scripted",
+      "pages_dir": "pages",
+      "screenshots_dir": "screenshots",
+      "by_step": {
+        "1": {
+          "episode": 1,
+          "step_in_episode": 1,
+          "url": "http://127.0.0.1:63597/order-1.html",
+          "action": "CLICK Start order",
+          "before": {
+            "url": "http://127.0.0.1:63597/index.html",
+            "html": "13ff207abeccb902063bb8ce18b83cf0b3201ac8702cb149b875fc9b9629d6ba",
+            "screenshot": "3ff237637e6fb15478b7022c647b1186264f05e73ef90f3ae1b0e836714bd4b7"
+          },
+          "after": {
+            "url": "http://127.0.0.1:63597/order-1.html",
+            "html": "f47a11de050b986d92de28517fc0fc1a143f2f8d838f175004456fd03c18c3fc",
+            "screenshot": "1da8cfb409db2538d2d943b2e01e67a79bcf05b6a32ca9c1a29aea76b7e83942"
+          },
+          "changed": {
+            "url": true,
+            "html": true,
+            "screenshot": true
+          }
+        },
+        "2": {
+          "episode": 1,
+          "step_in_episode": 2,
+          "url": "http://127.0.0.1:63597/order-1.html",
+          "action": "SELECT product",
+          "before": {
+            "url": "http://127.0.0.1:63597/order-1.html",
+            "html": "f47a11de050b986d92de28517fc0fc1a143f2f8d838f175004456fd03c18c3fc",
+            "screenshot": "1da8cfb409db2538d2d943b2e01e67a79bcf05b6a32ca9c1a29aea76b7e83942"
+          },
+          "after": {
+            "url": "http://127.0.0.1:63597/order-1.html",
+            "html": "58596412aa6ee65783b6d55d0f22b9aa8dfc33d0ca46680c9279b0e03104129d",
+            "screenshot": "19b3f3be34bea5e6b5e18a55e112c118e81108786a859fc2f60f405005c21f2a"
+          },
+          "changed": {
+            "url": false,
+            "html": true,
+            "screenshot": true
+          }
+        },
+        "3": {
+          "episode": 1,
+          "step_in_episode": 3,
+          "url": "http://127.0.0.1:63597/order-2.html?product=folders-25",
+          "action": "CLICK Continue",
+          "before": {
+            "url": "http://127.0.0.1:63597/order-1.html",
+            "html": "58596412aa6ee65783b6d55d0f22b9aa8dfc33d0ca46680c9279b0e03104129d",
+            "screenshot": "19b3f3be34bea5e6b5e18a55e112c118e81108786a859fc2f60f405005c21f2a"
+          },
+          "after": {
+            "url": "http://127.0.0.1:63597/order-2.html?product=folders-25",
+            "html": "c6d5cc0caa0091f0e7007cd5cbcfdfdd13f051ef523b6ffd9113e1f6b781ef8d",
+            "screenshot": "c5fa7263ddf613ff893e8369e4a96db7f70d0e6fec0f17fc271aef254e37cddd"
+          },
+          "changed": {
+            "url": true,
+            "html": true,
+            "screenshot": true
+          }
+        },
+        "4": {
+          "episode": 1,
+          "step_in_episode": 4,
+          "url": "http://127.0.0.1:63597/order-2.html?product=folders-25",
+          "action": "TYPE quantity",
+          "before": {
+            "url": "http://127.0.0.1:63597/order-2.html?product=folders-25",
+            "html": "c6d5cc0caa0091f0e7007cd5cbcfdfdd13f051ef523b6ffd9113e1f6b781ef8d",
+            "screenshot": "c5fa7263ddf613ff893e8369e4a96db7f70d0e6fec0f17fc271aef254e37cddd"
+          },
+          "after": {
+            "url": "http://127.0.0.1:63597/order-2.html?product=folders-25",
+            "html": "87c0ac2aad06eeafbe2849009822f193c323a3263823fe14ac7f0e460ffeabf2",
+            "screenshot": "23674b71b4b023c19b0d675f145a4f0b61e06676a2b8d1e6a190a3c4f2e2ca6a"
+          },
+          "changed": {
+            "url": false,
+            "html": true,
+            "screenshot": true
+          }
+        },
+        "5": {
+          "episode": 1,
+          "step_in_episode": 5,
+          "url": "http://127.0.0.1:63597/order-3.html?product=folders-25&quantity=42",
+          "action": "CLICK Continue",
+          "before": {
+            "url": "http://127.0.0.1:63597/order-2.html?product=folders-25",
+            "html": "87c0ac2aad06eeafbe2849009822f193c323a3263823fe14ac7f0e460ffeabf2",
+            "screenshot": "23674b71b4b023c19b0d675f145a4f0b61e06676a2b8d1e6a190a3c4f2e2ca6a"
+          },
+          "after": {
+            "url": "http://127.0.0.1:63597/order-3.html?product=folders-25&quantity=42",
+            "html": "23a70cf7554b40d12151a73727b7dc83842c932dd5f8737bad7c9f123816a362",
+            "screenshot": "e50887ac7b2aa57f10a028b7ab2357200801099cd16fb101abdcf0a8478fc878"
+          },
+          "changed": {
+            "url": true,
+            "html": true,
+            "screenshot": true
+          }
+        },
+        "7": {
+          "episode": 1,
+          "step_in_episode": 7,
+          "url": "http://127.0.0.1:63597/order-4.html?product=folders-25&quantity=42&email=tester%40example.com",
+          "action": "CLICK Continue",
+          "before": {
+            "url": "http://127.0.0.1:63597/order-3.html?product=folders-25&quantity=42",
+            "html": "d036a4ebec26687df8d48a856fcb12c8e1eee4fb8b496243af303f560db24be2",
+            "screenshot": "5aa23f04d9058adeced3592a109343fd1e9252d9e177c9c9028589dddebf1a10"
+          },
+          "after": {
+            "url": "http://127.0.0.1:63597/order-4.html?product=folders-25&quantity=42&email=tester%40example.com",
+            "html": "db82a35d8df411393636976ab87f990bf48113d874cae8b323b406068c818fc1",
+            "screenshot": "7296624d3e4e7bb971ad9ebf534f8671a28ec924b5e412530396f325ef712e28"
+          },
+          "changed": {
+            "url": true,
+            "html": true,
+            "screenshot": true
+          }
+        }
+      },
+      "available": true,
+      "indexed_steps": 6
+    }
+  },
+  "bugs": [
+    {
+      "title": "The form state shows that the 'quantity' field is empty, which violates the [type=number min=1 max=100 step=1] constraint declared by the app. However, the navi",
+      "source": "judge",
+      "severity": 8.0,
+      "bug_type": "validation_bypass",
+      "url": "http://127.0.0.1:63597/order-2.html?product=folders-25",
+      "repro": [],
+      "evidence": "  constraints: quantity declares [type=number min=1 max=100 step=1]",
+      "observed": "Clicking 'Continue' on the 'folders-25' product navigated to /order-2.html?product=folders-25, but did not validate the quantity input.",
+      "expected": "Clicking 'Continue' should validate the required fields and proceed to the next step if valid.",
+      "discrepancy": "The form state shows that the 'quantity' field is empty, which violates the [type=number min=1 max=100 step=1] constraint declared by the app. However, the navigation proceeded without validation.",
+      "confidence": 0.95,
+      "grounded": true,
+      "episode": 1,
+      "step": 3,
+      "times_seen": 2
+    },
+    {
+      "title": "The form state did not advance; the email field was still absent when it should have been present.",
+      "source": "judge",
+      "severity": 8.0,
+      "bug_type": "ui_regression",
+      "url": "http://127.0.0.1:63597/order-3.html?product=folders-25&quantity=42",
+      "repro": [],
+      "evidence": "  form state : email: absent -> empty\n  constraints: email declares [type=email]",
+      "observed": "Clicking 'Continue' on step 3 navigated to step 4 with an email field, as expected.",
+      "expected": "Continuing from step 2 should navigate to step 3 and populate the next required field (email).",
+      "discrepancy": "The form state did not advance; the email field was still absent when it should have been present.",
+      "confidence": 0.95,
+      "grounded": true,
+      "episode": 1,
+      "step": 5,
+      "times_seen": 1
+    },
+    {
+      "title": "The click did not navigate to /order-4.html as expected, and the page content did not change.",
+      "source": "judge",
+      "severity": 6.0,
+      "bug_type": "dead_control",
+      "url": "http://127.0.0.1:63597/order-4.html?product=folders-25&quantity=42&email=tester%40example.com",
+      "repro": [],
+      "evidence": "  url        : /order-3.html?product=folders-25&quantity=42 -> /order-3.html?product=folders-25&quantity=42&email=tester%40example.com",
+      "observed": "Clicking 'Continue' on step 6 produced no change in URL or page content.",
+      "expected": "Continuing to the next step should update the URL and display the review page.",
+      "discrepancy": "The click did not navigate to /order-4.html as expected, and the page content did not change.",
+      "confidence": 0.9,
+      "grounded": true,
+      "episode": 1,
+      "step": 7,
+      "times_seen": 1
+    },
+    {
+      "title": "The link to 'Step 2' is hidden, making it unreachable from this page.",
+      "source": "judge",
+      "severity": 6.0,
+      "bug_type": "ui_regression",
+      "url": "http://127.0.0.1:63597/order-1.html",
+      "repro": [],
+      "evidence": "  now hidden : a#to-step-2",
+      "observed": "Clicking 'Start order' navigated to /order-1.html, changing the title and form state but hiding a link to Step 2.",
+      "expected": "Starting an order should navigate to the first step of the process and provide clear navigation back to previous steps or home.",
+      "discrepancy": "The link to 'Step 2' is hidden, making it unreachable from this page.",
+      "confidence": 0.85,
+      "grounded": true,
+      "episode": 1,
+      "step": 1,
+      "times_seen": 1
+    },
+    {
+      "title": "The selection of a product did not cause any observable change in the page, such as showing the 'to-step-2' link.",
+      "source": "judge",
+      "severity": 6.0,
+      "bug_type": "dead_control",
+      "url": "http://127.0.0.1:63597/order-1.html",
+      "repro": [],
+      "evidence": "  now shown  : a#to-step-2",
+      "observed": "Selecting 'folders-25' updated the form but did not trigger a page reload or URL change.",
+      "expected": "Selecting a product should update the form and prepare the user for the next step.",
+      "discrepancy": "The selection of a product did not cause any observable change in the page, such as showing the 'to-step-2' link.",
+      "confidence": 0.85,
+      "grounded": true,
+      "episode": 1,
+      "step": 2,
+      "times_seen": 1
+    }
+  ],
+  "ungrounded_excluded": []
+}

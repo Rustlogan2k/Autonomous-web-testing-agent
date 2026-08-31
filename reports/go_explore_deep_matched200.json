@@ -1,4 +1,11 @@
 {
+  "_status": "PARTIALLY INVALID - captured 2026-08-27, findings column superseded same day.",
+  "_invalid_columns": {
+    "distinct_findings": "The `distinct_findings` / `trigger_counts` columns in this file are INVALID. Every broken_navigation firing on the deep_flow_site fixture came from a self-referential link -- an anchor resolving to the page already loaded (nav-support on support.html, sup-returns on support.html, nav-home on index.html). Clicking one reloads and correctly leaves the URL unchanged, which detect_bug_signals read as a broken link. The fixture's deterministic ceiling is 0, so these were never discoveries. Fixed 2026-08-27 in envs/action_registry.py (_is_self_link).",
+    "trigger_counts": "The `distinct_findings` / `trigger_counts` columns in this file are INVALID. Every broken_navigation firing on the deep_flow_site fixture came from a self-referential link -- an anchor resolving to the page already loaded (nav-support on support.html, sup-returns on support.html, nav-home on index.html). Clicking one reloads and correctly leaves the URL unchanged, which detect_bug_signals read as a broken link. The fixture's deterministic ceiling is 0, so these were never discoveries. Fixed 2026-08-27 in envs/action_registry.py (_is_self_link)."
+  },
+  "_valid_columns": "unaffected and still citable: unique_states, max_depth, mean_depth, reached_receipt, reached_review, archive_*, returns_*, env_steps, wall_clock_s.",
+  "_claim_this_invalidates": "'at a budget matched to masked random, go-explore is level on findings (11 [9-13] vs 10 [10-12])'. Both sides of that comparison were counting self-links. The depth half of the same entry ('only modestly ahead on depth, 0.10 vs 0.04') is unaffected and stands.",
   "site": "deep",
   "args": {
     "site": "deep",

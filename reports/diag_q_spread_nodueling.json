@@ -1,0 +1,440 @@
+{
+  "0": [
+    {
+      "page": "index.html",
+      "depth": 0,
+      "n_actions": 21,
+      "q_mean": -2.8672,
+      "q_std": 0.0533,
+      "q_min": -2.9856,
+      "q_max": -2.7667,
+      "spread": 0.2189,
+      "relative_spread": 0.0764,
+      "argmax": "CLICK:Terms",
+      "advancing_action": {
+        "action": "CLICK:start order",
+        "q": -2.7881,
+        "rank": 2,
+        "of": 21
+      }
+    },
+    {
+      "page": "order-1.html",
+      "depth": 1,
+      "n_actions": 19,
+      "q_mean": -3.0251,
+      "q_std": 0.0669,
+      "q_min": -3.1396,
+      "q_max": -2.8538,
+      "spread": 0.2858,
+      "relative_spread": 0.0945,
+      "argmax": "SELECT:product",
+      "advancing_action": {
+        "action": "SELECT:product",
+        "q": -2.8538,
+        "rank": 1,
+        "of": 19
+      }
+    },
+    {
+      "page": "order-1.html",
+      "depth": 1,
+      "n_actions": 20,
+      "q_mean": -3.1955,
+      "q_std": 0.0543,
+      "q_min": -3.2963,
+      "q_max": -3.0883,
+      "spread": 0.2081,
+      "relative_spread": 0.0651,
+      "argmax": "SELECT:product",
+      "advancing_action": {
+        "action": "SELECT:product",
+        "q": -3.0883,
+        "rank": 1,
+        "of": 20
+      }
+    },
+    {
+      "page": "order-2.html",
+      "depth": 2,
+      "n_actions": 24,
+      "q_mean": -3.6608,
+      "q_std": 0.0465,
+      "q_min": -3.7662,
+      "q_max": -3.5785,
+      "spread": 0.1877,
+      "relative_spread": 0.0513,
+      "argmax": "CLICK:Terms",
+      "advancing_action": {
+        "action": "TYPE:quantity",
+        "q": -3.6887,
+        "rank": 19,
+        "of": 24
+      }
+    },
+    {
+      "page": "order-2.html",
+      "depth": 2,
+      "n_actions": 25,
+      "q_mean": -2.1209,
+      "q_std": 0.0529,
+      "q_min": -2.2414,
+      "q_max": -2.0328,
+      "spread": 0.2086,
+      "relative_spread": 0.0984,
+      "argmax": "CLICK:Terms",
+      "advancing_action": {
+        "action": "TYPE:quantity",
+        "q": -2.1404,
+        "rank": 17,
+        "of": 25
+      }
+    },
+    {
+      "page": "order-3.html",
+      "depth": 3,
+      "n_actions": 24,
+      "q_mean": -2.3879,
+      "q_std": 0.0593,
+      "q_min": -2.4866,
+      "q_max": -2.2788,
+      "spread": 0.2077,
+      "relative_spread": 0.087,
+      "argmax": "CLICK:Terms",
+      "advancing_action": {
+        "action": "TYPE:email",
+        "q": -2.4728,
+        "rank": 23,
+        "of": 24
+      }
+    },
+    {
+      "page": "order-3.html",
+      "depth": 3,
+      "n_actions": 25,
+      "q_mean": -2.0417,
+      "q_std": 0.059,
+      "q_min": -2.146,
+      "q_max": -1.9392,
+      "spread": 0.2068,
+      "relative_spread": 0.1013,
+      "argmax": "CLICK:Terms",
+      "advancing_action": {
+        "action": "TYPE:email",
+        "q": -2.1252,
+        "rank": 24,
+        "of": 25
+      }
+    },
+    {
+      "page": "order-4.html",
+      "depth": 4,
+      "n_actions": 20,
+      "q_mean": -1.388,
+      "q_std": 0.0521,
+      "q_min": -1.4913,
+      "q_max": -1.3039,
+      "spread": 0.1873,
+      "relative_spread": 0.1349,
+      "argmax": "CLICK:Terms",
+      "advancing_action": {
+        "action": "CLICK:place order",
+        "q": -1.3448,
+        "rank": 6,
+        "of": 20
+      }
+    }
+  ],
+  "1": [
+    {
+      "page": "index.html",
+      "depth": 0,
+      "n_actions": 21,
+      "q_mean": -3.0664,
+      "q_std": 0.0395,
+      "q_min": -3.1624,
+      "q_max": -2.9801,
+      "spread": 0.1823,
+      "relative_spread": 0.0595,
+      "argmax": "CLICK:Start order",
+      "advancing_action": {
+        "action": "CLICK:start order",
+        "q": -2.9801,
+        "rank": 1,
+        "of": 21
+      }
+    },
+    {
+      "page": "order-1.html",
+      "depth": 1,
+      "n_actions": 19,
+      "q_mean": -2.7774,
+      "q_std": 0.0464,
+      "q_min": -2.8757,
+      "q_max": -2.6424,
+      "spread": 0.2334,
+      "relative_spread": 0.084,
+      "argmax": "SELECT:product",
+      "advancing_action": {
+        "action": "SELECT:product",
+        "q": -2.6424,
+        "rank": 1,
+        "of": 19
+      }
+    },
+    {
+      "page": "order-1.html",
+      "depth": 1,
+      "n_actions": 20,
+      "q_mean": -3.218,
+      "q_std": 0.0494,
+      "q_min": -3.3144,
+      "q_max": -3.1062,
+      "spread": 0.2082,
+      "relative_spread": 0.0647,
+      "argmax": "CLICK:Continue",
+      "advancing_action": {
+        "action": "SELECT:product",
+        "q": -3.1136,
+        "rank": 2,
+        "of": 20
+      }
+    },
+    {
+      "page": "order-2.html",
+      "depth": 2,
+      "n_actions": 24,
+      "q_mean": -3.5255,
+      "q_std": 0.0482,
+      "q_min": -3.6095,
+      "q_max": -3.435,
+      "spread": 0.1745,
+      "relative_spread": 0.0495,
+      "argmax": "CLICK:Back",
+      "advancing_action": {
+        "action": "TYPE:quantity",
+        "q": -3.6095,
+        "rank": 24,
+        "of": 24
+      }
+    },
+    {
+      "page": "order-2.html",
+      "depth": 2,
+      "n_actions": 25,
+      "q_mean": -4.7044,
+      "q_std": 0.058,
+      "q_min": -4.8061,
+      "q_max": -4.5686,
+      "spread": 0.2375,
+      "relative_spread": 0.0505,
+      "argmax": "CLICK:Continue",
+      "advancing_action": {
+        "action": "TYPE:quantity",
+        "q": -4.8061,
+        "rank": 25,
+        "of": 25
+      }
+    },
+    {
+      "page": "order-3.html",
+      "depth": 3,
+      "n_actions": 24,
+      "q_mean": -1.4451,
+      "q_std": 0.0342,
+      "q_min": -1.5156,
+      "q_max": -1.3696,
+      "spread": 0.146,
+      "relative_spread": 0.101,
+      "argmax": "CLICK:Back",
+      "advancing_action": {
+        "action": "TYPE:email",
+        "q": -1.4891,
+        "rank": 22,
+        "of": 24
+      }
+    },
+    {
+      "page": "order-3.html",
+      "depth": 3,
+      "n_actions": 25,
+      "q_mean": -2.1099,
+      "q_std": 0.0469,
+      "q_min": -2.1925,
+      "q_max": -1.984,
+      "spread": 0.2085,
+      "relative_spread": 0.0988,
+      "argmax": "CLICK:Continue",
+      "advancing_action": {
+        "action": "TYPE:email",
+        "q": -2.1759,
+        "rank": 24,
+        "of": 25
+      }
+    },
+    {
+      "page": "order-4.html",
+      "depth": 4,
+      "n_actions": 20,
+      "q_mean": -1.3567,
+      "q_std": 0.0321,
+      "q_min": -1.4224,
+      "q_max": -1.2968,
+      "spread": 0.1256,
+      "relative_spread": 0.0926,
+      "argmax": "CLICK:Back",
+      "advancing_action": {
+        "action": "CLICK:place order",
+        "q": -1.3104,
+        "rank": 2,
+        "of": 20
+      }
+    }
+  ],
+  "2": [
+    {
+      "page": "index.html",
+      "depth": 0,
+      "n_actions": 21,
+      "q_mean": -4.2774,
+      "q_std": 0.0569,
+      "q_min": -4.4008,
+      "q_max": -4.1762,
+      "spread": 0.2246,
+      "relative_spread": 0.0525,
+      "argmax": "CLICK:Start order",
+      "advancing_action": {
+        "action": "CLICK:start order",
+        "q": -4.1762,
+        "rank": 1,
+        "of": 21
+      }
+    },
+    {
+      "page": "order-1.html",
+      "depth": 1,
+      "n_actions": 19,
+      "q_mean": -3.6453,
+      "q_std": 0.0477,
+      "q_min": -3.7398,
+      "q_max": -3.5495,
+      "spread": 0.1903,
+      "relative_spread": 0.0522,
+      "argmax": "SELECT:product",
+      "advancing_action": {
+        "action": "SELECT:product",
+        "q": -3.5495,
+        "rank": 1,
+        "of": 19
+      }
+    },
+    {
+      "page": "order-1.html",
+      "depth": 1,
+      "n_actions": 20,
+      "q_mean": -4.0837,
+      "q_std": 0.0499,
+      "q_min": -4.1933,
+      "q_max": -4.0097,
+      "spread": 0.1836,
+      "relative_spread": 0.045,
+      "argmax": "SELECT:product",
+      "advancing_action": {
+        "action": "SELECT:product",
+        "q": -4.0097,
+        "rank": 1,
+        "of": 20
+      }
+    },
+    {
+      "page": "order-2.html",
+      "depth": 2,
+      "n_actions": 24,
+      "q_mean": -2.4647,
+      "q_std": 0.0435,
+      "q_min": -2.5611,
+      "q_max": -2.4113,
+      "spread": 0.1498,
+      "relative_spread": 0.0608,
+      "argmax": "CLICK:Back",
+      "advancing_action": {
+        "action": "TYPE:quantity",
+        "q": -2.4313,
+        "rank": 7,
+        "of": 24
+      }
+    },
+    {
+      "page": "order-2.html",
+      "depth": 2,
+      "n_actions": 25,
+      "q_mean": -4.0734,
+      "q_std": 0.0487,
+      "q_min": -4.1956,
+      "q_max": -3.997,
+      "spread": 0.1986,
+      "relative_spread": 0.0488,
+      "argmax": "CLICK:Back",
+      "advancing_action": {
+        "action": "TYPE:quantity",
+        "q": -4.0557,
+        "rank": 11,
+        "of": 25
+      }
+    },
+    {
+      "page": "order-3.html",
+      "depth": 3,
+      "n_actions": 24,
+      "q_mean": -1.7312,
+      "q_std": 0.0386,
+      "q_min": -1.8212,
+      "q_max": -1.6827,
+      "spread": 0.1385,
+      "relative_spread": 0.08,
+      "argmax": "CLICK:Back",
+      "advancing_action": {
+        "action": "TYPE:email",
+        "q": -1.7041,
+        "rank": 8,
+        "of": 24
+      }
+    },
+    {
+      "page": "order-3.html",
+      "depth": 3,
+      "n_actions": 25,
+      "q_mean": -2.2574,
+      "q_std": 0.0401,
+      "q_min": -2.3561,
+      "q_max": -2.196,
+      "spread": 0.1601,
+      "relative_spread": 0.0709,
+      "argmax": "CLICK:Back",
+      "advancing_action": {
+        "action": "TYPE:email",
+        "q": -2.2414,
+        "rank": 13,
+        "of": 25
+      }
+    },
+    {
+      "page": "order-4.html",
+      "depth": 4,
+      "n_actions": 20,
+      "q_mean": -1.3976,
+      "q_std": 0.0371,
+      "q_min": -1.4746,
+      "q_max": -1.3465,
+      "spread": 0.1281,
+      "relative_spread": 0.0917,
+      "argmax": "CLICK:Back",
+      "advancing_action": {
+        "action": "CLICK:place order",
+        "q": -1.355,
+        "rank": 3,
+        "of": 20
+      }
+    }
+  ]
+}

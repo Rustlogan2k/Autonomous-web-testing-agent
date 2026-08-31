@@ -1,5 +1,7 @@
 {
-  "_status": "PARTIALLY INVALID \u2014 captured 2026-08-18, superseded 2026-08-27.",
+  "_status_selflink": "distinct_findings was ALREADY marked invalid here for a different reason (a runner bug reading a key that does not exist, so it read 0). As of 2026-08-27 the corrected value quoted in _invalid_columns -- 17, from go_explore_deep_4000_seed0.json -- is ALSO invalid, for the self-link reason. Two independent defects in one column.",
+  "_selflink": "The `distinct_findings` / `trigger_counts` columns in this file are INVALID. Every broken_navigation firing on the deep_flow_site fixture came from a self-referential link -- an anchor resolving to the page already loaded (nav-support on support.html, sup-returns on support.html, nav-home on index.html). Clicking one reloads and correctly leaves the URL unchanged, which detect_bug_signals read as a broken link. The fixture's deterministic ceiling is 0, so these were never discoveries. Fixed 2026-08-27 in envs/action_registry.py (_is_self_link).",
+  "_status": "PARTIALLY INVALID — captured 2026-08-18, superseded 2026-08-27.",
   "_invalid_columns": {
     "distinct_findings": "reads 0 for every seed; a runner bug read a key that did not exist. Corrected value at this budget is 17 (seed 0 only, see go_explore_deep_4000_seed0.json).",
     "archive_max_depth": "undercounts; inferred stage depth from route contents instead of the cell's URL."

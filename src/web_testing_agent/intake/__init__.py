@@ -26,6 +26,18 @@ from .profile import (
     path_matches,
     window_paths,
 )
+# `RepositoryProfile` describes the *repository* (layout, languages, build, tests) for the
+# deployer and the report. `ApplicationProfile` above describes application *intent* for
+# the judge. Deliberately separate schemas — see repo_profile's module docstring.
+from .repo_profile import (
+    IGNORED_DIRS,
+    Detection,
+    LanguageStat,
+    ProfileStats,
+    RepositoryProfile,
+    profile_for_run,
+    profile_repository,
+)
 
 __all__ = [
     "BOOT_TIMEOUT_S",
@@ -44,4 +56,11 @@ __all__ = [
     "Rule",
     "path_matches",
     "window_paths",
+    "IGNORED_DIRS",
+    "Detection",
+    "LanguageStat",
+    "ProfileStats",
+    "RepositoryProfile",
+    "profile_for_run",
+    "profile_repository",
 ]

@@ -235,6 +235,9 @@ class WebTestingEnv(gym.Env, ABC):
 
         self.exploration.start_episode()
         self.finding_ledger.start_episode()
+        # Prime the reveal baseline with the landing page's own action set, so the first
+        # step is diffed against something rather than against nothing.
+        self.exploration.observe_action_set(self._action_specs, self._last_raw_obs.url)
         # A judge keeps its own rolling window for cross-step evidence. A fresh browser
         # context shares no state with the previous episode, so carrying records across
         # the boundary would invite causal links that cannot exist.
@@ -252,6 +255,8 @@ class WebTestingEnv(gym.Env, ABC):
             # observation, and the first observation of an episode is no exception —
             # omitting it here would leave step 0 masked against a stale or empty count.
             "num_valid_actions": len(self._action_specs),
+            "newly_revealed": [],
+            "state_visits": self.exploration.state_visits(self._state_key(self._last_raw_obs)),
             # Recorded so a corpus states whether its episodes began authenticated. A
             # trace that silently differs in session state is not comparable with one
             # that does not, and the difference is invisible in the pages themselves.
@@ -329,7 +334,14 @@ class WebTestingEnv(gym.Env, ABC):
         self._steps_taken += 1
 
         state_key = self._state_key(post_obs)
-        exploration = self.exploration.observe_step(spec, state_key)
+        # Diffed against the action set that was available *before* this step. A gated
+        # flow reveals its next control once its input is valid, so this is a direct,
+        # answer-key-free progress signal. Computed here, once, and consumed by both the
+        # reward and the policy's action features (via `info`) — a second definition
+        # outside the env would be free to drift from this one, which is exactly how
+        # `state_key` came to be exposed rather than recomputed.
+        newly_revealed = self.exploration.observe_action_set(self._action_specs, post_obs.url)
+        exploration = self.exploration.observe_step(spec, state_key, newly_revealed, post_obs.url)
 
         context = StepContext(
             pre_obs=pre_obs,
@@ -373,6 +385,10 @@ class WebTestingEnv(gym.Env, ABC):
             "load_duration_s": load_duration_s,
             "action_specs": self._action_specs,
             "num_valid_actions": len(self._action_specs),
+            # Action identities that appeared as a result of this step. The policy's
+            # action features read this rather than recomputing the diff.
+            "newly_revealed": sorted(newly_revealed),
+            "state_visits": self.exploration.state_visits(state_key),
             "page": self._page_info(post_obs),
             "episode_context": self._episode_context(state_key, exploration),
             **reward_info,

@@ -174,5 +174,7 @@
         "recall": 0.667
       }
     }
-  }
+  },
+  "_status": "VALID but INCOMPLETE - captured 2026-08-26. The self-link trigger defect fixed on 2026-08-27 does NOT affect this file: the toy fixture has no self-referential links (every <a href> in its six pages targets a different document), so none of its findings was ever a self-link false positive, and its seeded-bug recall against the answer key is unchanged. What it lacks is a MASKED DQN arm -- this script trained an unmasked head only, so the DQN row was set beside a random_masked baseline that could sample only legal slots while the DQN could not. See toy_dqn_comparison_v2_s*.json for the run that adds the like-for-like masked-vs-masked comparison.",
+  "_superseded_by": "toy_dqn_comparison_v2_s2.json"
 }

@@ -1,0 +1,116 @@
+{
+  "_purpose": "Validation of the reveal-bonus correction (same-page gates only).",
+  "flow_walk": [
+    {
+      "label": "nav  index -> order-1",
+      "page": "order-1.html",
+      "reveal": 0.0,
+      "novelty": 1.0,
+      "total": 0.95,
+      "revealed": []
+    },
+    {
+      "label": "GATE select product",
+      "page": "order-1.html",
+      "reveal": 1.5,
+      "novelty": 1.0,
+      "total": 2.45,
+      "revealed": [
+        [
+          "CLICK",
+          "Continue"
+        ]
+      ]
+    },
+    {
+      "label": "nav  order-1 -> order-2",
+      "page": "order-2.html",
+      "reveal": 0.0,
+      "novelty": 1.0,
+      "total": 0.95,
+      "revealed": []
+    },
+    {
+      "label": "GATE type quantity",
+      "page": "order-2.html",
+      "reveal": 1.5,
+      "novelty": 1.0,
+      "total": 2.45,
+      "revealed": [
+        [
+          "CLICK",
+          "Continue"
+        ]
+      ]
+    },
+    {
+      "label": "nav  order-2 -> order-3",
+      "page": "order-3.html",
+      "reveal": 0.0,
+      "novelty": 1.0,
+      "total": 0.8,
+      "revealed": []
+    },
+    {
+      "label": "GATE type email",
+      "page": "order-3.html",
+      "reveal": 1.5,
+      "novelty": 1.0,
+      "total": 2.45,
+      "revealed": [
+        [
+          "CLICK",
+          "Continue"
+        ]
+      ]
+    },
+    {
+      "label": "nav  order-3 -> order-4",
+      "page": "order-4.html",
+      "reveal": 0.0,
+      "novelty": 1.0,
+      "total": 0.65,
+      "revealed": []
+    },
+    {
+      "label": "nav  order-4 -> receipt",
+      "page": "receipt.html",
+      "reveal": 0.0,
+      "novelty": 1.0,
+      "total": 0.95,
+      "revealed": []
+    }
+  ],
+  "random_masked": {
+    "mean_episode_reward": -2.9763705838431513,
+    "unique_states": 9,
+    "distinct_findings": 0,
+    "totals": {
+      "reward": -14.88,
+      "novelty": 16.07,
+      "reveal": 1.5,
+      "deterministic": 0.0,
+      "step_cost": -11.3
+    },
+    "reveal_by_cause": {
+      "navigation": {
+        "payments": 0,
+        "reward": 0.0
+      },
+      "same_page_gate": {
+        "payments": 1,
+        "reward": 1.5
+      }
+    },
+    "before_fix": {
+      "reward": 70.62,
+      "novelty": 16.07,
+      "reveal": 87.0,
+      "deterministic": 0.0,
+      "step_cost": -11.3,
+      "reveal_navigation": 81.0,
+      "reveal_same_page": 6.0,
+      "mean_episode_reward": 14.12
+    }
+  }
+}

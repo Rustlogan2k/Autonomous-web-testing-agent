@@ -1,7 +1,7 @@
 {
-  "site": "Northwind Supply \u2014 deep-flow fixture",
+  "site": "Northwind Supply — deep-flow fixture",
   "version": 1,
-  "purpose": "The regime toy_site cannot test. Every bug on the toy site sits one or two steps from the landing page, which is exactly where uniform-random exploration is strongest and sequential credit assignment is worth nothing \u2014 so 'DQN lost to random there' says nothing about RL's actual claim. Here the single seeded defect is reachable only after four gated stages completed in order, so random success decays exponentially in sequence length while progress still produces novel states for a learner to climb.",
+  "purpose": "The regime toy_site cannot test. Every bug on the toy site sits one or two steps from the landing page, which is exactly where uniform-random exploration is strongest and sequential credit assignment is worth nothing — so 'DQN lost to random there' says nothing about RL's actual claim. Here the single seeded defect is reachable only after four gated stages completed in order, so random success decays exponentially in sequence length while progress still produces novel states for a learner to climb.",
   "entry_point": "index.html",
   "detectability_legend": {
     "deterministic": "a console-error / HTTP-error / stuck-page trigger fires; reachable without a language model",
@@ -11,12 +11,12 @@
   },
   "flow": {
     "stages": [
-      "index.html \u2014 click 'Start order' among 12 links",
-      "order-1.html \u2014 SELECT a product; 'Continue' is revealed only once a real option is chosen",
-      "order-2.html \u2014 TYPE a quantity in 1..100; 'Continue' revealed only while the value is valid",
-      "order-3.html \u2014 TYPE a syntactically valid email; 'Continue' revealed only then",
-      "order-4.html \u2014 review (echoes the order back CORRECTLY); click 'Place order'",
-      "receipt.html \u2014 the defect"
+      "index.html — click 'Start order' among 12 links",
+      "order-1.html — SELECT a product; 'Continue' is revealed only once a real option is chosen",
+      "order-2.html — TYPE a quantity in 1..100; 'Continue' revealed only while the value is valid",
+      "order-3.html — TYPE a syntactically valid email; 'Continue' revealed only then",
+      "order-4.html — review (echoes the order back CORRECTLY); click 'Place order'",
+      "receipt.html — the defect"
     ],
     "gating": "Each stage reveals its Continue link by adding an href and removing `display:none`, so the action space genuinely grows with progress. Nothing is disabled-but-present, which would look like a dead control and confound the judge.",
     "note": "order-4.html echoes the order back correctly on purpose. A known-good comparison one step before the defect means a judge cannot reach the right verdict by assuming every echo is broken.",
@@ -39,7 +39,7 @@
         "deep_flow"
       ],
       "repro": "Start order; select any product; enter quantity 42; enter a valid email; continue to review (which correctly shows 42); place the order.",
-      "expected": "The confirmation echoes the quantity that was entered at step 2 \u2014 42.",
+      "expected": "The confirmation echoes the quantity that was entered at step 2 — 42.",
       "actual": "The confirmation always reports 'Quantity: 1'. Product and contact are echoed correctly, the page returns 200 and logs nothing, and the review page one step earlier showed the right number.",
       "expected_triggers": []
     }
@@ -50,11 +50,14 @@
     "'Back' links move one stage earlier and legitimately drop the later query parameters.",
     "order-4.html echoing the order correctly is the expected behaviour, not a bug.",
     "Catalog, Support, About, Terms, Privacy and Status are ordinary static pages with no flow; clicking within them changing little is normal.",
-    "Typing an out-of-range quantity shows a validation message and withholds Continue \u2014 that is the form working, not a broken control."
+    "Typing an out-of-range quantity shows a validation message and withholds Continue — that is the form working, not a broken control.",
+    "A nav or in-page link pointing at the page currently loaded (nav-support on support.html) correctly reloads and leaves the URL unchanged. It is not a broken link. This one was not merely a watch item -- it was live in the harness until 2026-08-27 and produced every deterministic 'finding' ever reported here."
   ],
   "notes": [
-    "Deterministic ceiling is 0/1. No trigger in reward/functional_triggers.py can fire on this fixture at all: every page is 200, quiescent and console-clean. The whole fixture is judge-only by construction.",
-    "This is primarily an EXPLORATION benchmark, not a judge benchmark. The question it answers is whether a policy can reach receipt.html at all \u2014 report 'flow completions per N steps' alongside any recall figure, because a judge cannot find a bug in a state the explorer never visited.",
+    "Deterministic ceiling is 0/1: no seeded bug on this fixture is reachable without a language model. Every page is 200, quiescent and console-clean, and DEEP-01 is llm_required by construction.",
+    "CORRECTED 2026-08-27. This note previously read 'No trigger in reward/functional_triggers.py can fire on this fixture at all', and that was FALSE and load-bearing. broken_navigation fired 18-20 times per 200-step run, on every policy, because a link that resolves to the page it is already on (nav-support on support.html, sup-returns on support.html, nav-home on index.html) leaves the URL unchanged -- which was exactly the condition detect_bug_signals read as a broken link. Those firings were published as 'distinct findings' and used to claim masked random beat the DQN ~10x on bug discovery on this fixture. They were self-link false positives, not discoveries. Fixed in envs/action_registry.py (_is_self_link); a link resolving to the current document is no longer navigational.",
+    "Because the deterministic ceiling here is genuinely 0, `distinct_findings` on this fixture can only ever be an UNATTRIBUTED count. Report it as exploration diversity if at all, and use flow_completions / reached_receipt / max_depth as the headline metrics -- those are what this fixture was built to measure.",
+    "This is primarily an EXPLORATION benchmark, not a judge benchmark. The question it answers is whether a policy can reach receipt.html at all — report 'flow completions per N steps' alongside any recall figure, because a judge cannot find a bug in a state the explorer never visited.",
     "The landing page offers 21 valid actions and each stage 8-14, so a uniform-random walk completes the five-decision chain with probability on the order of 1e-6 per attempt. Any non-trivial completion rate is evidence of sequencing rather than luck.",
     "Progress is rewarded incidentally by the existing episodic novelty bonus (reward/exploration.py): each stage is a new state fingerprint, worth +1.0. That is the gradient a learner can climb, and it is why this fixture is a fair test rather than an impossible one."
   ]

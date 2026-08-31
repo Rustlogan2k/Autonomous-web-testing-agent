@@ -53,7 +53,10 @@ class WebFunctionalEnv(WebTestingEnv):
         page = self._browser.page
         assert page is not None
         elements = scan_page_elements(page)
-        return build_action_specs(elements)
+        # The page's own URL decides whether a link is a self-link, and a self-link
+        # cannot be a broken navigation. Read here rather than cached, because the scan
+        # describes whatever document is loaded *now*.
+        return build_action_specs(elements, page_url=page.url)
 
     def _execute_action(self, spec: ActionSpec) -> dict:
         page = self._browser.page
@@ -84,7 +87,8 @@ class WebFunctionalEnv(WebTestingEnv):
         # *supposed* to keep the same URL, BACK/FORWARD may legitimately no-op with no
         # history, and a checkbox/plain-button click isn't expected to navigate at all.
         # `_is_navigational` in the action registry also excludes fragment/javascript:
-        # hrefs and target="_blank" links, which never change the current URL either.
+        # hrefs, target="_blank" links, and links resolving to the document they are
+        # already in — none of which can change the current URL either.
         spec = context.spec
         was_navigation_action = (
             spec.action_type == ActionType.CLICK and spec.params.get("navigational", False)

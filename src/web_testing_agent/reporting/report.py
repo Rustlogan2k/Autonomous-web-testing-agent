@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict, dataclass, field
+from pathlib import Path
 from datetime import datetime, timezone
 from typing import Any
 
@@ -277,7 +278,7 @@ def build_report(
     return report
 
 
-def _render_bug(bug: ReportedBug, index: int) -> list[str]:
+def _render_bug(bug: ReportedBug, index: int, artifacts: dict | None = None) -> list[str]:
     provenance = (
         "deterministic trigger (no language model involved)"
         if bug.source == SOURCE_DETERMINISTIC
@@ -310,7 +311,106 @@ def _render_bug(bug: ReportedBug, index: int) -> list[str]:
 
     if bug.evidence:
         lines.extend(["**Evidence**", "", "```", bug.evidence.strip(), "```", ""])
+    lines.extend(_render_artifacts(artifacts))
     return lines
+
+
+# A digest is 64 hex characters; a dozen is enough to find the file and short enough to
+# read. The full value stays in the JSON report.
+_DIGEST_SHOWN = 12
+
+
+def _render_artifacts(artifacts: dict | None) -> list[str]:
+    """The concrete artifacts this finding can be checked against.
+
+    References, never contents: a screenshot pasted into a report is a document nobody
+    can diff and one that grows without bound. The digests resolve to exact bytes in the
+    trace directory named in the run block.
+    """
+    if not artifacts:
+        return []
+    after, before = artifacts.get("after") or {}, artifacts.get("before") or {}
+    rows: list[str] = []
+    if after.get("html"):
+        rows.append(f"- page after: `pages/{str(after['html'])[:_DIGEST_SHOWN]}….html`")
+    if before.get("html"):
+        rows.append(f"- page before: `pages/{str(before['html'])[:_DIGEST_SHOWN]}….html`")
+    if after.get("screenshot"):
+        rows.append(f"- screenshot after: `screenshots/{str(after['screenshot'])[:_DIGEST_SHOWN]}….png`")
+    if before.get("screenshot"):
+        rows.append(f"- screenshot before: `screenshots/{str(before['screenshot'])[:_DIGEST_SHOWN]}….png`")
+    for failure in artifacts.get("network_errors") or []:
+        rows.append(f"- network: {failure.get('status', '?')} {failure.get('url', '')}")
+    for message in artifacts.get("console_errors") or []:
+        rows.append(f"- console: {message}")
+    # Playwright reports `console.error()` on `console` and a genuine uncaught throw on
+    # `pageerror`; `detect_bug_signals` has always merged the two, and the trace keeps
+    # them apart. Rendering only the first silently dropped every uncaught exception —
+    # the most classic bug class there is — from the evidence of a finding that was
+    # *caused* by one. Found on the demo fixture, whose seeded error is a `pageerror`.
+    for message in artifacts.get("page_errors") or []:
+        rows.append(f"- uncaught error: {message}")
+    if not rows:
+        return []
+    episode = artifacts.get("episode")
+    step = artifacts.get("step_in_episode")
+    where = f" (episode {episode}, step {step})" if episode else ""
+    return [f"**Recorded evidence**{where}", "", *rows, ""]
+
+
+def _summarize_profile(profile: dict) -> list[str]:
+    """The repository in a few lines. The full profile stays in the JSON report.
+
+    Serialized in full, a real repository's profile runs to roughly 350 lines — most of
+    this document, and none of what a person reading a bug report needs. The fields that
+    survive are the ones that change how a finding should be read: what the application
+    is, and whether the pipeline could deploy it at all.
+    """
+    if not profile:
+        return []
+    if not profile.get("available", True):
+        return [f"**Repository** — profile unavailable ({profile.get('error', 'unknown error')})", ""]
+    languages = ", ".join(
+        f"{entry['language']} {entry['share']:.0%}"
+        for entry in (profile.get("languages") or [])[:3]
+    ) or "none recognised"
+    systems = ", ".join(d["value"] for d in profile.get("build_systems") or []) or "none detected"
+    frameworks = ", ".join(d["value"] for d in profile.get("frameworks") or [])
+    stats = profile.get("stats") or {}
+    rows = [
+        "**Repository**",
+        "",
+        f"- languages: {languages}",
+        f"- build systems: {systems}",
+    ]
+    if frameworks:
+        rows.append(f"- frameworks: {frameworks}")
+    rows.append(f"- files scanned: {stats.get('files_scanned', 0)}")
+    rows.append(f"- deployable by this pipeline: {'yes' if profile.get('deployable') else 'no'}")
+    for note in profile.get("notes") or []:
+        rows.append(f"- note: {note}")
+    rows.append("")
+    return rows
+
+
+def _summarize_evidence(evidence: dict) -> list[str]:
+    """Where the artifacts are. The per-step references sit on the findings above."""
+    if not evidence:
+        return []
+    if not evidence.get("available", True):
+        return [f"**Evidence** — unavailable ({evidence.get('error', 'unknown error')})", ""]
+    rows = [
+        "**Evidence**",
+        "",
+        f"- trace directory: `{evidence.get('trace_dir', '')}`",
+        f"- steps referenced: {evidence.get('indexed_steps', 0)}",
+        "- page bodies and screenshots are content-addressed; the digests on each finding "
+        "resolve to files in that directory",
+    ]
+    if evidence.get("missing_steps"):
+        rows.append(f"- cited steps with no record: {evidence['missing_steps']}")
+    rows.append("")
+    return rows
 
 
 def render_markdown(report: BugReport) -> str:
@@ -345,8 +445,12 @@ def render_markdown(report: BugReport) -> str:
 
     if not report.bugs:
         lines.extend(["No findings.", ""])
+    # A bug already names the global step that produced it (`first_seen_step` for a
+    # trigger, the judge's own step for a verdict). That number is the key into the
+    # evidence index, so no new identifier was needed to make a finding traceable.
+    by_step = ((report.run_meta.get("evidence") or {}).get("by_step") or {})
     for index, bug in enumerate(report.bugs, start=1):
-        lines.extend(_render_bug(bug, index))
+        lines.extend(_render_bug(bug, index, by_step.get(str(bug.step))))
 
     if report.ungrounded:
         lines.extend([
@@ -360,11 +464,18 @@ def render_markdown(report: BugReport) -> str:
             "",
         ])
         for index, bug in enumerate(report.ungrounded, start=1):
-            lines.extend(_render_bug(bug, index))
+            lines.extend(_render_bug(bug, index, by_step.get(str(bug.step))))
 
     if report.run_meta:
-        lines.extend([
-            "---", "", "## Run", "", "```json",
-            json.dumps(report.run_meta, indent=2, default=str), "```", "",
-        ])
+        # `repository_profile` and `evidence` are summarized rather than dumped: both run
+        # to hundreds of lines serialized, and the JSON report already carries them in
+        # full. Everything else is still shown verbatim, so a report with neither renders
+        # exactly as it did before evidence existed.
+        meta = dict(report.run_meta)
+        profile = meta.pop("repository_profile", None)
+        evidence = meta.pop("evidence", None)
+        lines.extend(["---", "", "## Run", ""])
+        lines.extend(_summarize_profile(profile or {}))
+        lines.extend(_summarize_evidence(evidence or {}))
+        lines.extend(["```json", json.dumps(meta, indent=2, default=str), "```", ""])
     return "\n".join(lines)

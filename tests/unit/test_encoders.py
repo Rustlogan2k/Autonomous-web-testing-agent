@@ -8,6 +8,8 @@ poisons the replay buffer rather than raising, which is precisely why they exist
 
 from __future__ import annotations
 
+import zlib
+
 import numpy as np
 import pytest
 
@@ -29,7 +31,17 @@ class _Counting(_CachedEncoder):
     def _encode_uncached(self, items: list) -> np.ndarray:
         self.forward_passes += 1
         self.items_encoded += len(items)
-        return np.stack([np.full(self._output_dim, float(hash(str(i)) % 97)) for i in items])
+        # `crc32`, not `hash()`, and never zero. Python randomizes string hashing per
+        # process, so `hash(i) % 97` was 0 for some inputs on some runs — an all-zero row
+        # that normalizes to an all-zero row, failing the unit-norm assertion about once
+        # in forty runs with no way to reproduce it. Demonstrated at PYTHONHASHSEED=15,
+        # where `hash("a") % 97 == 0`. crc32 is stable across processes, and the `+ 1`
+        # keeps a legitimately-encoded item from ever looking like the zero vector that
+        # `test_a_zero_vector_stays_zero_rather_than_becoming_nan` covers deliberately.
+        return np.stack([
+            np.full(self._output_dim, float(zlib.crc32(str(i).encode("utf-8")) % 97 + 1))
+            for i in items
+        ])
 
 
 # --- caching ----------------------------------------------------------------------

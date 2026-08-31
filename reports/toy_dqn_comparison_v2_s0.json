@@ -1,0 +1,478 @@
+{
+  "_status": "SUPERSEDED 2026-08-27 (Phase 0b). Captured with an unstable network observation: the HTTP `date` header, a monotonic `timestamp` and a float `duration_ms` survived canonicalization, and a content-hash encoder maps any byte difference to an orthogonal vector, so 384 of 1,664 observation dims were clock jitter on every step that touched the network. DQN training was consequently not reproducible at a fixed seed. The random arms in this file are unaffected (a random policy never reads an observation) and are byte-identical in the successor. Only the DQN rows move.",
+  "_superseded_by": "toy_dqn_comparison_v3_s0.json",
+  "config": {
+    "train_steps": 4000,
+    "eval_episodes": 3,
+    "episode_steps": 40,
+    "seed": 0,
+    "eval_epsilon": 0.05,
+    "reward_model": "NullRewardModel (deterministic triggers only)",
+    "encoders": "HashEmbeddingEncoder stand-ins (no semantics)",
+    "self_link_trigger_fix": true,
+    "arms": {
+      "dqn_unmasked": {
+        "train_seconds": 1510.3,
+        "best_mean_training_return": -17.42,
+        "best_step": 3961
+      },
+      "dqn_masked": {
+        "train_seconds": 2532.0,
+        "best_mean_training_return": 4.7,
+        "best_step": 521
+      }
+    }
+  },
+  "results": {
+    "dqn_unmasked": {
+      "label": "dqn_unmasked-best",
+      "target_url": "http://127.0.0.1:58272/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 43.33,
+      "steps_per_second": 2.77,
+      "total_reward": -56.25,
+      "mean_episode_reward": -18.75,
+      "episode_rewards": [
+        -18.3,
+        -22.0,
+        -15.95
+      ],
+      "unique_states": 4,
+      "valid_action_rate": 0.9583,
+      "exec_success_rate": 0.7667,
+      "noop_steps": 5,
+      "distinct_findings": 0,
+      "trigger_counts": {},
+      "findings": [],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [],
+        "recall": 0.0
+      }
+    },
+    "dqn_unmasked_final": {
+      "label": "dqn_unmasked-final",
+      "target_url": "http://127.0.0.1:58272/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 44.0,
+      "steps_per_second": 2.727,
+      "total_reward": -54.85,
+      "mean_episode_reward": -18.283,
+      "episode_rewards": [
+        -17.75,
+        -21.15,
+        -15.95
+      ],
+      "unique_states": 4,
+      "valid_action_rate": 0.9417,
+      "exec_success_rate": 0.7833,
+      "noop_steps": 7,
+      "distinct_findings": 0,
+      "trigger_counts": {},
+      "findings": [],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [],
+        "recall": 0.0
+      }
+    },
+    "dqn_masked": {
+      "label": "dqn_masked-best",
+      "target_url": "http://127.0.0.1:58272/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 40.92,
+      "steps_per_second": 2.932,
+      "total_reward": -81.7,
+      "mean_episode_reward": -27.233,
+      "episode_rewards": [
+        -30.15,
+        -38.15,
+        -13.4
+      ],
+      "unique_states": 3,
+      "valid_action_rate": 1.0,
+      "exec_success_rate": 1.0,
+      "noop_steps": 7,
+      "distinct_findings": 8,
+      "trigger_counts": {
+        "broken_navigation": 1,
+        "console_error": 4,
+        "document_http_error": 2,
+        "http_error": 2
+      },
+      "findings": [
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:58272/widgets.html",
+          "action": "RAPID_CLICK",
+          "element": "Generate report",
+          "detail": "Cannot read properties of undefined (reading 'build')",
+          "first_seen_step": 14,
+          "times_seen": 2
+        },
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+          "first_seen_step": 106,
+          "times_seen": 1
+        },
+        {
+          "trigger": "http_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "404 http://127.0.0.1:58272/pricing.html",
+          "first_seen_step": 106,
+          "times_seen": 1
+        },
+        {
+          "trigger": "document_http_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "",
+          "first_seen_step": 106,
+          "times_seen": 1
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "http://127.0.0.1:58272/pricing.html",
+          "first_seen_step": 106,
+          "times_seen": 1
+        },
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "REFRESH",
+          "element": "REFRESH",
+          "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+          "first_seen_step": 109,
+          "times_seen": 1
+        },
+        {
+          "trigger": "http_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "REFRESH",
+          "element": "REFRESH",
+          "detail": "404 http://127.0.0.1:58272/pricing.html",
+          "first_seen_step": 109,
+          "times_seen": 1
+        },
+        {
+          "trigger": "document_http_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "REFRESH",
+          "element": "REFRESH",
+          "detail": "",
+          "first_seen_step": 109,
+          "times_seen": 1
+        }
+      ],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [
+          "BUG-03",
+          "BUG-04"
+        ],
+        "recall": 0.667
+      }
+    },
+    "dqn_masked_final": {
+      "label": "dqn_masked-final",
+      "target_url": "http://127.0.0.1:58272/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 43.5,
+      "steps_per_second": 2.759,
+      "total_reward": -23.6,
+      "mean_episode_reward": -7.867,
+      "episode_rewards": [
+        -5.8,
+        -21.0,
+        3.2
+      ],
+      "unique_states": 9,
+      "valid_action_rate": 1.0,
+      "exec_success_rate": 1.0,
+      "noop_steps": 1,
+      "distinct_findings": 4,
+      "trigger_counts": {
+        "broken_navigation": 1,
+        "console_error": 1,
+        "document_http_error": 1,
+        "http_error": 1
+      },
+      "findings": [
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+          "first_seen_step": 109,
+          "times_seen": 1
+        },
+        {
+          "trigger": "http_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "404 http://127.0.0.1:58272/pricing.html",
+          "first_seen_step": 109,
+          "times_seen": 1
+        },
+        {
+          "trigger": "document_http_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "",
+          "first_seen_step": 109,
+          "times_seen": 1
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "http://127.0.0.1:58272/pricing.html",
+          "first_seen_step": 109,
+          "times_seen": 1
+        }
+      ],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [
+          "BUG-03"
+        ],
+        "recall": 0.333
+      }
+    },
+    "random_full": {
+      "label": "random-full-space",
+      "target_url": "http://127.0.0.1:58272/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 39.2,
+      "steps_per_second": 3.061,
+      "total_reward": -90.05,
+      "mean_episode_reward": -30.017,
+      "episode_rewards": [
+        -31.4,
+        -25.25,
+        -33.4
+      ],
+      "unique_states": 2,
+      "valid_action_rate": 0.15,
+      "exec_success_rate": 0.975,
+      "noop_steps": 105,
+      "distinct_findings": 4,
+      "trigger_counts": {
+        "broken_navigation": 1,
+        "console_error": 1,
+        "document_http_error": 1,
+        "http_error": 1
+      },
+      "findings": [
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+          "first_seen_step": 44,
+          "times_seen": 1
+        },
+        {
+          "trigger": "http_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "404 http://127.0.0.1:58272/pricing.html",
+          "first_seen_step": 44,
+          "times_seen": 1
+        },
+        {
+          "trigger": "document_http_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "",
+          "first_seen_step": 44,
+          "times_seen": 1
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "http://127.0.0.1:58272/pricing.html",
+          "first_seen_step": 44,
+          "times_seen": 1
+        }
+      ],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [
+          "BUG-03"
+        ],
+        "recall": 0.333
+      }
+    },
+    "random_masked": {
+      "label": "random-valid-only",
+      "target_url": "http://127.0.0.1:58272/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 47.34,
+      "steps_per_second": 2.535,
+      "total_reward": 36.05,
+      "mean_episode_reward": 12.017,
+      "episode_rewards": [
+        21.45,
+        2.65,
+        11.95
+      ],
+      "unique_states": 14,
+      "valid_action_rate": 1.0,
+      "exec_success_rate": 0.9333,
+      "noop_steps": 11,
+      "distinct_findings": 12,
+      "trigger_counts": {
+        "broken_navigation": 3,
+        "console_error": 9,
+        "document_http_error": 5,
+        "http_error": 5,
+        "slow_response": 1
+      },
+      "findings": [
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:58272/widgets.html",
+          "action": "CLICK",
+          "element": "Generate report",
+          "detail": "Cannot read properties of undefined (reading 'build')",
+          "first_seen_step": 11,
+          "times_seen": 4
+        },
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+          "first_seen_step": 15,
+          "times_seen": 3
+        },
+        {
+          "trigger": "http_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "404 http://127.0.0.1:58272/pricing.html",
+          "first_seen_step": 15,
+          "times_seen": 3
+        },
+        {
+          "trigger": "document_http_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "",
+          "first_seen_step": 15,
+          "times_seen": 3
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "http://127.0.0.1:58272/pricing.html",
+          "first_seen_step": 15,
+          "times_seen": 3
+        },
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "BROWSER_FORWARD",
+          "element": "BROWSER_FORWARD",
+          "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+          "first_seen_step": 17,
+          "times_seen": 1
+        },
+        {
+          "trigger": "http_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "BROWSER_FORWARD",
+          "element": "BROWSER_FORWARD",
+          "detail": "404 http://127.0.0.1:58272/pricing.html",
+          "first_seen_step": 17,
+          "times_seen": 1
+        },
+        {
+          "trigger": "document_http_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "BROWSER_FORWARD",
+          "element": "BROWSER_FORWARD",
+          "detail": "",
+          "first_seen_step": 17,
+          "times_seen": 1
+        },
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "REFRESH",
+          "element": "REFRESH",
+          "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+          "first_seen_step": 20,
+          "times_seen": 1
+        },
+        {
+          "trigger": "http_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "REFRESH",
+          "element": "REFRESH",
+          "detail": "404 http://127.0.0.1:58272/pricing.html",
+          "first_seen_step": 20,
+          "times_seen": 1
+        },
+        {
+          "trigger": "document_http_error",
+          "url": "http://127.0.0.1:58272/pricing.html",
+          "action": "REFRESH",
+          "element": "REFRESH",
+          "detail": "",
+          "first_seen_step": 20,
+          "times_seen": 1
+        },
+        {
+          "trigger": "slow_response",
+          "url": "http://127.0.0.1:58272/widgets.html",
+          "action": "CLICK",
+          "element": "Sync now",
+          "detail": "3.0s without quiescence",
+          "first_seen_step": 117,
+          "times_seen": 1
+        }
+      ],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [
+          "BUG-03",
+          "BUG-04",
+          "BUG-07"
+        ],
+        "recall": 1.0
+      }
+    }
+  }
+}

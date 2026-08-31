@@ -1,4 +1,9 @@
 {
+  "_status_selflink": "distinct_findings INVALID as of 2026-08-27.",
+  "_invalid_columns_selflink": {
+    "distinct_findings": "The `distinct_findings` / `trigger_counts` columns in this file are INVALID. Every broken_navigation firing on the deep_flow_site fixture came from a self-referential link -- an anchor resolving to the page already loaded (nav-support on support.html, sup-returns on support.html, nav-home on index.html). Clicking one reloads and correctly leaves the URL unchanged, which detect_bug_signals read as a broken link. The fixture's deterministic ceiling is 0, so these were never discoveries. Fixed 2026-08-27 in envs/action_registry.py (_is_self_link)."
+  },
+  "_claim_this_invalidates": "'17 distinct findings' at the 4,000-step budget. It was already marked n=1; it is now also marked as counting self-link false positives. The depth result from this run (max_depth 5, mean_depth 0.38, 11 steps on the receipt) is unaffected and is the number worth citing.",
   "_provenance": "RECOVERED FROM LOG, NOT WRITTEN BY THE SCRIPT.",
   "_why": [
     "run_go_explore.py writes its JSON only after every seed completes. This run was",
@@ -10,7 +15,9 @@
   ],
   "_sample_size": "n=1. This is a SUPPLEMENTARY result and is not comparable with the 3-seed tables. Do not place it in a row beside them without marking the difference.",
   "site": "deep",
-  "seeds": [0],
+  "seeds": [
+    0
+  ],
   "config": {
     "budget_env_steps": 4000,
     "explore_steps": 3,

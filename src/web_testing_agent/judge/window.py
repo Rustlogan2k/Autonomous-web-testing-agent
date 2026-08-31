@@ -416,13 +416,47 @@ def render_step(record: StepRecord, index: int) -> str:
     ][:_LIST_MAX]
     if value_changes and not navigated:
         lines.append(f"  field value: {'; '.join(value_changes)}")
-    if added:
-        # Named for what it is in each case: on a navigation this is simply the new
-        # page, and calling it "added" invites reading an ordinary page load as a change.
-        label = "page text  " if navigated else "text added "
-        lines.append(f"  {label}: {' | '.join(added)}")
-    if removed and not navigated:
-        lines.append(f"  text gone  : {' | '.join(removed)}")
+    if navigated:
+        # **The destination page's own text, not a diff against the page it replaced.**
+        #
+        # This line was previously `added` — the set difference — while being labelled
+        # `page text`, and the comment here asserted that "on a navigation this is
+        # simply the new page". It was not, and the gap deleted an entire bug class.
+        #
+        # Measured 2026-08-29 on a scripted DEEP-01 walk. `order-4.html` (the review
+        # page) and `receipt.html` both render `Product:` / `Quantity:` / `Contact:`
+        # and both echo the product and email correctly. Only the *quantity value*
+        # differs — 42 on the review page, a hard-coded 1 on the receipt. Every shared
+        # line was therefore suppressed as unchanged and the judge was handed:
+        #
+        #     page text  : ... | Order confirmed | Thank you. Your order has been
+        #                  placed. | 1 | Back to home
+        #
+        # An orphaned `1` with no label attached. The one seeded defect on that fixture
+        # was structurally unjudgeable, and both shipped prompt styles duly missed it
+        # (compact flagged the step as `dead_control`; detailed returned is_bug=False).
+        #
+        # This generalises well beyond the fixture: **any bug of the form "a value
+        # carried through a flow is echoed incorrectly on a later page" is invisible to
+        # a text diff**, because the labels are shared between the two pages and get
+        # differenced away, leaving values with nothing to identify them. That is the
+        # whole `broken_flow` class. The toy site's cross-page BUG-01 survived only
+        # because its evidence happened to sit in the URL rather than the page text.
+        #
+        # `render_page_context` already prints the *starting* page's full text, so
+        # showing a diff for every subsequent page was also internally inconsistent —
+        # the first page of a window and the third were described in different terms.
+        #
+        # `text gone` stays suppressed on navigation, which is where the measured
+        # saving actually came from (24% of window characters against `added`'s 14%).
+        # Bounded by `_TEXT_LINE_MAX`, applied when the PageView was built.
+        if after.text:
+            lines.append(f"  page text  : {' | '.join(after.text)}")
+    else:
+        if added:
+            lines.append(f"  text added : {' | '.join(added)}")
+        if removed:
+            lines.append(f"  text gone  : {' | '.join(removed)}")
 
     became_hidden = [item for item in after.hidden if item not in before.hidden]
     became_shown = [item for item in before.hidden if item not in after.hidden]

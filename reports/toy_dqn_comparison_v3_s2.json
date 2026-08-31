@@ -1,0 +1,256 @@
+{
+  "config": {
+    "train_steps": 4000,
+    "eval_episodes": 3,
+    "episode_steps": 40,
+    "seed": 2,
+    "eval_epsilon": 0.05,
+    "reward_model": "NullRewardModel (deterministic triggers only)",
+    "encoders": "HashEmbeddingEncoder stand-ins (no semantics)",
+    "self_link_trigger_fix": true,
+    "arms": {
+      "dqn_unmasked": {
+        "train_seconds": 1551.9,
+        "best_mean_training_return": -15.95,
+        "best_step": 3961
+      },
+      "dqn_masked": {
+        "train_seconds": 2205.3,
+        "best_mean_training_return": 10.42,
+        "best_step": 481
+      }
+    }
+  },
+  "results": {
+    "dqn_unmasked": {
+      "label": "dqn_unmasked-best",
+      "target_url": "http://127.0.0.1:54072/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 40.56,
+      "steps_per_second": 2.958,
+      "total_reward": -19.5,
+      "mean_episode_reward": -6.5,
+      "episode_rewards": [
+        -6.85,
+        -6.25,
+        -6.4
+      ],
+      "unique_states": 5,
+      "valid_action_rate": 0.9417,
+      "exec_success_rate": 1.0,
+      "noop_steps": 7,
+      "distinct_findings": 0,
+      "trigger_counts": {},
+      "findings": [],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [],
+        "recall": 0.0
+      }
+    },
+    "dqn_unmasked_final": {
+      "label": "dqn_unmasked-final",
+      "target_url": "http://127.0.0.1:54072/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 40.72,
+      "steps_per_second": 2.947,
+      "total_reward": -15.75,
+      "mean_episode_reward": -5.25,
+      "episode_rewards": [
+        -5.55,
+        -4.95,
+        -5.25
+      ],
+      "unique_states": 6,
+      "valid_action_rate": 0.9417,
+      "exec_success_rate": 1.0,
+      "noop_steps": 7,
+      "distinct_findings": 0,
+      "trigger_counts": {},
+      "findings": [],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [],
+        "recall": 0.0
+      }
+    },
+    "dqn_masked": {
+      "label": "dqn_masked-best",
+      "target_url": "http://127.0.0.1:54072/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 41.8,
+      "steps_per_second": 2.871,
+      "total_reward": -102.25,
+      "mean_episode_reward": -34.083,
+      "episode_rewards": [
+        -35.6,
+        -32.4,
+        -34.25
+      ],
+      "unique_states": 2,
+      "valid_action_rate": 1.0,
+      "exec_success_rate": 0.9833,
+      "noop_steps": 0,
+      "distinct_findings": 0,
+      "trigger_counts": {},
+      "findings": [],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [],
+        "recall": 0.0
+      }
+    },
+    "dqn_masked_final": {
+      "label": "dqn_masked-final",
+      "target_url": "http://127.0.0.1:54072/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 46.55,
+      "steps_per_second": 2.578,
+      "total_reward": -24.75,
+      "mean_episode_reward": -8.25,
+      "episode_rewards": [
+        -9.6,
+        -6.95,
+        -8.2
+      ],
+      "unique_states": 5,
+      "valid_action_rate": 1.0,
+      "exec_success_rate": 0.9917,
+      "noop_steps": 0,
+      "distinct_findings": 1,
+      "trigger_counts": {
+        "console_error": 20
+      },
+      "findings": [
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:54072/widgets.html",
+          "action": "RAPID_CLICK",
+          "element": "Generate report",
+          "detail": "Cannot read properties of undefined (reading 'build')",
+          "first_seen_step": 2,
+          "times_seen": 20
+        }
+      ],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [
+          "BUG-04"
+        ],
+        "recall": 0.333
+      }
+    },
+    "random_full": {
+      "label": "random-full-space",
+      "target_url": "http://127.0.0.1:54072/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 41.45,
+      "steps_per_second": 2.895,
+      "total_reward": -93.55,
+      "mean_episode_reward": -31.183,
+      "episode_rewards": [
+        -33.15,
+        -35.15,
+        -25.25
+      ],
+      "unique_states": 7,
+      "valid_action_rate": 0.1167,
+      "exec_success_rate": 0.9917,
+      "noop_steps": 106,
+      "distinct_findings": 0,
+      "trigger_counts": {},
+      "findings": [],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [],
+        "recall": 0.0
+      }
+    },
+    "random_masked": {
+      "label": "random-valid-only",
+      "target_url": "http://127.0.0.1:54072/index.html",
+      "episodes": 3,
+      "steps": 120,
+      "wall_clock_s": 44.58,
+      "steps_per_second": 2.692,
+      "total_reward": 8.3,
+      "mean_episode_reward": 2.767,
+      "episode_rewards": [
+        -3.2,
+        3.3,
+        8.2
+      ],
+      "unique_states": 16,
+      "valid_action_rate": 1.0,
+      "exec_success_rate": 0.9083,
+      "noop_steps": 5,
+      "distinct_findings": 5,
+      "trigger_counts": {
+        "broken_navigation": 1,
+        "console_error": 2,
+        "document_http_error": 1,
+        "http_error": 1
+      },
+      "findings": [
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:54072/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+          "first_seen_step": 82,
+          "times_seen": 1
+        },
+        {
+          "trigger": "http_error",
+          "url": "http://127.0.0.1:54072/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "404 http://127.0.0.1:54072/pricing.html",
+          "first_seen_step": 82,
+          "times_seen": 1
+        },
+        {
+          "trigger": "document_http_error",
+          "url": "http://127.0.0.1:54072/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "",
+          "first_seen_step": 82,
+          "times_seen": 1
+        },
+        {
+          "trigger": "broken_navigation",
+          "url": "http://127.0.0.1:54072/pricing.html",
+          "action": "CLICK",
+          "element": "Pricing",
+          "detail": "http://127.0.0.1:54072/pricing.html",
+          "first_seen_step": 82,
+          "times_seen": 1
+        },
+        {
+          "trigger": "console_error",
+          "url": "http://127.0.0.1:54072/widgets.html",
+          "action": "RAPID_CLICK",
+          "element": "Generate report",
+          "detail": "Cannot read properties of undefined (reading 'build')",
+          "first_seen_step": 106,
+          "times_seen": 1
+        }
+      ],
+      "answer_key": {
+        "detectable_total": 3,
+        "found": [
+          "BUG-03",
+          "BUG-04"
+        ],
+        "recall": 0.667
+      }
+    }
+  }
+}

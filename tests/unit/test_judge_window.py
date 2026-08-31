@@ -693,3 +693,106 @@ def test_a_decorative_hidden_link_stays_unnamed():
     """Inventing a name for a control that has none would be worse than admitting it."""
     html = '<html><body><a href="/x" data-hidden="true"><svg><circle r="2"/></svg></a></body></html>'
     assert any("(unnamed)" in item for item in page_view("/p", html).hidden)
+
+
+# --- carried-forward values across a navigation (the DEEP-01 class) ------------------
+#
+# These pin the 2026-08-29 fix. On a navigation the window must carry the destination
+# page's OWN text, not the set difference against the page it replaced. The difference
+# is not cosmetic: it decides whether an entire bug class is representable at all.
+
+_REVIEW = (
+    '<html><head><title>Order, step 4 of 4</title></head><body>'
+    '<nav><a id="nav-home" href="index.html">Home</a></nav>'
+    '<h1>Review your order</h1>'
+    '<p>Product: <span id="r-product">folders-25</span></p>'
+    '<p>Quantity: <span id="r-quantity">42</span></p>'
+    '<p>Contact: <span id="r-email">tester@example.com</span></p>'
+    '<a id="place-order" href="receipt.html">Place order</a>'
+    '</body></html>'
+)
+
+# Identical structure and identical labels; only the quantity is wrong. This is
+# DEEP-01 reduced to its essentials.
+_RECEIPT = (
+    '<html><head><title>Order confirmed</title></head><body>'
+    '<nav><a id="nav-home" href="index.html">Home</a></nav>'
+    '<h1>Order confirmed</h1>'
+    '<p>Product: <span id="c-product">folders-25</span></p>'
+    '<p>Quantity: <span id="c-quantity">1</span></p>'
+    '<p>Contact: <span id="c-email">tester@example.com</span></p>'
+    '<a id="c-home" href="index.html">Back to home</a>'
+    '</body></html>'
+)
+
+
+def _place_order(corpus) -> StepRecord:
+    record = corpus.record(
+        1, _REVIEW, _RECEIPT,
+        action={"type": "CLICK", "selector": '[id="place-order"]', "element": "Place order",
+                "description": "click 'Place order'", "params": {"navigational": True}},
+    )
+    record.before["path"], record.before["url"] = "/order-4.html", "/order-4.html?quantity=42"
+    record.after["path"], record.after["url"] = "/receipt.html", "/receipt.html?quantity=42"
+    return record
+
+
+def test_a_carried_value_echoed_wrongly_is_visible_after_a_navigation(tmp_path):
+    """DEEP-01 must be present in the window at all.
+
+    Before the fix the shared `Quantity:` label was suppressed as unchanged and the
+    wrong value reached the judge as an orphaned `1`, with nothing to identify it.
+    Both shipped prompt styles missed the bug; the compact one called the step a
+    `dead_control` and the detailed one returned is_bug=False.
+    """
+    rendered = render_step(_place_order(_Corpus(tmp_path)), 1)
+    assert "Quantity:" in rendered, "the label the wrong value belongs to must survive"
+    assert "1" in rendered, "the wrong value itself must survive"
+    # The association is what makes it judgeable: label and value adjacent, in order.
+    assert "Quantity: | 1" in rendered, rendered
+
+
+def test_the_correct_echoes_survive_the_navigation_too(tmp_path):
+    """A judge cannot call one field wrong without seeing the others are right.
+
+    If only the differing line were shown, "Quantity 1" would be indistinguishable
+    from a page that lost every value. The review page one step earlier echoes the
+    order correctly on purpose (see the fixture's answer key), and the receipt echoes
+    product and contact correctly — that contrast is the evidence.
+    """
+    rendered = render_step(_place_order(_Corpus(tmp_path)), 1)
+    for correct in ("Product:", "folders-25", "Contact:", "tester@example.com"):
+        assert correct in rendered, f"{correct!r} missing; only the diff was rendered"
+
+
+def test_the_value_that_changed_is_not_the_only_thing_rendered(tmp_path):
+    """The regression in one assertion: a pure diff renders exactly one text line."""
+    rendered = render_step(_place_order(_Corpus(tmp_path)), 1)
+    page_text = [line for line in rendered.splitlines() if "page text" in line][0]
+    assert page_text.count("|") >= 4, f"looks like a diff, not a page: {page_text}"
+
+
+def test_a_navigation_still_does_not_report_the_old_pages_text_as_gone(tmp_path):
+    """The measured saving came from suppressing `text gone`, and it must survive.
+
+    That was 24% of window characters against `added`'s 14%, so restoring the
+    destination page's own text does not undo the lean-window result.
+    """
+    rendered = render_step(_place_order(_Corpus(tmp_path)), 1)
+    assert "text gone" not in rendered
+    assert "Review your order" not in rendered, "the page that was left must not be re-listed"
+
+
+def test_text_diffs_are_unchanged_when_no_navigation_happened(tmp_path):
+    """The fix is scoped to navigations; in-place changes keep diffing.
+
+    An in-place update genuinely is a change, and a full page dump there would be the
+    tautology the lean-window trim removed.
+    """
+    corpus = _Corpus(tmp_path)
+    rendered = render_step(
+        corpus.record(1, "<html><body><p>Syncing…</p><p>Done</p></body></html>",
+                      "<html><body><p>Done</p></body></html>"), 1)
+    assert "text added" not in rendered
+    assert "text gone" in rendered and "Syncing" in rendered
+    assert "page text" not in rendered

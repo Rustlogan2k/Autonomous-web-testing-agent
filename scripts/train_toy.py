@@ -49,6 +49,7 @@ from stable_baselines3.common.monitor import Monitor  # noqa: E402
 from stable_baselines3.common.vec_env import DummyVecEnv  # noqa: E402
 
 from web_testing_agent.agents.features import FusionFeaturesExtractor  # noqa: E402
+from web_testing_agent.agents.masked_dqn import MaskedDQN  # noqa: E402
 from web_testing_agent.envs.functional_env import WebFunctionalEnv  # noqa: E402
 from web_testing_agent.envs.types import EPISODE_CONTEXT_DIM, MAX_ACTIONS  # noqa: E402
 from web_testing_agent.evaluation import (  # noqa: E402
@@ -122,9 +123,21 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def build_dqn(venv, seed: int, episode_steps: int, train_steps: int) -> DQN:
-    """DQN with the spec's hyperparameters, minus two documented pilot-scale changes."""
-    return DQN(
+def build_dqn(venv, seed: int, episode_steps: int, train_steps: int, masked: bool = False) -> DQN:
+    """DQN with the spec's hyperparameters, minus two documented pilot-scale changes.
+
+    `masked=True` swaps in `MaskedDQN` and changes **nothing else**. Every
+    hyperparameter below is shared by both arms, so the only difference between the two
+    DQN rows in the output table is whether invalid slots can be chosen.
+
+    Why the masked arm exists: until 2026-08-27 this script trained an *unmasked* head
+    only, so the toy table set a DQN that could waste ~85% of its budget on out-of-range
+    no-ops beside a `random_masked` baseline that could not. That gap was a statement
+    about masking, not about learning, and the table said so in a footnote rather than
+    by measuring the fair comparison. Now it measures it.
+    """
+    cls = MaskedDQN if masked else DQN
+    return cls(
         "MlpPolicy",
         venv,
         learning_rate=1e-4,            # spec
@@ -194,71 +207,93 @@ def _answer_key_hits(report: RolloutReport) -> dict:
     }
 
 
+def train_arm(base_url: str, args, masked: bool) -> tuple:
+    """Train one DQN arm and return (best_model, final_model_or_None, meta).
+
+    Both arms are built by the same `build_dqn`, trained for the same number of steps,
+    on the same seed, against the same fixture, and are scored below through the same
+    `run_rollout`. The masking is the only difference between them.
+    """
+    name = "dqn_masked" if masked else "dqn_unmasked"
+    suffix = "masked" if masked else "unmasked"
+    model_path = args.model.with_name(f"{args.model.stem}_{suffix}.zip")
+    cls = MaskedDQN if masked else DQN
+
+    if args.skip_train:
+        logger.info("Loading existing {} model from {}", name, model_path)
+        return cls.load(model_path, device="auto"), None, {}
+
+    # Monitor is what records episode returns; without it SB3 logs exploration_rate but
+    # no ep_rew_mean, leaving no learning curve to diagnose an ambiguous policy from.
+    venv = DummyVecEnv([
+        lambda: Monitor(
+            WebFunctionalEnv(base_url=base_url, max_steps=args.episode_steps, headless=True)
+        )
+    ])
+    venv = SemanticPerceptionWrapper(venv, encoders=default_encoders())
+    model = build_dqn(venv, args.seed, args.episode_steps, args.train_steps, masked=masked)
+    logger.info("Training {} for {} steps...", name, args.train_steps)
+    best_path = model_path.with_name(model_path.stem + "_best.zip")
+    keeper = KeepBestByTrainingReturn(best_path)
+    started = time.monotonic()
+    with contextlib.closing(venv):
+        model.learn(total_timesteps=args.train_steps, callback=keeper, progress_bar=False)
+    train_seconds = time.monotonic() - started
+    model_path.parent.mkdir(parents=True, exist_ok=True)
+    model.save(model_path)
+    logger.info("{} trained in {:.1f}s ({:.2f} steps/s); final -> {}",
+                name, train_seconds, args.train_steps / train_seconds, model_path)
+
+    meta = {"train_seconds": round(train_seconds, 1)}
+    final_model = None
+    if keeper.best_step:
+        # Report both the final policy and the best one seen. If they differ a lot,
+        # training was unstable and that instability is itself the result.
+        logger.info("{}: best training return {:+.2f} at step {}",
+                    name, keeper.best_mean, keeper.best_step)
+        final_model, model = model, cls.load(best_path, device="auto")
+        meta.update({"best_mean_training_return": round(keeper.best_mean, 2),
+                     "best_step": keeper.best_step})
+    return model, final_model, meta
+
+
 def main() -> None:
     args = parse_args()
     if not TOY_SITE.is_dir():
         raise SystemExit(f"Toy site fixture not found at {TOY_SITE}")
 
     reports: dict[str, RolloutReport] = {}
-    best_meta: dict = {}
-    train_seconds = 0.0
+    arm_meta: dict = {}
 
     with serve_directory(TOY_SITE) as origin:
         base_url = f"{origin}/index.html"
         logger.info("Toy validation site at {}", base_url)
+        eval_encoders = default_encoders()
 
-        # --- train -------------------------------------------------------------
-        if args.skip_train:
-            logger.info("Loading existing model from {}", args.model)
-            model = DQN.load(args.model, device="auto")
-        else:
-            # Monitor is what records episode returns; without it SB3 logs
-            # exploration_rate but no ep_rew_mean, leaving no learning curve to
-            # diagnose an ambiguous final policy from.
-            venv = DummyVecEnv([
-                lambda: Monitor(
-                    WebFunctionalEnv(base_url=base_url, max_steps=args.episode_steps, headless=True)
-                )
-            ])
-            venv = SemanticPerceptionWrapper(venv, encoders=default_encoders())
-            model = build_dqn(venv, args.seed, args.episode_steps, args.train_steps)
-            logger.info("Training DQN for {} steps…", args.train_steps)
-            best_path = args.model.with_name(args.model.stem + "_best.zip")
-            keeper = KeepBestByTrainingReturn(best_path)
-            started = time.monotonic()
-            with contextlib.closing(venv):
-                model.learn(total_timesteps=args.train_steps, callback=keeper, progress_bar=False)
-            train_seconds = time.monotonic() - started
-            args.model.parent.mkdir(parents=True, exist_ok=True)
-            model.save(args.model)
-            logger.info("Trained in {:.1f}s ({:.2f} steps/s); final -> {}",
-                        train_seconds, args.train_steps / train_seconds, args.model)
-
-            # Report both: the final policy and the best one seen. If they differ a lot,
-            # training was unstable and that instability is itself the result.
-            if keeper.best_step:
-                logger.info("Best training return {:+.2f} at step {}; loading {} for evaluation",
-                            keeper.best_mean, keeper.best_step, best_path)
-                final_model, model = model, DQN.load(best_path, device="auto")
-                best_meta.update({"best_mean_training_return": round(keeper.best_mean, 2),
-                                  "best_step": keeper.best_step})
-                reports["dqn_final"] = evaluate(
-                    base_url, "dqn-final-policy",
-                    lambda env: TrainedPolicy(
-                        final_model, default_encoders(), deterministic=True,
+        # --- both DQN arms: unmasked (the historical row) and masked (the fair one) --
+        for masked in (False, True):
+            name = "dqn_masked" if masked else "dqn_unmasked"
+            best_model, final_model, meta = train_arm(base_url, args, masked)
+            arm_meta[name] = meta
+            reports[name] = evaluate(
+                base_url, f"{name}-best",
+                # Bound at definition time: `best_model` is rebound each iteration, and a
+                # late-binding closure would score both arms against the last one trained.
+                lambda env, m=best_model: TrainedPolicy(
+                    m, eval_encoders, deterministic=True,
+                    epsilon=args.eval_epsilon, seed=args.seed,
+                ), args,
+            )
+            if final_model is not None:
+                reports[f"{name}_final"] = evaluate(
+                    base_url, f"{name}-final",
+                    lambda env, m=final_model: TrainedPolicy(
+                        m, eval_encoders, deterministic=True,
                         epsilon=args.eval_epsilon, seed=args.seed,
                     ), args,
                 )
 
-        # --- evaluate all three, same site / seed / budget ----------------------
-        eval_encoders = default_encoders()
-        reports["dqn"] = evaluate(
-            base_url, "dqn-trained",
-            lambda env: TrainedPolicy(
-                model, eval_encoders, deterministic=True,
-                epsilon=args.eval_epsilon, seed=args.seed,
-            ), args,
-        )
+        # --- baselines, same site / seed / budget / harness ----------------------
         reports["random_full"] = evaluate(
             base_url, "random-full-space",
             lambda env: RandomPolicy(MAX_ACTIONS, seed=args.seed, valid_only=False), args,
@@ -268,7 +303,7 @@ def main() -> None:
             lambda env: RandomPolicy(MAX_ACTIONS, seed=args.seed, valid_only=True), args,
         )
 
-    # --- report ----------------------------------------------------------------
+    # --- report -----------------------------------------------------------------
     rows = [
         ("mean episode reward", lambda r: f"{r.mean_episode_reward:+.2f}"),
         ("distinct findings", lambda r: str(r.distinct_findings)),
@@ -277,17 +312,24 @@ def main() -> None:
         ("valid-action rate", lambda r: f"{r.valid_action_rate:.1%}"),
         ("NO_OP steps", lambda r: f"{r.noop_steps / max(r.steps, 1):.1%}"),
         ("exec-success rate", lambda r: f"{r.exec_success_rate:.1%}"),
+        ("states / 100 steps", lambda r: f"{100 * r.unique_states / max(r.steps, 1):.1f}"),
+        ("findings / 100 steps", lambda r: f"{100 * r.distinct_findings / max(r.steps, 1):.1f}"),
         ("steps/s", lambda r: f"{r.steps_per_second:.2f}"),
     ]
-    order = [("DQN (best)", "dqn")]
-    if "dqn_final" in reports:
-        order.append(("DQN (final)", "dqn_final"))
-    order += [("Random (full)", "random_full"), ("Random (masked)", "random_masked")]
+    order = [
+        ("DQN unmasked (best)", "dqn_unmasked"),
+        ("DQN unmasked (final)", "dqn_unmasked_final"),
+        ("DQN masked (best)", "dqn_masked"),
+        ("DQN masked (final)", "dqn_masked_final"),
+        ("Random (full)", "random_full"),
+        ("Random (masked)", "random_masked"),
+    ]
+    order = [(label, key) for label, key in order if key in reports]
 
     width = max(len(name) for name, _ in rows) + 2
     header = f"{'metric':<{width}}" + "".join(f"{name:>22}" for name, _ in order)
     print("\n" + "=" * len(header))
-    print(f"Toy site — {args.eval_episodes} episodes x {args.episode_steps} steps, seed {args.seed}")
+    print(f"Toy site - {args.eval_episodes} episodes x {args.episode_steps} steps, seed {args.seed}")
     print("=" * len(header))
     print(header)
     print("-" * len(header))
@@ -298,19 +340,21 @@ def main() -> None:
     for label, key in order:
         hits = _answer_key_hits(reports[key])
         print(f"{label}: seeded bugs {sorted(hits.get('found', []))} (recall {hits.get('recall', 0):.0%})")
-    print()
+    print("\nDQN masked vs Random masked is the like-for-like comparison. The unmasked rows")
+    print("are kept because every published toy figure before 2026-08-27 came from an")
+    print("unmasked head set beside a masked baseline, which measured masking, not learning.\n")
 
     payload = {
         "config": {
             "train_steps": 0 if args.skip_train else args.train_steps,
-            "train_seconds": round(train_seconds, 1),
             "eval_episodes": args.eval_episodes,
             "episode_steps": args.episode_steps,
             "seed": args.seed,
             "eval_epsilon": args.eval_epsilon,
             "reward_model": "NullRewardModel (deterministic triggers only)",
             "encoders": "HashEmbeddingEncoder stand-ins (no semantics)",
-            **best_meta,
+            "self_link_trigger_fix": True,
+            "arms": arm_meta,
         },
         "results": {
             key: {**reports[key].to_dict(), "answer_key": _answer_key_hits(reports[key])}

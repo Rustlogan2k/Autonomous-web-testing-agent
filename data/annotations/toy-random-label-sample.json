@@ -1,0 +1,299 @@
+{
+  "_purpose": "Stratified sample of toy-random windows, selected BEFORE any A/B/C arm was scored.",
+  "_selection": {
+    "seed": 20260827,
+    "target": 40,
+    "stratified_on": "focus action type",
+    "population_gated_windows": 92,
+    "population_windows": 148
+  },
+  "windows": [
+    {
+      "episode": 1,
+      "global_step": 2,
+      "action_type": "CLICK",
+      "element": "Save settings",
+      "url": "http://127.0.0.1:63281/settings.html"
+    },
+    {
+      "episode": 1,
+      "global_step": 3,
+      "action_type": "CLICK",
+      "element": "\u2190 Home",
+      "url": "http://127.0.0.1:63281/index.html"
+    },
+    {
+      "episode": 1,
+      "global_step": 12,
+      "action_type": "RAPID_CLICK",
+      "element": "Generate report",
+      "url": "http://127.0.0.1:63281/widgets.html"
+    },
+    {
+      "episode": 1,
+      "global_step": 13,
+      "action_type": "CLICK",
+      "element": "\u2190 Home",
+      "url": "http://127.0.0.1:63281/index.html"
+    },
+    {
+      "episode": 1,
+      "global_step": 15,
+      "action_type": "CLICK",
+      "element": "Pricing",
+      "url": "http://127.0.0.1:63281/pricing.html"
+    },
+    {
+      "episode": 1,
+      "global_step": 16,
+      "action_type": "BROWSER_BACK",
+      "element": "",
+      "url": "http://127.0.0.1:63281/index.html"
+    },
+    {
+      "episode": 1,
+      "global_step": 17,
+      "action_type": "BROWSER_FORWARD",
+      "element": "",
+      "url": "http://127.0.0.1:63281/pricing.html"
+    },
+    {
+      "episode": 1,
+      "global_step": 26,
+      "action_type": "CLICK",
+      "element": "Pricing",
+      "url": "http://127.0.0.1:63281/pricing.html"
+    },
+    {
+      "episode": 1,
+      "global_step": 29,
+      "action_type": "BROWSER_BACK",
+      "element": "",
+      "url": "http://127.0.0.1:63281/index.html"
+    },
+    {
+      "episode": 1,
+      "global_step": 34,
+      "action_type": "RAPID_CLICK",
+      "element": "Export data",
+      "url": "http://127.0.0.1:63281/widgets.html"
+    },
+    {
+      "episode": 2,
+      "global_step": 47,
+      "action_type": "SELECT",
+      "element": "country",
+      "url": "http://127.0.0.1:63281/signup.html"
+    },
+    {
+      "episode": 2,
+      "global_step": 50,
+      "action_type": "TYPE",
+      "element": "username",
+      "url": "http://127.0.0.1:63281/signup.html"
+    },
+    {
+      "episode": 2,
+      "global_step": 54,
+      "action_type": "CLICK",
+      "element": "Account settings",
+      "url": "http://127.0.0.1:63281/settings.html"
+    },
+    {
+      "episode": 2,
+      "global_step": 56,
+      "action_type": "TYPE",
+      "element": "display_name",
+      "url": "http://127.0.0.1:63281/settings.html"
+    },
+    {
+      "episode": 2,
+      "global_step": 58,
+      "action_type": "TYPE",
+      "element": "display_name",
+      "url": "http://127.0.0.1:63281/settings.html"
+    },
+    {
+      "episode": 2,
+      "global_step": 59,
+      "action_type": "TYPE",
+      "element": "display_name",
+      "url": "http://127.0.0.1:63281/settings.html"
+    },
+    {
+      "episode": 2,
+      "global_step": 60,
+      "action_type": "CLICK",
+      "element": "Save settings",
+      "url": "http://127.0.0.1:63281/settings.html"
+    },
+    {
+      "episode": 2,
+      "global_step": 69,
+      "action_type": "TYPE",
+      "element": "display_name",
+      "url": "http://127.0.0.1:63281/settings.html"
+    },
+    {
+      "episode": 2,
+      "global_step": 70,
+      "action_type": "CLICK",
+      "element": "\u2190 Home",
+      "url": "http://127.0.0.1:63281/index.html"
+    },
+    {
+      "episode": 2,
+      "global_step": 74,
+      "action_type": "BROWSER_BACK",
+      "element": "",
+      "url": "http://127.0.0.1:63281/settings.html"
+    },
+    {
+      "episode": 2,
+      "global_step": 75,
+      "action_type": "TYPE",
+      "element": "display_name",
+      "url": "http://127.0.0.1:63281/settings.html"
+    },
+    {
+      "episode": 2,
+      "global_step": 76,
+      "action_type": "TYPE",
+      "element": "display_name",
+      "url": "http://127.0.0.1:63281/settings.html"
+    },
+    {
+      "episode": 2,
+      "global_step": 78,
+      "action_type": "TYPE",
+      "element": "display_name",
+      "url": "http://127.0.0.1:63281/settings.html"
+    },
+    {
+      "episode": 3,
+      "global_step": 81,
+      "action_type": "CLICK",
+      "element": "Sign up",
+      "url": "http://127.0.0.1:63281/signup.html"
+    },
+    {
+      "episode": 3,
+      "global_step": 82,
+      "action_type": "TYPE",
+      "element": "username",
+      "url": "http://127.0.0.1:63281/signup.html"
+    },
+    {
+      "episode": 3,
+      "global_step": 86,
+      "action_type": "CLICK",
+      "element": "Export data",
+      "url": "http://127.0.0.1:63281/widgets.html"
+    },
+    {
+      "episode": 3,
+      "global_step": 92,
+      "action_type": "CLICK",
+      "element": "Pricing",
+      "url": "http://127.0.0.1:63281/pricing.html"
+    },
+    {
+      "episode": 3,
+      "global_step": 95,
+      "action_type": "BROWSER_BACK",
+      "element": "",
+      "url": "http://127.0.0.1:63281/index.html"
+    },
+    {
+      "episode": 3,
+      "global_step": 100,
+      "action_type": "CLICK",
+      "element": "Settings",
+      "url": "http://127.0.0.1:63281/settings.html"
+    },
+    {
+      "episode": 3,
+      "global_step": 104,
+      "action_type": "RESIZE_VIEWPORT",
+      "element": "",
+      "url": "http://127.0.0.1:63281/index.html"
+    },
+    {
+      "episode": 3,
+      "global_step": 109,
+      "action_type": "CLICK",
+      "element": "Generate report",
+      "url": "http://127.0.0.1:63281/widgets.html"
+    },
+    {
+      "episode": 3,
+      "global_step": 110,
+      "action_type": "BROWSER_BACK",
+      "element": "",
+      "url": "http://127.0.0.1:63281/index.html"
+    },
+    {
+      "episode": 3,
+      "global_step": 115,
+      "action_type": "RAPID_CLICK",
+      "element": "Generate report",
+      "url": "http://127.0.0.1:63281/widgets.html"
+    },
+    {
+      "episode": 3,
+      "global_step": 119,
+      "action_type": "CLICK",
+      "element": "Open archive",
+      "url": "http://127.0.0.1:63281/archive.html"
+    },
+    {
+      "episode": 4,
+      "global_step": 123,
+      "action_type": "CLICK",
+      "element": "Create account",
+      "url": "http://127.0.0.1:63281/signup.html"
+    },
+    {
+      "episode": 4,
+      "global_step": 130,
+      "action_type": "REFRESH",
+      "element": "",
+      "url": "http://127.0.0.1:63281/signup.html"
+    },
+    {
+      "episode": 4,
+      "global_step": 131,
+      "action_type": "TYPE",
+      "element": "age",
+      "url": "http://127.0.0.1:63281/signup.html"
+    },
+    {
+      "episode": 4,
+      "global_step": 133,
+      "action_type": "TYPE",
+      "element": "age",
+      "url": "http://127.0.0.1:63281/signup.html"
+    },
+    {
+      "episode": 4,
+      "global_step": 147,
+      "action_type": "TYPE",
+      "element": "age",
+      "url": "http://127.0.0.1:63281/signup.html"
+    },
+    {
+      "episode": 4,
+      "global_step": 148,
+      "action_type": "TYPE",
+      "element": "age",
+      "url": "http://127.0.0.1:63281/signup.html"
+    },
+    {
+      "episode": 4,
+      "global_step": 150,
+      "action_type": "TYPE",
+      "element": "age",
+      "url": "http://127.0.0.1:63281/signup.html"
+    }
+  ]
+}

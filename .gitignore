@@ -103,3 +103,13 @@ docker-compose.override.yml
 # Playwright
 playwright-report/
 test-results/
+
+# Atomic-write temporaries. Long experiments persist results by writing `<name>.tmp`
+# and replacing, so a crash mid-write cannot destroy the previous good file — the
+# temporary itself is never worth committing.
+*.tmp
+reports/*.json.tmp
+
+# Ruff's cache (the linter is declared in the dev extra and runs in CI).
+.ruff_cache/
+.pytest_cache/

@@ -1,0 +1,387 @@
+{
+  "_purpose": "Blind ground-truth labels for the A/B/C source-grounding experiment.",
+  "_blind": "Assigned before ANY arm was scored on this corpus. No model verdict existed when these were written.",
+  "_method": "Rule-based over the focus step's rendered evidence, so the labelling is reproducible and auditable rather than recalled judgement. Rules are in _rules.",
+  "_criterion": "A window is 'bug' when the FOCUS step's own evidence exhibits a seeded defect that a competent tester reading this window would correctly report.",
+  "_rules": [
+    "console 'reading build' -> BUG-04",
+    "404 /pricing.html -> BUG-03",
+    "NO LONGER reachable signup -> BUG-08",
+    "confirm URL without email after email filled -> BUG-01",
+    "Export data click with no change -> BUG-02",
+    "NOT SETTLED -> BUG-07",
+    "Back to Widgets -> Home -> BUG-10",
+    "TYPE of an out-of-range age is NOT a bug: min/max gate submission, not typing. BUG-05 needs the submit."
+  ],
+  "labels": [
+    {
+      "episode": 1,
+      "global_step": 2,
+      "action_type": "CLICK",
+      "element": "Save settings",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "CLICK behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 1,
+      "global_step": 3,
+      "action_type": "CLICK",
+      "element": "\u2190 Home",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "CLICK behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 1,
+      "global_step": 12,
+      "action_type": "RAPID_CLICK",
+      "element": "Generate report",
+      "label": "bug",
+      "bug_id": "BUG-04",
+      "reason": "uncaught TypeError logged by 'Generate report'"
+    },
+    {
+      "episode": 1,
+      "global_step": 13,
+      "action_type": "CLICK",
+      "element": "\u2190 Home",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "CLICK behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 1,
+      "global_step": 15,
+      "action_type": "CLICK",
+      "element": "Pricing",
+      "label": "bug",
+      "bug_id": "BUG-03",
+      "reason": "Pricing nav link 404s"
+    },
+    {
+      "episode": 1,
+      "global_step": 16,
+      "action_type": "BROWSER_BACK",
+      "element": "",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "BROWSER_BACK behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 1,
+      "global_step": 17,
+      "action_type": "BROWSER_FORWARD",
+      "element": "",
+      "label": "bug",
+      "bug_id": "BUG-03",
+      "reason": "Pricing nav link 404s"
+    },
+    {
+      "episode": 1,
+      "global_step": 26,
+      "action_type": "CLICK",
+      "element": "Pricing",
+      "label": "bug",
+      "bug_id": "BUG-03",
+      "reason": "Pricing nav link 404s"
+    },
+    {
+      "episode": 1,
+      "global_step": 29,
+      "action_type": "BROWSER_BACK",
+      "element": "",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "BROWSER_BACK behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 1,
+      "global_step": 34,
+      "action_type": "RAPID_CLICK",
+      "element": "Export data",
+      "label": "bug",
+      "bug_id": "BUG-02",
+      "reason": "'Export data' is a dead control"
+    },
+    {
+      "episode": 2,
+      "global_step": 47,
+      "action_type": "SELECT",
+      "element": "country",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "SELECT behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 2,
+      "global_step": 50,
+      "action_type": "TYPE",
+      "element": "username",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "TYPE behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 2,
+      "global_step": 54,
+      "action_type": "CLICK",
+      "element": "Account settings",
+      "label": "bug",
+      "bug_id": "BUG-01",
+      "reason": "confirm URL omits email although email was filled"
+    },
+    {
+      "episode": 2,
+      "global_step": 56,
+      "action_type": "TYPE",
+      "element": "display_name",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "TYPE behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 2,
+      "global_step": 58,
+      "action_type": "TYPE",
+      "element": "display_name",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "TYPE behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 2,
+      "global_step": 59,
+      "action_type": "TYPE",
+      "element": "display_name",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "TYPE behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 2,
+      "global_step": 60,
+      "action_type": "CLICK",
+      "element": "Save settings",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "CLICK behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 2,
+      "global_step": 69,
+      "action_type": "TYPE",
+      "element": "display_name",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "TYPE behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 2,
+      "global_step": 70,
+      "action_type": "CLICK",
+      "element": "\u2190 Home",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "CLICK behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 2,
+      "global_step": 74,
+      "action_type": "BROWSER_BACK",
+      "element": "",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "BROWSER_BACK behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 2,
+      "global_step": 75,
+      "action_type": "TYPE",
+      "element": "display_name",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "TYPE behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 2,
+      "global_step": 76,
+      "action_type": "TYPE",
+      "element": "display_name",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "TYPE behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 2,
+      "global_step": 78,
+      "action_type": "TYPE",
+      "element": "display_name",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "TYPE behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 3,
+      "global_step": 81,
+      "action_type": "CLICK",
+      "element": "Sign up",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "CLICK behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 3,
+      "global_step": 82,
+      "action_type": "TYPE",
+      "element": "username",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "TYPE behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 3,
+      "global_step": 86,
+      "action_type": "CLICK",
+      "element": "Export data",
+      "label": "bug",
+      "bug_id": "BUG-02",
+      "reason": "'Export data' is a dead control"
+    },
+    {
+      "episode": 3,
+      "global_step": 92,
+      "action_type": "CLICK",
+      "element": "Pricing",
+      "label": "bug",
+      "bug_id": "BUG-03",
+      "reason": "Pricing nav link 404s"
+    },
+    {
+      "episode": 3,
+      "global_step": 95,
+      "action_type": "BROWSER_BACK",
+      "element": "",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "BROWSER_BACK behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 3,
+      "global_step": 100,
+      "action_type": "CLICK",
+      "element": "Settings",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "CLICK behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 3,
+      "global_step": 104,
+      "action_type": "RESIZE_VIEWPORT",
+      "element": "",
+      "label": "bug",
+      "bug_id": "BUG-08",
+      "reason": "every route into signup hidden at this viewport"
+    },
+    {
+      "episode": 3,
+      "global_step": 109,
+      "action_type": "CLICK",
+      "element": "Generate report",
+      "label": "bug",
+      "bug_id": "BUG-04",
+      "reason": "uncaught TypeError logged by 'Generate report'"
+    },
+    {
+      "episode": 3,
+      "global_step": 110,
+      "action_type": "BROWSER_BACK",
+      "element": "",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "BROWSER_BACK behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 3,
+      "global_step": 115,
+      "action_type": "RAPID_CLICK",
+      "element": "Generate report",
+      "label": "bug",
+      "bug_id": "BUG-04",
+      "reason": "uncaught TypeError logged by 'Generate report'"
+    },
+    {
+      "episode": 3,
+      "global_step": 119,
+      "action_type": "CLICK",
+      "element": "Open archive",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "CLICK behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 4,
+      "global_step": 123,
+      "action_type": "CLICK",
+      "element": "Create account",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "CLICK behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 4,
+      "global_step": 130,
+      "action_type": "REFRESH",
+      "element": "",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "REFRESH behaved as expected; no defect evidence in the focus step"
+    },
+    {
+      "episode": 4,
+      "global_step": 131,
+      "action_type": "TYPE",
+      "element": "age",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "out-of-range value entered but not yet submitted; min/max gate submission, not typing"
+    },
+    {
+      "episode": 4,
+      "global_step": 133,
+      "action_type": "TYPE",
+      "element": "age",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "out-of-range value entered but not yet submitted; min/max gate submission, not typing"
+    },
+    {
+      "episode": 4,
+      "global_step": 147,
+      "action_type": "TYPE",
+      "element": "age",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "out-of-range value entered but not yet submitted; min/max gate submission, not typing"
+    },
+    {
+      "episode": 4,
+      "global_step": 148,
+      "action_type": "TYPE",
+      "element": "age",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "out-of-range value entered but not yet submitted; min/max gate submission, not typing"
+    },
+    {
+      "episode": 4,
+      "global_step": 150,
+      "action_type": "TYPE",
+      "element": "age",
+      "label": "not_bug",
+      "bug_id": "",
+      "reason": "out-of-range value entered but not yet submitted; min/max gate submission, not typing"
+    }
+  ]
+}

@@ -97,13 +97,19 @@ Five ideas do the work.
 
 ## The parts that did not work, and why
 
-**Reinforcement learning has not yet earned its place.** On the shallow fixture, uniform-random exploration over valid actions beat the DQN at equal step budget — re-measured over 3 seeds: **masked random 3/3 seeded bugs [2–3] against the DQN's 0/3 [0–1]**, and 15 unique states [14–16] against 6 [6–7]. The single-seed figure this replaces (DQN 1/3) turned out to be the one seed where *every* arm found a bug, unmasked random included, so it never measured the DQN at all. That fixture trains an unmasked head, so it is not a masking comparison; the deep-flow result below is. What is not in doubt is the reward work: training produced four distinct reward exploits in five runs — the agent learned to refresh a 404 page 117 times, to do literally nothing, and to end each episode on step one — each a real defect in the reward design, and each found by the optimizer rather than by review or the test suite.
+**Reinforcement learning has not yet earned its place.** On the shallow fixture, uniform-random exploration over valid actions beat the DQN at equal step budget — re-measured over 3 seeds: **masked random 3/3 seeded bugs [2–3] against the DQN's 0/3 [0–1]**, and 15 unique states [14–16] against 6 [6–7]. The single-seed figure this replaces (DQN 1/3) turned out to be the one seed where *every* arm found a bug, unmasked random included, so it never measured the DQN at all. That fixture trained an unmasked head, so it was not a masking comparison — **corrected 2026-08-27**, it now trains both arms with byte-identical hyperparameters. Masking helps and does not close the gap: **masked DQN 1/3 seeded bugs [0–2] and 9 state [7–14], against masked random's 3/3 [2–3] and 15 [14–16]**. That is the first evidence here that masking buys the agent anything beyond action validity, and the loss to random survives the fair comparison. What is not in doubt is the reward work: training produced four distinct reward exploits in five runs — the agent learned to refresh a 404 page 117 times, to do literally nothing, and to end each episode on step one — each a real defect in the reward design, and each found by the optimizer rather than by review or the test suite.
 
 **Action masking works; the deep flow is still unsolved.** The original comparison was not a fair fight: masked random could sample only legal slots and the flat 100-way Q-head structurally could not. That is now fixed and verified — 100% valid actions against 18% for unmasked random, 0/200 invalid actions in a controlled harness. Measured on a four-gate ordering flow whose defect is reachable only after completing every stage in order:
 
 Measured over **3 training seeds × 5 episodes**, with residual ε=0.05 exploration at evaluation so the trained policy's episodes can differ from each other. Every cell is median [min–max] across seeds:
 
-| policy | valid actions | mean flow depth | reward | distinct findings |
+> **The `distinct findings` column is invalid, corrected 2026-08-27.** Every firing
+> behind it was a self-referential link — clicking `Catalog` while on `catalog.html`
+> reloads the page, correctly leaves the URL unchanged, and the harness read that as
+> a broken link. This fixture's deterministic ceiling is genuinely 0, so nothing in
+> that column was ever a bug. The other four columns are unaffected.
+
+| policy | valid actions | mean flow depth | reward | ~~distinct findings~~ |
 |---|---|---|---|---|
 | dqn_unmasked | 90% [82–96] | 0.17 [0.00–0.22] | −10.2 [−17.5, −4.0] | 0 [0–1] |
 | **dqn_masked** | **100%** (every seed) | 0.03 [0.03–**0.36**] | −14.6 [−16.0, −9.5] | 1 [0–2] |
@@ -134,7 +140,15 @@ The mechanism still looks right: a content hash is a near-perfect state *identif
 
 **Cause 1 is the one with strong evidence**, now across seeds rather than from one run: `random_masked` earns the best reward on every seed (+6.6 to +8.1) while going essentially nowhere (depth 0.01–0.04). Reward and objective point in different directions, robustly. A depth-aware exploration term is the next RL change worth making.
 
-**And the harder result: masked random beats the DQN on bug discovery by roughly 10×, on every seed, under both encoder configurations** — 10–12 distinct findings against 0–4. This fixture was built precisely to be the regime where RL's real claim (credit assignment over multi-step flows, where random's success probability decays exponentially in sequence length) should finally show. It did not. Masked random wins on the shallow fixture *and* on the deep one, on coverage and on findings. The honest statement is no longer "RL's claim is untested" — it was tested, in the regime chosen to favour it, and it lost.
+**And the harder result: masked random beats the DQN on exploration by a wide margin, on every seed, under both encoder configurations.** This fixture was built precisely to be the regime where RL's real claim (credit assignment over multi-step flows, where random's success probability decays exponentially in sequence length) should finally show. It did not. Masked random wins on the shallow fixture *and* on the deep one. The honest statement is no longer "RL's claim is untested" — it was tested, in the regime chosen to favour it, and it lost.
+
+> **Corrected 2026-08-27.** This paragraph previously read "beats the DQN on **bug discovery** by roughly 10× — 10–12 distinct findings against 0–4". Those findings were all self-link false positives (see the note on the table above), so the count measured how many distinct links on how many distinct pages each policy touched, not bugs. The gap is real and reproduces on every seed; it is an **exploration diversity** result, and the deep-flow verdict now rests on depth, state coverage and flow completion instead. On the **toy** fixture the seeded-bug comparison is unaffected — that site has no self-links and its 3/3-versus-0/3 answer-key result stands.
+
+**Two measurement defects were found in this project's own numbers, and both are corrected above.**
+
+*The deep-flow findings column was false positives.* `_is_navigational` treated every non-fragment link as expected-to-change-the-URL, so clicking `Catalog` while already on `catalog.html` — a reload that correctly leaves the URL unchanged — was recorded as a broken link. Every `broken_navigation` firing ever seen on that fixture was one of these. The corrected run fires the trigger **zero times on every arm and every seed** (before: 71 firings for masked random, 55 for the masked DQN). The fixture's own answer key had asserted that no deterministic trigger could fire on it, which is why 18–20 firings per run went unquestioned for ten days; that claim is corrected too. What dies is the "10× on bug discovery" reading — on a fixture whose deterministic ceiling is genuinely 0, nothing has ever found a bug there and nothing could. What survives is everything the fixture was built to measure: no policy passes stage 1, masking fixes validity and not depth, and masked random still earns the best reward while going least far.
+
+*DQN training is not reproducible at a fixed seed.* The toy fixture has no self-links, so its numbers should have been untouched by the fix. The random baselines were — bit-for-bit, all three seeds. The DQN was not (seed 2 went from 6 unique states to 1). Random policies never read the observation and DQN policies do, and probing directly shows why: across two identical navigations the visual and structural vectors are identical and the **network vector is unrelated** (cosine +0.02), because the HTTP `date` header, a monotonic timestamp and a float `duration_ms` all survive canonicalization and a content-hash encoder maps any byte difference to an orthogonal vector. **384 of 1,664 observation dimensions were clock jitter.** Fixed: the observation channel now canonicalizes the network trace (dropping clock readings, bucketing durations so `slow_response` survives, masking per-session header values while keeping header names), while `info["page"]["network"]` keeps full fidelity for the judge, the trace corpus and the bug report. Two 600-step trainings at an identical seed are now **bit-identical** in actions, rewards, observations and final weights. Re-measured over 3 seeds afterwards, **none of the conclusions moved**: no policy passes stage 1 of the deep flow, masking fixes validity and not depth, and masked random still earns the best reward while going least far. The masked DQN's final policy did improve to 2/3 seeded bugs [1–3] on the toy site — the best this project has produced — and still loses to masked random's 3/3 and 15 states.
 
 **On a real application, the hard part was never the judge.** Pointed at a live Gitea, the pipeline produced a stream of confident, well-argued, wrong findings. Fourteen defects have been found and fixed across three passes; **none was in the judge**. Every one had the same shape — the input stated something true about the *test harness* as though it were true about the *application*, and the model reasoned correctly from a false premise:
 
@@ -164,8 +178,21 @@ cd Autonomous-web-testing-agent
 
 python install.py           # venv, torch, deps, Playwright Chromium
 pip install -e ".[dev]"
-pytest tests/unit -q        # 497 tests, no browser needed
+
+pytest tests -q             # 864 passed, 14 skipped (full suite, this machine)
 ```
+
+The suite splits by what each test needs, so a partial environment gives skips rather
+than failures. `tests/conftest.py` prints what it found and marks tests accordingly:
+
+```bash
+# exactly what CI runs — nothing beyond pip, no daemon, no browser
+pytest tests -m "not requires_torch and not requires_docker and not requires_browser" -q
+# 694 passed, 5 skipped, 179 deselected
+```
+
+`requires_torch` needs torch/SB3/gymnasium, `requires_docker` needs a **reachable
+daemon** (not merely the CLI on PATH), `requires_browser` needs Playwright's Chromium.
 
 **Watch it drive a browser** against the bundled validation site:
 
@@ -202,6 +229,35 @@ python scripts/run_judged.py \
     --episodes 3 --steps 40
 ```
 
+**Run the whole pipeline on a repository** — profile, deploy, explore, judge, report:
+
+```bash
+python scripts/run_repo.py --repo tests/fixtures/demo_repo --judge stub
+python scripts/run_repo.py --repo tests/fixtures/demo_repo --deploy-only   # just the URL
+```
+
+The stages are `repository -> profile -> detect -> policy gate -> build -> run ->
+health check -> base_url -> environment -> rollout -> judge -> bug report -> teardown`.
+`pipeline.py` is the composition root and every stage is an injectable parameter, so the
+wiring is testable in milliseconds with a fake deployer and a stub judge
+(`tests/unit/test_pipeline.py`).
+
+### Deployment scope and threat model
+
+**Dockerfile-only, and deliberately so.** A repository is deployed if it has a
+`Dockerfile`. **Compose files are detected and policy-validated, then refused** — running
+one means generating an override and trusting a merge you did not write, which gives up
+the control the gate exists to provide. `deploy_repository` raises `RepoIntakeError` naming the
+file; provide a Dockerfile, or run the compose project yourself and point
+`scripts/run_judged.py --base-url` at it (`run_repo.py` deploys, so it has no such flag).
+
+**The repository is assumed trusted or controlled.** This is not a sandbox for hostile
+input, and the reason is structural: `docker build` executes the repository's own build
+commands *before* any `docker run` restriction exists. Resource limits, `cap_drop: ALL`,
+`no-new-privileges`, a read-only rootfs and an internal-only network are all applied at
+run time and none of them constrain the build. Point this at a disposable machine if the
+input is not genuinely trusted.
+
 **Other entry points:**
 
 | Script | Purpose |
@@ -213,6 +269,48 @@ python scripts/run_judged.py \
 | `measure_gate.py` | Replay the call gate over a scored corpus: saving *and* losses |
 | `seed_gitea_bugs.py` | Install/verify/remove the seeded defects in a running Gitea |
 
+### Evidence, and how a finding is traced back
+
+Every reported bug names the exact transition that produced it. `TraceRecorder`
+content-addresses each artifact as it is captured — page bodies to `pages/<sha256>.html`,
+frames to `screenshots/<sha256>.png` — and `annotation/evidence.py` reduces a trace to
+references for just the steps a report cites. The join key already existed: `run_rollout`
+and `TraceRecorder` increment the same global step counter for the same transition, and
+both trigger findings and judge verdicts carry it. `tests/unit/test_evidence.py` pins
+that alignment rather than trusting the paragraph.
+
+Validated end to end against a real model: **43/43 positive verdicts resolved** — each
+verdict's step is a real global step, present in the evidence index, whose recorded URL
+matches the verdict's and whose page-body and screenshot digests resolve to files that
+exist.
+
+### The judge, and what is currently wrong with it
+
+`qwen2.5:7b-instruct` (version-pinned local), `temperature=0`, `num_ctx=8192`, K=6
+windows, gated by the same `reward.gating` filter the live reward path uses. Nothing in
+`judge/` imports the environment or Playwright, so prompt changes are tested against
+fixed files in seconds.
+
+**Precision is the open problem, and it is worse than the fixture results above suggest.**
+On the deep-flow trajectory, scored in a dedicated validation run:
+
+| prompt | detects the seeded bug | false positives on correct behaviour | evidence grounded |
+|---|---|---|---|
+| `detailed` | **2/2** | 8/15 windows (53%) | 7/20 (35%) |
+| `compact` | **0/2** | 11/15 windows (73%) | 23/23 (100%) |
+
+The two prompts trade off cleanly and oppositely, and neither is usable as-is. Worse, on
+one of the four bug-bearing combinations the correct detection was **quarantined as
+ungrounded** — the model paraphrased a real quote, and `is_grounded` cannot distinguish a
+paraphrase of something true from an invention. It is doing its job; the job is not
+sufficient.
+
+An offline study of all 43 positives found that roughly half the false positives are
+mechanically contradicted by facts in the record the judge was shown, and a filter over
+those facts clears its pre-registered bar. **It is designed, not implemented** — see
+`PROJECT_CONTEXT.md`. Treat the 10/10 fixture number as the ceiling under favourable
+conditions, not as the judge's general precision.
+
 ---
 
 ## Repository layout
@@ -222,11 +320,14 @@ src/web_testing_agent/
   envs/          Gymnasium environment, browser session, action space, network capture
   judge/         Windowing, prompts, verdict schema, scoring, backends, validator
   reward/        Deterministic triggers, exploration shaping, call gate, live LLM judge
-  agents/        Masked DQN, SB3 features extractor
+  agents/        Masked DQN, action-conditioned dueling DQN, PER + n-step replay,
+                 per-action features, Go-Explore archive and archive-start curriculum
   perception/    State normalization, fusion MLP, encoder seam
-  intake/        Build-definition security gate, Application Profile schema
+  intake/        Build-definition gate, Docker runner, repo profiler, Application Profile
   evaluation/    Policy-agnostic rollout harness, random and scripted policies
-  annotation/    Trace recorder — content-addressed, replayable corpora
+  annotation/    Trace recorder and evidence indexing — content-addressed, replayable
+  reporting/     Bug report engine: findings, evidence blocks, ungrounded quarantine
+  pipeline.py    Composition root: repository -> deployment -> rollout -> judge -> report
 
 tests/fixtures/
   toy_site/          5 pages, 10 seeded bugs, answer key
@@ -237,6 +338,23 @@ data/profiles/       Application Profiles and session-bootstrap macros
 data/annotations/    Captured trace corpora
 reports/             Measured results
 ```
+
+---
+
+## CI
+
+`.github/workflows/tests.yml`, three jobs split by what each needs:
+
+| job | needs | what it runs |
+|---|---|---|
+| `portable` | pip only — `requirements-ci.txt` | the portable subset, on Ubuntu + Windows × Python 3.11/3.12 |
+| `integration` | Docker daemon + real Chromium | Linux only |
+| `lint` | ruff | the dev extra |
+
+The RL half is deliberately not run in CI: it needs torch, SB3 and transformers — none of
+which are in `requirements-ci.txt` — and a meaningful run is hours on a GPU, not minutes
+on a runner. Those tests are marked `requires_torch` and are not collected when the stack
+is absent.
 
 ---
 
@@ -262,11 +380,58 @@ reports/             Measured results
 
 - **Source grounding is not demonstrated, and the consumer did not help.** The Application Profile schema and consumer exist, but a controlled A/B with a version-pinned judge — both arms in one session — found the hand-authored profile changed **recall, false positives, discrimination and evidence grounding by nothing**, while altering 10 of 14 verdicts and shifting bug types toward a single category. An earlier result suggesting it halved false positives used an unversioned hosted model and did not reproduce. No source has been read at any point: "the code defines X, testing observed Y" remains a goal, and it now starts from a measured baseline of zero rather than an assumed benefit.
 - **Semantic perception measurably hurts at fixture scale, and is untested at any other.** The encoders run at ~5% step overhead, and CodeBERT needed two corrections to be usable at all (mean pooling and a fixed centering vector — the spec's `[CLS]` gives pairwise cosine ~0.99 across every page). Over 3 seeds they cost the agent return and valid-action rate on a 12-page fixture; whether they help on a large, diverse target — the case they were argued for — remains unmeasured.
-- **The RL contribution is measured, and it is negative.** Masked random beats the DQN ~10× on distinct findings on the deep fixture, on every seed and under both encoder configurations, at equal step budget. The remaining uncertainty is `train_toy.py`'s shallow-fixture comparison, which still carries the single-seed evaluation defect and is queued for rerun.
+- **The RL track is paused by decision, not finished — and the picture changed twice.** The
+  earlier headline, *"masked random beats the DQN ~10× on distinct findings"*, is
+  **retracted**: every one of those "findings" was a self-link false positive
+  (`broken_navigation` firing when a nav link pointed at the page already loaded), and the
+  deep-flow fixture's deterministic ceiling is genuinely 0. What replaced it, after an
+  action-conditioned dueling DQN, an archive-start curriculum and two reward corrections:
+  **the agent went from never passing stage 1 of the four-gate flow to completing it in
+  10 of 15 evaluation episodes** — the first flow completions in the project's history.
+  A later investigation established that the apparent *seed-level* split behind that
+  number was **run-to-run variance**, not a property of the seeds. Bugs found on that
+  fixture remain **0**, because its only defect is `llm_required` and these runs use the
+  deterministic triggers alone.
 - **Every policy comparison in this project is cheap to get wrong in the same way.** A greedy policy against a static fixture produces one trajectory no matter how many episodes you ask for, and the resulting identical numbers look like precision. If you extend this work, check that your evaluation can produce a different number twice before you believe any of it.
 - **Small n on the real target.** Six seeded bugs and two control windows is enough to be honest with, not enough to be confident with.
-- **Auto-deploy is gated but not built.** Uploaded build definitions are validated; the sandboxed runner that would execute them is not, and a passing policy check is not a sandbox. The gate also shipped with three bypasses that a review found later — now closed, but the useful signal is that a carefully written, unit-tested gate still missed an entire category, so assume more remain.
+- **Auto-deploy is built for Dockerfiles and refuses compose.** The runner builds, runs,
+  health-checks and tears down a Dockerfile repository with `cap_drop: ALL`,
+  `no-new-privileges`, a read-only rootfs, pid/memory/CPU limits and an internal-only
+  network. None of that makes it safe for untrusted input — `docker build` runs the
+  repository's own commands before any run-time restriction exists — so the documented
+  scope is trusted/controlled repositories. The compose gate also shipped with three
+  bypasses a review found later: now closed, but the useful signal is that a carefully
+  written, unit-tested gate still missed an entire category, so assume more remain.
 - **The hosted judge is not version-pinned.** See the reproducibility caveat above.
+
+---
+
+## Where RL research resumes
+
+The RL half is frozen at a documented state. Nothing about the agent, reward,
+exploration, PER, n-step schedule, epsilon schedule, archive or the deep-flow fixture
+should be changed before the next measurement is taken, because that measurement is what
+tells you whether any change helped.
+
+**The next action is to measure the run-to-run completion distribution at a fixed seed.**
+Flow completions were 10/15 across three runs, and the split looked seed-dependent until
+it was found to be run-to-run variance — so the size of that variance is currently
+unknown, and no candidate fix can be evaluated against a baseline whose spread nobody has
+measured. Repeat one seed N times under the identical protocol and record the
+distribution of completions before attempting an exploration fix.
+
+**No candidate RL fix is approved.** The known remaining obstacle is the final
+`order-4 -> receipt` transition, where `Place order` and `Back` sit within ~1.7% of each
+other in Q — a near-tie decided by noise. Diagnosis pointed at sparse experience rather
+than a mis-ordered objective, but **PER sampling of that transition has never been
+measured** (the replay buffer is not saved with checkpoints), so that remains a
+hypothesis.
+
+Retained for this work: `reports/diag_ac_3seed_deep_{nodueling,dueling,c1}.json` (the
+three-arm comparison), `reports/diag_q_spread_{nodueling,dueling}.json` (Q-value
+evidence), `reports/diag_order4_bottleneck.json`, and six checkpoints under
+`models/checkpoints/` — **gitignored, so they are not in a clone**; re-run
+`scripts/compare_agents.py` to regenerate them.
 
 ---
 

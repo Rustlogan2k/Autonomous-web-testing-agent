@@ -1,0 +1,128 @@
+{
+  "_purpose": "Is Place order -> receipt collected, stored and sampled? seed 2 only.",
+  "seed": 2,
+  "train_steps": 4000,
+  "final_transition": {
+    "training_steps_on_order4": 196,
+    "training_steps_on_receipt": 6,
+    "tagged_transitions_stored": 9,
+    "buffer_transitions": 4000,
+    "tagged_share_of_buffer_pct": 0.225,
+    "tagged_draws": 14,
+    "total_draws": 56000,
+    "tagged_share_of_draws_pct": 0.025,
+    "per_over_uniform": 0.111,
+    "mean_priority_tagged": 1.593451,
+    "mean_priority_other": 0.588631
+  },
+  "q_trace": [
+    {
+      "step": 2000,
+      "q_place": -0.4838,
+      "q_back": -0.4722,
+      "gap": -0.0116,
+      "place_wins": false,
+      "tagged_stored": 0,
+      "tagged_draws": 0,
+      "total_draws": 23936,
+      "order4_steps": 2,
+      "receipt_steps": 0
+    },
+    {
+      "step": 2250,
+      "q_place": -0.8644,
+      "q_back": -0.8143,
+      "gap": -0.05,
+      "place_wins": false,
+      "tagged_stored": 0,
+      "tagged_draws": 0,
+      "total_draws": 27968,
+      "order4_steps": 23,
+      "receipt_steps": 0
+    },
+    {
+      "step": 2500,
+      "q_place": -1.2547,
+      "q_back": -1.1943,
+      "gap": -0.0604,
+      "place_wins": false,
+      "tagged_stored": 0,
+      "tagged_draws": 0,
+      "total_draws": 31936,
+      "order4_steps": 58,
+      "receipt_steps": 0
+    },
+    {
+      "step": 2750,
+      "q_place": -1.3538,
+      "q_back": -1.2876,
+      "gap": -0.0662,
+      "place_wins": false,
+      "tagged_stored": 0,
+      "tagged_draws": 0,
+      "total_draws": 35968,
+      "order4_steps": 82,
+      "receipt_steps": 0
+    },
+    {
+      "step": 3000,
+      "q_place": -1.4114,
+      "q_back": -1.325,
+      "gap": -0.0864,
+      "place_wins": false,
+      "tagged_stored": 0,
+      "tagged_draws": 0,
+      "total_draws": 39936,
+      "order4_steps": 107,
+      "receipt_steps": 0
+    },
+    {
+      "step": 3250,
+      "q_place": -1.61,
+      "q_back": -1.5093,
+      "gap": -0.1007,
+      "place_wins": false,
+      "tagged_stored": 0,
+      "tagged_draws": 0,
+      "total_draws": 43968,
+      "order4_steps": 148,
+      "receipt_steps": 0
+    },
+    {
+      "step": 3500,
+      "q_place": -1.7657,
+      "q_back": -1.6307,
+      "gap": -0.135,
+      "place_wins": false,
+      "tagged_stored": 0,
+      "tagged_draws": 0,
+      "total_draws": 47936,
+      "order4_steps": 170,
+      "receipt_steps": 0
+    },
+    {
+      "step": 3750,
+      "q_place": -2.067,
+      "q_back": -1.9444,
+      "gap": -0.1226,
+      "place_wins": false,
+      "tagged_stored": 1,
+      "tagged_draws": 1,
+      "total_draws": 51968,
+      "order4_steps": 184,
+      "receipt_steps": 1
+    },
+    {
+      "step": 4000,
+      "q_place": -2.2973,
+      "q_back": -2.1238,
+      "gap": -0.1734,
+      "place_wins": false,
+      "tagged_stored": 9,
+      "tagged_draws": 13,
+      "total_draws": 55936,
+      "order4_steps": 196,
+      "receipt_steps": 6
+    }
+  ]
+}

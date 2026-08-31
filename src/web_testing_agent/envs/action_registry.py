@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from typing import TYPE_CHECKING
+from urllib.parse import urljoin
 
 from ..utils.logging import get_logger
 from .input_values import generate_input_value
@@ -50,6 +51,13 @@ els => els.map((el, i) => {
         id: el.id || null,
         name: el.getAttribute('name') || null,
         href: el.getAttribute('href') || null,
+        // The DOM's own resolution of that href against the document base. Needed
+        // because a link whose href resolves to the page it is already on cannot
+        // change the URL, and reading the raw attribute cannot tell you that:
+        // `href="support.html"` on support.html looks like an ordinary relative link.
+        // Taken from the DOM rather than resolved in Python so a `<base href>` tag,
+        // which changes what every relative href means, is honoured for free.
+        resolvedHref: el.tagName === 'A' ? (el.href || '') : null,
         target: el.getAttribute('target') || null,
         // Marked when cut, so a label shortened here is not mistaken downstream for
         // the application mangling its own text. The judge sees these labels and has
@@ -96,12 +104,42 @@ def _selector_for(el: dict) -> str:
     return f"{SCAN_SELECTOR} >> nth={el['index']}"
 
 
-def _is_navigational(el: dict) -> bool:
+def _strip_fragment(url: str) -> str:
+    return url.split("#", 1)[0]
+
+
+def _is_self_link(el: dict, page_url: str) -> bool:
+    """Whether this anchor points at the document it is already in.
+
+    A nav bar that highlights the current section still links to it — `nav-support` on
+    `support.html`, `sup-returns` on `support.html`, `nav-home` on `index.html`. Clicking
+    one reloads the page and correctly leaves the URL unchanged, which is exactly the
+    condition `detect_bug_signals` reads as `broken_navigation`. Measured on the
+    deep-flow fixture: **every one** of the 18-20 `broken_navigation` firings per run,
+    across every policy, came from a self-link, and the answer key's claim that no
+    deterministic trigger can fire on that fixture was false because of it. That made
+    `distinct_findings` there a count of how many distinct self-links a policy happened
+    to click rather than a bug-discovery figure.
+
+    Fragment-only hrefs are handled separately by `_is_navigational` and never reach
+    here; a same-path link carrying a *different* query genuinely does change the URL
+    and is deliberately not folded in.
+    """
+    resolved = (el.get("resolvedHref") or "").strip()
+    href = (el.get("href") or "").strip()
+    if not page_url or not (resolved or href):
+        return False
+    target = resolved or urljoin(page_url, href)
+    return _strip_fragment(target) == _strip_fragment(page_url)
+
+
+def _is_navigational(el: dict, page_url: str = "") -> bool:
     """Whether clicking this element is *expected* to change the URL.
 
     Only links and submit buttons are. Fragment (`#...`), `javascript:` and `mailto:`
-    hrefs legitimately leave the URL path unchanged, and a `target="_blank"` link opens
-    a popup rather than navigating the current page — none of those are broken links.
+    hrefs legitimately leave the URL path unchanged, a `target="_blank"` link opens a
+    popup rather than navigating the current page, and a link resolving to the current
+    document cannot change the URL by definition — none of those are broken links.
     """
     tag = el["tag"]
     el_type = el.get("type") or ""
@@ -116,7 +154,7 @@ def _is_navigational(el: dict) -> bool:
     href = (el.get("href") or "").strip()
     if not href or href.startswith(("#", "javascript:", "mailto:", "tel:")):
         return False
-    return True
+    return not _is_self_link(el, page_url)
 
 
 def _opens_new_tab(el: dict) -> bool:
@@ -167,7 +205,7 @@ def _fixed_action_specs() -> list[ActionSpec]:
     return specs
 
 
-def build_action_specs(elements: list[dict]) -> list[ActionSpec]:
+def build_action_specs(elements: list[dict], page_url: str = "") -> list[ActionSpec]:
     """Turn raw scanned elements into a prioritized, budget-truncated list of ActionSpecs.
 
     Two orthogonal priorities decide what survives truncation:
@@ -182,6 +220,11 @@ def build_action_specs(elements: list[dict]) -> list[ActionSpec]:
        edge-case variants fill whatever budget remains.
 
     Anything past MAX_ACTIONS is dropped; the env treats an out-of-range index as NO_OP.
+
+    `page_url` is the document the scan came from. It is only consulted to decide
+    whether a link points back at that same document (see `_is_self_link`); passing it
+    empty preserves the pre-2026-08-27 behaviour, in which every non-fragment link was
+    called navigational and a self-link therefore read as a broken one.
     """
     fixed = _fixed_action_specs()
     budget = MAX_ACTIONS - len(fixed)
@@ -214,7 +257,7 @@ def build_action_specs(elements: list[dict]) -> list[ActionSpec]:
                     selector=selector,
                     element_id=label,
                     params={
-                        "navigational": _is_navigational(el),
+                        "navigational": _is_navigational(el, page_url),
                         "in_viewport": in_viewport,
                         "opens_new_tab": _opens_new_tab(el),
                         "href": _link_href(el),

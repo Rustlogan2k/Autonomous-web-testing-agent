@@ -1,0 +1,6234 @@
+{
+  "_purpose": "Seed-0 deep-flow diagnostic under the corrected reward.",
+  "config": {
+    "train_steps": 4000,
+    "seed": 0,
+    "window": 100,
+    "reward": "corrected reveal bonus (same-page gates only)"
+  },
+  "complete": true,
+  "training_windows": [
+    {
+      "step": 100,
+      "elapsed_s": 35.6,
+      "window_s": 35.57,
+      "steps_per_s": 2.811,
+      "ms_per_step": 355.7,
+      "timings_net_s": {
+        "env_step": 32.932,
+        "env_reset": 2.359,
+        "obs_construction": 0.081,
+        "action_features": 0.023,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 99
+      },
+      "behaviour": {
+        "exec_failures": 5,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.284,
+        "action_types": {
+          "CLICK": 48,
+          "RESIZE_VIEWPORT": 22,
+          "NO_OP": 10,
+          "SCROLL": 7,
+          "BROWSER_FORWARD": 5,
+          "BROWSER_BACK": 5,
+          "REFRESH": 3
+        },
+        "depth_histogram": {
+          "0": 97,
+          "1": 3
+        }
+      },
+      "reward_terms": {
+        "reward": -4.07,
+        "novelty": 10.43,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.5
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 8,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 0
+      },
+      "epsilon": 0.9629,
+      "buffer": 97
+    },
+    {
+      "step": 200,
+      "elapsed_s": 72.3,
+      "window_s": 36.76,
+      "steps_per_s": 2.721,
+      "ms_per_step": 367.6,
+      "timings_net_s": {
+        "env_step": 32.867,
+        "env_reset": 3.614,
+        "obs_construction": 0.091,
+        "action_features": 0.021,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100
+      },
+      "behaviour": {
+        "exec_failures": 2,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.285,
+        "action_types": {
+          "CLICK": 53,
+          "RESIZE_VIEWPORT": 17,
+          "SCROLL": 10,
+          "REFRESH": 9,
+          "NO_OP": 5,
+          "BROWSER_BACK": 4,
+          "BROWSER_FORWARD": 2
+        },
+        "depth_histogram": {
+          "0": 98,
+          "1": 2
+        }
+      },
+      "reward_terms": {
+        "reward": -14.77,
+        "novelty": 3.33,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.2
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 4
+      },
+      "epsilon": 0.9254,
+      "buffer": 197
+    },
+    {
+      "step": 300,
+      "elapsed_s": 107.9,
+      "window_s": 35.54,
+      "steps_per_s": 2.814,
+      "ms_per_step": 355.4,
+      "timings_net_s": {
+        "env_step": 33.014,
+        "env_reset": 2.179,
+        "obs_construction": 0.091,
+        "action_features": 0.024,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100
+      },
+      "behaviour": {
+        "exec_failures": 8,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.286,
+        "action_types": {
+          "CLICK": 49,
+          "RESIZE_VIEWPORT": 18,
+          "BROWSER_FORWARD": 9,
+          "SCROLL": 9,
+          "REFRESH": 7,
+          "NO_OP": 7,
+          "BROWSER_BACK": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -14.42,
+        "novelty": 2.63,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.8
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 6
+      },
+      "epsilon": 0.8879,
+      "buffer": 297
+    },
+    {
+      "step": 400,
+      "elapsed_s": 143.5,
+      "window_s": 35.67,
+      "steps_per_s": 2.803,
+      "ms_per_step": 356.7,
+      "timings_net_s": {
+        "env_step": 32.536,
+        "env_reset": 2.859,
+        "obs_construction": 0.086,
+        "action_features": 0.022,
+        "buffer_add": 0.011
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100
+      },
+      "behaviour": {
+        "exec_failures": 6,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.284,
+        "action_types": {
+          "CLICK": 44,
+          "RESIZE_VIEWPORT": 20,
+          "SCROLL": 12,
+          "BROWSER_FORWARD": 8,
+          "BROWSER_BACK": 7,
+          "REFRESH": 5,
+          "NO_OP": 4
+        },
+        "depth_histogram": {
+          "0": 96,
+          "1": 4
+        }
+      },
+      "reward_terms": {
+        "reward": -14.75,
+        "novelty": 2.25,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.6
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 8
+      },
+      "epsilon": 0.8504,
+      "buffer": 397
+    },
+    {
+      "step": 500,
+      "elapsed_s": 178.8,
+      "window_s": 35.29,
+      "steps_per_s": 2.834,
+      "ms_per_step": 352.9,
+      "timings_net_s": {
+        "env_step": 32.776,
+        "env_reset": 2.229,
+        "obs_construction": 0.089,
+        "action_features": 0.02,
+        "buffer_add": 0.011
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100
+      },
+      "behaviour": {
+        "exec_failures": 3,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.284,
+        "action_types": {
+          "CLICK": 51,
+          "RESIZE_VIEWPORT": 15,
+          "SCROLL": 12,
+          "BROWSER_BACK": 9,
+          "NO_OP": 6,
+          "REFRESH": 4,
+          "BROWSER_FORWARD": 3
+        },
+        "depth_histogram": {
+          "0": 93,
+          "1": 7
+        }
+      },
+      "reward_terms": {
+        "reward": -12.69,
+        "novelty": 2.51,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.3
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 10
+      },
+      "epsilon": 0.8129,
+      "buffer": 497
+    },
+    {
+      "step": 600,
+      "elapsed_s": 216.1,
+      "window_s": 37.28,
+      "steps_per_s": 2.682,
+      "ms_per_step": 372.8,
+      "timings_net_s": {
+        "env_step": 33.481,
+        "env_reset": 1.952,
+        "gradient": 0.991,
+        "qnet_forward": 0.297,
+        "buffer_sample": 0.217,
+        "obs_construction": 0.092,
+        "action_features": 0.022,
+        "buffer_add": 0.011
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 48,
+        "qnet_forward": 160,
+        "gradient": 24
+      },
+      "behaviour": {
+        "exec_failures": 4,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.286,
+        "action_types": {
+          "CLICK": 53,
+          "BROWSER_BACK": 13,
+          "RESIZE_VIEWPORT": 12,
+          "REFRESH": 9,
+          "NO_OP": 5,
+          "BROWSER_FORWARD": 4,
+          "SCROLL": 4
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -19.0,
+        "novelty": 1.55,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.4
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 10
+      },
+      "epsilon": 0.7754,
+      "buffer": 597
+    },
+    {
+      "step": 700,
+      "elapsed_s": 252.9,
+      "window_s": 36.82,
+      "steps_per_s": 2.716,
+      "ms_per_step": 368.2,
+      "timings_net_s": {
+        "env_step": 33.414,
+        "env_reset": 1.925,
+        "gradient": 0.717,
+        "buffer_sample": 0.178,
+        "qnet_forward": 0.169,
+        "obs_construction": 0.094,
+        "action_features": 0.021,
+        "buffer_add": 0.012
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 181,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 2,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.288,
+        "action_types": {
+          "CLICK": 62,
+          "BROWSER_BACK": 13,
+          "RESIZE_VIEWPORT": 10,
+          "SCROLL": 8,
+          "NO_OP": 5,
+          "REFRESH": 1,
+          "BROWSER_FORWARD": 1
+        },
+        "depth_histogram": {
+          "0": 99,
+          "1": 1
+        }
+      },
+      "reward_terms": {
+        "reward": -19.79,
+        "novelty": 1.76,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.2
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 11
+      },
+      "epsilon": 0.7379,
+      "buffer": 697
+    },
+    {
+      "step": 800,
+      "elapsed_s": 291.1,
+      "window_s": 38.15,
+      "steps_per_s": 2.622,
+      "ms_per_step": 381.5,
+      "timings_net_s": {
+        "env_step": 32.925,
+        "env_reset": 3.384,
+        "gradient": 1.071,
+        "buffer_sample": 0.218,
+        "qnet_forward": 0.169,
+        "obs_construction": 0.09,
+        "action_features": 0.02,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 181,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 3,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.287,
+        "action_types": {
+          "CLICK": 61,
+          "RESIZE_VIEWPORT": 14,
+          "SCROLL": 8,
+          "REFRESH": 7,
+          "BROWSER_BACK": 5,
+          "BROWSER_FORWARD": 3,
+          "NO_OP": 2
+        },
+        "depth_histogram": {
+          "0": 97,
+          "1": 3
+        }
+      },
+      "reward_terms": {
+        "reward": -29.61,
+        "novelty": 1.44,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.3
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 14
+      },
+      "epsilon": 0.7004,
+      "buffer": 797
+    },
+    {
+      "step": 900,
+      "elapsed_s": 327.8,
+      "window_s": 36.73,
+      "steps_per_s": 2.723,
+      "ms_per_step": 367.3,
+      "timings_net_s": {
+        "env_step": 33.528,
+        "env_reset": 1.311,
+        "gradient": 1.055,
+        "buffer_sample": 0.228,
+        "qnet_forward": 0.164,
+        "obs_construction": 0.102,
+        "action_features": 0.023,
+        "buffer_add": 0.011
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 185,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 3,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.291,
+        "action_types": {
+          "CLICK": 74,
+          "RESIZE_VIEWPORT": 7,
+          "SCROLL": 5,
+          "REFRESH": 4,
+          "BROWSER_BACK": 3,
+          "NO_OP": 3,
+          "BROWSER_FORWARD": 3,
+          "SELECT": 1
+        },
+        "depth_histogram": {
+          "0": 80,
+          "1": 20
+        }
+      },
+      "reward_terms": {
+        "reward": -15.25,
+        "novelty": 2.8,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -5.3
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 14
+      },
+      "epsilon": 0.6629,
+      "buffer": 897
+    },
+    {
+      "step": 1000,
+      "elapsed_s": 365.9,
+      "window_s": 38.09,
+      "steps_per_s": 2.626,
+      "ms_per_step": 380.9,
+      "timings_net_s": {
+        "env_step": 33.31,
+        "env_reset": 3.112,
+        "gradient": 0.881,
+        "buffer_sample": 0.212,
+        "qnet_forward": 0.171,
+        "obs_construction": 0.089,
+        "action_features": 0.018,
+        "buffer_add": 0.009
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 190,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.289,
+        "action_types": {
+          "CLICK": 72,
+          "RESIZE_VIEWPORT": 11,
+          "SCROLL": 7,
+          "REFRESH": 5,
+          "NO_OP": 2,
+          "BROWSER_BACK": 1,
+          "SELECT": 1,
+          "BROWSER_FORWARD": 1
+        },
+        "depth_histogram": {
+          "0": 72,
+          "1": 28
+        }
+      },
+      "reward_terms": {
+        "reward": -19.72,
+        "novelty": 1.88,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 16
+      },
+      "epsilon": 0.6254,
+      "buffer": 997
+    },
+    {
+      "step": 1100,
+      "elapsed_s": 402.5,
+      "window_s": 36.63,
+      "steps_per_s": 2.73,
+      "ms_per_step": 366.3,
+      "timings_net_s": {
+        "env_step": 31.985,
+        "env_reset": 2.751,
+        "gradient": 1.111,
+        "buffer_sample": 0.2,
+        "qnet_forward": 0.178,
+        "obs_construction": 0.073,
+        "action_features": 0.019,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 194,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 33,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.279,
+        "action_types": {
+          "CLICK": 35,
+          "BROWSER_FORWARD": 33,
+          "SCROLL": 15,
+          "RESIZE_VIEWPORT": 11,
+          "NO_OP": 4,
+          "REFRESH": 2
+        },
+        "depth_histogram": {
+          "0": 94,
+          "1": 6
+        }
+      },
+      "reward_terms": {
+        "reward": -37.58,
+        "novelty": 1.22,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -8.3
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 19
+      },
+      "epsilon": 0.5879,
+      "buffer": 1097
+    },
+    {
+      "step": 1200,
+      "elapsed_s": 439.2,
+      "window_s": 36.69,
+      "steps_per_s": 2.726,
+      "ms_per_step": 366.9,
+      "timings_net_s": {
+        "env_step": 31.906,
+        "env_reset": 2.855,
+        "gradient": 1.005,
+        "buffer_sample": 0.25,
+        "qnet_forward": 0.187,
+        "obs_construction": 0.077,
+        "action_features": 0.018,
+        "buffer_add": 0.011
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 196,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 5,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.28,
+        "action_types": {
+          "CLICK": 39,
+          "SCROLL": 38,
+          "RESIZE_VIEWPORT": 10,
+          "BROWSER_FORWARD": 6,
+          "BROWSER_BACK": 4,
+          "REFRESH": 2,
+          "NO_OP": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -41.67,
+        "novelty": 0.88,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.5
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 21
+      },
+      "epsilon": 0.5504,
+      "buffer": 1197
+    },
+    {
+      "step": 1300,
+      "elapsed_s": 476.5,
+      "window_s": 37.26,
+      "steps_per_s": 2.684,
+      "ms_per_step": 372.6,
+      "timings_net_s": {
+        "env_step": 33.341,
+        "env_reset": 1.892,
+        "gradient": 0.999,
+        "buffer_sample": 0.338,
+        "qnet_forward": 0.189,
+        "obs_construction": 0.089,
+        "action_features": 0.019,
+        "buffer_add": 0.011,
+        "archive_step": 0.002
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 205,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.29,
+        "action_types": {
+          "CLICK": 72,
+          "RESIZE_VIEWPORT": 11,
+          "SCROLL": 8,
+          "NO_OP": 6,
+          "BROWSER_BACK": 3
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -37.05,
+        "novelty": 0.9,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 22
+      },
+      "epsilon": 0.5129,
+      "buffer": 1297
+    },
+    {
+      "step": 1400,
+      "elapsed_s": 512.9,
+      "window_s": 36.48,
+      "steps_per_s": 2.741,
+      "ms_per_step": 364.8,
+      "timings_net_s": {
+        "env_step": 31.425,
+        "env_reset": 3.433,
+        "gradient": 0.791,
+        "buffer_sample": 0.216,
+        "qnet_forward": 0.201,
+        "obs_construction": 0.075,
+        "action_features": 0.02,
+        "buffer_add": 0.011
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 197,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 2,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.273,
+        "action_types": {
+          "NO_OP": 42,
+          "CLICK": 26,
+          "RESIZE_VIEWPORT": 14,
+          "SCROLL": 6,
+          "REFRESH": 5,
+          "BROWSER_BACK": 5,
+          "BROWSER_FORWARD": 2
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -43.64,
+        "novelty": 0.56,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.2
+      },
+      "archive": {
+        "cells": 8,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 1
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 25
+      },
+      "epsilon": 0.4754,
+      "buffer": 1397
+    },
+    {
+      "step": 1500,
+      "elapsed_s": 548.4,
+      "window_s": 35.45,
+      "steps_per_s": 2.821,
+      "ms_per_step": 354.5,
+      "timings_net_s": {
+        "env_step": 31.883,
+        "env_reset": 1.926,
+        "gradient": 0.786,
+        "qnet_forward": 0.214,
+        "buffer_sample": 0.179,
+        "obs_construction": 0.084,
+        "action_features": 0.024,
+        "buffer_add": 0.011
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 206,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 3,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.28,
+        "action_types": {
+          "CLICK": 36,
+          "RESIZE_VIEWPORT": 31,
+          "SELECT": 19,
+          "SCROLL": 5,
+          "NO_OP": 3,
+          "BROWSER_FORWARD": 3,
+          "BROWSER_BACK": 2,
+          "REFRESH": 1
+        },
+        "depth_histogram": {
+          "0": 66,
+          "1": 34
+        }
+      },
+      "reward_terms": {
+        "reward": -32.78,
+        "novelty": 1.97,
+        "reveal": 3.0,
+        "deterministic": 0.0,
+        "step_cost": -5.3
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 1,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 26
+      },
+      "epsilon": 0.4379,
+      "buffer": 1497
+    },
+    {
+      "step": 1600,
+      "elapsed_s": 588.1,
+      "window_s": 39.72,
+      "steps_per_s": 2.517,
+      "ms_per_step": 397.2,
+      "timings_net_s": {
+        "env_step": 34.317,
+        "env_reset": 2.534,
+        "gradient": 1.771,
+        "buffer_sample": 0.284,
+        "qnet_forward": 0.215,
+        "obs_construction": 0.103,
+        "action_features": 0.024,
+        "buffer_add": 0.012
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 211,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 7,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.292,
+        "action_types": {
+          "CLICK": 76,
+          "RESIZE_VIEWPORT": 5,
+          "BROWSER_FORWARD": 4,
+          "TYPE": 4,
+          "NO_OP": 3,
+          "SELECT": 2,
+          "SCROLL": 2,
+          "BROWSER_BACK": 2,
+          "REFRESH": 2
+        },
+        "depth_histogram": {
+          "0": 63,
+          "1": 30,
+          "2": 7
+        }
+      },
+      "reward_terms": {
+        "reward": -40.44,
+        "novelty": 2.71,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.7
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 27
+      },
+      "epsilon": 0.4004,
+      "buffer": 1597
+    },
+    {
+      "step": 1700,
+      "elapsed_s": 625.6,
+      "window_s": 37.47,
+      "steps_per_s": 2.668,
+      "ms_per_step": 374.7,
+      "timings_net_s": {
+        "env_step": 33.831,
+        "gradient": 1.351,
+        "env_reset": 1.313,
+        "buffer_sample": 0.242,
+        "qnet_forward": 0.228,
+        "obs_construction": 0.105,
+        "action_features": 0.023,
+        "buffer_add": 0.011,
+        "archive_step": 0.002
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 216,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.294,
+        "action_types": {
+          "CLICK": 81,
+          "RESIZE_VIEWPORT": 6,
+          "REFRESH": 5,
+          "NO_OP": 3,
+          "SCROLL": 3,
+          "BROWSER_BACK": 1,
+          "BROWSER_FORWARD": 1
+        },
+        "depth_histogram": {
+          "0": 70,
+          "1": 30
+        }
+      },
+      "reward_terms": {
+        "reward": -46.96,
+        "novelty": 1.09,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 27
+      },
+      "epsilon": 0.3629,
+      "buffer": 1697
+    },
+    {
+      "step": 1800,
+      "elapsed_s": 663.6,
+      "window_s": 38.02,
+      "steps_per_s": 2.63,
+      "ms_per_step": 380.2,
+      "timings_net_s": {
+        "env_step": 33.98,
+        "env_reset": 1.972,
+        "gradient": 1.057,
+        "buffer_sample": 0.24,
+        "qnet_forward": 0.217,
+        "obs_construction": 0.1,
+        "action_features": 0.023,
+        "buffer_add": 0.011
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 221,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.294,
+        "action_types": {
+          "CLICK": 87,
+          "RESIZE_VIEWPORT": 7,
+          "SCROLL": 2,
+          "NO_OP": 1,
+          "BROWSER_FORWARD": 1,
+          "BROWSER_BACK": 1,
+          "REFRESH": 1
+        },
+        "depth_histogram": {
+          "0": 99,
+          "1": 1
+        }
+      },
+      "reward_terms": {
+        "reward": -61.7,
+        "novelty": 0.6,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 27
+      },
+      "epsilon": 0.3254,
+      "buffer": 1797
+    },
+    {
+      "step": 1900,
+      "elapsed_s": 701.5,
+      "window_s": 37.86,
+      "steps_per_s": 2.641,
+      "ms_per_step": 378.6,
+      "timings_net_s": {
+        "env_step": 33.956,
+        "env_reset": 1.859,
+        "gradient": 1.095,
+        "buffer_sample": 0.255,
+        "qnet_forward": 0.198,
+        "obs_construction": 0.087,
+        "action_features": 0.02,
+        "buffer_add": 0.01,
+        "archive_step": 0.002
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 213,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.295,
+        "action_types": {
+          "CLICK": 86,
+          "SCROLL": 4,
+          "RESIZE_VIEWPORT": 4,
+          "REFRESH": 3,
+          "BROWSER_FORWARD": 1,
+          "BROWSER_BACK": 1,
+          "NO_OP": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -48.49,
+        "novelty": 0.81,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 28
+      },
+      "epsilon": 0.2879,
+      "buffer": 1897
+    },
+    {
+      "step": 2000,
+      "elapsed_s": 740.3,
+      "window_s": 38.84,
+      "steps_per_s": 2.574,
+      "ms_per_step": 388.4,
+      "timings_net_s": {
+        "env_step": 33.191,
+        "env_reset": 3.69,
+        "gradient": 1.007,
+        "qnet_forward": 0.211,
+        "buffer_sample": 0.209,
+        "obs_construction": 0.09,
+        "action_features": 0.02,
+        "buffer_add": 0.011
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 223,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.286,
+        "action_types": {
+          "CLICK": 51,
+          "REFRESH": 31,
+          "SCROLL": 12,
+          "RESIZE_VIEWPORT": 4,
+          "BROWSER_BACK": 1,
+          "BROWSER_FORWARD": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -52.3,
+        "novelty": 0.55,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 3,
+        "return_failures": 0,
+        "replayed_actions": 31
+      },
+      "epsilon": 0.2504,
+      "buffer": 1997
+    },
+    {
+      "step": 2100,
+      "elapsed_s": 776.0,
+      "window_s": 35.69,
+      "steps_per_s": 2.802,
+      "ms_per_step": 356.9,
+      "timings_net_s": {
+        "env_step": 31.832,
+        "env_reset": 1.894,
+        "gradient": 0.943,
+        "buffer_sample": 0.233,
+        "qnet_forward": 0.231,
+        "obs_construction": 0.07,
+        "action_features": 0.02,
+        "buffer_add": 0.011
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 227,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 2,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.275,
+        "action_types": {
+          "SCROLL": 65,
+          "CLICK": 24,
+          "RESIZE_VIEWPORT": 7,
+          "BROWSER_FORWARD": 2,
+          "BROWSER_BACK": 1,
+          "NO_OP": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -65.66,
+        "novelty": 0.49,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.2
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 32
+      },
+      "epsilon": 0.2129,
+      "buffer": 2097
+    },
+    {
+      "step": 2200,
+      "elapsed_s": 812.8,
+      "window_s": 36.76,
+      "steps_per_s": 2.72,
+      "ms_per_step": 367.6,
+      "timings_net_s": {
+        "env_step": 32.955,
+        "env_reset": 1.964,
+        "gradient": 0.818,
+        "buffer_sample": 0.239,
+        "qnet_forward": 0.217,
+        "obs_construction": 0.092,
+        "action_features": 0.021,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 229,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 3,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.287,
+        "action_types": {
+          "CLICK": 56,
+          "SCROLL": 19,
+          "BROWSER_BACK": 19,
+          "RESIZE_VIEWPORT": 3,
+          "REFRESH": 3
+        },
+        "depth_histogram": {
+          "0": 91,
+          "1": 9
+        }
+      },
+      "reward_terms": {
+        "reward": -70.89,
+        "novelty": 0.46,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.3
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 32
+      },
+      "epsilon": 0.1754,
+      "buffer": 2197
+    },
+    {
+      "step": 2300,
+      "elapsed_s": 850.4,
+      "window_s": 37.64,
+      "steps_per_s": 2.656,
+      "ms_per_step": 376.4,
+      "timings_net_s": {
+        "env_step": 33.43,
+        "gradient": 1.793,
+        "env_reset": 1.308,
+        "buffer_sample": 0.243,
+        "qnet_forward": 0.226,
+        "obs_construction": 0.092,
+        "action_features": 0.021,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 231,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 27,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.289,
+        "action_types": {
+          "CLICK": 49,
+          "BROWSER_BACK": 42,
+          "RESIZE_VIEWPORT": 4,
+          "SCROLL": 3,
+          "REFRESH": 1,
+          "NO_OP": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -72.08,
+        "novelty": 0.52,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -7.7
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 32
+      },
+      "epsilon": 0.1379,
+      "buffer": 2297
+    },
+    {
+      "step": 2400,
+      "elapsed_s": 890.4,
+      "window_s": 39.94,
+      "steps_per_s": 2.504,
+      "ms_per_step": 399.4,
+      "timings_net_s": {
+        "env_step": 34.064,
+        "env_reset": 3.429,
+        "gradient": 1.381,
+        "qnet_forward": 0.235,
+        "buffer_sample": 0.223,
+        "obs_construction": 0.097,
+        "action_features": 0.022,
+        "buffer_add": 0.011
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 238,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.297,
+        "action_types": {
+          "CLICK": 91,
+          "RESIZE_VIEWPORT": 3,
+          "REFRESH": 3,
+          "SCROLL": 2,
+          "NO_OP": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -77.54,
+        "novelty": 0.36,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 36
+      },
+      "epsilon": 0.1004,
+      "buffer": 2397
+    },
+    {
+      "step": 2500,
+      "elapsed_s": 925.6,
+      "window_s": 35.23,
+      "steps_per_s": 2.838,
+      "ms_per_step": 352.3,
+      "timings_net_s": {
+        "env_step": 30.661,
+        "env_reset": 2.779,
+        "gradient": 0.866,
+        "qnet_forward": 0.217,
+        "buffer_sample": 0.185,
+        "obs_construction": 0.065,
+        "action_features": 0.019,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 236,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.271,
+        "action_types": {
+          "RESIZE_VIEWPORT": 63,
+          "SELECT": 20,
+          "CLICK": 15,
+          "BROWSER_FORWARD": 1,
+          "SCROLL": 1
+        },
+        "depth_histogram": {
+          "0": 77,
+          "1": 23
+        }
+      },
+      "reward_terms": {
+        "reward": -67.68,
+        "novelty": 0.62,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 40
+      },
+      "epsilon": 0.1,
+      "buffer": 2497
+    },
+    {
+      "step": 2600,
+      "elapsed_s": 963.5,
+      "window_s": 37.93,
+      "steps_per_s": 2.636,
+      "ms_per_step": 379.3,
+      "timings_net_s": {
+        "env_step": 33.892,
+        "env_reset": 1.931,
+        "gradient": 1.028,
+        "qnet_forward": 0.217,
+        "buffer_sample": 0.211,
+        "obs_construction": 0.095,
+        "action_features": 0.021,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 240,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.295,
+        "action_types": {
+          "CLICK": 96,
+          "SCROLL": 2,
+          "NO_OP": 1,
+          "RESIZE_VIEWPORT": 1
+        },
+        "depth_histogram": {
+          "0": 99,
+          "1": 1
+        }
+      },
+      "reward_terms": {
+        "reward": -68.15,
+        "novelty": 0.35,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 40
+      },
+      "epsilon": 0.1,
+      "buffer": 2597
+    },
+    {
+      "step": 2700,
+      "elapsed_s": 1001.8,
+      "window_s": 38.31,
+      "steps_per_s": 2.61,
+      "ms_per_step": 383.1,
+      "timings_net_s": {
+        "env_step": 34.293,
+        "env_reset": 1.905,
+        "gradient": 1.004,
+        "qnet_forward": 0.235,
+        "buffer_sample": 0.202,
+        "obs_construction": 0.091,
+        "action_features": 0.018,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 239,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 2,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.298,
+        "action_types": {
+          "CLICK": 96,
+          "BROWSER_FORWARD": 2,
+          "RESIZE_VIEWPORT": 1,
+          "NO_OP": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -68.88,
+        "novelty": 0.52,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.2
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 41
+      },
+      "epsilon": 0.1,
+      "buffer": 2697
+    },
+    {
+      "step": 2800,
+      "elapsed_s": 1039.9,
+      "window_s": 38.11,
+      "steps_per_s": 2.624,
+      "ms_per_step": 381.1,
+      "timings_net_s": {
+        "env_step": 34.062,
+        "env_reset": 1.971,
+        "gradient": 0.978,
+        "buffer_sample": 0.239,
+        "qnet_forward": 0.231,
+        "obs_construction": 0.092,
+        "action_features": 0.02,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 242,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.299,
+        "action_types": {
+          "CLICK": 97,
+          "BROWSER_BACK": 1,
+          "RESIZE_VIEWPORT": 1,
+          "NO_OP": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -72.45,
+        "novelty": 0.45,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 41
+      },
+      "epsilon": 0.1,
+      "buffer": 2797
+    },
+    {
+      "step": 2900,
+      "elapsed_s": 1078.5,
+      "window_s": 38.53,
+      "steps_per_s": 2.595,
+      "ms_per_step": 385.3,
+      "timings_net_s": {
+        "env_step": 33.903,
+        "env_reset": 2.491,
+        "gradient": 0.973,
+        "buffer_sample": 0.305,
+        "qnet_forward": 0.242,
+        "obs_construction": 0.102,
+        "action_features": 0.022,
+        "buffer_add": 0.011
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 242,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.296,
+        "action_types": {
+          "CLICK": 90,
+          "RESIZE_VIEWPORT": 8,
+          "NO_OP": 2
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -66.95,
+        "novelty": 0.45,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 43
+      },
+      "epsilon": 0.1,
+      "buffer": 2897
+    },
+    {
+      "step": 3000,
+      "elapsed_s": 1122.1,
+      "window_s": 43.65,
+      "steps_per_s": 2.291,
+      "ms_per_step": 436.5,
+      "timings_net_s": {
+        "env_step": 36.926,
+        "env_reset": 4.731,
+        "gradient": 0.445,
+        "buffer_sample": 0.404,
+        "qnet_forward": 0.392,
+        "obs_construction": 0.168,
+        "action_features": 0.031,
+        "buffer_add": 0.015,
+        "archive_step": 0.002
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 238,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.301,
+        "action_types": {
+          "CLICK": 76,
+          "RESIZE_VIEWPORT": 21,
+          "BROWSER_BACK": 1,
+          "NO_OP": 1,
+          "SCROLL": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -72.46,
+        "novelty": 0.34,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 48
+      },
+      "epsilon": 0.1,
+      "buffer": 2997
+    },
+    {
+      "step": 3100,
+      "elapsed_s": 1174.2,
+      "window_s": 52.1,
+      "steps_per_s": 1.919,
+      "ms_per_step": 521.0,
+      "timings_net_s": {
+        "env_step": 44.811,
+        "env_reset": 3.362,
+        "gradient": 1.141,
+        "qnet_forward": 0.739,
+        "buffer_sample": 0.641,
+        "obs_construction": 0.339,
+        "action_features": 0.056,
+        "buffer_add": 0.032,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 239,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.336,
+        "action_types": {
+          "CLICK": 97,
+          "RESIZE_VIEWPORT": 1,
+          "BROWSER_BACK": 1,
+          "NO_OP": 1
+        },
+        "depth_histogram": {
+          "0": 62,
+          "1": 38
+        }
+      },
+      "reward_terms": {
+        "reward": -66.91,
+        "novelty": 0.64,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 52
+      },
+      "epsilon": 0.1,
+      "buffer": 3097
+    },
+    {
+      "step": 3200,
+      "elapsed_s": 1224.4,
+      "window_s": 50.17,
+      "steps_per_s": 1.993,
+      "ms_per_step": 501.7,
+      "timings_net_s": {
+        "env_step": 43.043,
+        "env_reset": 3.728,
+        "gradient": 0.766,
+        "qnet_forward": 0.697,
+        "buffer_sample": 0.616,
+        "obs_construction": 0.311,
+        "action_features": 0.054,
+        "buffer_add": 0.026,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 240,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 2,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.306,
+        "action_types": {
+          "REFRESH": 76,
+          "CLICK": 20,
+          "RESIZE_VIEWPORT": 2,
+          "BROWSER_BACK": 2
+        },
+        "depth_histogram": {
+          "0": 95,
+          "1": 5
+        }
+      },
+      "reward_terms": {
+        "reward": -80.89,
+        "novelty": 0.26,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.2
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 54
+      },
+      "epsilon": 0.1,
+      "buffer": 3197
+    },
+    {
+      "step": 3300,
+      "elapsed_s": 1271.9,
+      "window_s": 47.46,
+      "steps_per_s": 2.107,
+      "ms_per_step": 474.6,
+      "timings_net_s": {
+        "env_step": 42.481,
+        "env_reset": 1.651,
+        "gradient": 0.755,
+        "qnet_forward": 0.686,
+        "buffer_sample": 0.538,
+        "obs_construction": 0.314,
+        "action_features": 0.057,
+        "buffer_add": 0.029,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 233,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.311,
+        "action_types": {
+          "REFRESH": 62,
+          "CLICK": 31,
+          "RESIZE_VIEWPORT": 3,
+          "SCROLL": 3,
+          "BROWSER_FORWARD": 1
+        },
+        "depth_histogram": {
+          "0": 55,
+          "1": 45
+        }
+      },
+      "reward_terms": {
+        "reward": -66.45,
+        "novelty": 0.45,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 54
+      },
+      "epsilon": 0.1,
+      "buffer": 3297
+    },
+    {
+      "step": 3400,
+      "elapsed_s": 1322.8,
+      "window_s": 50.95,
+      "steps_per_s": 1.963,
+      "ms_per_step": 509.5,
+      "timings_net_s": {
+        "env_step": 44.476,
+        "env_reset": 3.182,
+        "gradient": 0.797,
+        "qnet_forward": 0.704,
+        "buffer_sample": 0.42,
+        "obs_construction": 0.336,
+        "action_features": 0.059,
+        "buffer_add": 0.033,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 239,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.334,
+        "action_types": {
+          "CLICK": 94,
+          "NO_OP": 1,
+          "REFRESH": 1,
+          "BROWSER_BACK": 1,
+          "RESIZE_VIEWPORT": 1,
+          "SELECT": 1,
+          "SCROLL": 1
+        },
+        "depth_histogram": {
+          "0": 54,
+          "1": 46
+        }
+      },
+      "reward_terms": {
+        "reward": -70.59,
+        "novelty": 0.46,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 55
+      },
+      "epsilon": 0.1,
+      "buffer": 3397
+    },
+    {
+      "step": 3500,
+      "elapsed_s": 1366.6,
+      "window_s": 43.8,
+      "steps_per_s": 2.283,
+      "ms_per_step": 438.0,
+      "timings_net_s": {
+        "env_step": 38.564,
+        "env_reset": 2.346,
+        "gradient": 0.689,
+        "qnet_forward": 0.585,
+        "buffer_sample": 0.377,
+        "obs_construction": 0.206,
+        "action_features": 0.055,
+        "buffer_add": 0.022,
+        "archive_step": 0.003
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 240,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.298,
+        "action_types": {
+          "RESIZE_VIEWPORT": 60,
+          "CLICK": 37,
+          "NO_OP": 2,
+          "BROWSER_FORWARD": 1
+        },
+        "depth_histogram": {
+          "0": 76,
+          "1": 24
+        }
+      },
+      "reward_terms": {
+        "reward": -69.6,
+        "novelty": 0.45,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 56
+      },
+      "epsilon": 0.1,
+      "buffer": 3497
+    },
+    {
+      "step": 3600,
+      "elapsed_s": 1404.3,
+      "window_s": 37.72,
+      "steps_per_s": 2.651,
+      "ms_per_step": 377.2,
+      "timings_net_s": {
+        "env_step": 34.405,
+        "env_reset": 1.953,
+        "gradient": 0.448,
+        "qnet_forward": 0.246,
+        "buffer_sample": 0.177,
+        "obs_construction": 0.096,
+        "action_features": 0.018,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 238,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.298,
+        "action_types": {
+          "CLICK": 95,
+          "SCROLL": 2,
+          "NO_OP": 2,
+          "RESIZE_VIEWPORT": 1
+        },
+        "depth_histogram": {
+          "0": 55,
+          "1": 45
+        }
+      },
+      "reward_terms": {
+        "reward": -80.25,
+        "novelty": 0.35,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 0,
+        "return_failures": 0,
+        "replayed_actions": 56
+      },
+      "epsilon": 0.1,
+      "buffer": 3597
+    },
+    {
+      "step": 3700,
+      "elapsed_s": 1442.8,
+      "window_s": 38.44,
+      "steps_per_s": 2.601,
+      "ms_per_step": 384.4,
+      "timings_net_s": {
+        "env_step": 33.712,
+        "env_reset": 3.322,
+        "gradient": 0.51,
+        "qnet_forward": 0.221,
+        "buffer_sample": 0.196,
+        "obs_construction": 0.097,
+        "action_features": 0.02,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 240,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 12,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.293,
+        "action_types": {
+          "CLICK": 83,
+          "BROWSER_FORWARD": 12,
+          "RESIZE_VIEWPORT": 3,
+          "SELECT": 1,
+          "SCROLL": 1
+        },
+        "depth_histogram": {
+          "0": 48,
+          "1": 52
+        }
+      },
+      "reward_terms": {
+        "reward": -63.89,
+        "novelty": 0.61,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -6.2
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 61
+      },
+      "epsilon": 0.1,
+      "buffer": 3697
+    },
+    {
+      "step": 3800,
+      "elapsed_s": 1481.6,
+      "window_s": 38.8,
+      "steps_per_s": 2.578,
+      "ms_per_step": 388.0,
+      "timings_net_s": {
+        "env_step": 34.253,
+        "env_reset": 3.129,
+        "gradient": 0.521,
+        "qnet_forward": 0.216,
+        "buffer_sample": 0.178,
+        "obs_construction": 0.096,
+        "action_features": 0.019,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 240,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.298,
+        "action_types": {
+          "CLICK": 96,
+          "RESIZE_VIEWPORT": 2,
+          "BROWSER_BACK": 1,
+          "NO_OP": 1
+        },
+        "depth_histogram": {
+          "0": 65,
+          "1": 35
+        }
+      },
+      "reward_terms": {
+        "reward": -69.34,
+        "novelty": 0.41,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 63
+      },
+      "epsilon": 0.1,
+      "buffer": 3797
+    },
+    {
+      "step": 3900,
+      "elapsed_s": 1520.1,
+      "window_s": 38.55,
+      "steps_per_s": 2.594,
+      "ms_per_step": 385.5,
+      "timings_net_s": {
+        "env_step": 34.681,
+        "env_reset": 2.438,
+        "gradient": 0.512,
+        "qnet_forward": 0.236,
+        "buffer_sample": 0.203,
+        "obs_construction": 0.099,
+        "action_features": 0.019,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 2,
+        "archive_reset": 2,
+        "action_features": 102,
+        "obs_construction": 102,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 239,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 0,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.3,
+        "action_types": {
+          "CLICK": 94,
+          "RESIZE_VIEWPORT": 2,
+          "NO_OP": 1,
+          "SELECT": 1,
+          "BROWSER_BACK": 1,
+          "REFRESH": 1
+        },
+        "depth_histogram": {
+          "0": 72,
+          "1": 28
+        }
+      },
+      "reward_terms": {
+        "reward": -54.4,
+        "novelty": 0.7,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "step_cost": -5.0
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 2,
+        "return_failures": 0,
+        "replayed_actions": 65
+      },
+      "epsilon": 0.1,
+      "buffer": 3897
+    },
+    {
+      "step": 4000,
+      "elapsed_s": 1558.5,
+      "window_s": 38.37,
+      "steps_per_s": 2.606,
+      "ms_per_step": 383.7,
+      "timings_net_s": {
+        "env_step": 34.416,
+        "env_reset": 2.52,
+        "gradient": 0.509,
+        "qnet_forward": 0.228,
+        "buffer_sample": 0.187,
+        "obs_construction": 0.099,
+        "action_features": 0.02,
+        "buffer_add": 0.01
+      },
+      "calls": {
+        "env_reset": 3,
+        "archive_reset": 3,
+        "action_features": 103,
+        "obs_construction": 103,
+        "env_step": 100,
+        "archive_step": 100,
+        "buffer_add": 100,
+        "buffer_sample": 50,
+        "qnet_forward": 241,
+        "gradient": 25
+      },
+      "behaviour": {
+        "exec_failures": 1,
+        "playwright_timeouts": 0,
+        "rapid_clicks": 0,
+        "mean_load_s": 0.3,
+        "action_types": {
+          "CLICK": 97,
+          "BROWSER_FORWARD": 1,
+          "BROWSER_BACK": 1,
+          "RESIZE_VIEWPORT": 1
+        },
+        "depth_histogram": {
+          "0": 100
+        }
+      },
+      "reward_terms": {
+        "reward": -82.45,
+        "novelty": 0.15,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "step_cost": -5.1
+      },
+      "archive": {
+        "cells": 9,
+        "new_cells": 0,
+        "by_depth": {
+          "0": 7,
+          "1": 2
+        },
+        "max_depth": 1,
+        "selections": 1,
+        "return_failures": 0,
+        "replayed_actions": 66
+      },
+      "epsilon": 0.1,
+      "buffer": 3997
+    }
+  ],
+  "train_seconds": 1558.7,
+  "archive_final": {
+    "cells": 9,
+    "episodes": 101,
+    "returns_attempted": 42,
+    "returns_failed": 0,
+    "cells_discovered": 8,
+    "replayed_actions": 66,
+    "return_failure_rate": 0.0
+  },
+  "archive_cells": [
+    {
+      "page": "index.html",
+      "depth": 0,
+      "route_len": 0,
+      "chosen": 2,
+      "discoveries": 0
+    },
+    {
+      "page": "about.html",
+      "depth": 0,
+      "route_len": 1,
+      "chosen": 5,
+      "discoveries": 0
+    },
+    {
+      "page": "status.html",
+      "depth": 0,
+      "route_len": 1,
+      "chosen": 5,
+      "discoveries": 0
+    },
+    {
+      "page": "support.html",
+      "depth": 0,
+      "route_len": 1,
+      "chosen": 3,
+      "discoveries": 0
+    },
+    {
+      "page": "privacy.html",
+      "depth": 0,
+      "route_len": 1,
+      "chosen": 5,
+      "discoveries": 0
+    },
+    {
+      "page": "catalog.html",
+      "depth": 0,
+      "route_len": 1,
+      "chosen": 4,
+      "discoveries": 0
+    },
+    {
+      "page": "order-1.html",
+      "depth": 1,
+      "route_len": 1,
+      "chosen": 10,
+      "discoveries": 0
+    },
+    {
+      "page": "terms.html",
+      "depth": 0,
+      "route_len": 1,
+      "chosen": 5,
+      "discoveries": 0
+    },
+    {
+      "page": "order-1.html",
+      "depth": 1,
+      "route_len": 4,
+      "chosen": 5,
+      "discoveries": 0
+    }
+  ],
+  "archive_max_depth": 1,
+  "eval": {
+    "label": "ac_dqn_corrected",
+    "target_url": "http://127.0.0.1:55994/index.html",
+    "episodes": 5,
+    "steps": 200,
+    "wall_clock_s": 72.72,
+    "steps_per_second": 2.75,
+    "total_reward": -152.55,
+    "mean_episode_reward": -30.51,
+    "episode_rewards": [
+      -27.3,
+      -33.858,
+      -26.986,
+      -30.333,
+      -34.074
+    ],
+    "unique_states": 8,
+    "valid_action_rate": 1.0,
+    "exec_success_rate": 1.0,
+    "noop_steps": 1,
+    "distinct_findings": 0,
+    "trigger_counts": {},
+    "findings": [],
+    "mean_depth": 0.005,
+    "max_depth": 1,
+    "depth_histogram": {
+      "0": 199,
+      "1": 1
+    },
+    "flow_completions": 0,
+    "episodes_past_stage_1": 0,
+    "per_episode_max_depth": [
+      1,
+      0,
+      0,
+      0,
+      0
+    ],
+    "reward_term_totals": {
+      "reward": -152.55,
+      "novelty": 8.95,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -10.0
+    },
+    "eval_exec_failures": 0
+  },
+  "eval_trajectory": [
+    {
+      "event": "reset"
+    },
+    {
+      "from": "index.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": true,
+      "type": "SCROLL",
+      "element": "",
+      "n_actions": 21
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": true,
+      "type": "NO_OP",
+      "element": "",
+      "n_actions": 20
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": true,
+      "type": "CLICK",
+      "element": "Start an order",
+      "n_actions": 21
+    },
+    {
+      "from": "order-1.html",
+      "depth": 1,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 19
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": true,
+      "type": "CLICK",
+      "element": "Returns",
+      "n_actions": 20
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "event": "reset"
+    },
+    {
+      "from": "index.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "event": "reset"
+    },
+    {
+      "from": "index.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": true,
+      "type": "SCROLL",
+      "element": "",
+      "n_actions": 21
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": true,
+      "type": "CLICK",
+      "element": "Privacy",
+      "n_actions": 21
+    },
+    {
+      "from": "privacy.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": true,
+      "type": "CLICK",
+      "element": "Status",
+      "n_actions": 21
+    },
+    {
+      "from": "status.html",
+      "depth": 0,
+      "eps": true,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 17
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "event": "reset"
+    },
+    {
+      "from": "index.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": true,
+      "type": "CLICK",
+      "element": "About",
+      "n_actions": 21
+    },
+    {
+      "from": "about.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": true,
+      "type": "CLICK",
+      "element": "Terms",
+      "n_actions": 21
+    },
+    {
+      "from": "terms.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 17
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "event": "reset"
+    },
+    {
+      "from": "index.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": true,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    },
+    {
+      "from": "catalog.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Support",
+      "n_actions": 21
+    },
+    {
+      "from": "support.html",
+      "depth": 0,
+      "eps": false,
+      "type": "CLICK",
+      "element": "Catalog",
+      "n_actions": 20
+    }
+  ],
+  "eval_reward_rows": [
+    {
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.35,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.35,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.49999999999999994,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.49999999999999994,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.65,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.65,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "order-1.html",
+      "failed": false
+    },
+    {
+      "reward": -0.8,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.8,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.95,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.95,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": 0.16821789023599237,
+      "novelty": 0.2182178902359924,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": 0.17360679774997895,
+      "novelty": 0.22360679774997896,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.35,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.35,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.49999999999999994,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.49999999999999994,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.65,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.65,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.8,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.8,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.95,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.95,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": 0.10617376188860607,
+      "novelty": 0.15617376188860607,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": 0.10811388300841897,
+      "novelty": 0.15811388300841897,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.35,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.35,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.49999999999999994,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.49999999999999994,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.65,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.65,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.8,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.8,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.95,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.95,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "privacy.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "status.html",
+      "failed": false
+    },
+    {
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": 0.08018891098082388,
+      "novelty": 0.13018891098082389,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": 0.08018891098082388,
+      "novelty": 0.13018891098082389,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.35,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.35,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.49999999999999994,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.49999999999999994,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.65,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.65,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.8,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.8,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.95,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.95,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": 0.6571067811865474,
+      "novelty": 0.7071067811865475,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "about.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "terms.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": 0.06322770341445956,
+      "novelty": 0.11322770341445956,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": 0.06322770341445956,
+      "novelty": 0.11322770341445956,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.2,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.35,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.35,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.49999999999999994,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.49999999999999994,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.65,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.65,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.8,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.8,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -0.95,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -0.95,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "support.html",
+      "failed": false
+    },
+    {
+      "reward": -1.05,
+      "novelty": 0.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "url": "catalog.html",
+      "failed": false
+    }
+  ]
+}

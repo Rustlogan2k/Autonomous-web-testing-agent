@@ -1,0 +1,40 @@
+{
+  "_purpose": "DEEP-01 detectability when the review page is outside the K=6 window (the realistic RL-trajectory case)",
+  "corpus": "deep01-noisy (14/14 scripted steps matched; 5 filler steps before Place order)",
+  "review_page_in_window": false,
+  "model": "qwen2.5:7b-instruct",
+  "runs": {
+    "detailed": {
+      "deep01_detected": true,
+      "rows": [
+        {
+          "step": 13,
+          "is_bug": true,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "discrepancy": "The quantity of folders ordered is displayed as 1 instead of 42, which does not match the expected value from /order-4.html.",
+          "evidence": "Product: | folders-25 | Quantity: | 1",
+          "grounded": true,
+          "is_deep01": true
+        }
+      ]
+    },
+    "compact": {
+      "deep01_detected": false,
+      "rows": [
+        {
+          "step": 13,
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 0.95,
+          "discrepancy": "none",
+          "evidence": "  url        : /order-4.html?product=folders-25&quantity=42&email=tester%40example.com -> /receipt.html?product=folders-25&quantity=42&email=tester%40example.com\n  title      : 'Northwind Supply \u2014 Order, step 4 of 4' -> 'Northwind Supply \u2014 Order confirmed'\n  page text  : Northwind Supply \u2014 Order confirmed | Home | Catalog | Support | About | Order confirmed | Thank you. Your order has been placed. | Product: | folders-25 | Quantity: | 1 | Contact: | tester@example.com | Back to home | Terms | Pr",
+          "grounded": true,
+          "is_deep01": false
+        }
+      ]
+    }
+  }
+}

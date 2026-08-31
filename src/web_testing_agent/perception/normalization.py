@@ -13,6 +13,7 @@ unit-testable and runs identically in the env process and the encoder process.
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
@@ -65,6 +66,24 @@ _VOLATILE_QUERY_KEYS = frozenset(
     {"csrf", "csrf_token", "_csrf", "token", "authenticity_token", "nonce", "_", "ts", "timestamp", "cachebust", "v"}
 )
 
+# Headers whose *value* is per-request or per-session noise. The header **name** is kept
+# in every case: "this response carried a Set-Cookie" and "this request carried an
+# Authorization" are real signals about application behaviour (and Agent A's whole
+# premise), while the rotating value behind them is not.
+_VOLATILE_HEADERS = frozenset({
+    "date", "age", "expires", "last-modified", "etag", "if-modified-since",
+    "if-none-match", "set-cookie", "cookie", "authorization", "x-request-id",
+    "request-id", "traceparent", "x-runtime", "x-csrf-token", "keep-alive",
+})
+
+# Coarse, log-ish buckets for request duration. A raw float is clock jitter — two
+# identical navigations measured 16.00000006 ms and 15.99999983 ms — but *how slow* a
+# request was is genuine signal the `slow_response` trigger is built on, so it is
+# retained at a resolution the application can actually be responsible for.
+_DURATION_BUCKETS: tuple[tuple[float, str], ...] = (
+    (50.0, "<50ms"), (200.0, "<200ms"), (1000.0, "<1s"), (5000.0, "<5s"),
+)
+
 _SCRIPT_BODY = re.compile(r"(<script\b[^>]*>)(.*?)(</script>)", re.IGNORECASE | re.DOTALL)
 _STYLE_BLOCK = re.compile(r"<style\b[^>]*>.*?</style>", re.IGNORECASE | re.DOTALL)
 _COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
@@ -88,6 +107,106 @@ def canonicalize_url(url: str) -> str:
     kept = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True) if k.lower() not in _VOLATILE_QUERY_KEYS]
     query = urlencode([(k, canonicalize_text(v)) for k, v in sorted(kept)])
     return urlunsplit((parts.scheme, parts.netloc, canonicalize_text(parts.path), query, ""))
+
+
+def _bucket_duration(duration_ms) -> str:
+    if duration_ms is None:
+        return "unknown"
+    try:
+        value = float(duration_ms)
+    except (TypeError, ValueError):
+        return "unknown"
+    for ceiling, label in _DURATION_BUCKETS:
+        if value < ceiling:
+            return label
+    return ">=5s"
+
+
+def _canonicalize_headers(headers) -> dict:
+    if not isinstance(headers, dict):
+        return {}
+    return {
+        str(name).lower(): (
+            "<VOLATILE>" if str(name).lower() in _VOLATILE_HEADERS
+            else canonicalize_text(str(value))
+        )
+        for name, value in sorted(headers.items())
+    }
+
+
+def canonicalize_network_trace(network_json: str, page_url: str = "") -> str:
+    """Reduce a captured network trace to the parts that identify application *state*.
+
+    **This is the observation channel only.** `info["page"]["network"]` keeps the full
+    trace, and the judge window, the trace corpus and the bug report all read that —
+    forensic evidence (exact timings, exact headers, exact bodies) is untouched by
+    anything here. What this exists for is the other consumer: the encoded observation
+    the RL agent learns over.
+
+    **The defect it fixes, measured 2026-08-27.** Two identical navigations
+    (`index.html` -> `order-1.html`, same seed, same page) produced *unrelated* network
+    vectors — cosine +0.018. Three fields differed: the HTTP `date` response header, the
+    monotonic-clock `timestamp` (which the `epoch_*` patterns do not match, being 7
+    digits rather than 10), and `duration_ms`, differing in its eighth decimal.
+    `HashEmbeddingEncoder` maps any byte difference to an orthogonal vector, so **384 of
+    1,664 observation dimensions were fresh noise on every step that touched the
+    network** — and the visual and structural blocks were bit-identical, so it was the
+    whole of the instability. DQN training was consequently not reproducible at a fixed
+    seed (one toy seed moved from 6 unique states to 1) while the random baselines, which
+    never read an observation, reproduced bit-for-bit.
+
+    What is kept, because it distinguishes one application state from another: method,
+    status, resource type, failure, the URL (origin-relative), header *names*, bodies,
+    and a coarse duration bucket. What is dropped or masked: wall-clock and monotonic
+    timestamps, sub-millisecond timing precision, and the values of per-request or
+    per-session headers.
+
+    `page_url` supplies the origin. Same-origin URLs collapse to `<ORIGIN>/path` so an
+    ephemeral test-server port (`127.0.0.1:58614`, different on every run) stops making
+    the same page look like a different one across processes; a *foreign* origin is left
+    intact, because on-site versus off-site is exactly the distinction that matters.
+
+    Falls back to plain `canonicalize_text` if the trace does not parse — a truncated or
+    malformed trace should degrade, not raise, inside an observation pipeline.
+    """
+    try:
+        events = json.loads(network_json) if network_json else []
+    except (ValueError, TypeError):
+        logger_fallback = canonicalize_text(network_json or "")
+        return logger_fallback
+    if not isinstance(events, list):
+        return canonicalize_text(network_json or "")
+
+    origin = ""
+    if page_url:
+        parts = urlsplit(page_url)
+        origin = f"{parts.scheme}://{parts.netloc}"
+
+    reduced = []
+    for event in events:
+        if not isinstance(event, dict):
+            continue
+        reduced.append({
+            "url": canonicalize_url(str(event.get("url", ""))),
+            "method": str(event.get("method", "")),
+            "status": event.get("response_status"),
+            "type": str(event.get("resource_type", "")),
+            "failed": bool(event.get("failed", False)),
+            "failure": canonicalize_text(str(event.get("failure_text") or "")),
+            "duration": _bucket_duration(event.get("duration_ms")),
+            "request_headers": _canonicalize_headers(event.get("request_headers")),
+            "response_headers": _canonicalize_headers(event.get("response_headers")),
+            "request_body": canonicalize_text(str(event.get("request_body") or ""))[:512],
+            "response_body": canonicalize_text(str(event.get("response_body_snippet") or ""))[:512],
+        })
+    rendered = json.dumps(reduced, sort_keys=True, default=str)
+    # Applied to the whole serialized trace rather than to the `url` field alone: the
+    # origin also appears in `referer`, in an `origin` header, and inside response
+    # bodies, and an ephemeral test-server port left in any one of them is enough to
+    # make two identical states hash to unrelated vectors.
+    if origin:
+        rendered = rendered.replace(origin, "<ORIGIN>")
+    return canonicalize_text(rendered)
 
 
 def preprocess_for_structural_encoder(html: str, max_chars: int = 8_000) -> str:

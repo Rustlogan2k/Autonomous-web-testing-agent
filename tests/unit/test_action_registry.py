@@ -12,6 +12,7 @@ _DEFAULTS = {
     "id": None,
     "name": None,
     "href": None,
+    "resolvedHref": None,
     "target": None,
     "text": "",
     "disabled": False,
@@ -155,6 +156,72 @@ def test_links_are_navigational_but_fragments_and_popups_are_not():
     blank = build_action_specs([_el(tag="a", index=0, href="/next", target="_blank", text="x")])
     click = next(s for s in blank if s.action_type == ActionType.CLICK)
     assert click.params["navigational"] is False
+
+
+def test_a_link_back_to_the_page_it_is_on_is_not_navigational():
+    """The self-link false positive: every `broken_navigation` firing on the deep-flow
+    fixture came from one of these, and the fixture's answer key wrongly stated that no
+    deterministic trigger could fire there at all. Clicking `nav-support` while already
+    on support.html reloads the page and correctly leaves the URL unchanged, which
+    `detect_bug_signals` read as a broken link."""
+    page_url = "http://127.0.0.1:8000/support.html"
+    for href in ("support.html", "/support.html", page_url):
+        specs = build_action_specs(
+            [_el(tag="a", index=0, href=href, text="Support")], page_url=page_url
+        )
+        click = next(s for s in specs if s.action_type == ActionType.CLICK)
+        assert click.params["navigational"] is False, href
+
+
+def test_a_link_to_a_different_page_stays_navigational():
+    """The other half of the fix: it must not silence genuine broken navigation. The
+    toy site's BUG-03 is a nav link to a page that 404s, and it has to keep firing."""
+    page_url = "http://127.0.0.1:8000/index.html"
+    specs = build_action_specs(
+        [_el(tag="a", index=0, href="pricing.html", text="Pricing")], page_url=page_url
+    )
+    click = next(s for s in specs if s.action_type == ActionType.CLICK)
+    assert click.params["navigational"] is True
+
+
+def test_a_self_path_link_carrying_a_different_query_is_still_navigational():
+    """A same-path link with a different query genuinely does change the URL, so it is
+    deliberately not folded into the self-link rule."""
+    specs = build_action_specs(
+        [_el(tag="a", index=0, href="catalog.html?page=2", text="Next")],
+        page_url="http://127.0.0.1:8000/catalog.html",
+    )
+    click = next(s for s in specs if s.action_type == ActionType.CLICK)
+    assert click.params["navigational"] is True
+
+
+def test_a_self_link_differing_only_by_fragment_is_not_navigational():
+    specs = build_action_specs(
+        [_el(tag="a", index=0, href="support.html#returns", text="Returns")],
+        page_url="http://127.0.0.1:8000/support.html",
+    )
+    click = next(s for s in specs if s.action_type == ActionType.CLICK)
+    assert click.params["navigational"] is False
+
+
+def test_the_browsers_own_href_resolution_wins_over_the_raw_attribute():
+    """`resolvedHref` comes from the DOM, so a `<base href>` that changes what every
+    relative href means is honoured without reimplementing base resolution in Python."""
+    specs = build_action_specs(
+        [_el(tag="a", index=0, href="index.html",
+             resolvedHref="http://127.0.0.1:8000/app/index.html", text="Home")],
+        page_url="http://127.0.0.1:8000/app/index.html",
+    )
+    click = next(s for s in specs if s.action_type == ActionType.CLICK)
+    assert click.params["navigational"] is False
+
+
+def test_without_a_page_url_every_non_fragment_link_stays_navigational():
+    """The pre-fix behaviour is what an omitted `page_url` restores, so a caller that
+    predates this argument is unchanged rather than silently altered."""
+    specs = build_action_specs([_el(tag="a", index=0, href="support.html", text="Support")])
+    click = next(s for s in specs if s.action_type == ActionType.CLICK)
+    assert click.params["navigational"] is True
 
 
 def test_on_screen_elements_are_allocated_before_off_screen_ones():

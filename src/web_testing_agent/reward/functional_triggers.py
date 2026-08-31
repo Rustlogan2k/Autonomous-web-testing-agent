@@ -6,6 +6,7 @@ a meaningful reward signal from these alone, before any LLM reward model exists.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 
 from ..envs.types import BugSignals, NetworkEvent, RawObservation
@@ -184,8 +185,44 @@ class FunctionalRewardWeights:
     # has to discourage pointless repetition, it is scaled to sit below `novelty_bonus`
     # — exploring somewhere new must always beat standing still.
     novelty_bonus: float = 1.0
-    repetition_penalty: float = -0.15
-    max_repetition_penalty: float = -1.0
+    # **Rescaled 2026-08-28, formula unchanged.** Measured over 4,000 training steps on
+    # the deep-flow fixture, the repetition penalty was **-1861.3 of a -2014.2 total —
+    # 92% of the reward's whole magnitude** — against novelty +50.9 and reveal +10.5.
+    # The reward had become a repetition penalty with decorations, and the signal the
+    # agent is supposed to follow was 3% of what it felt.
+    #
+    # The scale is anchored to two existing terms rather than tuned:
+    #
+    # * per repeat = `step_penalty`. Repeating an action costs exactly what taking an
+    #   extra step costs, which is what a wasted action *is*.
+    # * the floor is a quarter of `novelty_bonus`. Novelty decays as
+    #   1/sqrt(1+visits), so a floor of -0.25 cannot cancel the novelty of reaching a
+    #   state visited fewer than 16 times — progress essentially always wins, which is
+    #   what §3.3 said this term was scaled for and what it had stopped doing once the
+    #   floor equalled the full novelty bonus.
+    #
+    # The shape is preserved: the floor is still reached after ~5 repeats in the
+    # 20-step window, so what changes is magnitude, not behaviour.
+    repetition_penalty: float = -0.05
+    max_repetition_penalty: float = -0.25
+    # **Progress, as distinct from novelty.** Paid when an action causes a control to
+    # appear that was not in the action set before — which is exactly what a gated flow
+    # does when its input becomes valid. Measured on the deep-flow fixture, the
+    # gate-opening SELECT on order-1.html reveals precisely {('CLICK', 'Continue')}.
+    #
+    # This is the only exploration term that is genuinely depth-correlated: reaching a
+    # static footer page reveals nothing, while advancing a flow stage reveals the next
+    # stage's control. It is sized *above* `novelty_bonus` because the failure it
+    # corrects is that going deep and going wide paid the same while going wide was
+    # roughly nine times easier per step.
+    #
+    # Restricted to CLICK/TYPE/SELECT/RAPID_CLICK and paid once per
+    # (state, revealed action) per episode — see `ExplorationTracker.observe_step`.
+    # Without both guards, a viewport resize or a panel-toggling checkbox is a pump.
+    reveal_bonus: float = 1.5
+    # Divides `novelty_bonus` by sqrt(1 + visits_this_run) when True. Off restores the
+    # flat episodic bonus every published figure before 2026-08-28 was measured under.
+    count_based_novelty: bool = True
     # A stale selector or timed-out click is legitimate data, but shouldn't be free.
     failed_action_penalty: float = -0.1
     # What an *already-discovered* finding pays when its condition still holds. Zero:
@@ -239,9 +276,23 @@ def compose_reward(
         bug_bonus += _trigger_bonus("broken_navigation", weights.broken_navigation_bonus)
 
     exploration_bonus = 0.0
+    novelty_component = 0.0
+    reveal_component = 0.0
     if exploration is not None:
         if exploration.is_novel_state:
-            exploration_bonus += weights.novelty_bonus
+            # First visit *this episode*, scaled by how often the whole run has already
+            # been here. sqrt rather than a linear decay so a state stays worth
+            # something for a long time: at 10 prior visits it still pays ~32% of full.
+            if weights.count_based_novelty:
+                novelty_component = weights.novelty_bonus / math.sqrt(
+                    1.0 + exploration.state_run_visits
+                )
+            else:
+                novelty_component = weights.novelty_bonus
+            exploration_bonus += novelty_component
+        if exploration.unpaid_reveals:
+            reveal_component = weights.reveal_bonus * len(exploration.unpaid_reveals)
+            exploration_bonus += reveal_component
         if exploration.repeat_count:
             # Linear in the repeat count so hammering one element degrades fast, but
             # floored so a single sticky element cannot dominate the whole return.
@@ -263,6 +314,12 @@ def compose_reward(
         "deterministic_bonus": bug_bonus,
         "new_triggers": sorted(new_triggers) if new_triggers is not None else None,
         "exploration_bonus": exploration_bonus,
+        # Broken out so a training run can tell which exploration term is driving the
+        # policy. The per-term breakdown in `info` is what made the four historical
+        # reward exploits diagnosable in minutes rather than days.
+        "novelty_bonus": novelty_component,
+        "reveal_bonus": reveal_component,
+        "newly_revealed": sorted(exploration.newly_revealed) if exploration else [],
         "step_cost": step_cost,
         "bug_signals": bug_signals,
         "exploration": exploration,

@@ -1,0 +1,3210 @@
+{
+  "random_masked": {
+    "mean_episode_reward": 14.12362941615685,
+    "rows": [
+      {
+        "reward": 0.95,
+        "novelty": 1.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 1.0,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "CLICK",
+        "element": "Terms",
+        "revealed": []
+      },
+      {
+        "reward": 6.95,
+        "novelty": 1.0,
+        "reveal": 6.0,
+        "deterministic": 0.0,
+        "exploration_total": 7.0,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Catalog",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Catalog",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "BROWSER_BACK",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "NO_OP",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "NO_OP",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "CLICK",
+        "element": "Terms",
+        "revealed": []
+      },
+      {
+        "reward": 5.45,
+        "novelty": 1.0,
+        "reveal": 4.5,
+        "deterministic": 0.0,
+        "exploration_total": 5.5,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Support",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": 0.95,
+        "novelty": 1.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 1.0,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "CLICK",
+        "element": "Status",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "REFRESH",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Catalog",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Contact us",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Returns",
+        "revealed": []
+      },
+      {
+        "reward": 0.95,
+        "novelty": 1.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 1.0,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "CLICK",
+        "element": "About",
+        "revealed": []
+      },
+      {
+        "reward": 5.95,
+        "novelty": 0.0,
+        "reveal": 6.0,
+        "deterministic": 0.0,
+        "exploration_total": 6.0,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "CLICK",
+        "element": "Home",
+        "revealed": [
+          [
+            "CLICK",
+            "A4 paper, 5 reams"
+          ],
+          [
+            "CLICK",
+            "Ballpoint pens, box of 50"
+          ],
+          [
+            "CLICK",
+            "Start order"
+          ],
+          [
+            "CLICK",
+            "Suspension folders"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Support",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "CLICK",
+        "element": "Status",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "CLICK",
+        "element": "Terms",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Support",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "NO_OP",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.15000000000000002,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.15000000000000002,
+        "url": "support.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 0.95,
+        "novelty": 1.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 1.0,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "CLICK",
+        "element": "Privacy",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "CLICK",
+        "element": "Home",
+        "revealed": [
+          [
+            "CLICK",
+            "A4 paper, 5 reams"
+          ],
+          [
+            "CLICK",
+            "Ballpoint pens, box of 50"
+          ],
+          [
+            "CLICK",
+            "Start order"
+          ],
+          [
+            "CLICK",
+            "Suspension folders"
+          ]
+        ]
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "NO_OP",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Suspension folders",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Filing",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "CLICK",
+        "element": "Terms",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "CLICK",
+        "element": "Privacy",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "NO_OP",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "CLICK",
+        "element": "Home",
+        "revealed": [
+          [
+            "CLICK",
+            "A4 paper, 5 reams"
+          ],
+          [
+            "CLICK",
+            "Ballpoint pens, box of 50"
+          ],
+          [
+            "CLICK",
+            "Start order"
+          ],
+          [
+            "CLICK",
+            "Suspension folders"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "BROWSER_BACK",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "REFRESH",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": [
+          [
+            "CLICK",
+            "A4 paper, 5 reams"
+          ],
+          [
+            "CLICK",
+            "Ballpoint pens, box of 50"
+          ],
+          [
+            "CLICK",
+            "Start order"
+          ],
+          [
+            "CLICK",
+            "Suspension folders"
+          ]
+        ]
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "REFRESH",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "NO_OP",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "NO_OP",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "NO_OP",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 6.327964473009227,
+        "novelty": 0.3779644730092272,
+        "reveal": 6.0,
+        "deterministic": 0.0,
+        "exploration_total": 6.377964473009227,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "A4 paper, 5 reams",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": 4.803553390593274,
+        "novelty": 0.35355339059327373,
+        "reveal": 4.5,
+        "deterministic": 0.0,
+        "exploration_total": 4.853553390593274,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Support",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": 0.6571067811865474,
+        "novelty": 0.7071067811865475,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.7071067811865475,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "CLICK",
+        "element": "About",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Catalog",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": 3.95,
+        "novelty": 1.0,
+        "reveal": 3.0,
+        "deterministic": 0.0,
+        "exploration_total": 4.0,
+        "step_cost": -0.05,
+        "url": "order-1.html",
+        "action": "CLICK",
+        "element": "Start an order",
+        "revealed": [
+          [
+            "CLICK",
+            "Cancel order"
+          ],
+          [
+            "SELECT",
+            "product#folders-25"
+          ]
+        ]
+      },
+      {
+        "reward": -0.15000000000000002,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.15000000000000002,
+        "url": "order-1.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "order-1.html",
+        "action": "REFRESH",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 2.45,
+        "novelty": 1.0,
+        "reveal": 1.5,
+        "deterministic": 0.0,
+        "exploration_total": 2.5,
+        "step_cost": -0.05,
+        "url": "order-1.html",
+        "action": "SELECT",
+        "element": "product",
+        "revealed": [
+          [
+            "CLICK",
+            "Continue"
+          ]
+        ]
+      },
+      {
+        "reward": 0.3582482904638631,
+        "novelty": 0.4082482904638631,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.4082482904638631,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "CLICK",
+        "element": "Privacy",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Contact us",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.30000000000000004,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.15000000000000002,
+        "url": "support.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Delivery times",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Contact us",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Delivery times",
+        "revealed": []
+      },
+      {
+        "reward": 0.23867513459481293,
+        "novelty": 0.2886751345948129,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.2886751345948129,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "CLICK",
+        "element": "Terms",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Support",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Returns",
+        "revealed": []
+      },
+      {
+        "reward": -0.45,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.15000000000000002,
+        "url": "support.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "CLICK",
+        "element": "Privacy",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 5.95,
+        "novelty": 0.0,
+        "reveal": 6.0,
+        "deterministic": 0.0,
+        "exploration_total": 6.0,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "CLICK",
+        "element": "Home",
+        "revealed": [
+          [
+            "CLICK",
+            "A4 paper, 5 reams"
+          ],
+          [
+            "CLICK",
+            "Ballpoint pens, box of 50"
+          ],
+          [
+            "CLICK",
+            "Start order"
+          ],
+          [
+            "CLICK",
+            "Suspension folders"
+          ]
+        ]
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Ballpoint pens, box of 50",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "CLICK",
+        "element": "Terms",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "REFRESH",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "BROWSER_BACK",
+        "element": "",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "BROWSER_BACK",
+        "element": "",
+        "revealed": [
+          [
+            "CLICK",
+            "A4 paper, 5 reams"
+          ],
+          [
+            "CLICK",
+            "Ballpoint pens, box of 50"
+          ],
+          [
+            "CLICK",
+            "Start order"
+          ],
+          [
+            "CLICK",
+            "Suspension folders"
+          ]
+        ]
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "REFRESH",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Catalog",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Filing",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "CLICK",
+        "element": "Privacy",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 0.39721359549995794,
+        "novelty": 0.4472135954999579,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.4472135954999579,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "CLICK",
+        "element": "Status",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "CLICK",
+        "element": "Home",
+        "revealed": [
+          [
+            "CLICK",
+            "A4 paper, 5 reams"
+          ],
+          [
+            "CLICK",
+            "Ballpoint pens, box of 50"
+          ],
+          [
+            "CLICK",
+            "Start order"
+          ],
+          [
+            "CLICK",
+            "Suspension folders"
+          ]
+        ]
+      },
+      {
+        "reward": -0.30000000000000004,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.15000000000000002,
+        "url": "index.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 6.227350098112614,
+        "novelty": 0.2773500981126146,
+        "reveal": 6.0,
+        "deterministic": 0.0,
+        "exploration_total": 6.277350098112614,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "A4 paper, 5 reams",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": 0.45,
+        "novelty": 0.5,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.5,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "CLICK",
+        "element": "About",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "CLICK",
+        "element": "About",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Catalog",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Catalog",
+        "revealed": []
+      },
+      {
+        "reward": -0.15000000000000002,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.15000000000000002,
+        "url": "catalog.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Filing",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "REFRESH",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "BROWSER_BACK",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 0.3582482904638631,
+        "novelty": 0.4082482904638631,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.4082482904638631,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "CLICK",
+        "element": "Status",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "CLICK",
+        "element": "About",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Catalog",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.30000000000000004,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.15000000000000002,
+        "url": "catalog.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 0.2081988897471611,
+        "novelty": 0.2581988897471611,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.2581988897471611,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "CLICK",
+        "element": "Terms",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "BROWSER_BACK",
+        "element": "",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": 3.45,
+        "novelty": 0.5,
+        "reveal": 3.0,
+        "deterministic": 0.0,
+        "exploration_total": 3.5,
+        "step_cost": -0.05,
+        "url": "order-1.html",
+        "action": "CLICK",
+        "element": "Start an order",
+        "revealed": [
+          [
+            "CLICK",
+            "Cancel order"
+          ],
+          [
+            "SELECT",
+            "product#folders-25"
+          ]
+        ]
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "BROWSER_BACK",
+        "element": "",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "order-1.html",
+        "action": "CLICK",
+        "element": "Start an order",
+        "revealed": [
+          [
+            "CLICK",
+            "Cancel order"
+          ],
+          [
+            "SELECT",
+            "product#folders-25"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "CLICK",
+        "element": "Status",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "NO_OP",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 4.692535625036333,
+        "novelty": 0.24253562503633297,
+        "reveal": 4.5,
+        "deterministic": 0.0,
+        "exploration_total": 4.742535625036333,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Support",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.49999999999999994,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.44999999999999996,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "BROWSER_BACK",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 5.95,
+        "novelty": 0.0,
+        "reveal": 6.0,
+        "deterministic": 0.0,
+        "exploration_total": 6.0,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "CLICK",
+        "element": "Home",
+        "revealed": [
+          [
+            "CLICK",
+            "A4 paper, 5 reams"
+          ],
+          [
+            "CLICK",
+            "Ballpoint pens, box of 50"
+          ],
+          [
+            "CLICK",
+            "Start order"
+          ],
+          [
+            "CLICK",
+            "Suspension folders"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 0.25151134457776364,
+        "novelty": 0.30151134457776363,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.30151134457776363,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "CLICK",
+        "element": "Privacy",
+        "revealed": []
+      },
+      {
+        "reward": -0.30000000000000004,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.15000000000000002,
+        "url": "privacy.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "CLICK",
+        "element": "Status",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "CLICK",
+        "element": "Terms",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Support",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Invoices",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 4.66320071635561,
+        "novelty": 0.21320071635561041,
+        "reveal": 4.5,
+        "deterministic": 0.0,
+        "exploration_total": 4.71320071635561,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Support",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "REFRESH",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Contact us",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 0.2172612419124244,
+        "novelty": 0.2672612419124244,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.2672612419124244,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "CLICK",
+        "element": "Status",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 6.146116135138184,
+        "novelty": 0.19611613513818404,
+        "reveal": 6.0,
+        "deterministic": 0.0,
+        "exploration_total": 6.196116135138184,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Catalog",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": 0.26622776601683795,
+        "novelty": 0.31622776601683794,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.31622776601683794,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "CLICK",
+        "element": "About",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "CLICK",
+        "element": "Status",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "CLICK",
+        "element": "Status",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Support",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": 0.22735009811261458,
+        "novelty": 0.2773500981126146,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.2773500981126146,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "CLICK",
+        "element": "Privacy",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "CLICK",
+        "element": "About",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Contact us",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "NO_OP",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.15000000000000002,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.15000000000000002,
+        "url": "support.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "CLICK",
+        "element": "About",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "REFRESH",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Catalog",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": 3.3582482904638633,
+        "novelty": 0.4082482904638631,
+        "reveal": 3.0,
+        "deterministic": 0.0,
+        "exploration_total": 3.408248290463863,
+        "step_cost": -0.05,
+        "url": "order-1.html",
+        "action": "CLICK",
+        "element": "Start an order",
+        "revealed": [
+          [
+            "CLICK",
+            "Cancel order"
+          ],
+          [
+            "SELECT",
+            "product#folders-25"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Contact us",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "REFRESH",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "REFRESH",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 5.95,
+        "novelty": 0.0,
+        "reveal": 6.0,
+        "deterministic": 0.0,
+        "exploration_total": 6.0,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "CLICK",
+        "element": "Home",
+        "revealed": [
+          [
+            "CLICK",
+            "A4 paper, 5 reams"
+          ],
+          [
+            "CLICK",
+            "Ballpoint pens, box of 50"
+          ],
+          [
+            "CLICK",
+            "Start order"
+          ],
+          [
+            "CLICK",
+            "Suspension folders"
+          ]
+        ]
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Contact us",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "CLICK",
+        "element": "Home",
+        "revealed": [
+          [
+            "CLICK",
+            "A4 paper, 5 reams"
+          ],
+          [
+            "CLICK",
+            "Ballpoint pens, box of 50"
+          ],
+          [
+            "CLICK",
+            "Start order"
+          ],
+          [
+            "CLICK",
+            "Suspension folders"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.49999999999999994,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.44999999999999996,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "REFRESH",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "CLICK",
+        "element": "Status",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Catalog",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": -0.30000000000000004,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.15000000000000002,
+        "url": "catalog.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.49999999999999994,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.44999999999999996,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Contact us",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "CLICK",
+        "element": "About",
+        "revealed": []
+      },
+      {
+        "reward": -0.49999999999999994,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.44999999999999996,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Contact us",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "NO_OP",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "index.html",
+        "action": "CLICK",
+        "element": "Home",
+        "revealed": [
+          [
+            "CLICK",
+            "A4 paper, 5 reams"
+          ],
+          [
+            "CLICK",
+            "Ballpoint pens, box of 50"
+          ],
+          [
+            "CLICK",
+            "Start order"
+          ],
+          [
+            "CLICK",
+            "Suspension folders"
+          ]
+        ]
+      },
+      {
+        "reward": 0.19253562503633298,
+        "novelty": 0.24253562503633297,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.24253562503633297,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "CLICK",
+        "element": "Terms",
+        "revealed": []
+      },
+      {
+        "reward": 0.2,
+        "novelty": 0.25,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.25,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "CLICK",
+        "element": "About",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "BROWSER_BACK",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "REFRESH",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "REFRESH",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "CLICK",
+        "element": "Terms",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.30000000000000004,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.15000000000000002,
+        "url": "terms.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "CLICK",
+        "element": "About",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "CLICK",
+        "element": "About",
+        "revealed": []
+      },
+      {
+        "reward": -0.49999999999999994,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.44999999999999996,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "CLICK",
+        "element": "About",
+        "revealed": []
+      },
+      {
+        "reward": 0.17360679774997895,
+        "novelty": 0.22360679774997896,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.22360679774997896,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "CLICK",
+        "element": "Status",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "CLICK",
+        "element": "Status",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "RESIZE_VIEWPORT",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.65,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.6,
+        "step_cost": -0.05,
+        "url": "about.html",
+        "action": "CLICK",
+        "element": "About",
+        "revealed": []
+      },
+      {
+        "reward": 4.612221421130763,
+        "novelty": 0.16222142113076254,
+        "reveal": 4.5,
+        "deterministic": 0.0,
+        "exploration_total": 4.662221421130763,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Contact us",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "status.html",
+        "action": "CLICK",
+        "element": "Status",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Support",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Contact us",
+        "revealed": []
+      },
+      {
+        "reward": 0.2081988897471611,
+        "novelty": 0.2581988897471611,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.2581988897471611,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "CLICK",
+        "element": "Privacy",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "NO_OP",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "CLICK",
+        "element": "Privacy",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Contact us",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "CLICK",
+        "element": "Terms",
+        "revealed": []
+      },
+      {
+        "reward": -0.49999999999999994,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.44999999999999996,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Contact us",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.15000000000000002,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.15000000000000002,
+        "url": "support.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "SCROLL",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": 6.132574185835056,
+        "novelty": 0.18257418583505536,
+        "reveal": 6.0,
+        "deterministic": 0.0,
+        "exploration_total": 6.182574185835056,
+        "step_cost": -0.05,
+        "url": "catalog.html",
+        "action": "CLICK",
+        "element": "Catalog",
+        "revealed": [
+          [
+            "CLICK",
+            "Filing"
+          ],
+          [
+            "CLICK",
+            "Paper"
+          ],
+          [
+            "CLICK",
+            "Pens and markers"
+          ],
+          [
+            "CLICK",
+            "Start an order"
+          ]
+        ]
+      },
+      {
+        "reward": -0.65,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.6,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "CLICK",
+        "element": "Contact us",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.30000000000000004,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.15000000000000002,
+        "url": "support.html",
+        "action": "BROWSER_FORWARD",
+        "element": "",
+        "revealed": []
+      },
+      {
+        "reward": -0.35,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.3,
+        "step_cost": -0.05,
+        "url": "privacy.html",
+        "action": "CLICK",
+        "element": "Privacy",
+        "revealed": []
+      },
+      {
+        "reward": -0.05,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": 0.0,
+        "step_cost": -0.05,
+        "url": "support.html",
+        "action": "BROWSER_BACK",
+        "element": "",
+        "revealed": [
+          [
+            "CLICK",
+            "Delivery times"
+          ],
+          [
+            "CLICK",
+            "Invoices"
+          ],
+          [
+            "CLICK",
+            "Returns"
+          ]
+        ]
+      },
+      {
+        "reward": -0.2,
+        "novelty": 0.0,
+        "reveal": 0.0,
+        "deterministic": 0.0,
+        "exploration_total": -0.15,
+        "step_cost": -0.05,
+        "url": "terms.html",
+        "action": "CLICK",
+        "element": "Terms",
+        "revealed": []
+      }
+    ]
+  }
+}

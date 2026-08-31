@@ -1,0 +1,830 @@
+{
+  "_status": "SUPERSEDED 2026-08-27 (Phase 0b). Captured with an unstable network observation: the HTTP `date` header, a monotonic `timestamp` and a float `duration_ms` survived canonicalization, and a content-hash encoder maps any byte difference to an orthogonal vector, so 384 of 1,664 observation dims were clock jitter on every step that touched the network. DQN training was consequently not reproducible at a fixed seed. The random arms in this file are unaffected (a random policy never reads an observation) and are byte-identical in the successor. Only the DQN rows move.",
+  "_superseded_by": "compare_agents_deep_hash_3seed_v3.json",
+  "site": "deep",
+  "encoders": "hash",
+  "args": {
+    "site": "deep",
+    "train_steps": 4000,
+    "episode_steps": 40,
+    "eval_episodes": 5,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "eval_epsilon": 0.05,
+    "encoders": "hash",
+    "out": "reports\\compare_agents_deep_hash_3seed_v2.json"
+  },
+  "summary": {
+    "dqn_unmasked": {
+      "reward": {
+        "median": -10.78,
+        "min": -13.1,
+        "max": -7.12
+      },
+      "valid%": {
+        "median": 79.5,
+        "min": 68.5,
+        "max": 82.0
+      },
+      "states": {
+        "median": 7.0,
+        "min": 5.0,
+        "max": 8.0
+      },
+      "finds": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "finds_ak": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "finds_un": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "bugs": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "maxD": {
+        "median": 1.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "meanD": {
+        "median": 0.18,
+        "min": 0.18,
+        "max": 0.26
+      },
+      "receipt": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "done": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "pastS1": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "states/100": {
+        "median": 3.5,
+        "min": 2.5,
+        "max": 4.0
+      },
+      "finds/100": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "steps/s": {
+        "median": 2.91,
+        "min": 2.55,
+        "max": 2.97
+      },
+      "seeds": 3
+    },
+    "dqn_masked": {
+      "reward": {
+        "median": -12.32,
+        "min": -14.86,
+        "max": -7.64
+      },
+      "valid%": {
+        "median": 100.0,
+        "min": 100.0,
+        "max": 100.0
+      },
+      "states": {
+        "median": 9.0,
+        "min": 7.0,
+        "max": 9.0
+      },
+      "finds": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "finds_ak": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "finds_un": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "bugs": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "maxD": {
+        "median": 1.0,
+        "min": 0.0,
+        "max": 1.0
+      },
+      "meanD": {
+        "median": 0.02,
+        "min": 0.0,
+        "max": 0.12
+      },
+      "receipt": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "done": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "pastS1": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "states/100": {
+        "median": 4.5,
+        "min": 3.5,
+        "max": 4.5
+      },
+      "finds/100": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "steps/s": {
+        "median": 2.91,
+        "min": 2.66,
+        "max": 2.97
+      },
+      "seeds": 3
+    },
+    "random_unmasked": {
+      "reward": {
+        "median": -30.01,
+        "min": -30.07,
+        "max": -29.06
+      },
+      "valid%": {
+        "median": 18.0,
+        "min": 16.5,
+        "max": 18.5
+      },
+      "states": {
+        "median": 6.0,
+        "min": 6.0,
+        "max": 7.0
+      },
+      "finds": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "finds_ak": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "finds_un": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "bugs": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "maxD": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "meanD": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "receipt": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "done": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "pastS1": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "states/100": {
+        "median": 3.0,
+        "min": 3.0,
+        "max": 3.5
+      },
+      "finds/100": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "steps/s": {
+        "median": 3.2,
+        "min": 3.02,
+        "max": 3.2
+      },
+      "seeds": 3
+    },
+    "random_masked": {
+      "reward": {
+        "median": -0.28,
+        "min": -0.99,
+        "max": 0.11
+      },
+      "valid%": {
+        "median": 100.0,
+        "min": 100.0,
+        "max": 100.0
+      },
+      "states": {
+        "median": 8.0,
+        "min": 8.0,
+        "max": 9.0
+      },
+      "finds": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "finds_ak": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "finds_un": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "bugs": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "maxD": {
+        "median": 1.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "meanD": {
+        "median": 0.04,
+        "min": 0.01,
+        "max": 0.04
+      },
+      "receipt": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "done": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "pastS1": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "states/100": {
+        "median": 4.0,
+        "min": 4.0,
+        "max": 4.5
+      },
+      "finds/100": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "steps/s": {
+        "median": 2.99,
+        "min": 2.8,
+        "max": 2.99
+      },
+      "seeds": 3
+    }
+  },
+  "results_per_seed": {
+    "dqn_unmasked": [
+      {
+        "label": "dqn_unmasked",
+        "target_url": "http://127.0.0.1:49771/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 78.36,
+        "steps_per_second": 2.552,
+        "total_reward": -35.6,
+        "mean_episode_reward": -7.12,
+        "episode_rewards": [
+          -6.25,
+          -8.9,
+          -6.35,
+          -7.3,
+          -6.8
+        ],
+        "unique_states": 7,
+        "valid_action_rate": 0.795,
+        "exec_success_rate": 0.905,
+        "noop_steps": 41,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 1,
+          "mean_depth": 0.18,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 0
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 0,
+        "train_seconds": 1444.6
+      },
+      {
+        "label": "dqn_unmasked",
+        "target_url": "http://127.0.0.1:49771/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 68.83,
+        "steps_per_second": 2.906,
+        "total_reward": -53.9,
+        "mean_episode_reward": -10.78,
+        "episode_rewards": [
+          -10.75,
+          -10.45,
+          -10.6,
+          -10.6,
+          -11.5
+        ],
+        "unique_states": 5,
+        "valid_action_rate": 0.82,
+        "exec_success_rate": 1.0,
+        "noop_steps": 36,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 1,
+          "mean_depth": 0.18,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 0
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 1,
+        "train_seconds": 1349.2
+      },
+      {
+        "label": "dqn_unmasked",
+        "target_url": "http://127.0.0.1:49771/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 67.34,
+        "steps_per_second": 2.97,
+        "total_reward": -65.5,
+        "mean_episode_reward": -13.1,
+        "episode_rewards": [
+          -12.35,
+          -11.4,
+          -14.95,
+          -16.4,
+          -10.4
+        ],
+        "unique_states": 8,
+        "valid_action_rate": 0.685,
+        "exec_success_rate": 1.0,
+        "noop_steps": 63,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 1,
+          "mean_depth": 0.26,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 0
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 2,
+        "train_seconds": 1335.4
+      }
+    ],
+    "dqn_masked": [
+      {
+        "label": "dqn_masked",
+        "target_url": "http://127.0.0.1:49771/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 68.72,
+        "steps_per_second": 2.91,
+        "total_reward": -61.6,
+        "mean_episode_reward": -12.32,
+        "episode_rewards": [
+          -10.2,
+          -20.2,
+          -11.7,
+          -9.15,
+          -10.35
+        ],
+        "unique_states": 7,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 1.0,
+        "noop_steps": 1,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 0,
+          "mean_depth": 0.0,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 0
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 0,
+        "train_seconds": 1608.6
+      },
+      {
+        "label": "dqn_masked",
+        "target_url": "http://127.0.0.1:49771/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 67.44,
+        "steps_per_second": 2.966,
+        "total_reward": -74.3,
+        "mean_episode_reward": -14.86,
+        "episode_rewards": [
+          -11.45,
+          -18.95,
+          -16.3,
+          -15.7,
+          -11.9
+        ],
+        "unique_states": 9,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 0.96,
+        "noop_steps": 0,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 1,
+          "mean_depth": 0.02,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 0
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 1,
+        "train_seconds": 1366.4
+      },
+      {
+        "label": "dqn_masked",
+        "target_url": "http://127.0.0.1:49771/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 75.14,
+        "steps_per_second": 2.662,
+        "total_reward": -38.2,
+        "mean_episode_reward": -7.64,
+        "episode_rewards": [
+          -8.6,
+          -4.15,
+          -11.45,
+          -10.85,
+          -3.15
+        ],
+        "unique_states": 9,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 1.0,
+        "noop_steps": 1,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 1,
+          "mean_depth": 0.12,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 0
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 2,
+        "train_seconds": 1394.0
+      }
+    ],
+    "random_unmasked": [
+      {
+        "label": "random_unmasked",
+        "target_url": "http://127.0.0.1:49771/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 62.53,
+        "steps_per_second": 3.198,
+        "total_reward": -150.05,
+        "mean_episode_reward": -30.01,
+        "episode_rewards": [
+          -29.4,
+          -32.25,
+          -31.4,
+          -28.6,
+          -28.4
+        ],
+        "unique_states": 7,
+        "valid_action_rate": 0.185,
+        "exec_success_rate": 0.98,
+        "noop_steps": 166,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 0,
+          "mean_depth": 0.0,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 0
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 0
+      },
+      {
+        "label": "random_unmasked",
+        "target_url": "http://127.0.0.1:49771/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 62.52,
+        "steps_per_second": 3.199,
+        "total_reward": -150.35,
+        "mean_episode_reward": -30.07,
+        "episode_rewards": [
+          -28.3,
+          -28.4,
+          -31.15,
+          -34.15,
+          -28.35
+        ],
+        "unique_states": 6,
+        "valid_action_rate": 0.165,
+        "exec_success_rate": 0.985,
+        "noop_steps": 169,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 0,
+          "mean_depth": 0.0,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 0
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 1
+      },
+      {
+        "label": "random_unmasked",
+        "target_url": "http://127.0.0.1:49771/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 66.16,
+        "steps_per_second": 3.023,
+        "total_reward": -145.3,
+        "mean_episode_reward": -29.06,
+        "episode_rewards": [
+          -29.15,
+          -33.3,
+          -29.4,
+          -25.3,
+          -28.15
+        ],
+        "unique_states": 6,
+        "valid_action_rate": 0.18,
+        "exec_success_rate": 0.995,
+        "noop_steps": 166,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 0,
+          "mean_depth": 0.0,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 0
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 2
+      }
+    ],
+    "random_masked": [
+      {
+        "label": "random_masked",
+        "target_url": "http://127.0.0.1:49771/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 66.83,
+        "steps_per_second": 2.993,
+        "total_reward": 0.55,
+        "mean_episode_reward": 0.11,
+        "episode_rewards": [
+          0.45,
+          2.75,
+          0.8,
+          -1.45,
+          -2.0
+        ],
+        "unique_states": 9,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 0.935,
+        "noop_steps": 12,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 1,
+          "mean_depth": 0.04,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 0
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 0
+      },
+      {
+        "label": "random_masked",
+        "target_url": "http://127.0.0.1:49771/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 66.86,
+        "steps_per_second": 2.991,
+        "total_reward": -1.4,
+        "mean_episode_reward": -0.28,
+        "episode_rewards": [
+          -0.0,
+          0.3,
+          -1.45,
+          -0.85,
+          0.6
+        ],
+        "unique_states": 8,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 0.945,
+        "noop_steps": 10,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 1,
+          "mean_depth": 0.04,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 0
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 1
+      },
+      {
+        "label": "random_masked",
+        "target_url": "http://127.0.0.1:49771/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 71.34,
+        "steps_per_second": 2.803,
+        "total_reward": -4.95,
+        "mean_episode_reward": -0.99,
+        "episode_rewards": [
+          0.15,
+          -0.8,
+          -1.6,
+          -1.25,
+          -1.45
+        ],
+        "unique_states": 8,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 0.93,
+        "noop_steps": 13,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 1,
+          "mean_depth": 0.01,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 0
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 2
+      }
+    ]
+  }
+}

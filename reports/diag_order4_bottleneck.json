@@ -1,0 +1,630 @@
+{
+  "seeds": {
+    "0": {
+      "order4_ranking": [
+        {
+          "action": "CLICK:Back",
+          "q": 2.7627
+        },
+        {
+          "action": "CLICK:Place order",
+          "q": 2.2453
+        },
+        {
+          "action": "CLICK:Cancel order",
+          "q": 1.8737
+        },
+        {
+          "action": "CLICK:Catalog",
+          "q": 1.8499
+        },
+        {
+          "action": "NO_OP:",
+          "q": 1.7329
+        },
+        {
+          "action": "REFRESH:",
+          "q": 1.7219
+        },
+        {
+          "action": "SCROLL:",
+          "q": 1.6732
+        },
+        {
+          "action": "SCROLL:",
+          "q": 1.6545
+        },
+        {
+          "action": "RESIZE_VIEWPORT:",
+          "q": 1.6527
+        },
+        {
+          "action": "BROWSER_FORWARD:",
+          "q": 1.6169
+        },
+        {
+          "action": "CLICK:Home",
+          "q": 1.6117
+        },
+        {
+          "action": "RESIZE_VIEWPORT:",
+          "q": 1.5513
+        },
+        {
+          "action": "BROWSER_BACK:",
+          "q": 1.5378
+        },
+        {
+          "action": "RESIZE_VIEWPORT:",
+          "q": 1.535
+        },
+        {
+          "action": "CLICK:Status",
+          "q": 1.4895
+        },
+        {
+          "action": "CLICK:Terms",
+          "q": 1.4662
+        },
+        {
+          "action": "CLICK:Contact us",
+          "q": 1.4289
+        },
+        {
+          "action": "CLICK:Support",
+          "q": 1.384
+        },
+        {
+          "action": "CLICK:About",
+          "q": 1.3756
+        },
+        {
+          "action": "CLICK:Privacy",
+          "q": 1.3465
+        }
+      ],
+      "place_order": {
+        "q": 2.2453,
+        "rank": 2,
+        "of": 20
+      },
+      "argmax": {
+        "action": "CLICK:Back",
+        "q": 2.7627
+      },
+      "gap": 0.5174,
+      "greedy_from_order4": [
+        {
+          "from": "order-4.html",
+          "chose": "CLICK:Back",
+          "to": "order-3.html",
+          "reward": 0.95
+        },
+        {
+          "from": "order-3.html",
+          "chose": "TYPE:email",
+          "to": "order-3.html",
+          "reward": 2.4
+        },
+        {
+          "from": "order-3.html",
+          "chose": "CLICK:Continue",
+          "to": "order-4.html",
+          "reward": 0.8
+        },
+        {
+          "from": "order-4.html",
+          "chose": "CLICK:Back",
+          "to": "order-3.html",
+          "reward": -0.1
+        },
+        {
+          "from": "order-3.html",
+          "chose": "CLICK:Back",
+          "to": "order-2.html",
+          "reward": 0.85
+        },
+        {
+          "from": "order-2.html",
+          "chose": "TYPE:quantity",
+          "to": "order-2.html",
+          "reward": 2.4
+        },
+        {
+          "from": "order-2.html",
+          "chose": "CLICK:Continue",
+          "to": "order-3.html",
+          "reward": 0.75
+        },
+        {
+          "from": "order-3.html",
+          "chose": "TYPE:email",
+          "to": "order-3.html",
+          "reward": 2.35
+        },
+        {
+          "from": "order-3.html",
+          "chose": "CLICK:Continue",
+          "to": "order-4.html",
+          "reward": 0.7
+        },
+        {
+          "from": "order-4.html",
+          "chose": "CLICK:Back",
+          "to": "order-3.html",
+          "reward": -0.2
+        }
+      ],
+      "training_experience": {
+        "steps_by_depth": {
+          "0": 1509,
+          "1": 681,
+          "2": 656,
+          "3": 834,
+          "4": 315,
+          "5": 5
+        },
+        "steps_at_depth_4": 315,
+        "steps_at_depth_5_receipt": 5,
+        "archive_by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 4,
+          "3": 6,
+          "4": 7,
+          "5": 2
+        },
+        "buffer_capacity": 10000,
+        "note": "buffer_size 10000 > 4000 steps, so nothing was evicted: every transition collected is still in replay at the end of training."
+      }
+    },
+    "1": {
+      "order4_ranking": [
+        {
+          "action": "CLICK:Back",
+          "q": -1.3247
+        },
+        {
+          "action": "CLICK:Place order",
+          "q": -1.3418
+        },
+        {
+          "action": "CLICK:Catalog",
+          "q": -1.3971
+        },
+        {
+          "action": "CLICK:Cancel order",
+          "q": -1.4553
+        },
+        {
+          "action": "SCROLL:",
+          "q": -1.5279
+        },
+        {
+          "action": "SCROLL:",
+          "q": -1.5302
+        },
+        {
+          "action": "RESIZE_VIEWPORT:",
+          "q": -1.5477
+        },
+        {
+          "action": "RESIZE_VIEWPORT:",
+          "q": -1.5605
+        },
+        {
+          "action": "CLICK:Home",
+          "q": -1.5668
+        },
+        {
+          "action": "RESIZE_VIEWPORT:",
+          "q": -1.5739
+        },
+        {
+          "action": "CLICK:Support",
+          "q": -1.5766
+        },
+        {
+          "action": "CLICK:About",
+          "q": -1.581
+        },
+        {
+          "action": "REFRESH:",
+          "q": -1.5918
+        },
+        {
+          "action": "CLICK:Privacy",
+          "q": -1.6041
+        },
+        {
+          "action": "BROWSER_BACK:",
+          "q": -1.6042
+        },
+        {
+          "action": "CLICK:Terms",
+          "q": -1.6052
+        },
+        {
+          "action": "NO_OP:",
+          "q": -1.6266
+        },
+        {
+          "action": "BROWSER_FORWARD:",
+          "q": -1.6414
+        },
+        {
+          "action": "CLICK:Contact us",
+          "q": -1.6463
+        },
+        {
+          "action": "CLICK:Status",
+          "q": -1.6584
+        }
+      ],
+      "place_order": {
+        "q": -1.3418,
+        "rank": 2,
+        "of": 20
+      },
+      "argmax": {
+        "action": "CLICK:Back",
+        "q": -1.3247
+      },
+      "gap": 0.0171,
+      "greedy_from_order4": [
+        {
+          "from": "order-4.html",
+          "chose": "CLICK:Back",
+          "to": "order-3.html",
+          "reward": 0.95
+        },
+        {
+          "from": "order-3.html",
+          "chose": "TYPE:email",
+          "to": "order-3.html",
+          "reward": 2.4
+        },
+        {
+          "from": "order-3.html",
+          "chose": "CLICK:Continue",
+          "to": "order-4.html",
+          "reward": 0.8
+        },
+        {
+          "from": "order-4.html",
+          "chose": "CLICK:Back",
+          "to": "order-3.html",
+          "reward": -0.1
+        },
+        {
+          "from": "order-3.html",
+          "chose": "TYPE:email",
+          "to": "order-3.html",
+          "reward": -0.15
+        },
+        {
+          "from": "order-3.html",
+          "chose": "CLICK:Continue",
+          "to": "order-4.html",
+          "reward": -0.25
+        },
+        {
+          "from": "order-4.html",
+          "chose": "CLICK:Back",
+          "to": "order-3.html",
+          "reward": -0.15
+        },
+        {
+          "from": "order-3.html",
+          "chose": "TYPE:email",
+          "to": "order-3.html",
+          "reward": -0.2
+        },
+        {
+          "from": "order-3.html",
+          "chose": "CLICK:Continue",
+          "to": "order-4.html",
+          "reward": -0.3
+        },
+        {
+          "from": "order-4.html",
+          "chose": "CLICK:Back",
+          "to": "order-3.html",
+          "reward": -0.2
+        }
+      ],
+      "training_experience": {
+        "steps_by_depth": {
+          "0": 2707,
+          "1": 711,
+          "2": 236,
+          "3": 218,
+          "4": 107,
+          "5": 21
+        },
+        "steps_at_depth_4": 107,
+        "steps_at_depth_5_receipt": 21,
+        "archive_by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 4,
+          "3": 6,
+          "4": 6,
+          "5": 3
+        },
+        "buffer_capacity": 10000,
+        "note": "buffer_size 10000 > 4000 steps, so nothing was evicted: every transition collected is still in replay at the end of training."
+      }
+    },
+    "2": {
+      "order4_ranking": [
+        {
+          "action": "CLICK:Back",
+          "q": 0.9427
+        },
+        {
+          "action": "CLICK:Catalog",
+          "q": 0.5314
+        },
+        {
+          "action": "CLICK:Cancel order",
+          "q": 0.3776
+        },
+        {
+          "action": "CLICK:Place order",
+          "q": 0.3555
+        },
+        {
+          "action": "CLICK:Home",
+          "q": 0.2587
+        },
+        {
+          "action": "CLICK:Support",
+          "q": 0.2045
+        },
+        {
+          "action": "CLICK:Status",
+          "q": 0.1166
+        },
+        {
+          "action": "CLICK:About",
+          "q": 0.0737
+        },
+        {
+          "action": "CLICK:Contact us",
+          "q": -0.0229
+        },
+        {
+          "action": "CLICK:Privacy",
+          "q": -0.0594
+        },
+        {
+          "action": "CLICK:Terms",
+          "q": -0.07
+        },
+        {
+          "action": "SCROLL:",
+          "q": -0.0762
+        },
+        {
+          "action": "REFRESH:",
+          "q": -0.0817
+        },
+        {
+          "action": "SCROLL:",
+          "q": -0.1581
+        },
+        {
+          "action": "RESIZE_VIEWPORT:",
+          "q": -0.1669
+        },
+        {
+          "action": "BROWSER_BACK:",
+          "q": -0.1815
+        },
+        {
+          "action": "RESIZE_VIEWPORT:",
+          "q": -0.1818
+        },
+        {
+          "action": "RESIZE_VIEWPORT:",
+          "q": -0.1836
+        },
+        {
+          "action": "NO_OP:",
+          "q": -0.1907
+        },
+        {
+          "action": "BROWSER_FORWARD:",
+          "q": -0.406
+        }
+      ],
+      "place_order": {
+        "q": 0.3555,
+        "rank": 4,
+        "of": 20
+      },
+      "argmax": {
+        "action": "CLICK:Back",
+        "q": 0.9427
+      },
+      "gap": 0.5872,
+      "greedy_from_order4": [
+        {
+          "from": "order-4.html",
+          "chose": "CLICK:Back",
+          "to": "order-3.html",
+          "reward": 0.95
+        },
+        {
+          "from": "order-3.html",
+          "chose": "TYPE:email",
+          "to": "order-3.html",
+          "reward": 2.4
+        },
+        {
+          "from": "order-3.html",
+          "chose": "CLICK:Continue",
+          "to": "order-4.html",
+          "reward": 0.8
+        },
+        {
+          "from": "order-4.html",
+          "chose": "CLICK:Back",
+          "to": "order-3.html",
+          "reward": -0.1
+        },
+        {
+          "from": "order-3.html",
+          "chose": "CLICK:Back",
+          "to": "order-2.html",
+          "reward": 0.85
+        },
+        {
+          "from": "order-2.html",
+          "chose": "TYPE:quantity",
+          "to": "order-2.html",
+          "reward": 2.4
+        },
+        {
+          "from": "order-2.html",
+          "chose": "CLICK:Continue",
+          "to": "order-3.html",
+          "reward": 0.75
+        },
+        {
+          "from": "order-3.html",
+          "chose": "TYPE:email",
+          "to": "order-3.html",
+          "reward": 2.35
+        },
+        {
+          "from": "order-3.html",
+          "chose": "CLICK:Continue",
+          "to": "order-4.html",
+          "reward": 0.7
+        },
+        {
+          "from": "order-4.html",
+          "chose": "CLICK:Back",
+          "to": "order-3.html",
+          "reward": -0.2
+        }
+      ],
+      "training_experience": {
+        "steps_by_depth": {
+          "0": 1878,
+          "1": 781,
+          "2": 540,
+          "3": 557,
+          "4": 228,
+          "5": 16
+        },
+        "steps_at_depth_4": 228,
+        "steps_at_depth_5_receipt": 16,
+        "archive_by_depth": {
+          "0": 7,
+          "1": 2,
+          "2": 4,
+          "3": 6,
+          "4": 7,
+          "5": 4
+        },
+        "buffer_capacity": 10000,
+        "note": "buffer_size 10000 > 4000 steps, so nothing was evicted: every transition collected is still in replay at the end of training."
+      }
+    }
+  },
+  "reward_chain": [
+    {
+      "action": "CLICK:start order",
+      "page": "order-1.html",
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05
+    },
+    {
+      "action": "SELECT:product",
+      "page": "order-1.html",
+      "reward": 2.45,
+      "novelty": 1.0,
+      "reveal": 1.5,
+      "deterministic": 0.0,
+      "step_cost": -0.05
+    },
+    {
+      "action": "CLICK:continue",
+      "page": "order-2.html",
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05
+    },
+    {
+      "action": "TYPE:quantity",
+      "page": "order-2.html",
+      "reward": 2.45,
+      "novelty": 1.0,
+      "reveal": 1.5,
+      "deterministic": 0.0,
+      "step_cost": -0.05
+    },
+    {
+      "action": "CLICK:continue",
+      "page": "order-3.html",
+      "reward": 0.9,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05
+    },
+    {
+      "action": "TYPE:email",
+      "page": "order-3.html",
+      "reward": 2.45,
+      "novelty": 1.0,
+      "reveal": 1.5,
+      "deterministic": 0.0,
+      "step_cost": -0.05
+    },
+    {
+      "action": "CLICK:continue",
+      "page": "order-4.html",
+      "reward": 0.85,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05
+    },
+    {
+      "action": "CLICK:place order",
+      "page": "receipt.html",
+      "reward": 0.95,
+      "novelty": 1.0,
+      "reveal": 0.0,
+      "deterministic": 0.0,
+      "step_cost": -0.05,
+      "terminated": false,
+      "truncated": false,
+      "n_actions_on_receipt": 18,
+      "actions_on_receipt": [
+        "NO_OP:",
+        "SCROLL:",
+        "SCROLL:",
+        "RESIZE_VIEWPORT:",
+        "RESIZE_VIEWPORT:",
+        "RESIZE_VIEWPORT:",
+        "BROWSER_BACK:",
+        "BROWSER_FORWARD:"
+      ]
+    }
+  ],
+  "step_after_receipt": {
+    "action": "NO_OP:",
+    "page": "receipt.html",
+    "reward": -0.05
+  }
+}

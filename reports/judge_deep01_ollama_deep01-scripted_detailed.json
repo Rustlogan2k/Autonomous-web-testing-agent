@@ -1,0 +1,259 @@
+{
+  "target": "deep_flow_site::deep01-scripted",
+  "generated_at": "2026-08-30T09:42:12+00:00",
+  "counts": {
+    "total": 2,
+    "deterministic": 0,
+    "judge": 2,
+    "high": 2,
+    "medium": 0,
+    "low": 0,
+    "ungrounded_excluded": 4
+  },
+  "run": {
+    "corpus": "deep01-scripted",
+    "judge": "ollama/qwen2.5:7b-instruct",
+    "prompt": "detailed",
+    "evidence": {
+      "trace_dir": "C:\\Users\\reach\\AppData\\Local\\Temp\\claude\\c--Users-reach-OneDrive-Code-files-SEM7-RL-web-tester\\153893c5-c1a5-45b6-82ac-c03f5197be2a\\scratchpad\\jv_corpus\\deep01-scripted",
+      "pages_dir": "pages",
+      "screenshots_dir": "screenshots",
+      "by_step": {
+        "2": {
+          "episode": 1,
+          "step_in_episode": 2,
+          "url": "http://127.0.0.1:63597/order-1.html",
+          "action": "SELECT product",
+          "before": {
+            "url": "http://127.0.0.1:63597/order-1.html",
+            "html": "f47a11de050b986d92de28517fc0fc1a143f2f8d838f175004456fd03c18c3fc",
+            "screenshot": "1da8cfb409db2538d2d943b2e01e67a79bcf05b6a32ca9c1a29aea76b7e83942"
+          },
+          "after": {
+            "url": "http://127.0.0.1:63597/order-1.html",
+            "html": "58596412aa6ee65783b6d55d0f22b9aa8dfc33d0ca46680c9279b0e03104129d",
+            "screenshot": "19b3f3be34bea5e6b5e18a55e112c118e81108786a859fc2f60f405005c21f2a"
+          },
+          "changed": {
+            "url": false,
+            "html": true,
+            "screenshot": true
+          }
+        },
+        "3": {
+          "episode": 1,
+          "step_in_episode": 3,
+          "url": "http://127.0.0.1:63597/order-2.html?product=folders-25",
+          "action": "CLICK Continue",
+          "before": {
+            "url": "http://127.0.0.1:63597/order-1.html",
+            "html": "58596412aa6ee65783b6d55d0f22b9aa8dfc33d0ca46680c9279b0e03104129d",
+            "screenshot": "19b3f3be34bea5e6b5e18a55e112c118e81108786a859fc2f60f405005c21f2a"
+          },
+          "after": {
+            "url": "http://127.0.0.1:63597/order-2.html?product=folders-25",
+            "html": "c6d5cc0caa0091f0e7007cd5cbcfdfdd13f051ef523b6ffd9113e1f6b781ef8d",
+            "screenshot": "c5fa7263ddf613ff893e8369e4a96db7f70d0e6fec0f17fc271aef254e37cddd"
+          },
+          "changed": {
+            "url": true,
+            "html": true,
+            "screenshot": true
+          }
+        },
+        "5": {
+          "episode": 1,
+          "step_in_episode": 5,
+          "url": "http://127.0.0.1:63597/order-3.html?product=folders-25&quantity=42",
+          "action": "CLICK Continue",
+          "before": {
+            "url": "http://127.0.0.1:63597/order-2.html?product=folders-25",
+            "html": "87c0ac2aad06eeafbe2849009822f193c323a3263823fe14ac7f0e460ffeabf2",
+            "screenshot": "23674b71b4b023c19b0d675f145a4f0b61e06676a2b8d1e6a190a3c4f2e2ca6a"
+          },
+          "after": {
+            "url": "http://127.0.0.1:63597/order-3.html?product=folders-25&quantity=42",
+            "html": "23a70cf7554b40d12151a73727b7dc83842c932dd5f8737bad7c9f123816a362",
+            "screenshot": "e50887ac7b2aa57f10a028b7ab2357200801099cd16fb101abdcf0a8478fc878"
+          },
+          "changed": {
+            "url": true,
+            "html": true,
+            "screenshot": true
+          }
+        },
+        "6": {
+          "episode": 1,
+          "step_in_episode": 6,
+          "url": "http://127.0.0.1:63597/order-3.html?product=folders-25&quantity=42",
+          "action": "TYPE email",
+          "before": {
+            "url": "http://127.0.0.1:63597/order-3.html?product=folders-25&quantity=42",
+            "html": "23a70cf7554b40d12151a73727b7dc83842c932dd5f8737bad7c9f123816a362",
+            "screenshot": "e50887ac7b2aa57f10a028b7ab2357200801099cd16fb101abdcf0a8478fc878"
+          },
+          "after": {
+            "url": "http://127.0.0.1:63597/order-3.html?product=folders-25&quantity=42",
+            "html": "d036a4ebec26687df8d48a856fcb12c8e1eee4fb8b496243af303f560db24be2",
+            "screenshot": "5aa23f04d9058adeced3592a109343fd1e9252d9e177c9c9028589dddebf1a10"
+          },
+          "changed": {
+            "url": false,
+            "html": true,
+            "screenshot": true
+          }
+        },
+        "7": {
+          "episode": 1,
+          "step_in_episode": 7,
+          "url": "http://127.0.0.1:63597/order-4.html?product=folders-25&quantity=42&email=tester%40example.com",
+          "action": "CLICK Continue",
+          "before": {
+            "url": "http://127.0.0.1:63597/order-3.html?product=folders-25&quantity=42",
+            "html": "d036a4ebec26687df8d48a856fcb12c8e1eee4fb8b496243af303f560db24be2",
+            "screenshot": "5aa23f04d9058adeced3592a109343fd1e9252d9e177c9c9028589dddebf1a10"
+          },
+          "after": {
+            "url": "http://127.0.0.1:63597/order-4.html?product=folders-25&quantity=42&email=tester%40example.com",
+            "html": "db82a35d8df411393636976ab87f990bf48113d874cae8b323b406068c818fc1",
+            "screenshot": "7296624d3e4e7bb971ad9ebf534f8671a28ec924b5e412530396f325ef712e28"
+          },
+          "changed": {
+            "url": true,
+            "html": true,
+            "screenshot": true
+          }
+        },
+        "8": {
+          "episode": 1,
+          "step_in_episode": 8,
+          "url": "http://127.0.0.1:63597/receipt.html?product=folders-25&quantity=42&email=tester%40example.com",
+          "action": "CLICK Place order",
+          "before": {
+            "url": "http://127.0.0.1:63597/order-4.html?product=folders-25&quantity=42&email=tester%40example.com",
+            "html": "db82a35d8df411393636976ab87f990bf48113d874cae8b323b406068c818fc1",
+            "screenshot": "7296624d3e4e7bb971ad9ebf534f8671a28ec924b5e412530396f325ef712e28"
+          },
+          "after": {
+            "url": "http://127.0.0.1:63597/receipt.html?product=folders-25&quantity=42&email=tester%40example.com",
+            "html": "0668fa0c8e683f7491d19bdb2189f198907ab9a204b4e4132461dd871fd34a6a",
+            "screenshot": "d38cea86bb0f135c4081f27c49d0df4e50fc29323eb965af8d119f4fe09c901a"
+          },
+          "changed": {
+            "url": true,
+            "html": true,
+            "screenshot": true
+          }
+        }
+      },
+      "available": true,
+      "indexed_steps": 6
+    }
+  },
+  "bugs": [
+    {
+      "title": "No change in URL or form state was observed, even though a selection was made.",
+      "source": "judge",
+      "severity": 10.0,
+      "bug_type": "dead_control",
+      "url": "http://127.0.0.1:63597/order-1.html",
+      "repro": [],
+      "evidence": "url        : /order-1.html (unchanged)\nform state : product: unselected -> selected",
+      "observed": "SELECT on 'product' with value 'folders-25'",
+      "expected": "The application should update the form state to reflect the selected product and show a link to proceed to the next step.",
+      "discrepancy": "No change in URL or form state was observed, even though a selection was made.",
+      "confidence": 1.0,
+      "grounded": true,
+      "episode": 1,
+      "step": 2,
+      "times_seen": 1
+    },
+    {
+      "title": "The URL query string includes 'quantity' even though the field was empty. This implies an automatic form submission which did not occur based on the user action",
+      "source": "judge",
+      "severity": 10.0,
+      "bug_type": "broken_flow",
+      "url": "http://127.0.0.1:63597/order-2.html?product=folders-25",
+      "repro": [],
+      "evidence": "url: /order-1.html -> /order-2.html?product=folders-25",
+      "observed": "A CLICK on 'Continue' led to /order-2.html?product=folders-25 with an empty quantity field.",
+      "expected": "The application should have navigated to /order-2.html with the product parameter set and pre-filled the quantity field with a default value or left it as empty if no default is applicable, but not change the URL query string in such a way that suggests a form submission occurred without user interaction.",
+      "discrepancy": "The URL query string includes 'quantity' even though the field was empty. This implies an automatic form submission which did not occur based on the user action (a simple click).",
+      "confidence": 1.0,
+      "grounded": true,
+      "episode": 1,
+      "step": 3,
+      "times_seen": 1
+    }
+  ],
+  "ungrounded_excluded": [
+    {
+      "title": "The email field was left empty after navigating to /order-3.html. A correct application would either pre-fill the email field with a default value (e.g., from s",
+      "source": "judge",
+      "severity": 10.0,
+      "bug_type": "validation_bypass",
+      "url": "http://127.0.0.1:63597/order-3.html?product=folders-25&quantity=42",
+      "repro": [],
+      "evidence": "In /order-2.html, the 'Continue' button was clicked, but in /order-3.html, the email field remained empty despite no validation error being observed.",
+      "observed": "A 'Continue' button click on /order-2.html?product=folders-25 led to /order-3.html?product=folders-25&quantity=42, with an empty email field.",
+      "expected": "The application should have populated the email field with a default value or validated that it is not left empty before proceeding to the next step.",
+      "discrepancy": "The email field was left empty after navigating to /order-3.html. A correct application would either pre-fill the email field with a default value (e.g., from session data) or enforce validation to ensure the field is filled before allowing further progress.",
+      "confidence": 1.0,
+      "grounded": false,
+      "episode": 1,
+      "step": 5,
+      "times_seen": 1
+    },
+    {
+      "title": "No validation error was shown for an invalid email address (e.g., missing '@' symbol).",
+      "source": "judge",
+      "severity": 10.0,
+      "bug_type": "validation_bypass",
+      "url": "http://127.0.0.1:63597/order-3.html?product=folders-25&quantity=42",
+      "repro": [],
+      "evidence": "The 'email' field accepted a value without '@', which is not a valid email format, but no validation error message was displayed.",
+      "observed": "TYPE on 'email' with value 'tester@example.com'",
+      "expected": "The application should validate the email field according to its declared constraint [type=email] and display no errors or warnings.",
+      "discrepancy": "No validation error was shown for an invalid email address (e.g., missing '@' symbol).",
+      "confidence": 1.0,
+      "grounded": false,
+      "episode": 1,
+      "step": 6,
+      "times_seen": 1
+    },
+    {
+      "title": "No observable change occurred after clicking 'Continue'. The URL changed as expected, but the page content did not update to reflect the final step of the order",
+      "source": "judge",
+      "severity": 10.0,
+      "bug_type": "broken_flow",
+      "url": "http://127.0.0.1:63597/order-4.html?product=folders-25&quantity=42&email=tester%40example.com",
+      "repro": [],
+      "evidence": "The title remained unchanged at 'Northwind Supply \u2014 Order, step 3 of 4', and the page text did not display any summary or confirmation information for the order details. The links were still those from step 3, indicating no change in the UI state.",
+      "observed": "CLICK on 'Continue'",
+      "expected": "The application should navigate to a confirmation or summary page, showing the selected product, quantity, and email address.",
+      "discrepancy": "No observable change occurred after clicking 'Continue'. The URL changed as expected, but the page content did not update to reflect the final step of the order process.",
+      "confidence": 1.0,
+      "grounded": false,
+      "episode": 1,
+      "step": 7,
+      "times_seen": 1
+    },
+    {
+      "title": "The quantity of the product on the receipt page shows as 1 instead of 42.",
+      "source": "judge",
+      "severity": 10.0,
+      "bug_type": "broken_flow",
+      "url": "http://127.0.0.1:63597/receipt.html?product=folders-25&quantity=42&email=tester%40example.com",
+      "repro": [],
+      "evidence": "On the final step, the page text states: 'Quantity: | 1', whereas the expected value was 42 based on the form input in previous steps.",
+      "observed": "The 'Place order' button was clicked, and the URL changed to /receipt.html?product=folders-25&quantity=42&email=tester%40example.com.",
+      "expected": "Upon clicking 'Place order', the application should have processed the order and displayed a receipt page with the correct product, quantity, and email information. The URL change is expected but does not indicate any issues by itself.",
+      "discrepancy": "The quantity of the product on the receipt page shows as 1 instead of 42.",
+      "confidence": 1.0,
+      "grounded": false,
+      "episode": 1,
+      "step": 8,
+      "times_seen": 1
+    }
+  ]
+}

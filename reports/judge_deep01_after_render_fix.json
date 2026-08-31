@@ -1,0 +1,234 @@
+{
+  "_purpose": "DEEP-01 judge detectability after the 2026-08-29 render_step navigation fix",
+  "corpus": "deep01-scripted (9/9 scripted steps matched)",
+  "windows": 8,
+  "deep01_window_steps": [
+    8
+  ],
+  "model": "qwen2.5:7b-instruct",
+  "temperature": 0,
+  "before_fix": {
+    "compact": {
+      "flagged": 8,
+      "deep01_detected": false,
+      "note": "step 8 typed dead_control, 'no observable change', quoting a URL that did change"
+    },
+    "detailed": {
+      "flagged": 6,
+      "deep01_detected": false,
+      "note": "step 8 returned is_bug=False"
+    }
+  },
+  "after_fix": {
+    "compact": {
+      "flagged": 6,
+      "windows": 8,
+      "deep01_detected": false,
+      "false_positives": 6,
+      "grounded": 8,
+      "rows": [
+        {
+          "step": 1,
+          "page": "order-1.html",
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 0.6,
+          "confidence": 0.85,
+          "discrepancy": "The link to 'Step 2' is hidden, making it unreachable from this page.",
+          "evidence": "  now hidden : a#to-step-2",
+          "grounded": true,
+          "is_deep01": false
+        },
+        {
+          "step": 2,
+          "page": "order-1.html",
+          "is_bug": true,
+          "bug_type": "dead_control",
+          "severity": 0.6,
+          "confidence": 0.85,
+          "discrepancy": "The selection of a product did not cause any observable change in the page, such as showing the 'to-step-2' link.",
+          "evidence": "  now shown  : a#to-step-2",
+          "grounded": true,
+          "is_deep01": false
+        },
+        {
+          "step": 3,
+          "page": "order-2.html?product=folders-25",
+          "is_bug": true,
+          "bug_type": "validation_bypass",
+          "severity": 0.8,
+          "confidence": 0.95,
+          "discrepancy": "The form state shows that the 'quantity' field is empty, which violates the [type=number min=1 max=100 step=1] constraint declared by the app. However, the navigation proceeded without validation.",
+          "evidence": "  constraints: quantity declares [type=number min=1 max=100 step=1]",
+          "grounded": true,
+          "is_deep01": false
+        },
+        {
+          "step": 4,
+          "page": "order-2.html?product=folders-25",
+          "is_bug": true,
+          "bug_type": "validation_bypass",
+          "severity": 0.5,
+          "confidence": 0.9,
+          "discrepancy": "The user entered a valid number (42) within the allowed range, but it was accepted.",
+          "evidence": "constraints: quantity declares [type=number min=1 max=100 step=1]",
+          "grounded": true,
+          "is_deep01": false
+        },
+        {
+          "step": 5,
+          "page": "order-3.html?product=folders-25&quantity=42",
+          "is_bug": true,
+          "bug_type": "ui_regression",
+          "severity": 0.8,
+          "confidence": 0.95,
+          "discrepancy": "The form state did not advance; the email field was still absent when it should have been present.",
+          "evidence": "  form state : email: absent -> empty\n  constraints: email declares [type=email]",
+          "grounded": true,
+          "is_deep01": false
+        },
+        {
+          "step": 6,
+          "page": "order-3.html?product=folders-25&quantity=42",
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 1.0,
+          "discrepancy": "The email field accepted a valid input as expected, so there is no issue.",
+          "evidence": "  field value: email: '' -> 'tester@example.com'",
+          "grounded": true,
+          "is_deep01": false
+        },
+        {
+          "step": 7,
+          "page": "order-4.html?product=folders-25&quantity=42&",
+          "is_bug": true,
+          "bug_type": "dead_control",
+          "severity": 0.6,
+          "confidence": 0.9,
+          "discrepancy": "The click did not navigate to /order-4.html as expected, and the page content did not change.",
+          "evidence": "  url        : /order-3.html?product=folders-25&quantity=42 -> /order-3.html?product=folders-25&quantity=42&email=tester%40example.com",
+          "grounded": true,
+          "is_deep01": false
+        },
+        {
+          "step": 8,
+          "page": "receipt.html?product=folders-25&quantity=42&",
+          "is_bug": false,
+          "bug_type": "other",
+          "severity": 0.0,
+          "confidence": 0.9,
+          "discrepancy": "none",
+          "evidence": "  url        : /order-4.html?product=folders-25&quantity=42&email=tester%40example.com -> /receipt.html?product=folders-25&quantity=42&email=tester%40example.com",
+          "grounded": true,
+          "is_deep01": false
+        }
+      ]
+    },
+    "detailed": {
+      "flagged": 6,
+      "windows": 8,
+      "deep01_detected": true,
+      "false_positives": 5,
+      "grounded": 2,
+      "rows": [
+        {
+          "step": 1,
+          "page": "order-1.html",
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "discrepancy": "The page title changed from 'Northwind Supply \u2014 Home' to 'Northwind Supply \u2014 Order, step 1 of 4', indicating that the navigation was successful. The form for selecting a product is present as expected.",
+          "evidence": "",
+          "grounded": false,
+          "is_deep01": false
+        },
+        {
+          "step": 2,
+          "page": "order-1.html",
+          "is_bug": true,
+          "bug_type": "dead_control",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "discrepancy": "No change was observed after selecting the 'folders-25' option. The page did not display any relevant information about the selected product.",
+          "evidence": "The form state shows that the 'product' field is now selected, but no new text or elements were made visible on the page.",
+          "grounded": false,
+          "is_deep01": false
+        },
+        {
+          "step": 3,
+          "page": "order-2.html?product=folders-25",
+          "is_bug": true,
+          "bug_type": "validation_bypass",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "discrepancy": "The quantity field remains empty after navigating to /order-2.html, even though it is required and has constraints [type=number min=1 max=100 step=1].",
+          "evidence": "form state: quantity: empty -> empty",
+          "grounded": true,
+          "is_deep01": false
+        },
+        {
+          "step": 4,
+          "page": "order-2.html?product=folders-25",
+          "is_bug": true,
+          "bug_type": "validation_bypass",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "discrepancy": "The 'quantity' field was typed with a value of '42', but no validation error or feedback was provided, even though the field declares [type=number min=1 max=100 step=1].",
+          "evidence": "Constraints: quantity declares [type=number min=1 max=100 step=1], but no validation message or error is shown when '42' is entered.",
+          "grounded": false,
+          "is_deep01": false
+        },
+        {
+          "step": 5,
+          "page": "order-3.html?product=folders-25&quantity=42",
+          "is_bug": true,
+          "bug_type": "broken_navigation",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "discrepancy": "'Continue' button does not navigate to the expected page '/order-3.html?product=folders-25&quantity=42'. Instead, it seems to have navigated back to an earlier state or failed to update the URL and title as expected.",
+          "evidence": "The URL remains at /order-2.html?product=folders-25&quantity=42, and the title does not change to 'Northwind Supply \u2014 Order, step 3 of 4'.",
+          "grounded": false,
+          "is_deep01": false
+        },
+        {
+          "step": 6,
+          "page": "order-3.html?product=folders-25&quantity=42",
+          "is_bug": true,
+          "bug_type": "validation_bypass",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "discrepancy": "The email field was filled without any validation error messages, and no further navigation occurred. This suggests that the application did not enforce the email format constraint.",
+          "evidence": "Constraints: email declares [type=email]. Field value: email: '' -> 'tester@example.com'. No validation errors or navigation to the next step were observed.",
+          "grounded": false,
+          "is_deep01": false
+        },
+        {
+          "step": 7,
+          "page": "order-4.html?product=folders-25&quantity=42&",
+          "is_bug": false,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "discrepancy": "No discrepancy observed; the application behaved as expected by navigating to the final step and displaying the order summary.",
+          "evidence": "The URL changed to /order-4.html?product=folders-25&quantity=42&email=tester%40example.com, the title updated to 'Northwind Supply \u2014 Order, step 4 of 4', and the page text correctly displayed all order details.",
+          "grounded": false,
+          "is_deep01": false
+        },
+        {
+          "step": 8,
+          "page": "receipt.html?product=folders-25&quantity=42&",
+          "is_bug": true,
+          "bug_type": "broken_flow",
+          "severity": 1.0,
+          "confidence": 1.0,
+          "discrepancy": "The quantity on the receipt page is shown as 1 instead of 42.",
+          "evidence": "/order-4.html?product=folders-25&quantity=42&email=tester%40example.com -> /receipt.html?product=folders-25&quantity=1&email=tester%40example.com",
+          "grounded": true,
+          "is_deep01": true
+        }
+      ]
+    }
+  }
+}
