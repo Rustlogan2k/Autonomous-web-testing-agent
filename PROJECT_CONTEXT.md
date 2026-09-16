@@ -2,7 +2,9 @@
 
 Living reference document. Update this as scope, design decisions, or progress change — it's meant to let anyone (a future session, evaluators) get fully oriented without re-reading the whole conversation history.
 
-Last updated: 2026-08-15.
+Last updated: 2026-09-16.
+
+**Current research checkpoint: Search-vs-Bandit-vs-AC-DQN completed; advisor-approved confound-resolution experiment is next.** The A0/B/C ladder ran over 8 seeds × 25 evaluation episodes and is recorded in §5 (2026-09-16); its A-vs-B/C reading is **confounded by information access** and the corrected interpretation is in that entry, not in the report artefacts. The next milestone is the five-condition **A0/A1/A2/B/C** comparison, whose definitions must be frozen before the fixture is inspected. **A1 and A2 are not implemented and not run.**
 
 ---
 
@@ -2919,6 +2921,256 @@ ever made public.
 protocol, training configuration or experiment result was touched, and nothing was deleted.
 
 
+
+### 2026-09-02 → 09-05 — the September series: the fixed-seed distribution, four nulls, and a myopic control
+
+Six experiments ran between the handoff and the search ladder. They are recorded together
+because they form one argument, and because none of them was in this file until now.
+
+**1. The run-to-run completion distribution at a fixed seed — the blocking measurement, done.**
+The 2026-08-31 entry above and README's *"Where RL research resumes"* both named this as the
+next RL action, and neither has been updated since; **this supersedes both.** Three
+replicates of seed 0 at 4,000 steps produced **1, 2 and 5 flow completions out of 5**
+(`reports/fixed_seed_completion_distribution.json`). The spread at one seed covers nearly
+the entire range the metric can take.
+
+A companion measurement explains why. At the full 4,000-step budget, three nominally
+identical uninstrumented runs produced **three distinct trajectories — 0 of 3 pairs
+identical, agreement rate 0.0** (`reports/diag_harness_determinism_4000.json`). The
+intermittent harness non-determinism recorded in README at 200-600 steps is not intermittent
+at 4,000; it is the norm. **A "seed" in this project is a label on a run, not a reproducible
+unit**, and every per-seed figure below has to be read that way.
+
+**2. Archive ON vs OFF ablation.** `p_return=0.5` against `p_return=0.0`, 8 seeds, 5
+evaluation episodes (`reports/ablate_archive_pr050.json`, `..._pr000.json`):
+`[5,0,4,5,5,2,5,0]` = 26/40 with the archive, `[0,5,0,5,5,4,0,5]` = 24/40 without. **Null.**
+The Go-Explore start-state curriculum is not what produces flow completions.
+
+**3. The Markov observation fix.** `EPISODE_CONTEXT_DIM` widened 6 → 9, adding the run-level
+state-visit count, the novelty decay multiplier `1/sqrt(1+visits)` itself, and the episodic
+reveal-ledger depth — the three hidden counters `novelty_bonus` and `reveal_bonus` had
+reintroduced after slots 0-5 were built to close exactly that gap. Two further slots were
+audited out before shipping (one collinear, one post-action and therefore unable to predict
+`r_t`); the reasoning is in `envs/types.py`. Re-baselined at 8 seeds:
+`[5,0,5,5,0,0,5,5]` = 25/40 (`reports/postmarkov_baseline_pr050.json`). **Null** against the
+24-26/40 the two archive arms already sat at. `tests/unit/test_markov_context.py` pins that
+no reward term, counter or scale moved.
+
+**4. Action-representation probe.** Does the 32-dim signed-trigram label hash encode
+*semantic* similarity, or only shared characters? Semantic pairs mean cosine **0.249** against
+random pairs' **0.018** (permutation p = 0.0002) — but stratified, semantic pairs *sharing a
+token* score **0.502** and semantic pairs with *no shared token* score **0.081**
+(`reports/probe_action_representation.json`). **The separation is lexical overlap, not
+meaning.** `LabelEncoder` is the seam a sentence embedding was always meant to be swapped in
+at, and this is the measurement that says the seam is empty.
+
+**5. Trained-checkpoint action-Q diagnostic.** Across 6,096 within-state CLICK-CLICK pairs
+scored by the 8 final checkpoints, label cosine correlates with |Q gap| at Pearson
+**-0.0396**; mean |Q gap| is **0.2027** against a reward scale of 1.5-2.5, having grown
+**33.6x** from initialization (`reports/trained_action_q_diagnostic.md`). At the `order-4`
+decision, `Place order` is the argmax in **5/8** seeds and ranks above `Cancel order` and
+above `Back` in **6/8** each. Five of the seven requested label pairs have **zero** co-valid
+states, so they are unavailable rather than negative evidence. Observational only: it cannot
+establish that the representation *caused* the deadlock.
+
+**6. The contextual bandit, and the 25-episode protocol.** `agents/contextual_bandit.py` is a
+myopic control that removes exactly one thing from AC-DQN — the bootstrapped future — and
+keeps everything else: same env, same 6973-dim observation, same 100-slot masked action
+interface, same hash encoder, same action features, same reward, same epsilon schedule, same
+archive and `p_return`, same budget, same evaluation. Target is `data.rewards`, full stop;
+no target network, no next state, no gamma, `n_step` forced to 1. Four independent tests
+enforce that rather than a docstring asserting it.
+
+At 5 evaluation episodes AC-DQN looked perfectly bimodal (`[5,0,5,5,0,0,5,5]`, 8/8 extreme)
+and the bandit did not (`[5,2,0,0,5,1,4,3]`, 4/8 intermediate). **Five episodes turned out to
+be the instrument, not the finding.** Re-evaluating the same 16 checkpoints at 25 episodes
+with no retraining (`reports/offline_eval_25ep.md`) gave AC-DQN `[24,0,25,23,1,2,24,17]`
+(mean 0.580) against the bandit's `[17,8,0,0,25,14,24,20]` (mean 0.540) — the arms are not
+clearly distinguishable, and the apparent difference in *shape* was an artefact of the
+evaluation length. **25 episodes is the canonical evaluation protocol from this point on.**
+The seed-1 bandit archive failures were inspected and judged ordinary conservative failed
+returns, not infrastructure contamination; nothing was excluded.
+
+
+### 2026-09-16 — the search ladder: A0 hand-priority search vs contextual bandit vs AC-DQN
+
+**The question.** Five consecutive nulls left one rung unmeasured: what does a *non-learning*
+policy with a reasonable hand-designed action priority do at the same budget? Without that
+floor, "learning helps" has nothing to be measured against.
+
+Three arms, one fixture, one observation, one action space and mask, one reward, one archive,
+one evaluation protocol. They differ only in how an action is scored:
+
+| rung | arm | scoring rule |
+|---|---|---|
+| A0 | `hand_priority` | `w · φ(a)`, `w` hand-designed and **fixed** |
+| B | `contextual_bandit` | `f_θ(s, φ(a))`, θ regressed onto `r_t` |
+| C | `ac_dqn` | `Q_θ(s, φ(a))`, θ regressed onto `r_t + γⁿ max_a' Q_target(s_{t+n}, a')` |
+
+φ is the *same* 52-dim `ActionFeatureExtractor` vector in all three rows — A0 is a hand
+weighting of the representation the other two learn a weighting of, not a parallel one.
+
+**Budget, and why it is matched.** The repository already measures search in env steps
+(`run_go_explore --budget`, `GoExploreStats.env_steps`) and training in the same unit
+(`--train-steps 4000`), with route replay outside the step budget but reported as
+`replayed_actions`. A0 got 4,000 env steps per seed in 100 × 40-step episodes through the
+same `ArchiveStartWrapper` at the same `p_return=0.5` under the same ε schedule
+(1.0 → 0.10 over 60%): 32,000 env steps + 2,252 replayed actions = 34,252 browser actions,
+against the trained arms' 4,125-4,394 each. Both numbers are reported, neither absorbed.
+Arms B and C were **not retrained** — their finalized checkpoints were re-evaluated
+contemporaneously, SHA-256 taken before and after, all 16 unchanged.
+
+**Results.** 8 seeds × 25 evaluation episodes, landing page, archive disabled, ε 0.05.
+
+| arm | counts /25 | mean | median | sd | bootstrap 95% CI | review | S1 | max depth |
+|---|---|---|---|---|---|---|---|---|
+| A0 `hand_priority` | `[0,0,1,0,0,0,0,0]` | **0.005** | 0.000 | 0.014 | `[0.0, 0.015]` | **0.855** | 0.950 | 5 every seed |
+| B `contextual_bandit` | `[17,8,0,0,25,14,24,20]` | **0.540** | 0.620 | 0.398 | `[0.28, 0.79]` | 0.755 | 0.875 | 5 |
+| C `ac_dqn` | `[24,0,25,23,1,2,24,17]` | **0.580** | 0.800 | 0.458 | `[0.27, 0.855]` | 0.730 | 1.000 | 5 |
+
+B and C reproduced the 25-episode re-evaluation **exactly** — 16/16 checkpoints matched on
+completion count and review count, 10/16 to the 4th decimal on mean reward. 32/32 runs
+completed, 0 excluded, **0 invalid action selections** across 800 evaluation episodes,
+6.34 h wall clock. Artefacts: `reports/search_vs_bandit_vs_ac_dqn.{json,md,csv}`.
+
+#### The A-vs-B/C result is confounded, and the earlier reading of it is retracted
+
+**Do not cite this experiment as "learning action identity/value beats search."** That claim
+does not survive inspection, and the report's own auto-generated A-vs-B verdict line
+(`contextual_bandit is ahead of hand_priority by 0.535…`) overstates it. This entry is the
+authoritative reading; the JSON/Markdown artefacts are left unedited so the raw result and
+its wording stay on record.
+
+A0 was built with **all 32 hashed-label dimensions weighted exactly zero**, as a guarantee
+that it could not recognise `Place order` or any other control by name. That guarantee did
+its job — A0 is provably invariant to relabelling every control on the site — but it also
+**denied A0 the one piece of information that resolves the decision the benchmark turns on.**
+On `order-4` every candidate is a navigational, in-viewport link carrying an href, so every
+feature A0 is permitted to read is identical across them; the only discriminator is the
+label. B and C could use it. A0 could not. That is an **information-access confound**, not a
+learning-vs-search comparison.
+
+The data say exactly where the gap sits. A0 reaches the final review page in **85.5%** of
+episodes — *more often than either learned arm* (75.5% and 73.0%) — and then completes
+**0.6%** of the time from there, against AC-DQN's 84.6%. Its search phase reached depth 5 on
+every seed and completed the flow 22 times across 800 search episodes. **Generic exploration
+and reachability were not the obstacle.** The entire measured gap is one decision on one page.
+
+The defensible conclusion:
+
+> Access to the distinguishing action information is important for resolving the critical
+> decision. The experiment does **not** isolate whether the advantage comes from *learning*
+> or from *access to label information*.
+
+Recorded as a limitation of the completed experiment, and it is what the next milestone
+exists to resolve.
+
+#### The B ≈ C null, stated with its scope
+
+> No detectable advantage for AC-DQN over the contextual bandit was observed **under the
+> current reward, archive/reset configuration, benchmark, and tested budget.**
+
+Mean difference **+0.040**, bootstrap 95% CI **`[-0.360, +0.425]`**. Per-seed differences
+`[+0.28, -0.32, +1.00, +0.92, -0.96, -0.48, 0.00, -0.12]`: **3 seeds favour C, 4 favour B, 1
+tied.** The mean is not a small consistent edge; it is a near-even split of very large
+opposite swings.
+
+**This does not show that bootstrapping is useless, and it must not be written that way.**
+Two reasons the design does not put bootstrapping under much strain:
+
+* **The reward is overwhelmingly immediate and dense** — novelty, newly-revealed-action,
+  repetition penalty, step cost, failed-action penalty. A myopic predictor of `r_t` already
+  captures most of the signal by construction.
+* **The archive supplies frontier-state returns**, so the credit that would otherwise have to
+  propagate backwards over a long horizon is substantially short-circuited by the start-state
+  curriculum.
+
+So this benchmark does not strongly test delayed credit assignment, and **"sequential RL is
+unnecessary for web testing" is not a conclusion this supports.** That remains unresolved.
+
+**Effective sample size.** The 8 seeds are strongly bimodal at the run level — most
+checkpoints sit near 0/25 or near 25/25 — so B vs C rests on **8 independent seed-level
+outcomes, not 200 independent episodes.** Pooled episode counts are descriptive only, and
+every interval quoted here resamples checkpoints. Combined with the 0.0 harness agreement
+rate at 4,000 steps, a seed is one draw from a wide run-level distribution rather than a
+reproducible condition.
+
+#### One thing deliberately not done
+
+While tracing where A0 stalls, a generic "page-uniqueness / control-IDF" term was identified
+that would plausibly have carried A0 past `order-4`. It was conceived **after** seeing the
+result, so adding it would have been fitting the heuristic to the benchmark. It is recorded
+in the report as considered-and-rejected rather than used. The same applies to a frontier
+term over unvisited href targets.
+
+#### Unresolved research questions, recorded as open
+
+1. Does **learning** contribute beyond simply providing access to semantic/action-label
+   information?
+2. Under a genuinely **delayed-reward** web-testing formulation, does sequential value
+   learning provide an advantage over contextual-bandit learning?
+3. Does learned action value **transfer across applications**? (The action-conditioned
+   representation exists for this, and a single-fixture benchmark cannot see it.)
+4. How **representative** is the current Deep fixture of broader web-testing tasks?
+
+
+### 2026-09-16 (advisor decision) — resolve the label-information confound before building delayed-credit benchmarks
+
+The advisor reviewed the completed results and approved the sequencing. **Before**
+constructing delayed-credit benchmarks or running further major RL comparisons, resolve the
+A0 label-information confound identified above.
+
+The next experiment has **five conditions**:
+
+| arm | definition |
+|---|---|
+| **A0** | current hand-priority search, label dimensions zero-weighted (unchanged) |
+| **A1** | hand-priority search **+ a generic lexical commit-verb prior** |
+| **A2** | hand-priority search **+ frozen sentence-embedding similarity against generic web-UI anchor phrases** |
+| **B** | existing contextual bandit, **unchanged** |
+| **C** | existing AC-DQN, **unchanged** |
+
+The logic: A0 → A1/A2 varies *access to label information* while holding *learning* fixed at
+zero. If A1/A2 close most of the gap to B, the A-vs-B difference was about access rather than
+learning. If they do not, learning is doing something access alone does not.
+
+#### Methodological requirements, recorded as binding
+
+1. **Freeze the exact definitions of A1 and A2 before inspecting or tuning against the
+   fixture.** This is the whole point; a lexicon tuned against `order-4` measures nothing.
+2. **A1's commit-verb vocabulary must be generic web-UI vocabulary, fixed in advance.**
+3. **A2's anchor phrases must be generic web-UI phrases, fixed in advance.**
+4. **No tuning** of the lexical list or the semantic anchors after inspecting `order-4`
+   behaviour.
+5. **Pre-specify the decision rule for what counts as "A2 matches B"** before running.
+6. **Primary comparison on per-seed solve counts/rates.** Episodes are not independent
+   replicates (see the effective-sample-size note above).
+7. **Preserve the existing protocol byte-for-byte wherever applicable:** 8 seeds, 25
+   evaluation episodes, same environment, same budget, same archive configuration, same
+   epsilon schedule, same reward, same evaluation protocol.
+8. **Report mechanistic metrics for every arm:** completion, Review rate, S1 rate, max depth,
+   and the relevant reward/coverage metrics — not completion alone. The 13b decomposition in
+   the last report is what made the confound visible at all.
+9. **Run the learning-onset re-analysis from existing checkpoints in parallel**, if the
+   required checkpoint/evaluation history exists.
+10. **Commit the A1/A2 definitions before looking at their final results.**
+
+**Status: not started.** A1 and A2 are **not implemented and not run** as of this entry. The
+A0/B/C results above are historical and must remain unchanged.
+
+#### Known issues, intentionally deferred
+
+* **The search-ladder experiment's code and reports are not yet in git.**
+  `src/web_testing_agent/agents/hand_priority.py`, `tests/unit/test_hand_priority.py`,
+  `scripts/search_vs_bandit_vs_ac_dqn.py` and `reports/search_vs_bandit_vs_ac_dqn.*` exist in
+  the working tree but are untracked, as is the whole September series
+  (`agents/contextual_bandit.py`, `agents/diagnostics.py`, five scripts, and their reports).
+  This entry references them by path, so a clone cannot currently follow those references.
+  **Committing them is a separate decision and has not been taken.**
+* `models/checkpoints/` remains gitignored, so the 16 checkpoints every figure here rests on
+  are not in a clone.
+
+
 ---
 
 ## 6. Scoping decisions
@@ -3024,6 +3276,13 @@ What the offline work did establish about grounding generally: **what the judge 
 Completed 2026-08-02: the toy validation site (was #1), viewport-aware prioritization (was #3), the Repo Profiler context decision (was #4), HTML/network normalization (was #9), and the exploration incentive (was #10).
 
 This is now a single ordered critical path rather than parallel workstreams, so the ordering matters more than it did: items 1–4 establish that the core claim holds, items 5–9 make it hold on a real application, and everything from 10 down is expansion that should be cut before the earlier items are compromised (§8, "Timeline ambition vs. scope").
+
+**RL critical path — replaced 2026-09-16.** The RL next-step recorded in the 2026-08-31 entry and in README's *"Where RL research resumes"* — *measure the run-to-run completion distribution at a fixed seed* — **is done** (1/2/5 completions of 5 across three replicates of seed 0; `reports/fixed_seed_completion_distribution.json`), and README is now stale on that point. The RL path is no longer "paused pending a measurement". In order:
+
+* **R1. The five-condition A0/A1/A2/B/C comparison** — the advisor-approved next milestone (§5, 2026-09-16). Resolves whether the A-vs-B gap was about *learning* or about *access to action-label information*. **Not started; A1/A2 not implemented.** Definitions must be frozen and committed before the fixture is inspected or their final results are read.
+* **R2. A delayed-credit web-testing formulation.** Deferred behind R1 by decision. The current reward is dense and immediate (novelty, reveal, repetition, step cost, failed action) and the archive supplies frontier-state returns, so the present benchmark does not strongly test what bootstrapping is for. Question 2 of §5's open list cannot be answered on it.
+* **R3. Cross-application transfer of learned action value** — the property the action-conditioned representation exists for, and the one a single-fixture benchmark structurally cannot see. Depends on item 5/6 (a second real target) more than on any RL change.
+* **Not approved, and not to be attempted opportunistically:** any change to the reward, observation, action encoding, archive behaviour or AC-DQN architecture. Five consecutive nulls were obtained under a frozen configuration, and that freeze is what makes them comparable.
 
 **Ordering note added 2026-08-08.** The toy site is now saturated — both candidate judges score 10/10, so it can neither discriminate between models nor detect further regressions in judgment quality. Everything that remains to be learned requires a real target. But **Gitea should be approached with the masked-random explorer and the judge, not with the DQN.** Those are two different questions — "does the pipeline work on a real application?" and "does RL beat random?" — and running them together on first contact means any failure is ambiguous between an environment problem, a judge problem, and an RL problem. The DQN is also the weakest component by evidence (it lost on the toy site), so pointing it at the hardest target first maximizes the chance of an uninterpretable result. Validate env + judge on Gitea first; keep the RL questions (1b, 1c) on fixtures where they can be answered cleanly.
 
