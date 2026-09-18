@@ -255,8 +255,20 @@ def apply_decision_rule(rows_by_arm: dict, episodes: int) -> dict:
                    and fraction >= DECISION_RULE["match_median_fraction"])
         closes = fraction >= DECISION_RULE["closes_gap_median_fraction"]
 
+        # **Which tail the match test failed on.** §5's criterion is two-sided -- it asks
+        # whether A2 is *within 5* of B -- so failing it means "not equivalent", which can
+        # happen because A2 is far below B or far above it. The approved decision tree is
+        # one-sided: CASE B is licensed only "if A2 meaningfully underperforms B", and the
+        # three-way learned experiment is "conditional on A2 meaningfully trailing B".
+        # Reading `not match` as `trails` conflates the two tails and, on a run where A2
+        # leads, produces a verdict that is the exact opposite of the truth. The frozen
+        # thresholds are untouched; only the direction is now stated instead of assumed.
+        direction = ("above" if arm_median > reference_median
+                     else "below" if arm_median < reference_median else "equal")
         verdicts[arm] = {
             "match_criterion_reachable_at_this_n": reachable,
+            "direction_vs_reference": direction,
+            "trails_reference": direction == "below" and not matches,
             "_partial_run_warning": None if reachable else (
                 f"Only {len(paired)} paired seeds. The frozen rule needs "
                 f"{DECISION_RULE['match_min_seeds']}, so MATCHES B cannot be declared yet "
@@ -304,12 +316,26 @@ def apply_decision_rule(rows_by_arm: dict, episodes: int) -> dict:
             "The conditional three-way learned-feature experiment -- B(lexical) vs "
             "B(anchor) vs B(raw embedding) -- is NOT run. Choose the primary fixed prior "
             "on the out-of-list vocabulary probe.")
+    elif a2.get("trails_reference"):
+        conditional = (
+            "CASE B. A2 fails the frozen match criterion AND its median is below B's, so "
+            "A2 meaningfully trails B and the conditional three-way learned-feature "
+            "experiment IS licensed: B(lexical) vs B(anchor projection) vs B(raw sentence "
+            "embedding), which tests whether the LEARNED component benefits from the "
+            "representation.")
     elif a2:
         conditional = (
-            "CASE B. A2 does not match B under the frozen rule, so A2 meaningfully trails "
-            "B and the conditional three-way learned-feature experiment IS licensed: "
-            "B(lexical) vs B(anchor projection) vs B(raw sentence embedding), which tests "
-            "whether the LEARNED component benefits from the representation.")
+            f"CASE A. A2 fails the frozen match criterion, but on the {a2['direction_vs_reference']} "
+            f"side: its median is {a2['arm_median']} against B's {a2['reference_median']} "
+            f"({a2['median_fraction_of_reference']:.2f}x). The approved decision tree "
+            f"licenses the three-way learned-feature experiment only if A2 *meaningfully "
+            f"underperforms* B, which it does not. A fixed prior explains this decision at "
+            f"least as well as the learned arm, so the three-way experiment is NOT run and "
+            f"the primary fixed prior is chosen on the out-of-list vocabulary probe.\n\n"
+            f"Why the two-sided criterion failed anyway: it asks whether A2 is within 5 of "
+            f"B on each seed, and B's per-seed counts are highly dispersed while A2's are "
+            f"tight. The test is detecting B's variance, not A2's weakness. Report the "
+            f"per-seed columns, not the match count alone.")
     else:
         conditional = "No A2 rows; the conditional experiment cannot be decided."
 
@@ -426,13 +452,62 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--search-steps", type=int, default=0,
                         help=f"0 (default) skips the coverage phase; {SEARCH_STEPS} runs it")
     parser.add_argument("--smoke", action="store_true")
+    parser.add_argument("--reanalyse", action="store_true",
+                        help="recompute summaries and the decision from the persisted rows; "
+                             "runs no episodes and touches no per-seed measurement")
     parser.add_argument("--out-stem", type=Path, default=REPORTS / "a0_a1_a2")
     return parser.parse_args()
+
+
+def reanalyse(stem: Path) -> None:
+    """Recompute `arm_summaries` and `decision` from rows already on disk.
+
+    Needed because a long run holds this module in memory for hours: a defect found in the
+    *analysis* while the run is still measuring cannot reach the file the run will write.
+    This recomputes from `per_checkpoint`, which is measurement, and leaves every
+    measurement untouched -- the rows, the checkpoints, the anomalies and the protocol block
+    are copied through unchanged, and the previous analysis is kept under
+    `superseded_analysis` rather than deleted, so the correction is inspectable.
+    """
+    path = stem.with_suffix(".json")
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    rows_by_arm = payload["per_checkpoint"]
+    episodes = payload["protocol"]["episodes_per_seed"]
+
+    rng = np.random.default_rng(BOOTSTRAP_SEED)
+    payload["superseded_analysis"] = {
+        "decision": payload.get("decision"),
+        "_why": "Recomputed by --reanalyse. The frozen §5 thresholds are unchanged; the "
+                "defect was in mapping 'fails the two-sided match test' onto 'trails B', "
+                "which is false when the arm fails on the upper tail.",
+        "_reanalysed_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    }
+    payload["arm_summaries"] = {arm: summarise_arm(rows, rng, episodes)
+                                for arm, rows in rows_by_arm.items() if rows}
+    payload["decision"] = apply_decision_rule(rows_by_arm, episodes)
+    persist(stem, payload)
+
+    print("=" * 78)
+    print("REANALYSED (no episode was re-run)")
+    print("=" * 78)
+    for arm, rows in rows_by_arm.items():
+        if rows:
+            counts = [r["completion_count"] for r in rows]
+            print(f"{arm:26} {counts}  median {st.median(counts):.1f}")
+    for arm, block in payload["decision"].get("verdicts", {}).items():
+        print(f"\n{arm}: {block['verdict']}  "
+              f"[median {block['arm_median']} vs B {block['reference_median']}, "
+              f"{block['direction_vs_reference']}, trails={block['trails_reference']}]")
+    print(f"\n{payload['decision'].get('conditional_experiment', '')}")
+    print(f"\nRewrote {path}")
 
 
 def main() -> None:
     args = parse_args()
     stem = args.out_stem.with_name(args.out_stem.name + "_smoke") if args.smoke else args.out_stem
+    if args.reanalyse:
+        reanalyse(stem)
+        return
     episodes = 3 if args.smoke else args.episodes
     search_steps = 80 if (args.smoke and args.search_steps) else args.search_steps
     if args.smoke:

@@ -203,6 +203,42 @@ def test_pairing_is_by_seed_not_by_position():
     assert result["verdicts"]["a2_anchor"]["seeds_within_5"] == 4
 
 
+def test_failing_the_match_test_on_the_upper_tail_is_not_trailing():
+    """The defect the 7-seed run exposed, pinned in both directions.
+
+    §5's criterion is two-sided -- within 5 of B on each seed -- so an arm can fail it by
+    being far *above* B. The approved decision tree licenses the three-way learned
+    experiment only "if A2 meaningfully underperforms B", so reading `not match` as `trails`
+    inverts the conclusion on exactly the run that happened: A2 at a median of 22 against
+    B's 14 was reported as "A2 meaningfully trails B".
+
+    Constructed to reproduce the real shape: B highly dispersed, A2 tight and higher, so
+    the within-5 count fails on B's variance rather than on A2's weakness.
+    """
+    result = apply_decision_rule({
+        "a2_anchor": _rows([22, 24, 22, 20, 22, 19, 24, 22]),
+        "contextual_bandit": _rows([17, 8, 0, 0, 25, 14, 24, 20]),
+    }, episodes=25)
+    a2 = result["verdicts"]["a2_anchor"]
+    assert a2["declared_match"] is False, "B's dispersion should still fail the match test"
+    assert a2["seeds_within_5"] < DECISION_RULE["match_min_seeds"]
+    assert a2["direction_vs_reference"] == "above"
+    assert a2["trails_reference"] is False
+    assert result["conditional_experiment"].startswith("CASE A")
+
+
+def test_failing_the_match_test_on_the_lower_tail_is_trailing():
+    """The complement, and the only shape that licenses CASE B."""
+    result = apply_decision_rule({
+        "a2_anchor": _rows([0, 1, 0, 2, 0, 0, 1, 0]),
+        "contextual_bandit": _rows([20, 22, 18, 21, 19, 23, 20, 21]),
+    }, episodes=25)
+    a2 = result["verdicts"]["a2_anchor"]
+    assert a2["direction_vs_reference"] == "below"
+    assert a2["trails_reference"] is True
+    assert result["conditional_experiment"].startswith("CASE B")
+
+
 def test_a_partial_run_cannot_declare_a_verdict():
     """The report is persisted after every seed, so partial reports exist and get read.
 

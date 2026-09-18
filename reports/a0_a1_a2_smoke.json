@@ -1,0 +1,2625 @@
+{
+  "_purpose": "A0/A1/A2 vs B and C: does label information alone resolve the deep fixture's one hard decision?",
+  "_complete": true,
+  "_smoke": true,
+  "_inferential_unit": "the seed / checkpoint, never the episode",
+  "generated_at": "2026-09-18T13:07:04+00:00",
+  "git": {
+    "head": "7b6182c5e774ac8a32e4a123c47b809f192ae500",
+    "branch": "review/measurement-and-gate-fixes",
+    "dirty": true
+  },
+  "protocol": {
+    "fixture": "tests\\fixtures\\deep_flow_site",
+    "seeds": [
+      0,
+      1
+    ],
+    "episodes_per_seed": 3,
+    "episode_steps": 40,
+    "eval_epsilon": 0.05,
+    "search_steps_per_arm_per_seed": 0,
+    "archive_p_return_during_search": 0.5,
+    "evaluation_start": "landing page, archive disabled",
+    "judge": "disabled (NullRewardModel)",
+    "_source": "imported from scripts/search_vs_bandit_vs_ac_dqn.py, not restated",
+    "_deviation": "search_steps=0 by default. The search phase builds its own policy and archive and returns neither, so no evaluation row reads it; it reports search coverage only. Run with --search-steps 4000 to produce that table."
+  },
+  "arm_identity": {
+    "a0_hand_priority": {
+      "rung": "A0",
+      "learns": false,
+      "reads_labels": false,
+      "note": "counters cleared every episode (stationary-policy reading)"
+    },
+    "a0_hand_priority_search": {
+      "rung": "A0",
+      "learns": false,
+      "reads_labels": false,
+      "note": "run-level counters carried across the 25 episodes (search reading)"
+    },
+    "a1_lexical": {
+      "rung": "A1",
+      "learns": false,
+      "reads_labels": "frozen word list",
+      "note": "stationary-policy reading"
+    },
+    "a1_lexical_search": {
+      "rung": "A1",
+      "learns": false,
+      "reads_labels": "frozen word list",
+      "note": "search reading"
+    },
+    "a2_anchor": {
+      "rung": "A2",
+      "learns": false,
+      "reads_labels": "frozen MiniLM anchor axis",
+      "note": "stationary-policy reading"
+    },
+    "a2_anchor_search": {
+      "rung": "A2",
+      "learns": false,
+      "reads_labels": "frozen MiniLM anchor axis",
+      "note": "search reading"
+    },
+    "contextual_bandit": {
+      "rung": "B",
+      "learns": true,
+      "reads_labels": "hashed",
+      "note": "re-evaluated from the finalized checkpoint, not retrained"
+    },
+    "ac_dqn": {
+      "rung": "C",
+      "learns": true,
+      "reads_labels": "hashed",
+      "note": "re-evaluated from the finalized checkpoint, not retrained"
+    }
+  },
+  "provenance_warning": "A1's word list is NOT independent of this fixture (reports/audit_a1_provenance.json): frozen 39 days after the fixture, by an author who had traced A0's stall to order-4.html, and its five fixture-relevant tokens rank the correct control first at 5 of 5 gated decisions. A1/A2 numbers here are an UPPER BOUND on what a generic fixed prior achieves.",
+  "checkpoints": [
+    {
+      "arm": "ac_dqn",
+      "seed": 0,
+      "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\models\\checkpoints\\postmarkov_baseline\\ac_dqn_seed0_final.zip",
+      "sha256_before": "e3766204d879bb79c354206a1d319e61face6629a1a8f7f3c8dfd128976c129c",
+      "bytes": 17224308,
+      "sha256_after": "e3766204d879bb79c354206a1d319e61face6629a1a8f7f3c8dfd128976c129c",
+      "unmodified": true
+    },
+    {
+      "arm": "ac_dqn",
+      "seed": 1,
+      "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\models\\checkpoints\\postmarkov_baseline\\ac_dqn_seed1_final.zip",
+      "sha256_before": "e801cf78b5cb55cc19847ff9684b80e7a42c06cf79b7199b57c56f25760362b8",
+      "bytes": 17224308,
+      "sha256_after": "e801cf78b5cb55cc19847ff9684b80e7a42c06cf79b7199b57c56f25760362b8",
+      "unmodified": true
+    },
+    {
+      "arm": "contextual_bandit",
+      "seed": 0,
+      "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\models\\checkpoints\\contextual_bandit\\contextual_bandit_seed0_final.zip",
+      "sha256_before": "0267e470b0771db2a144437cce21b757a26d08cb230b76d6c7443d8133b85094",
+      "bytes": 16671383,
+      "sha256_after": "0267e470b0771db2a144437cce21b757a26d08cb230b76d6c7443d8133b85094",
+      "unmodified": true
+    },
+    {
+      "arm": "contextual_bandit",
+      "seed": 1,
+      "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\models\\checkpoints\\contextual_bandit\\contextual_bandit_seed1_final.zip",
+      "sha256_before": "7fbee7fb417dbbaf801dc98036c29f6cd2196eb5ed588ba49039712531f50063",
+      "bytes": 16671383,
+      "sha256_after": "7fbee7fb417dbbaf801dc98036c29f6cd2196eb5ed588ba49039712531f50063",
+      "unmodified": true
+    }
+  ],
+  "all_checkpoints_unmodified": true,
+  "per_checkpoint": {
+    "a0_hand_priority": [
+      {
+        "arm": "a0_hand_priority",
+        "seed": 0,
+        "n_episodes": 3,
+        "completion_count": 0,
+        "completion_rate": 0.0,
+        "review_count": 1,
+        "review_rate": 0.3333,
+        "s1_count": 3,
+        "s1_rate": 1.0,
+        "mean_reward": 7.1066,
+        "median_reward": 8.615,
+        "std_reward": 2.9973,
+        "min_reward": 3.6547,
+        "max_reward": 9.05,
+        "mean_depth": 0.3917,
+        "max_depth": 4,
+        "unique_states_mean": 12,
+        "unique_states_run_total": 14,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 1,
+        "wall_clock_s": 50.9,
+        "flow_metrics": {
+          "max_depth": 4,
+          "mean_depth": 0.39,
+          "reached_receipt": 0,
+          "reached_review": 1,
+          "flow_completions": 0,
+          "episodes_reaching_review": 1,
+          "episodes_leaving_stage_1": 3
+        },
+        "episodes": [
+          {
+            "arm": "a0_hand_priority",
+            "seed": 0,
+            "episode": 0,
+            "eval_seed": 0,
+            "completed": false,
+            "reached_review": false,
+            "reached_s1": true,
+            "reward": 9.05,
+            "max_depth": 2,
+            "mean_depth": 0.225,
+            "steps": 40,
+            "unique_states": 11
+          },
+          {
+            "arm": "a0_hand_priority",
+            "seed": 0,
+            "episode": 1,
+            "eval_seed": 1,
+            "completed": false,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 8.615,
+            "max_depth": 4,
+            "mean_depth": 0.425,
+            "steps": 40,
+            "unique_states": 14
+          },
+          {
+            "arm": "a0_hand_priority",
+            "seed": 0,
+            "episode": 2,
+            "eval_seed": 2,
+            "completed": false,
+            "reached_review": false,
+            "reached_s1": true,
+            "reward": 3.6547,
+            "max_depth": 2,
+            "mean_depth": 0.525,
+            "steps": 40,
+            "unique_states": 11
+          }
+        ],
+        "policy": {
+          "algorithm": "hand_priority_search",
+          "learns": false,
+          "epsilon": 0.05,
+          "carry_counts_across_episodes": false,
+          "label_prior": null,
+          "label_prior_weight": 0.0,
+          "scalar_weights": {
+            "is_newly_revealed": 4.0,
+            "is_form_control": 1.5,
+            "value_ordinal": 1.0,
+            "navigational": 0.6,
+            "in_viewport": 0.3,
+            "has_href": 0.1,
+            "opens_new_tab": -1.0,
+            "is_fixed_action": -2.0,
+            "taken_this_episode": -6.0,
+            "taken_here": -3.0
+          },
+          "type_weights": {
+            "CLICK": 0.3,
+            "SELECT": 0.3,
+            "TYPE": 0.3,
+            "RAPID_CLICK": -0.5,
+            "NO_OP": -1.0,
+            "SCROLL": 0.0,
+            "RESIZE_VIEWPORT": -0.5,
+            "BROWSER_BACK": 0.0,
+            "BROWSER_FORWARD": -0.5,
+            "REFRESH": -0.5
+          },
+          "label_block_weight_l1": 0.0,
+          "tie_break": "lowest action index (action_registry's own priority order)",
+          "steps": 120,
+          "exploratory_steps": 8,
+          "ties_broken": 90
+        },
+        "errors": null
+      },
+      {
+        "arm": "a0_hand_priority",
+        "seed": 1,
+        "n_episodes": 3,
+        "completion_count": 0,
+        "completion_rate": 0.0,
+        "review_count": 2,
+        "review_rate": 0.6667,
+        "s1_count": 3,
+        "s1_rate": 1.0,
+        "mean_reward": 8.4331,
+        "median_reward": 8.136,
+        "std_reward": 4.975,
+        "min_reward": 3.6133,
+        "max_reward": 13.55,
+        "mean_depth": 0.3833,
+        "max_depth": 4,
+        "unique_states_mean": 13.333,
+        "unique_states_run_total": 14,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 0,
+        "wall_clock_s": 44.7,
+        "flow_metrics": {
+          "max_depth": 4,
+          "mean_depth": 0.38,
+          "reached_receipt": 0,
+          "reached_review": 2,
+          "flow_completions": 0,
+          "episodes_reaching_review": 2,
+          "episodes_leaving_stage_1": 3
+        },
+        "episodes": [
+          {
+            "arm": "a0_hand_priority",
+            "seed": 1,
+            "episode": 0,
+            "eval_seed": 1,
+            "completed": false,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 13.55,
+            "max_depth": 4,
+            "mean_depth": 0.475,
+            "steps": 40,
+            "unique_states": 14
+          },
+          {
+            "arm": "a0_hand_priority",
+            "seed": 1,
+            "episode": 1,
+            "eval_seed": 2,
+            "completed": false,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 8.136,
+            "max_depth": 4,
+            "mean_depth": 0.425,
+            "steps": 40,
+            "unique_states": 14
+          },
+          {
+            "arm": "a0_hand_priority",
+            "seed": 1,
+            "episode": 2,
+            "eval_seed": 3,
+            "completed": false,
+            "reached_review": false,
+            "reached_s1": true,
+            "reward": 3.6133,
+            "max_depth": 3,
+            "mean_depth": 0.25,
+            "steps": 40,
+            "unique_states": 12
+          }
+        ],
+        "policy": {
+          "algorithm": "hand_priority_search",
+          "learns": false,
+          "epsilon": 0.05,
+          "carry_counts_across_episodes": false,
+          "label_prior": null,
+          "label_prior_weight": 0.0,
+          "scalar_weights": {
+            "is_newly_revealed": 4.0,
+            "is_form_control": 1.5,
+            "value_ordinal": 1.0,
+            "navigational": 0.6,
+            "in_viewport": 0.3,
+            "has_href": 0.1,
+            "opens_new_tab": -1.0,
+            "is_fixed_action": -2.0,
+            "taken_this_episode": -6.0,
+            "taken_here": -3.0
+          },
+          "type_weights": {
+            "CLICK": 0.3,
+            "SELECT": 0.3,
+            "TYPE": 0.3,
+            "RAPID_CLICK": -0.5,
+            "NO_OP": -1.0,
+            "SCROLL": 0.0,
+            "RESIZE_VIEWPORT": -0.5,
+            "BROWSER_BACK": 0.0,
+            "BROWSER_FORWARD": -0.5,
+            "REFRESH": -0.5
+          },
+          "label_block_weight_l1": 0.0,
+          "tie_break": "lowest action index (action_registry's own priority order)",
+          "steps": 120,
+          "exploratory_steps": 5,
+          "ties_broken": 95
+        },
+        "errors": null
+      }
+    ],
+    "a0_hand_priority_search": [
+      {
+        "arm": "a0_hand_priority_search",
+        "seed": 0,
+        "n_episodes": 3,
+        "completion_count": 0,
+        "completion_rate": 0.0,
+        "review_count": 1,
+        "review_rate": 0.3333,
+        "s1_count": 2,
+        "s1_rate": 0.6667,
+        "mean_reward": 5.3458,
+        "median_reward": 8.6914,
+        "std_reward": 6.1079,
+        "min_reward": -1.7039,
+        "max_reward": 9.05,
+        "mean_depth": 0.2667,
+        "max_depth": 4,
+        "unique_states_mean": 10.667,
+        "unique_states_run_total": 14,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 1,
+        "wall_clock_s": 44.8,
+        "flow_metrics": {
+          "max_depth": 4,
+          "mean_depth": 0.27,
+          "reached_receipt": 0,
+          "reached_review": 2,
+          "flow_completions": 0,
+          "episodes_reaching_review": 1,
+          "episodes_leaving_stage_1": 2
+        },
+        "episodes": [
+          {
+            "arm": "a0_hand_priority_search",
+            "seed": 0,
+            "episode": 0,
+            "eval_seed": 0,
+            "completed": false,
+            "reached_review": false,
+            "reached_s1": true,
+            "reward": 9.05,
+            "max_depth": 2,
+            "mean_depth": 0.225,
+            "steps": 40,
+            "unique_states": 11
+          },
+          {
+            "arm": "a0_hand_priority_search",
+            "seed": 0,
+            "episode": 1,
+            "eval_seed": 1,
+            "completed": false,
+            "reached_review": false,
+            "reached_s1": false,
+            "reward": -1.7039,
+            "max_depth": 0,
+            "mean_depth": 0,
+            "steps": 40,
+            "unique_states": 7
+          },
+          {
+            "arm": "a0_hand_priority_search",
+            "seed": 0,
+            "episode": 2,
+            "eval_seed": 2,
+            "completed": false,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 8.6914,
+            "max_depth": 4,
+            "mean_depth": 0.575,
+            "steps": 40,
+            "unique_states": 14
+          }
+        ],
+        "policy": {
+          "algorithm": "hand_priority_search",
+          "learns": false,
+          "epsilon": 0.05,
+          "carry_counts_across_episodes": true,
+          "label_prior": null,
+          "label_prior_weight": 0.0,
+          "scalar_weights": {
+            "is_newly_revealed": 4.0,
+            "is_form_control": 1.5,
+            "value_ordinal": 1.0,
+            "navigational": 0.6,
+            "in_viewport": 0.3,
+            "has_href": 0.1,
+            "opens_new_tab": -1.0,
+            "is_fixed_action": -2.0,
+            "taken_this_episode": -6.0,
+            "taken_here": -3.0
+          },
+          "type_weights": {
+            "CLICK": 0.3,
+            "SELECT": 0.3,
+            "TYPE": 0.3,
+            "RAPID_CLICK": -0.5,
+            "NO_OP": -1.0,
+            "SCROLL": 0.0,
+            "RESIZE_VIEWPORT": -0.5,
+            "BROWSER_BACK": 0.0,
+            "BROWSER_FORWARD": -0.5,
+            "REFRESH": -0.5
+          },
+          "label_block_weight_l1": 0.0,
+          "tie_break": "lowest action index (action_registry's own priority order)",
+          "steps": 120,
+          "exploratory_steps": 8,
+          "ties_broken": 91
+        },
+        "errors": null
+      },
+      {
+        "arm": "a0_hand_priority_search",
+        "seed": 1,
+        "n_episodes": 3,
+        "completion_count": 0,
+        "completion_rate": 0.0,
+        "review_count": 1,
+        "review_rate": 0.3333,
+        "s1_count": 2,
+        "s1_rate": 0.6667,
+        "mean_reward": 5.657,
+        "median_reward": 5.0718,
+        "std_reward": 7.6172,
+        "min_reward": -1.6507,
+        "max_reward": 13.55,
+        "mean_depth": 0.2417,
+        "max_depth": 4,
+        "unique_states_mean": 11.333,
+        "unique_states_run_total": 14,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 0,
+        "wall_clock_s": 44.5,
+        "flow_metrics": {
+          "max_depth": 4,
+          "mean_depth": 0.24,
+          "reached_receipt": 0,
+          "reached_review": 1,
+          "flow_completions": 0,
+          "episodes_reaching_review": 1,
+          "episodes_leaving_stage_1": 2
+        },
+        "episodes": [
+          {
+            "arm": "a0_hand_priority_search",
+            "seed": 1,
+            "episode": 0,
+            "eval_seed": 1,
+            "completed": false,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 13.55,
+            "max_depth": 4,
+            "mean_depth": 0.475,
+            "steps": 40,
+            "unique_states": 14
+          },
+          {
+            "arm": "a0_hand_priority_search",
+            "seed": 1,
+            "episode": 1,
+            "eval_seed": 2,
+            "completed": false,
+            "reached_review": false,
+            "reached_s1": true,
+            "reward": 5.0718,
+            "max_depth": 3,
+            "mean_depth": 0.225,
+            "steps": 40,
+            "unique_states": 12
+          },
+          {
+            "arm": "a0_hand_priority_search",
+            "seed": 1,
+            "episode": 2,
+            "eval_seed": 3,
+            "completed": false,
+            "reached_review": false,
+            "reached_s1": false,
+            "reward": -1.6507,
+            "max_depth": 1,
+            "mean_depth": 0.025,
+            "steps": 40,
+            "unique_states": 8
+          }
+        ],
+        "policy": {
+          "algorithm": "hand_priority_search",
+          "learns": false,
+          "epsilon": 0.05,
+          "carry_counts_across_episodes": true,
+          "label_prior": null,
+          "label_prior_weight": 0.0,
+          "scalar_weights": {
+            "is_newly_revealed": 4.0,
+            "is_form_control": 1.5,
+            "value_ordinal": 1.0,
+            "navigational": 0.6,
+            "in_viewport": 0.3,
+            "has_href": 0.1,
+            "opens_new_tab": -1.0,
+            "is_fixed_action": -2.0,
+            "taken_this_episode": -6.0,
+            "taken_here": -3.0
+          },
+          "type_weights": {
+            "CLICK": 0.3,
+            "SELECT": 0.3,
+            "TYPE": 0.3,
+            "RAPID_CLICK": -0.5,
+            "NO_OP": -1.0,
+            "SCROLL": 0.0,
+            "RESIZE_VIEWPORT": -0.5,
+            "BROWSER_BACK": 0.0,
+            "BROWSER_FORWARD": -0.5,
+            "REFRESH": -0.5
+          },
+          "label_block_weight_l1": 0.0,
+          "tie_break": "lowest action index (action_registry's own priority order)",
+          "steps": 120,
+          "exploratory_steps": 5,
+          "ties_broken": 91
+        },
+        "errors": null
+      }
+    ],
+    "a1_lexical": [
+      {
+        "arm": "a1_lexical",
+        "seed": 0,
+        "n_episodes": 3,
+        "completion_count": 3,
+        "completion_rate": 1.0,
+        "review_count": 3,
+        "review_rate": 1.0,
+        "s1_count": 3,
+        "s1_rate": 1.0,
+        "mean_reward": 9.8913,
+        "median_reward": 8.5123,
+        "std_reward": 3.8587,
+        "min_reward": 6.9116,
+        "max_reward": 14.25,
+        "mean_depth": 0.5583,
+        "max_depth": 5,
+        "unique_states_mean": 15,
+        "unique_states_run_total": 15,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 1,
+        "wall_clock_s": 44.6,
+        "flow_metrics": {
+          "max_depth": 5,
+          "mean_depth": 0.56,
+          "reached_receipt": 3,
+          "reached_review": 6,
+          "flow_completions": 3,
+          "episodes_reaching_review": 3,
+          "episodes_leaving_stage_1": 3
+        },
+        "episodes": [
+          {
+            "arm": "a1_lexical",
+            "seed": 0,
+            "episode": 0,
+            "eval_seed": 0,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 14.25,
+            "max_depth": 5,
+            "mean_depth": 0.575,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a1_lexical",
+            "seed": 0,
+            "episode": 1,
+            "eval_seed": 1,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 8.5123,
+            "max_depth": 5,
+            "mean_depth": 0.55,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a1_lexical",
+            "seed": 0,
+            "episode": 2,
+            "eval_seed": 2,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 6.9116,
+            "max_depth": 5,
+            "mean_depth": 0.55,
+            "steps": 40,
+            "unique_states": 15
+          }
+        ],
+        "policy": {
+          "algorithm": "hand_priority_search",
+          "learns": false,
+          "epsilon": 0.05,
+          "carry_counts_across_episodes": false,
+          "label_prior": {
+            "prior": "A1_lexical",
+            "kind": "frozen lexical word list",
+            "vocabulary_version": "2026-09-18.frozen",
+            "positive_tokens": [
+              "apply",
+              "buy",
+              "checkout",
+              "complete",
+              "confirm",
+              "continue",
+              "create",
+              "done",
+              "finish",
+              "next",
+              "order",
+              "pay",
+              "place",
+              "proceed",
+              "purchase",
+              "register",
+              "save",
+              "send",
+              "signup",
+              "submit",
+              "subscribe"
+            ],
+            "negative_tokens": [
+              "abort",
+              "back",
+              "cancel",
+              "clear",
+              "close",
+              "delete",
+              "discard",
+              "exit",
+              "logout",
+              "previous",
+              "remove",
+              "reset",
+              "return",
+              "signout"
+            ],
+            "learns": false
+          },
+          "label_prior_weight": 1.2,
+          "scalar_weights": {
+            "is_newly_revealed": 4.0,
+            "is_form_control": 1.5,
+            "value_ordinal": 1.0,
+            "navigational": 0.6,
+            "in_viewport": 0.3,
+            "has_href": 0.1,
+            "opens_new_tab": -1.0,
+            "is_fixed_action": -2.0,
+            "taken_this_episode": -6.0,
+            "taken_here": -3.0
+          },
+          "type_weights": {
+            "CLICK": 0.3,
+            "SELECT": 0.3,
+            "TYPE": 0.3,
+            "RAPID_CLICK": -0.5,
+            "NO_OP": -1.0,
+            "SCROLL": 0.0,
+            "RESIZE_VIEWPORT": -0.5,
+            "BROWSER_BACK": 0.0,
+            "BROWSER_FORWARD": -0.5,
+            "REFRESH": -0.5
+          },
+          "label_block_weight_l1": 0.0,
+          "tie_break": "lowest action index (action_registry's own priority order)",
+          "steps": 120,
+          "exploratory_steps": 8,
+          "ties_broken": 83
+        },
+        "errors": null
+      },
+      {
+        "arm": "a1_lexical",
+        "seed": 1,
+        "n_episodes": 3,
+        "completion_count": 3,
+        "completion_rate": 1.0,
+        "review_count": 3,
+        "review_rate": 1.0,
+        "s1_count": 3,
+        "s1_rate": 1.0,
+        "mean_reward": 9.8034,
+        "median_reward": 8.4729,
+        "std_reward": 3.8098,
+        "min_reward": 6.8372,
+        "max_reward": 14.1,
+        "mean_depth": 0.55,
+        "max_depth": 5,
+        "unique_states_mean": 15,
+        "unique_states_run_total": 15,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 0,
+        "wall_clock_s": 44.5,
+        "flow_metrics": {
+          "max_depth": 5,
+          "mean_depth": 0.55,
+          "reached_receipt": 3,
+          "reached_review": 6,
+          "flow_completions": 3,
+          "episodes_reaching_review": 3,
+          "episodes_leaving_stage_1": 3
+        },
+        "episodes": [
+          {
+            "arm": "a1_lexical",
+            "seed": 1,
+            "episode": 0,
+            "eval_seed": 1,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 14.1,
+            "max_depth": 5,
+            "mean_depth": 0.55,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a1_lexical",
+            "seed": 1,
+            "episode": 1,
+            "eval_seed": 2,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 8.4729,
+            "max_depth": 5,
+            "mean_depth": 0.55,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a1_lexical",
+            "seed": 1,
+            "episode": 2,
+            "eval_seed": 3,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 6.8372,
+            "max_depth": 5,
+            "mean_depth": 0.55,
+            "steps": 40,
+            "unique_states": 15
+          }
+        ],
+        "policy": {
+          "algorithm": "hand_priority_search",
+          "learns": false,
+          "epsilon": 0.05,
+          "carry_counts_across_episodes": false,
+          "label_prior": {
+            "prior": "A1_lexical",
+            "kind": "frozen lexical word list",
+            "vocabulary_version": "2026-09-18.frozen",
+            "positive_tokens": [
+              "apply",
+              "buy",
+              "checkout",
+              "complete",
+              "confirm",
+              "continue",
+              "create",
+              "done",
+              "finish",
+              "next",
+              "order",
+              "pay",
+              "place",
+              "proceed",
+              "purchase",
+              "register",
+              "save",
+              "send",
+              "signup",
+              "submit",
+              "subscribe"
+            ],
+            "negative_tokens": [
+              "abort",
+              "back",
+              "cancel",
+              "clear",
+              "close",
+              "delete",
+              "discard",
+              "exit",
+              "logout",
+              "previous",
+              "remove",
+              "reset",
+              "return",
+              "signout"
+            ],
+            "learns": false
+          },
+          "label_prior_weight": 1.2,
+          "scalar_weights": {
+            "is_newly_revealed": 4.0,
+            "is_form_control": 1.5,
+            "value_ordinal": 1.0,
+            "navigational": 0.6,
+            "in_viewport": 0.3,
+            "has_href": 0.1,
+            "opens_new_tab": -1.0,
+            "is_fixed_action": -2.0,
+            "taken_this_episode": -6.0,
+            "taken_here": -3.0
+          },
+          "type_weights": {
+            "CLICK": 0.3,
+            "SELECT": 0.3,
+            "TYPE": 0.3,
+            "RAPID_CLICK": -0.5,
+            "NO_OP": -1.0,
+            "SCROLL": 0.0,
+            "RESIZE_VIEWPORT": -0.5,
+            "BROWSER_BACK": 0.0,
+            "BROWSER_FORWARD": -0.5,
+            "REFRESH": -0.5
+          },
+          "label_block_weight_l1": 0.0,
+          "tie_break": "lowest action index (action_registry's own priority order)",
+          "steps": 120,
+          "exploratory_steps": 5,
+          "ties_broken": 86
+        },
+        "errors": null
+      }
+    ],
+    "a1_lexical_search": [
+      {
+        "arm": "a1_lexical_search",
+        "seed": 0,
+        "n_episodes": 3,
+        "completion_count": 2,
+        "completion_rate": 0.6667,
+        "review_count": 2,
+        "review_rate": 0.6667,
+        "s1_count": 2,
+        "s1_rate": 0.6667,
+        "mean_reward": 7.389,
+        "median_reward": 9.3481,
+        "std_reward": 8.0221,
+        "min_reward": -1.4312,
+        "max_reward": 14.25,
+        "mean_depth": 0.4083,
+        "max_depth": 5,
+        "unique_states_mean": 12.667,
+        "unique_states_run_total": 17,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 1,
+        "wall_clock_s": 44.9,
+        "flow_metrics": {
+          "max_depth": 5,
+          "mean_depth": 0.41,
+          "reached_receipt": 2,
+          "reached_review": 4,
+          "flow_completions": 2,
+          "episodes_reaching_review": 2,
+          "episodes_leaving_stage_1": 2
+        },
+        "episodes": [
+          {
+            "arm": "a1_lexical_search",
+            "seed": 0,
+            "episode": 0,
+            "eval_seed": 0,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 14.25,
+            "max_depth": 5,
+            "mean_depth": 0.575,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a1_lexical_search",
+            "seed": 0,
+            "episode": 1,
+            "eval_seed": 1,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 9.3481,
+            "max_depth": 5,
+            "mean_depth": 0.6,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a1_lexical_search",
+            "seed": 0,
+            "episode": 2,
+            "eval_seed": 2,
+            "completed": false,
+            "reached_review": false,
+            "reached_s1": false,
+            "reward": -1.4312,
+            "max_depth": 1,
+            "mean_depth": 0.05,
+            "steps": 40,
+            "unique_states": 8
+          }
+        ],
+        "policy": {
+          "algorithm": "hand_priority_search",
+          "learns": false,
+          "epsilon": 0.05,
+          "carry_counts_across_episodes": true,
+          "label_prior": {
+            "prior": "A1_lexical",
+            "kind": "frozen lexical word list",
+            "vocabulary_version": "2026-09-18.frozen",
+            "positive_tokens": [
+              "apply",
+              "buy",
+              "checkout",
+              "complete",
+              "confirm",
+              "continue",
+              "create",
+              "done",
+              "finish",
+              "next",
+              "order",
+              "pay",
+              "place",
+              "proceed",
+              "purchase",
+              "register",
+              "save",
+              "send",
+              "signup",
+              "submit",
+              "subscribe"
+            ],
+            "negative_tokens": [
+              "abort",
+              "back",
+              "cancel",
+              "clear",
+              "close",
+              "delete",
+              "discard",
+              "exit",
+              "logout",
+              "previous",
+              "remove",
+              "reset",
+              "return",
+              "signout"
+            ],
+            "learns": false
+          },
+          "label_prior_weight": 1.2,
+          "scalar_weights": {
+            "is_newly_revealed": 4.0,
+            "is_form_control": 1.5,
+            "value_ordinal": 1.0,
+            "navigational": 0.6,
+            "in_viewport": 0.3,
+            "has_href": 0.1,
+            "opens_new_tab": -1.0,
+            "is_fixed_action": -2.0,
+            "taken_this_episode": -6.0,
+            "taken_here": -3.0
+          },
+          "type_weights": {
+            "CLICK": 0.3,
+            "SELECT": 0.3,
+            "TYPE": 0.3,
+            "RAPID_CLICK": -0.5,
+            "NO_OP": -1.0,
+            "SCROLL": 0.0,
+            "RESIZE_VIEWPORT": -0.5,
+            "BROWSER_BACK": 0.0,
+            "BROWSER_FORWARD": -0.5,
+            "REFRESH": -0.5
+          },
+          "label_block_weight_l1": 0.0,
+          "tie_break": "lowest action index (action_registry's own priority order)",
+          "steps": 120,
+          "exploratory_steps": 8,
+          "ties_broken": 80
+        },
+        "errors": null
+      },
+      {
+        "arm": "a1_lexical_search",
+        "seed": 1,
+        "n_episodes": 3,
+        "completion_count": 2,
+        "completion_rate": 0.6667,
+        "review_count": 2,
+        "review_rate": 0.6667,
+        "s1_count": 2,
+        "s1_rate": 0.6667,
+        "mean_reward": 7.5291,
+        "median_reward": 9.7086,
+        "std_reward": 7.8898,
+        "min_reward": -1.2213,
+        "max_reward": 14.1,
+        "mean_depth": 0.4083,
+        "max_depth": 5,
+        "unique_states_mean": 12.667,
+        "unique_states_run_total": 17,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 0,
+        "wall_clock_s": 44.5,
+        "flow_metrics": {
+          "max_depth": 5,
+          "mean_depth": 0.41,
+          "reached_receipt": 2,
+          "reached_review": 4,
+          "flow_completions": 2,
+          "episodes_reaching_review": 2,
+          "episodes_leaving_stage_1": 2
+        },
+        "episodes": [
+          {
+            "arm": "a1_lexical_search",
+            "seed": 1,
+            "episode": 0,
+            "eval_seed": 1,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 14.1,
+            "max_depth": 5,
+            "mean_depth": 0.55,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a1_lexical_search",
+            "seed": 1,
+            "episode": 1,
+            "eval_seed": 2,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 9.7086,
+            "max_depth": 5,
+            "mean_depth": 0.625,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a1_lexical_search",
+            "seed": 1,
+            "episode": 2,
+            "eval_seed": 3,
+            "completed": false,
+            "reached_review": false,
+            "reached_s1": false,
+            "reward": -1.2213,
+            "max_depth": 1,
+            "mean_depth": 0.05,
+            "steps": 40,
+            "unique_states": 8
+          }
+        ],
+        "policy": {
+          "algorithm": "hand_priority_search",
+          "learns": false,
+          "epsilon": 0.05,
+          "carry_counts_across_episodes": true,
+          "label_prior": {
+            "prior": "A1_lexical",
+            "kind": "frozen lexical word list",
+            "vocabulary_version": "2026-09-18.frozen",
+            "positive_tokens": [
+              "apply",
+              "buy",
+              "checkout",
+              "complete",
+              "confirm",
+              "continue",
+              "create",
+              "done",
+              "finish",
+              "next",
+              "order",
+              "pay",
+              "place",
+              "proceed",
+              "purchase",
+              "register",
+              "save",
+              "send",
+              "signup",
+              "submit",
+              "subscribe"
+            ],
+            "negative_tokens": [
+              "abort",
+              "back",
+              "cancel",
+              "clear",
+              "close",
+              "delete",
+              "discard",
+              "exit",
+              "logout",
+              "previous",
+              "remove",
+              "reset",
+              "return",
+              "signout"
+            ],
+            "learns": false
+          },
+          "label_prior_weight": 1.2,
+          "scalar_weights": {
+            "is_newly_revealed": 4.0,
+            "is_form_control": 1.5,
+            "value_ordinal": 1.0,
+            "navigational": 0.6,
+            "in_viewport": 0.3,
+            "has_href": 0.1,
+            "opens_new_tab": -1.0,
+            "is_fixed_action": -2.0,
+            "taken_this_episode": -6.0,
+            "taken_here": -3.0
+          },
+          "type_weights": {
+            "CLICK": 0.3,
+            "SELECT": 0.3,
+            "TYPE": 0.3,
+            "RAPID_CLICK": -0.5,
+            "NO_OP": -1.0,
+            "SCROLL": 0.0,
+            "RESIZE_VIEWPORT": -0.5,
+            "BROWSER_BACK": 0.0,
+            "BROWSER_FORWARD": -0.5,
+            "REFRESH": -0.5
+          },
+          "label_block_weight_l1": 0.0,
+          "tie_break": "lowest action index (action_registry's own priority order)",
+          "steps": 120,
+          "exploratory_steps": 5,
+          "ties_broken": 82
+        },
+        "errors": null
+      }
+    ],
+    "a2_anchor": [
+      {
+        "arm": "a2_anchor",
+        "seed": 0,
+        "n_episodes": 3,
+        "completion_count": 3,
+        "completion_rate": 1.0,
+        "review_count": 3,
+        "review_rate": 1.0,
+        "s1_count": 3,
+        "s1_rate": 1.0,
+        "mean_reward": 9.7227,
+        "median_reward": 8.5746,
+        "std_reward": 4.2706,
+        "min_reward": 6.1436,
+        "max_reward": 14.45,
+        "mean_depth": 0.625,
+        "max_depth": 5,
+        "unique_states_mean": 14.667,
+        "unique_states_run_total": 15,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 1,
+        "wall_clock_s": 45.2,
+        "flow_metrics": {
+          "max_depth": 5,
+          "mean_depth": 0.62,
+          "reached_receipt": 4,
+          "reached_review": 7,
+          "flow_completions": 3,
+          "episodes_reaching_review": 3,
+          "episodes_leaving_stage_1": 3
+        },
+        "episodes": [
+          {
+            "arm": "a2_anchor",
+            "seed": 0,
+            "episode": 0,
+            "eval_seed": 0,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 14.45,
+            "max_depth": 5,
+            "mean_depth": 0.725,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a2_anchor",
+            "seed": 0,
+            "episode": 1,
+            "eval_seed": 1,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 8.5746,
+            "max_depth": 5,
+            "mean_depth": 0.575,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a2_anchor",
+            "seed": 0,
+            "episode": 2,
+            "eval_seed": 2,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 6.1436,
+            "max_depth": 5,
+            "mean_depth": 0.575,
+            "steps": 40,
+            "unique_states": 14
+          }
+        ],
+        "policy": {
+          "algorithm": "hand_priority_search",
+          "learns": false,
+          "epsilon": 0.05,
+          "carry_counts_across_episodes": false,
+          "label_prior": {
+            "prior": "A2_anchor_projection",
+            "kind": "frozen sentence-embedding anchor axis on the 48-D projection",
+            "anchors_version": "2026-09-18.frozen",
+            "positive_anchors": [
+              "submit the form",
+              "confirm and place the order",
+              "proceed to the next step",
+              "complete the purchase",
+              "save these changes",
+              "create the account"
+            ],
+            "negative_anchors": [
+              "cancel and discard changes",
+              "go back to the previous page",
+              "return to the home page",
+              "log out of the account",
+              "read the terms and conditions",
+              "contact customer support"
+            ],
+            "encoder": "sentence-transformers/all-MiniLM-L6-v2",
+            "projection_fingerprint": "6d15b39cc5e276ff",
+            "labels_cached": 36,
+            "learns": false
+          },
+          "label_prior_weight": 1.2,
+          "scalar_weights": {
+            "is_newly_revealed": 4.0,
+            "is_form_control": 1.5,
+            "value_ordinal": 1.0,
+            "navigational": 0.6,
+            "in_viewport": 0.3,
+            "has_href": 0.1,
+            "opens_new_tab": -1.0,
+            "is_fixed_action": -2.0,
+            "taken_this_episode": -6.0,
+            "taken_here": -3.0
+          },
+          "type_weights": {
+            "CLICK": 0.3,
+            "SELECT": 0.3,
+            "TYPE": 0.3,
+            "RAPID_CLICK": -0.5,
+            "NO_OP": -1.0,
+            "SCROLL": 0.0,
+            "RESIZE_VIEWPORT": -0.5,
+            "BROWSER_BACK": 0.0,
+            "BROWSER_FORWARD": -0.5,
+            "REFRESH": -0.5
+          },
+          "label_block_weight_l1": 0.0,
+          "tie_break": "lowest action index (action_registry's own priority order)",
+          "steps": 120,
+          "exploratory_steps": 8,
+          "ties_broken": 0
+        },
+        "errors": null
+      },
+      {
+        "arm": "a2_anchor",
+        "seed": 1,
+        "n_episodes": 3,
+        "completion_count": 3,
+        "completion_rate": 1.0,
+        "review_count": 3,
+        "review_rate": 1.0,
+        "s1_count": 3,
+        "s1_rate": 1.0,
+        "mean_reward": 10.0164,
+        "median_reward": 8.5751,
+        "std_reward": 3.9171,
+        "min_reward": 7.0241,
+        "max_reward": 14.45,
+        "mean_depth": 0.575,
+        "max_depth": 5,
+        "unique_states_mean": 15,
+        "unique_states_run_total": 15,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 0,
+        "wall_clock_s": 44.5,
+        "flow_metrics": {
+          "max_depth": 5,
+          "mean_depth": 0.57,
+          "reached_receipt": 3,
+          "reached_review": 6,
+          "flow_completions": 3,
+          "episodes_reaching_review": 3,
+          "episodes_leaving_stage_1": 3
+        },
+        "episodes": [
+          {
+            "arm": "a2_anchor",
+            "seed": 1,
+            "episode": 0,
+            "eval_seed": 1,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 14.45,
+            "max_depth": 5,
+            "mean_depth": 0.575,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a2_anchor",
+            "seed": 1,
+            "episode": 1,
+            "eval_seed": 2,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 8.5751,
+            "max_depth": 5,
+            "mean_depth": 0.575,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a2_anchor",
+            "seed": 1,
+            "episode": 2,
+            "eval_seed": 3,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 7.0241,
+            "max_depth": 5,
+            "mean_depth": 0.575,
+            "steps": 40,
+            "unique_states": 15
+          }
+        ],
+        "policy": {
+          "algorithm": "hand_priority_search",
+          "learns": false,
+          "epsilon": 0.05,
+          "carry_counts_across_episodes": false,
+          "label_prior": {
+            "prior": "A2_anchor_projection",
+            "kind": "frozen sentence-embedding anchor axis on the 48-D projection",
+            "anchors_version": "2026-09-18.frozen",
+            "positive_anchors": [
+              "submit the form",
+              "confirm and place the order",
+              "proceed to the next step",
+              "complete the purchase",
+              "save these changes",
+              "create the account"
+            ],
+            "negative_anchors": [
+              "cancel and discard changes",
+              "go back to the previous page",
+              "return to the home page",
+              "log out of the account",
+              "read the terms and conditions",
+              "contact customer support"
+            ],
+            "encoder": "sentence-transformers/all-MiniLM-L6-v2",
+            "projection_fingerprint": "6d15b39cc5e276ff",
+            "labels_cached": 36,
+            "learns": false
+          },
+          "label_prior_weight": 1.2,
+          "scalar_weights": {
+            "is_newly_revealed": 4.0,
+            "is_form_control": 1.5,
+            "value_ordinal": 1.0,
+            "navigational": 0.6,
+            "in_viewport": 0.3,
+            "has_href": 0.1,
+            "opens_new_tab": -1.0,
+            "is_fixed_action": -2.0,
+            "taken_this_episode": -6.0,
+            "taken_here": -3.0
+          },
+          "type_weights": {
+            "CLICK": 0.3,
+            "SELECT": 0.3,
+            "TYPE": 0.3,
+            "RAPID_CLICK": -0.5,
+            "NO_OP": -1.0,
+            "SCROLL": 0.0,
+            "RESIZE_VIEWPORT": -0.5,
+            "BROWSER_BACK": 0.0,
+            "BROWSER_FORWARD": -0.5,
+            "REFRESH": -0.5
+          },
+          "label_block_weight_l1": 0.0,
+          "tie_break": "lowest action index (action_registry's own priority order)",
+          "steps": 120,
+          "exploratory_steps": 5,
+          "ties_broken": 0
+        },
+        "errors": null
+      }
+    ],
+    "a2_anchor_search": [
+      {
+        "arm": "a2_anchor_search",
+        "seed": 0,
+        "n_episodes": 3,
+        "completion_count": 3,
+        "completion_rate": 1.0,
+        "review_count": 3,
+        "review_rate": 1.0,
+        "s1_count": 3,
+        "s1_rate": 1.0,
+        "mean_reward": 10.5685,
+        "median_reward": 9.5402,
+        "std_reward": 3.4831,
+        "min_reward": 7.7154,
+        "max_reward": 14.45,
+        "mean_depth": 0.725,
+        "max_depth": 5,
+        "unique_states_mean": 14.667,
+        "unique_states_run_total": 19,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 1,
+        "wall_clock_s": 44.5,
+        "flow_metrics": {
+          "max_depth": 5,
+          "mean_depth": 0.72,
+          "reached_receipt": 4,
+          "reached_review": 7,
+          "flow_completions": 3,
+          "episodes_reaching_review": 3,
+          "episodes_leaving_stage_1": 3
+        },
+        "episodes": [
+          {
+            "arm": "a2_anchor_search",
+            "seed": 0,
+            "episode": 0,
+            "eval_seed": 0,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 14.45,
+            "max_depth": 5,
+            "mean_depth": 0.725,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a2_anchor_search",
+            "seed": 0,
+            "episode": 1,
+            "eval_seed": 1,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 9.5402,
+            "max_depth": 5,
+            "mean_depth": 0.6,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a2_anchor_search",
+            "seed": 0,
+            "episode": 2,
+            "eval_seed": 2,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 7.7154,
+            "max_depth": 5,
+            "mean_depth": 0.85,
+            "steps": 40,
+            "unique_states": 14
+          }
+        ],
+        "policy": {
+          "algorithm": "hand_priority_search",
+          "learns": false,
+          "epsilon": 0.05,
+          "carry_counts_across_episodes": true,
+          "label_prior": {
+            "prior": "A2_anchor_projection",
+            "kind": "frozen sentence-embedding anchor axis on the 48-D projection",
+            "anchors_version": "2026-09-18.frozen",
+            "positive_anchors": [
+              "submit the form",
+              "confirm and place the order",
+              "proceed to the next step",
+              "complete the purchase",
+              "save these changes",
+              "create the account"
+            ],
+            "negative_anchors": [
+              "cancel and discard changes",
+              "go back to the previous page",
+              "return to the home page",
+              "log out of the account",
+              "read the terms and conditions",
+              "contact customer support"
+            ],
+            "encoder": "sentence-transformers/all-MiniLM-L6-v2",
+            "projection_fingerprint": "6d15b39cc5e276ff",
+            "labels_cached": 36,
+            "learns": false
+          },
+          "label_prior_weight": 1.2,
+          "scalar_weights": {
+            "is_newly_revealed": 4.0,
+            "is_form_control": 1.5,
+            "value_ordinal": 1.0,
+            "navigational": 0.6,
+            "in_viewport": 0.3,
+            "has_href": 0.1,
+            "opens_new_tab": -1.0,
+            "is_fixed_action": -2.0,
+            "taken_this_episode": -6.0,
+            "taken_here": -3.0
+          },
+          "type_weights": {
+            "CLICK": 0.3,
+            "SELECT": 0.3,
+            "TYPE": 0.3,
+            "RAPID_CLICK": -0.5,
+            "NO_OP": -1.0,
+            "SCROLL": 0.0,
+            "RESIZE_VIEWPORT": -0.5,
+            "BROWSER_BACK": 0.0,
+            "BROWSER_FORWARD": -0.5,
+            "REFRESH": -0.5
+          },
+          "label_block_weight_l1": 0.0,
+          "tie_break": "lowest action index (action_registry's own priority order)",
+          "steps": 120,
+          "exploratory_steps": 8,
+          "ties_broken": 0
+        },
+        "errors": null
+      },
+      {
+        "arm": "a2_anchor_search",
+        "seed": 1,
+        "n_episodes": 3,
+        "completion_count": 2,
+        "completion_rate": 0.6667,
+        "review_count": 2,
+        "review_rate": 0.6667,
+        "s1_count": 3,
+        "s1_rate": 1.0,
+        "mean_reward": 9.2957,
+        "median_reward": 9.3609,
+        "std_reward": 5.1872,
+        "min_reward": 4.0762,
+        "max_reward": 14.45,
+        "mean_depth": 0.525,
+        "max_depth": 5,
+        "unique_states_mean": 14,
+        "unique_states_run_total": 17,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 0,
+        "wall_clock_s": 44.5,
+        "flow_metrics": {
+          "max_depth": 5,
+          "mean_depth": 0.53,
+          "reached_receipt": 2,
+          "reached_review": 4,
+          "flow_completions": 2,
+          "episodes_reaching_review": 2,
+          "episodes_leaving_stage_1": 3
+        },
+        "episodes": [
+          {
+            "arm": "a2_anchor_search",
+            "seed": 1,
+            "episode": 0,
+            "eval_seed": 1,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 14.45,
+            "max_depth": 5,
+            "mean_depth": 0.575,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a2_anchor_search",
+            "seed": 1,
+            "episode": 1,
+            "eval_seed": 2,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 9.3609,
+            "max_depth": 5,
+            "mean_depth": 0.6,
+            "steps": 40,
+            "unique_states": 15
+          },
+          {
+            "arm": "a2_anchor_search",
+            "seed": 1,
+            "episode": 2,
+            "eval_seed": 3,
+            "completed": false,
+            "reached_review": false,
+            "reached_s1": true,
+            "reward": 4.0762,
+            "max_depth": 3,
+            "mean_depth": 0.4,
+            "steps": 40,
+            "unique_states": 12
+          }
+        ],
+        "policy": {
+          "algorithm": "hand_priority_search",
+          "learns": false,
+          "epsilon": 0.05,
+          "carry_counts_across_episodes": true,
+          "label_prior": {
+            "prior": "A2_anchor_projection",
+            "kind": "frozen sentence-embedding anchor axis on the 48-D projection",
+            "anchors_version": "2026-09-18.frozen",
+            "positive_anchors": [
+              "submit the form",
+              "confirm and place the order",
+              "proceed to the next step",
+              "complete the purchase",
+              "save these changes",
+              "create the account"
+            ],
+            "negative_anchors": [
+              "cancel and discard changes",
+              "go back to the previous page",
+              "return to the home page",
+              "log out of the account",
+              "read the terms and conditions",
+              "contact customer support"
+            ],
+            "encoder": "sentence-transformers/all-MiniLM-L6-v2",
+            "projection_fingerprint": "6d15b39cc5e276ff",
+            "labels_cached": 36,
+            "learns": false
+          },
+          "label_prior_weight": 1.2,
+          "scalar_weights": {
+            "is_newly_revealed": 4.0,
+            "is_form_control": 1.5,
+            "value_ordinal": 1.0,
+            "navigational": 0.6,
+            "in_viewport": 0.3,
+            "has_href": 0.1,
+            "opens_new_tab": -1.0,
+            "is_fixed_action": -2.0,
+            "taken_this_episode": -6.0,
+            "taken_here": -3.0
+          },
+          "type_weights": {
+            "CLICK": 0.3,
+            "SELECT": 0.3,
+            "TYPE": 0.3,
+            "RAPID_CLICK": -0.5,
+            "NO_OP": -1.0,
+            "SCROLL": 0.0,
+            "RESIZE_VIEWPORT": -0.5,
+            "BROWSER_BACK": 0.0,
+            "BROWSER_FORWARD": -0.5,
+            "REFRESH": -0.5
+          },
+          "label_block_weight_l1": 0.0,
+          "tie_break": "lowest action index (action_registry's own priority order)",
+          "steps": 120,
+          "exploratory_steps": 5,
+          "ties_broken": 0
+        },
+        "errors": null
+      }
+    ],
+    "contextual_bandit": [
+      {
+        "arm": "contextual_bandit",
+        "seed": 0,
+        "n_episodes": 3,
+        "completion_count": 3,
+        "completion_rate": 1.0,
+        "review_count": 3,
+        "review_rate": 1.0,
+        "s1_count": 3,
+        "s1_rate": 1.0,
+        "mean_reward": 8.903,
+        "median_reward": 7.8863,
+        "std_reward": 1.9489,
+        "min_reward": 7.6727,
+        "max_reward": 11.15,
+        "mean_depth": 0.725,
+        "max_depth": 5,
+        "unique_states_mean": 13,
+        "unique_states_run_total": 14,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 1,
+        "wall_clock_s": 44.1,
+        "flow_metrics": {
+          "max_depth": 5,
+          "mean_depth": 0.72,
+          "reached_receipt": 3,
+          "reached_review": 6,
+          "flow_completions": 3,
+          "episodes_reaching_review": 3,
+          "episodes_leaving_stage_1": 3
+        },
+        "episodes": [
+          {
+            "arm": "contextual_bandit",
+            "seed": 0,
+            "episode": 0,
+            "eval_seed": 0,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 11.15,
+            "max_depth": 5,
+            "mean_depth": 0.75,
+            "steps": 40,
+            "unique_states": 12
+          },
+          {
+            "arm": "contextual_bandit",
+            "seed": 0,
+            "episode": 1,
+            "eval_seed": 1,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 7.6727,
+            "max_depth": 5,
+            "mean_depth": 0.725,
+            "steps": 40,
+            "unique_states": 13
+          },
+          {
+            "arm": "contextual_bandit",
+            "seed": 0,
+            "episode": 2,
+            "eval_seed": 2,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 7.8863,
+            "max_depth": 5,
+            "mean_depth": 0.7,
+            "steps": 40,
+            "unique_states": 14
+          }
+        ],
+        "errors": null,
+        "checkpoint": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\models\\checkpoints\\contextual_bandit\\contextual_bandit_seed0_final.zip"
+      },
+      {
+        "arm": "contextual_bandit",
+        "seed": 1,
+        "n_episodes": 3,
+        "completion_count": 2,
+        "completion_rate": 0.6667,
+        "review_count": 2,
+        "review_rate": 0.6667,
+        "s1_count": 2,
+        "s1_rate": 0.6667,
+        "mean_reward": 3.8602,
+        "median_reward": 6.3709,
+        "std_reward": 7.3346,
+        "min_reward": -4.4,
+        "max_reward": 9.6098,
+        "mean_depth": 0.3917,
+        "max_depth": 5,
+        "unique_states_mean": 11,
+        "unique_states_run_total": 14,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 2,
+        "wall_clock_s": 44.4,
+        "flow_metrics": {
+          "max_depth": 5,
+          "mean_depth": 0.39,
+          "reached_receipt": 2,
+          "reached_review": 4,
+          "flow_completions": 2,
+          "episodes_reaching_review": 2,
+          "episodes_leaving_stage_1": 2
+        },
+        "episodes": [
+          {
+            "arm": "contextual_bandit",
+            "seed": 1,
+            "episode": 0,
+            "eval_seed": 1,
+            "completed": false,
+            "reached_review": false,
+            "reached_s1": false,
+            "reward": -4.4,
+            "max_depth": 0,
+            "mean_depth": 0,
+            "steps": 40,
+            "unique_states": 5
+          },
+          {
+            "arm": "contextual_bandit",
+            "seed": 1,
+            "episode": 1,
+            "eval_seed": 2,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 9.6098,
+            "max_depth": 5,
+            "mean_depth": 0.65,
+            "steps": 40,
+            "unique_states": 14
+          },
+          {
+            "arm": "contextual_bandit",
+            "seed": 1,
+            "episode": 2,
+            "eval_seed": 3,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 6.3709,
+            "max_depth": 5,
+            "mean_depth": 0.525,
+            "steps": 40,
+            "unique_states": 14
+          }
+        ],
+        "errors": null,
+        "checkpoint": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\models\\checkpoints\\contextual_bandit\\contextual_bandit_seed1_final.zip"
+      }
+    ],
+    "ac_dqn": [
+      {
+        "arm": "ac_dqn",
+        "seed": 0,
+        "n_episodes": 3,
+        "completion_count": 3,
+        "completion_rate": 1.0,
+        "review_count": 3,
+        "review_rate": 1.0,
+        "s1_count": 3,
+        "s1_rate": 1.0,
+        "mean_reward": 13.2099,
+        "median_reward": 11.7606,
+        "std_reward": 5.2672,
+        "min_reward": 8.8191,
+        "max_reward": 19.05,
+        "mean_depth": 1.7833,
+        "max_depth": 5,
+        "unique_states_mean": 19.333,
+        "unique_states_run_total": 24,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 3,
+        "wall_clock_s": 43.9,
+        "flow_metrics": {
+          "max_depth": 5,
+          "mean_depth": 1.78,
+          "reached_receipt": 4,
+          "reached_review": 15,
+          "flow_completions": 3,
+          "episodes_reaching_review": 3,
+          "episodes_leaving_stage_1": 3
+        },
+        "episodes": [
+          {
+            "arm": "ac_dqn",
+            "seed": 0,
+            "episode": 0,
+            "eval_seed": 0,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 19.05,
+            "max_depth": 5,
+            "mean_depth": 1.95,
+            "steps": 40,
+            "unique_states": 20
+          },
+          {
+            "arm": "ac_dqn",
+            "seed": 0,
+            "episode": 1,
+            "eval_seed": 1,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 8.8191,
+            "max_depth": 5,
+            "mean_depth": 1.725,
+            "steps": 40,
+            "unique_states": 16
+          },
+          {
+            "arm": "ac_dqn",
+            "seed": 0,
+            "episode": 2,
+            "eval_seed": 2,
+            "completed": true,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 11.7606,
+            "max_depth": 5,
+            "mean_depth": 1.675,
+            "steps": 40,
+            "unique_states": 22
+          }
+        ],
+        "errors": null,
+        "checkpoint": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\models\\checkpoints\\postmarkov_baseline\\ac_dqn_seed0_final.zip"
+      },
+      {
+        "arm": "ac_dqn",
+        "seed": 1,
+        "n_episodes": 3,
+        "completion_count": 0,
+        "completion_rate": 0.0,
+        "review_count": 3,
+        "review_rate": 1.0,
+        "s1_count": 3,
+        "s1_rate": 1.0,
+        "mean_reward": 7.1068,
+        "median_reward": 6.8726,
+        "std_reward": 5.0301,
+        "min_reward": 2.1979,
+        "max_reward": 12.25,
+        "mean_depth": 0.6917,
+        "max_depth": 4,
+        "unique_states_mean": 12.333,
+        "unique_states_run_total": 14,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 5,
+        "wall_clock_s": 43.4,
+        "flow_metrics": {
+          "max_depth": 4,
+          "mean_depth": 0.69,
+          "reached_receipt": 0,
+          "reached_review": 6,
+          "flow_completions": 0,
+          "episodes_reaching_review": 3,
+          "episodes_leaving_stage_1": 3
+        },
+        "episodes": [
+          {
+            "arm": "ac_dqn",
+            "seed": 1,
+            "episode": 0,
+            "eval_seed": 1,
+            "completed": false,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 12.25,
+            "max_depth": 4,
+            "mean_depth": 0.5,
+            "steps": 40,
+            "unique_states": 13
+          },
+          {
+            "arm": "ac_dqn",
+            "seed": 1,
+            "episode": 1,
+            "eval_seed": 2,
+            "completed": false,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 6.8726,
+            "max_depth": 4,
+            "mean_depth": 0.55,
+            "steps": 40,
+            "unique_states": 13
+          },
+          {
+            "arm": "ac_dqn",
+            "seed": 1,
+            "episode": 2,
+            "eval_seed": 3,
+            "completed": false,
+            "reached_review": true,
+            "reached_s1": true,
+            "reward": 2.1979,
+            "max_depth": 4,
+            "mean_depth": 1.025,
+            "steps": 40,
+            "unique_states": 11
+          }
+        ],
+        "errors": null,
+        "checkpoint": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\models\\checkpoints\\postmarkov_baseline\\ac_dqn_seed1_final.zip"
+      }
+    ]
+  },
+  "search_phase": [],
+  "arm_summaries": {
+    "a0_hand_priority": {
+      "n_checkpoints": 2,
+      "completion_counts_per_seed": [
+        0,
+        0
+      ],
+      "completion_rates_per_seed": [
+        0.0,
+        0.0
+      ],
+      "mean_checkpoint_completion_rate": 0.0,
+      "median_checkpoint_completion_rate": 0.0,
+      "sd_across_checkpoints": 0.0,
+      "min_checkpoint_rate": 0.0,
+      "max_checkpoint_rate": 0.0,
+      "bootstrap_95ci_mean_rate_over_checkpoints": [
+        0.0,
+        0.0
+      ],
+      "checkpoints_with_at_least_one_completion": 0,
+      "checkpoints_with_all_episodes": 0,
+      "checkpoints_with_zero": 2,
+      "review_rates_per_seed": [
+        0.3333,
+        0.6667
+      ],
+      "s1_rates_per_seed": [
+        1.0,
+        1.0
+      ],
+      "mean_review_rate": 0.5,
+      "mean_s1_rate": 1.0,
+      "completion_given_review_per_seed": [
+        0.0,
+        0.0
+      ],
+      "mean_completion_given_review": 0.0,
+      "pooled_completion_given_review": 0.0,
+      "mean_reward_over_checkpoints": 7.7698,
+      "mean_depth_over_checkpoints": 0.3875,
+      "max_depth_observed": 4,
+      "mean_unique_states": 12.666,
+      "mean_valid_action_rate": 1.0,
+      "total_invalid_actions": 0,
+      "_descriptive_total": {
+        "completions": 0,
+        "episodes": 6,
+        "_warning": "DESCRIPTIVE ONLY. These episodes are not independent training runs; the inferential unit is the checkpoint."
+      }
+    },
+    "a0_hand_priority_search": {
+      "n_checkpoints": 2,
+      "completion_counts_per_seed": [
+        0,
+        0
+      ],
+      "completion_rates_per_seed": [
+        0.0,
+        0.0
+      ],
+      "mean_checkpoint_completion_rate": 0.0,
+      "median_checkpoint_completion_rate": 0.0,
+      "sd_across_checkpoints": 0.0,
+      "min_checkpoint_rate": 0.0,
+      "max_checkpoint_rate": 0.0,
+      "bootstrap_95ci_mean_rate_over_checkpoints": [
+        0.0,
+        0.0
+      ],
+      "checkpoints_with_at_least_one_completion": 0,
+      "checkpoints_with_all_episodes": 0,
+      "checkpoints_with_zero": 2,
+      "review_rates_per_seed": [
+        0.3333,
+        0.3333
+      ],
+      "s1_rates_per_seed": [
+        0.6667,
+        0.6667
+      ],
+      "mean_review_rate": 0.3333,
+      "mean_s1_rate": 0.6667,
+      "completion_given_review_per_seed": [
+        0.0,
+        0.0
+      ],
+      "mean_completion_given_review": 0.0,
+      "pooled_completion_given_review": 0.0,
+      "mean_reward_over_checkpoints": 5.5014,
+      "mean_depth_over_checkpoints": 0.2542,
+      "max_depth_observed": 4,
+      "mean_unique_states": 11.0,
+      "mean_valid_action_rate": 1.0,
+      "total_invalid_actions": 0,
+      "_descriptive_total": {
+        "completions": 0,
+        "episodes": 6,
+        "_warning": "DESCRIPTIVE ONLY. These episodes are not independent training runs; the inferential unit is the checkpoint."
+      }
+    },
+    "a1_lexical": {
+      "n_checkpoints": 2,
+      "completion_counts_per_seed": [
+        3,
+        3
+      ],
+      "completion_rates_per_seed": [
+        1.0,
+        1.0
+      ],
+      "mean_checkpoint_completion_rate": 1.0,
+      "median_checkpoint_completion_rate": 1.0,
+      "sd_across_checkpoints": 0.0,
+      "min_checkpoint_rate": 1.0,
+      "max_checkpoint_rate": 1.0,
+      "bootstrap_95ci_mean_rate_over_checkpoints": [
+        1.0,
+        1.0
+      ],
+      "checkpoints_with_at_least_one_completion": 2,
+      "checkpoints_with_all_episodes": 2,
+      "checkpoints_with_zero": 0,
+      "review_rates_per_seed": [
+        1.0,
+        1.0
+      ],
+      "s1_rates_per_seed": [
+        1.0,
+        1.0
+      ],
+      "mean_review_rate": 1.0,
+      "mean_s1_rate": 1.0,
+      "completion_given_review_per_seed": [
+        1.0,
+        1.0
+      ],
+      "mean_completion_given_review": 1.0,
+      "pooled_completion_given_review": 1.0,
+      "mean_reward_over_checkpoints": 9.8473,
+      "mean_depth_over_checkpoints": 0.5542,
+      "max_depth_observed": 5,
+      "mean_unique_states": 15,
+      "mean_valid_action_rate": 1.0,
+      "total_invalid_actions": 0,
+      "_descriptive_total": {
+        "completions": 6,
+        "episodes": 6,
+        "_warning": "DESCRIPTIVE ONLY. These episodes are not independent training runs; the inferential unit is the checkpoint."
+      }
+    },
+    "a1_lexical_search": {
+      "n_checkpoints": 2,
+      "completion_counts_per_seed": [
+        2,
+        2
+      ],
+      "completion_rates_per_seed": [
+        0.6667,
+        0.6667
+      ],
+      "mean_checkpoint_completion_rate": 0.6667,
+      "median_checkpoint_completion_rate": 0.6667,
+      "sd_across_checkpoints": 0.0,
+      "min_checkpoint_rate": 0.6667,
+      "max_checkpoint_rate": 0.6667,
+      "bootstrap_95ci_mean_rate_over_checkpoints": [
+        0.6667,
+        0.6667
+      ],
+      "checkpoints_with_at_least_one_completion": 2,
+      "checkpoints_with_all_episodes": 0,
+      "checkpoints_with_zero": 0,
+      "review_rates_per_seed": [
+        0.6667,
+        0.6667
+      ],
+      "s1_rates_per_seed": [
+        0.6667,
+        0.6667
+      ],
+      "mean_review_rate": 0.6667,
+      "mean_s1_rate": 0.6667,
+      "completion_given_review_per_seed": [
+        1.0,
+        1.0
+      ],
+      "mean_completion_given_review": 1.0,
+      "pooled_completion_given_review": 1.0,
+      "mean_reward_over_checkpoints": 7.459,
+      "mean_depth_over_checkpoints": 0.4083,
+      "max_depth_observed": 5,
+      "mean_unique_states": 12.667,
+      "mean_valid_action_rate": 1.0,
+      "total_invalid_actions": 0,
+      "_descriptive_total": {
+        "completions": 4,
+        "episodes": 6,
+        "_warning": "DESCRIPTIVE ONLY. These episodes are not independent training runs; the inferential unit is the checkpoint."
+      }
+    },
+    "a2_anchor": {
+      "n_checkpoints": 2,
+      "completion_counts_per_seed": [
+        3,
+        3
+      ],
+      "completion_rates_per_seed": [
+        1.0,
+        1.0
+      ],
+      "mean_checkpoint_completion_rate": 1.0,
+      "median_checkpoint_completion_rate": 1.0,
+      "sd_across_checkpoints": 0.0,
+      "min_checkpoint_rate": 1.0,
+      "max_checkpoint_rate": 1.0,
+      "bootstrap_95ci_mean_rate_over_checkpoints": [
+        1.0,
+        1.0
+      ],
+      "checkpoints_with_at_least_one_completion": 2,
+      "checkpoints_with_all_episodes": 2,
+      "checkpoints_with_zero": 0,
+      "review_rates_per_seed": [
+        1.0,
+        1.0
+      ],
+      "s1_rates_per_seed": [
+        1.0,
+        1.0
+      ],
+      "mean_review_rate": 1.0,
+      "mean_s1_rate": 1.0,
+      "completion_given_review_per_seed": [
+        1.0,
+        1.0
+      ],
+      "mean_completion_given_review": 1.0,
+      "pooled_completion_given_review": 1.0,
+      "mean_reward_over_checkpoints": 9.8696,
+      "mean_depth_over_checkpoints": 0.6,
+      "max_depth_observed": 5,
+      "mean_unique_states": 14.834,
+      "mean_valid_action_rate": 1.0,
+      "total_invalid_actions": 0,
+      "_descriptive_total": {
+        "completions": 6,
+        "episodes": 6,
+        "_warning": "DESCRIPTIVE ONLY. These episodes are not independent training runs; the inferential unit is the checkpoint."
+      }
+    },
+    "a2_anchor_search": {
+      "n_checkpoints": 2,
+      "completion_counts_per_seed": [
+        3,
+        2
+      ],
+      "completion_rates_per_seed": [
+        1.0,
+        0.6667
+      ],
+      "mean_checkpoint_completion_rate": 0.8334,
+      "median_checkpoint_completion_rate": 0.8334,
+      "sd_across_checkpoints": 0.2357,
+      "min_checkpoint_rate": 0.6667,
+      "max_checkpoint_rate": 1.0,
+      "bootstrap_95ci_mean_rate_over_checkpoints": [
+        0.6667,
+        1.0
+      ],
+      "checkpoints_with_at_least_one_completion": 2,
+      "checkpoints_with_all_episodes": 1,
+      "checkpoints_with_zero": 0,
+      "review_rates_per_seed": [
+        1.0,
+        0.6667
+      ],
+      "s1_rates_per_seed": [
+        1.0,
+        1.0
+      ],
+      "mean_review_rate": 0.8334,
+      "mean_s1_rate": 1.0,
+      "completion_given_review_per_seed": [
+        1.0,
+        1.0
+      ],
+      "mean_completion_given_review": 1.0,
+      "pooled_completion_given_review": 1.0,
+      "mean_reward_over_checkpoints": 9.9321,
+      "mean_depth_over_checkpoints": 0.625,
+      "max_depth_observed": 5,
+      "mean_unique_states": 14.334,
+      "mean_valid_action_rate": 1.0,
+      "total_invalid_actions": 0,
+      "_descriptive_total": {
+        "completions": 5,
+        "episodes": 6,
+        "_warning": "DESCRIPTIVE ONLY. These episodes are not independent training runs; the inferential unit is the checkpoint."
+      }
+    },
+    "contextual_bandit": {
+      "n_checkpoints": 2,
+      "completion_counts_per_seed": [
+        3,
+        2
+      ],
+      "completion_rates_per_seed": [
+        1.0,
+        0.6667
+      ],
+      "mean_checkpoint_completion_rate": 0.8334,
+      "median_checkpoint_completion_rate": 0.8334,
+      "sd_across_checkpoints": 0.2357,
+      "min_checkpoint_rate": 0.6667,
+      "max_checkpoint_rate": 1.0,
+      "bootstrap_95ci_mean_rate_over_checkpoints": [
+        0.6667,
+        1.0
+      ],
+      "checkpoints_with_at_least_one_completion": 2,
+      "checkpoints_with_all_episodes": 1,
+      "checkpoints_with_zero": 0,
+      "review_rates_per_seed": [
+        1.0,
+        0.6667
+      ],
+      "s1_rates_per_seed": [
+        1.0,
+        0.6667
+      ],
+      "mean_review_rate": 0.8334,
+      "mean_s1_rate": 0.8334,
+      "completion_given_review_per_seed": [
+        1.0,
+        1.0
+      ],
+      "mean_completion_given_review": 1.0,
+      "pooled_completion_given_review": 1.0,
+      "mean_reward_over_checkpoints": 6.3816,
+      "mean_depth_over_checkpoints": 0.5584,
+      "max_depth_observed": 5,
+      "mean_unique_states": 12,
+      "mean_valid_action_rate": 1.0,
+      "total_invalid_actions": 0,
+      "_descriptive_total": {
+        "completions": 5,
+        "episodes": 6,
+        "_warning": "DESCRIPTIVE ONLY. These episodes are not independent training runs; the inferential unit is the checkpoint."
+      }
+    },
+    "ac_dqn": {
+      "n_checkpoints": 2,
+      "completion_counts_per_seed": [
+        3,
+        0
+      ],
+      "completion_rates_per_seed": [
+        1.0,
+        0.0
+      ],
+      "mean_checkpoint_completion_rate": 0.5,
+      "median_checkpoint_completion_rate": 0.5,
+      "sd_across_checkpoints": 0.7071,
+      "min_checkpoint_rate": 0.0,
+      "max_checkpoint_rate": 1.0,
+      "bootstrap_95ci_mean_rate_over_checkpoints": [
+        0.0,
+        1.0
+      ],
+      "checkpoints_with_at_least_one_completion": 1,
+      "checkpoints_with_all_episodes": 1,
+      "checkpoints_with_zero": 1,
+      "review_rates_per_seed": [
+        1.0,
+        1.0
+      ],
+      "s1_rates_per_seed": [
+        1.0,
+        1.0
+      ],
+      "mean_review_rate": 1.0,
+      "mean_s1_rate": 1.0,
+      "completion_given_review_per_seed": [
+        1.0,
+        0.0
+      ],
+      "mean_completion_given_review": 0.5,
+      "pooled_completion_given_review": 0.5,
+      "mean_reward_over_checkpoints": 10.1583,
+      "mean_depth_over_checkpoints": 1.2375,
+      "max_depth_observed": 5,
+      "mean_unique_states": 15.833,
+      "mean_valid_action_rate": 1.0,
+      "total_invalid_actions": 0,
+      "_descriptive_total": {
+        "completions": 3,
+        "episodes": 6,
+        "_warning": "DESCRIPTIVE ONLY. These episodes are not independent training runs; the inferential unit is the checkpoint."
+      }
+    }
+  },
+  "decision": {
+    "rule": {
+      "unit": "the seed; statistic is the per-seed completion count out of 25",
+      "match_within": 5,
+      "match_min_seeds": 6,
+      "match_median_fraction": 0.6,
+      "closes_gap_median_fraction": 0.5,
+      "reference_arm": "contextual_bandit",
+      "_source": "docs/methodology/2026-09-18-a0-a1-a2-frozen.md \u00a75, commit 0d104f3"
+    },
+    "reference_arm": "contextual_bandit",
+    "episodes_per_seed": 3,
+    "verdicts": {
+      "a1_lexical": {
+        "paired_seeds": [
+          {
+            "seed": 0,
+            "a1_lexical": 3,
+            "contextual_bandit": 3,
+            "difference": 0
+          },
+          {
+            "seed": 1,
+            "a1_lexical": 3,
+            "contextual_bandit": 2,
+            "difference": 1
+          }
+        ],
+        "n_paired": 2,
+        "seeds_within_5": 2,
+        "seeds_within_5_list": [
+          0,
+          1
+        ],
+        "arm_median": 3.0,
+        "reference_median": 2.5,
+        "median_fraction_of_reference": 1.2,
+        "declared_match": false,
+        "declared_closes_most_of_the_gap": true,
+        "verdict": "CLOSES MOST OF THE A0 GAP",
+        "_rule": "match requires |diff| <= 5 on >= 6 of 2 seeds AND median >= 60% of B's median"
+      },
+      "a2_anchor": {
+        "paired_seeds": [
+          {
+            "seed": 0,
+            "a2_anchor": 3,
+            "contextual_bandit": 3,
+            "difference": 0
+          },
+          {
+            "seed": 1,
+            "a2_anchor": 3,
+            "contextual_bandit": 2,
+            "difference": 1
+          }
+        ],
+        "n_paired": 2,
+        "seeds_within_5": 2,
+        "seeds_within_5_list": [
+          0,
+          1
+        ],
+        "arm_median": 3.0,
+        "reference_median": 2.5,
+        "median_fraction_of_reference": 1.2,
+        "declared_match": false,
+        "declared_closes_most_of_the_gap": true,
+        "verdict": "CLOSES MOST OF THE A0 GAP",
+        "_rule": "match requires |diff| <= 5 on >= 6 of 2 seeds AND median >= 60% of B's median"
+      }
+    },
+    "conditional_experiment": "CASE B. A2 does not match B under the frozen rule, so A2 meaningfully trails B and the conditional three-way learned-feature experiment IS licensed: B(lexical) vs B(anchor projection) vs B(raw sentence embedding), which tests whether the LEARNED component benefits from the representation.",
+    "_frozen_before_results": "Every threshold above is read from DECISION_RULE, which transcribes \u00a75 of a document committed in 0d104f3 before any arm was implemented."
+  },
+  "anomalies": [],
+  "wall_clock_s": 724.0,
+  "limitations": [
+    "**A1 and A2 are not independent of this fixture.** See `reports/audit_a1_provenance.json`. They are frozen against tuning, not against having been written by someone who knew which decision they had to resolve. Every number here is an upper bound on a generic prior's performance.",
+    "**The A arms have no training variance.** Eight rows of a non-learning policy vary only in the epsilon stream, so their spread understates what a spread means for B and C, and their intervals are narrow for a reason that is not a property of the method.",
+    "**The A arms read two features that are structurally dead for B and C.** `taken_here` and `taken_this_episode` are written only by `ActionFeatureExtractor.record_taken()`, which nothing on the RL path calls. This is an information advantage for every A arm, and it is identical across A0, A1 and A2 -- so it does not affect A0-vs-A1-vs-A2, which is what this experiment is for.",
+    "**B and C were not retrained.** Their finalized checkpoints were re-evaluated, with SHA-256 verified before and after.",
+    "**The browser harness is intermittently non-deterministic on this configuration** (`reports/diag_harness_determinism.json`). Every row here is a single run.",
+    "**n=8 seeds, one fixture, one budget.** The deep fixture is excluded from all transfer and generalization evaluation under the current project direction. Nothing here is evidence about transfer.",
+    "**Completion is a proxy.** Reaching receipt.html is what makes DEEP-01 findable; it is not finding it. The deterministic ceiling on this fixture is 0."
+  ]
+}
