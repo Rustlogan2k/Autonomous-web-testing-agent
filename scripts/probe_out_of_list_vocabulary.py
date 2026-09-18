@@ -255,10 +255,15 @@ def hash_vectors(labels: list[str]) -> np.ndarray:
 
 
 def raw_minilm_vectors(labels: list[str], encoder: SemanticLabelEncoder) -> np.ndarray:
-    """The unprojected 384-dim MiniLM embedding, reusing the arm's own pinned encoder."""
+    """The unprojected 384-dim MiniLM embedding, reusing the arm's own pinned encoder.
+
+    Reaches through `SemanticLabelEncoder` to the encoder it already holds rather than
+    constructing a second `SentenceTransformerEncoder`: two instances of the same pinned
+    model should agree, and "should" is not a property this table can assume while it is
+    being used to decide between representations.
+    """
     model = encoder._load_encoder()  # noqa: SLF001 - one pinned encoder, not a second copy
-    return np.asarray(model.encode(labels, convert_to_numpy=True, show_progress_bar=False),
-                      dtype=np.float64)
+    return np.asarray(model.encode_batch(list(labels)), dtype=np.float64)
 
 
 def score_tier(name: str, commit: tuple[str, ...], navigate: tuple[str, ...],
@@ -525,7 +530,7 @@ def main() -> None:
                "positive_anchors": list(A2_POSITIVE_ANCHORS),
                "negative_anchors": list(A2_NEGATIVE_ANCHORS),
                "encoder": encoder.model_name,
-               "projection_fingerprint": encoder.fingerprint()},
+               "projection_fingerprint": encoder.fingerprint},
         "pre_registered_reading":
             "A2 on the 48-D projection reaches AUC >= 0.80 with a bootstrap 95% lower "
             "bound above 0.5 on tier 1, or the probe does not establish generalisation "

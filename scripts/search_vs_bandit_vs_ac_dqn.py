@@ -256,7 +256,8 @@ def summarise_episodes(arm: str, seed: int, report, episodes_urls, episodes_keys
 # -- Arm A's search phase --------------------------------------------------------------
 
 
-def run_search_phase(base_url: str, seed: int, steps: int, episode_steps: int) -> dict:
+def run_search_phase(base_url: str, seed: int, steps: int, episode_steps: int,
+                     policy: HandPriorityPolicy | None = None) -> dict:
     """`steps` env steps of hand-priority search through the same archive the learners used.
 
     This is the budget-matched half of Arm A. It produces no artefact that evaluation can
@@ -264,13 +265,20 @@ def run_search_phase(base_url: str, seed: int, steps: int, episode_steps: int) -
     at evaluation for every arm — so what it reports is *search coverage at a matched
     budget*, which is the claim Go-Explore actually makes and the only thing a search
     budget can buy here. Recording that it buys nothing transferable is the point.
+
+    `policy` defaults to `None`, which builds exactly the Arm A policy this function has
+    always built, so every row in `reports/search_vs_bandit_vs_ac_dqn.*` is reproduced
+    unchanged. `scripts/a0_a1_a2.py` passes A1's and A2's policies instead — without this
+    parameter it would have to either duplicate this function or silently measure A0's
+    search coverage three times under three different arm names.
     """
     episodes = max(1, steps // episode_steps)
     archive = Archive()
     inner = WebFunctionalEnv(base_url=base_url, max_steps=episode_steps, headless=True)
     env = ArchiveStartWrapper(inner, archive, p_return=P_RETURN, seed=seed)
-    policy = HandPriorityPolicy(epsilon=EPS_INITIAL, seed=seed,
-                                carry_counts_across_episodes=True)
+    if policy is None:
+        policy = HandPriorityPolicy(epsilon=EPS_INITIAL, seed=seed,
+                                    carry_counts_across_episodes=True)
     scheduled = ScheduledEpsilon(policy, steps, initial=EPS_INITIAL, final=EPS_FINAL,
                                  fraction=EXPLORATION_FRACTION)
     episodes_urls, _keys, visited = _tracked(env)

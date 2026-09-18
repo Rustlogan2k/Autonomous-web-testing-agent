@@ -209,6 +209,8 @@ class AnchorProjectionPrior:
         return cached
 
     def to_dict(self) -> dict:
+        # `SemanticLabelEncoder.fingerprint` is a property; a test double may expose a
+        # method. Accept either rather than depending on which.
         fingerprint = getattr(self.encoder, "fingerprint", None)
         return {
             "prior": self.name,
@@ -217,7 +219,7 @@ class AnchorProjectionPrior:
             "positive_anchors": list(A2_POSITIVE_ANCHORS),
             "negative_anchors": list(A2_NEGATIVE_ANCHORS),
             "encoder": getattr(self.encoder, "model_name", None),
-            "projection_fingerprint": fingerprint() if callable(fingerprint) else None,
+            "projection_fingerprint": fingerprint() if callable(fingerprint) else fingerprint,
             "labels_cached": len(self._cache),
             "learns": False,
         }

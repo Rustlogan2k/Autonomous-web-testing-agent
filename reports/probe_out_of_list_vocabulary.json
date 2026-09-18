@@ -1,0 +1,1269 @@
+{
+  "_purpose": "Does A2 keep discriminating when the vocabulary is outside A1's list?",
+  "probe_version": "2026-09-18.out-of-list.1",
+  "generated_at": "2026-09-18T12:51:35+00:00",
+  "git": {
+    "head": "7b6182c5e774ac8a32e4a123c47b809f192ae500",
+    "branch": "review/measurement-and-gate-fixes",
+    "dirty": true
+  },
+  "bootstrap": {
+    "draws": 10000,
+    "seed": 0,
+    "unit": "labels"
+  },
+  "a1": {
+    "version": "2026-09-18.frozen",
+    "positive_tokens": [
+      "apply",
+      "buy",
+      "checkout",
+      "complete",
+      "confirm",
+      "continue",
+      "create",
+      "done",
+      "finish",
+      "next",
+      "order",
+      "pay",
+      "place",
+      "proceed",
+      "purchase",
+      "register",
+      "save",
+      "send",
+      "signup",
+      "submit",
+      "subscribe"
+    ],
+    "negative_tokens": [
+      "abort",
+      "back",
+      "cancel",
+      "clear",
+      "close",
+      "delete",
+      "discard",
+      "exit",
+      "logout",
+      "previous",
+      "remove",
+      "reset",
+      "return",
+      "signout"
+    ]
+  },
+  "a2": {
+    "version": "2026-09-18.frozen",
+    "positive_anchors": [
+      "submit the form",
+      "confirm and place the order",
+      "proceed to the next step",
+      "complete the purchase",
+      "save these changes",
+      "create the account"
+    ],
+    "negative_anchors": [
+      "cancel and discard changes",
+      "go back to the previous page",
+      "return to the home page",
+      "log out of the account",
+      "read the terms and conditions",
+      "contact customer support"
+    ],
+    "encoder": "sentence-transformers/all-MiniLM-L6-v2",
+    "projection_fingerprint": "6d15b39cc5e276ff"
+  },
+  "pre_registered_reading": "A2 on the 48-D projection reaches AUC >= 0.80 with a bootstrap 95% lower bound above 0.5 on tier 1, or the probe does not establish generalisation past A1's vocabulary.",
+  "tiers": [
+    {
+      "tier": "tier1_out_of_list",
+      "rule": "every token of every label is absent from A1's positive and negative lists",
+      "a1_is_analytic": "A1 scores 0.0 on all 24 labels, so its AUC is exactly 0.5 by construction. Reported, not discovered.",
+      "commit_labels": [
+        "Finalise the booking",
+        "Authorise the transaction",
+        "Ratify the agreement",
+        "Dispatch the parcel",
+        "Endorse the document",
+        "Execute the contract",
+        "Enact the amendment",
+        "Lodge the appeal",
+        "Remit the balance",
+        "Countersign the lease",
+        "Commission the artwork",
+        "Validate the entry"
+      ],
+      "navigate_labels": [
+        "Browse the archive",
+        "Peruse the listings",
+        "Revisit the earlier screen",
+        "Wander through the gallery",
+        "Skim the announcements",
+        "Inspect the directory",
+        "Traverse the sitemap",
+        "Navigate to the lobby",
+        "Explore the showroom",
+        "Scan the bulletin",
+        "Visit the reading room",
+        "Tour the exhibition"
+      ],
+      "n_commit": 12,
+      "n_navigate": 12,
+      "results": {
+        "A1_lexical_frozen_indicator": {
+          "auc": 0.5,
+          "n_commit_items": 12,
+          "n_navigate_items": 12,
+          "n_independent_items": 24,
+          "n_ordered_pairs": 144,
+          "ci_95_bootstrap_over_items": [
+            0.5,
+            0.5
+          ],
+          "_ci_unit": "labels, not ordered pairs"
+        },
+        "A1_lexical_count_variant": {
+          "auc": 0.5,
+          "n_commit_items": 12,
+          "n_navigate_items": 12,
+          "n_independent_items": 24,
+          "n_ordered_pairs": 144,
+          "ci_95_bootstrap_over_items": [
+            0.5,
+            0.5
+          ],
+          "_ci_unit": "labels, not ordered pairs"
+        },
+        "A2_anchor_on_projected_48d": {
+          "auc": 0.7639,
+          "n_commit_items": 12,
+          "n_navigate_items": 12,
+          "n_independent_items": 24,
+          "n_ordered_pairs": 144,
+          "ci_95_bootstrap_over_items": [
+            0.5556,
+            0.9306
+          ],
+          "_ci_unit": "labels, not ordered pairs"
+        },
+        "A2_anchor_on_raw_minilm_384d": {
+          "auc": 0.75,
+          "n_commit_items": 12,
+          "n_navigate_items": 12,
+          "n_independent_items": 24,
+          "n_ordered_pairs": 144,
+          "ci_95_bootstrap_over_items": [
+            0.5347,
+            0.9236
+          ],
+          "_ci_unit": "labels, not ordered pairs"
+        },
+        "anchor_on_trigram_hash_32d": {
+          "auc": 0.4236,
+          "n_commit_items": 12,
+          "n_navigate_items": 12,
+          "n_independent_items": 24,
+          "n_ordered_pairs": 144,
+          "ci_95_bootstrap_over_items": [
+            0.2014,
+            0.6597
+          ],
+          "_ci_unit": "labels, not ordered pairs"
+        }
+      },
+      "per_label": [
+        {
+          "label": "Finalise the booking",
+          "category": "commit",
+          "tokens": [
+            "booking",
+            "finalise",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": 0.1202,
+          "A2_anchor_on_raw_minilm_384d": 0.1545,
+          "anchor_on_trigram_hash_32d": 0.1857
+        },
+        {
+          "label": "Authorise the transaction",
+          "category": "commit",
+          "tokens": [
+            "authorise",
+            "the",
+            "transaction"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": 0.0657,
+          "A2_anchor_on_raw_minilm_384d": 0.0735,
+          "anchor_on_trigram_hash_32d": 0.3019
+        },
+        {
+          "label": "Ratify the agreement",
+          "category": "commit",
+          "tokens": [
+            "agreement",
+            "ratify",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.0188,
+          "A2_anchor_on_raw_minilm_384d": 0.0621,
+          "anchor_on_trigram_hash_32d": -0.2194
+        },
+        {
+          "label": "Dispatch the parcel",
+          "category": "commit",
+          "tokens": [
+            "dispatch",
+            "parcel",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": 0.2688,
+          "A2_anchor_on_raw_minilm_384d": 0.1912,
+          "anchor_on_trigram_hash_32d": 0.2188
+        },
+        {
+          "label": "Endorse the document",
+          "category": "commit",
+          "tokens": [
+            "document",
+            "endorse",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.1872,
+          "A2_anchor_on_raw_minilm_384d": 0.0557,
+          "anchor_on_trigram_hash_32d": 0.0567
+        },
+        {
+          "label": "Execute the contract",
+          "category": "commit",
+          "tokens": [
+            "contract",
+            "execute",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": 0.2137,
+          "A2_anchor_on_raw_minilm_384d": 0.1316,
+          "anchor_on_trigram_hash_32d": 0.0136
+        },
+        {
+          "label": "Enact the amendment",
+          "category": "commit",
+          "tokens": [
+            "amendment",
+            "enact",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.0507,
+          "A2_anchor_on_raw_minilm_384d": 0.008,
+          "anchor_on_trigram_hash_32d": 0.0635
+        },
+        {
+          "label": "Lodge the appeal",
+          "category": "commit",
+          "tokens": [
+            "appeal",
+            "lodge",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": 0.0539,
+          "A2_anchor_on_raw_minilm_384d": 0.1579,
+          "anchor_on_trigram_hash_32d": -0.0011
+        },
+        {
+          "label": "Remit the balance",
+          "category": "commit",
+          "tokens": [
+            "balance",
+            "remit",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.0658,
+          "A2_anchor_on_raw_minilm_384d": 0.0731,
+          "anchor_on_trigram_hash_32d": -0.1752
+        },
+        {
+          "label": "Countersign the lease",
+          "category": "commit",
+          "tokens": [
+            "countersign",
+            "lease",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.1817,
+          "A2_anchor_on_raw_minilm_384d": -0.0936,
+          "anchor_on_trigram_hash_32d": 0.1133
+        },
+        {
+          "label": "Commission the artwork",
+          "category": "commit",
+          "tokens": [
+            "artwork",
+            "commission",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": 0.0019,
+          "A2_anchor_on_raw_minilm_384d": 0.1509,
+          "anchor_on_trigram_hash_32d": 0.0471
+        },
+        {
+          "label": "Validate the entry",
+          "category": "commit",
+          "tokens": [
+            "entry",
+            "the",
+            "validate"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": 0.278,
+          "A2_anchor_on_raw_minilm_384d": 0.1669,
+          "anchor_on_trigram_hash_32d": 0.183
+        },
+        {
+          "label": "Browse the archive",
+          "category": "navigate",
+          "tokens": [
+            "archive",
+            "browse",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.2296,
+          "A2_anchor_on_raw_minilm_384d": -0.0882,
+          "anchor_on_trigram_hash_32d": 0.2746
+        },
+        {
+          "label": "Peruse the listings",
+          "category": "navigate",
+          "tokens": [
+            "listings",
+            "peruse",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.0716,
+          "A2_anchor_on_raw_minilm_384d": 0.1174,
+          "anchor_on_trigram_hash_32d": 0.0955
+        },
+        {
+          "label": "Revisit the earlier screen",
+          "category": "navigate",
+          "tokens": [
+            "earlier",
+            "revisit",
+            "screen",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.2958,
+          "A2_anchor_on_raw_minilm_384d": -0.1872,
+          "anchor_on_trigram_hash_32d": 0.2481
+        },
+        {
+          "label": "Wander through the gallery",
+          "category": "navigate",
+          "tokens": [
+            "gallery",
+            "the",
+            "through",
+            "wander"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.0274,
+          "A2_anchor_on_raw_minilm_384d": 0.0594,
+          "anchor_on_trigram_hash_32d": 0.0418
+        },
+        {
+          "label": "Skim the announcements",
+          "category": "navigate",
+          "tokens": [
+            "announcements",
+            "skim",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.0053,
+          "A2_anchor_on_raw_minilm_384d": 0.1334,
+          "anchor_on_trigram_hash_32d": 0.2424
+        },
+        {
+          "label": "Inspect the directory",
+          "category": "navigate",
+          "tokens": [
+            "directory",
+            "inspect",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.1799,
+          "A2_anchor_on_raw_minilm_384d": -0.087,
+          "anchor_on_trigram_hash_32d": 0.1138
+        },
+        {
+          "label": "Traverse the sitemap",
+          "category": "navigate",
+          "tokens": [
+            "sitemap",
+            "the",
+            "traverse"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.2165,
+          "A2_anchor_on_raw_minilm_384d": -0.0477,
+          "anchor_on_trigram_hash_32d": 0.0764
+        },
+        {
+          "label": "Navigate to the lobby",
+          "category": "navigate",
+          "tokens": [
+            "lobby",
+            "navigate",
+            "the",
+            "to"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.1809,
+          "A2_anchor_on_raw_minilm_384d": 0.0104,
+          "anchor_on_trigram_hash_32d": -0.1225
+        },
+        {
+          "label": "Explore the showroom",
+          "category": "navigate",
+          "tokens": [
+            "explore",
+            "showroom",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.0111,
+          "A2_anchor_on_raw_minilm_384d": 0.0771,
+          "anchor_on_trigram_hash_32d": 0.0815
+        },
+        {
+          "label": "Scan the bulletin",
+          "category": "navigate",
+          "tokens": [
+            "bulletin",
+            "scan",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": 0.0057,
+          "A2_anchor_on_raw_minilm_384d": 0.0077,
+          "anchor_on_trigram_hash_32d": -0.0302
+        },
+        {
+          "label": "Visit the reading room",
+          "category": "navigate",
+          "tokens": [
+            "reading",
+            "room",
+            "the",
+            "visit"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": -0.1942,
+          "A2_anchor_on_raw_minilm_384d": -0.0187,
+          "anchor_on_trigram_hash_32d": 0.1845
+        },
+        {
+          "label": "Tour the exhibition",
+          "category": "navigate",
+          "tokens": [
+            "exhibition",
+            "the",
+            "tour"
+          ],
+          "A1_lexical_frozen_indicator": 0.0,
+          "A1_lexical_count_variant": 0.0,
+          "A2_anchor_on_projected_48d": 0.0666,
+          "A2_anchor_on_raw_minilm_384d": 0.1407,
+          "anchor_on_trigram_hash_32d": 0.0239
+        }
+      ]
+    },
+    {
+      "tier": "tier2_partial_coverage",
+      "rule": "head verb absent from A1; exactly one A1 positive token per label; the same token multiset on both sides",
+      "a1_is_analytic": "A1 scores +1.0 on all 16 labels, so its AUC is exactly 0.5 by construction. The word list is loud and uninformative here, rather than silent as in tier 1.",
+      "commit_labels": [
+        "Finalise the order",
+        "Ratify the purchase",
+        "Authorise the checkout",
+        "Dispatch the order",
+        "Countersign the order",
+        "Endorse the purchase",
+        "Execute the order",
+        "Validate the checkout"
+      ],
+      "navigate_labels": [
+        "Browse the order history",
+        "Peruse the purchase records",
+        "Revisit the checkout guide",
+        "Skim the order summary",
+        "Inspect the order archive",
+        "Tour the purchase gallery",
+        "Scan the order listings",
+        "Survey the checkout statistics"
+      ],
+      "n_commit": 8,
+      "n_navigate": 8,
+      "results": {
+        "A1_lexical_frozen_indicator": {
+          "auc": 0.5,
+          "n_commit_items": 8,
+          "n_navigate_items": 8,
+          "n_independent_items": 16,
+          "n_ordered_pairs": 64,
+          "ci_95_bootstrap_over_items": [
+            0.5,
+            0.5
+          ],
+          "_ci_unit": "labels, not ordered pairs"
+        },
+        "A1_lexical_count_variant": {
+          "auc": 0.5,
+          "n_commit_items": 8,
+          "n_navigate_items": 8,
+          "n_independent_items": 16,
+          "n_ordered_pairs": 64,
+          "ci_95_bootstrap_over_items": [
+            0.5,
+            0.5
+          ],
+          "_ci_unit": "labels, not ordered pairs"
+        },
+        "A2_anchor_on_projected_48d": {
+          "auc": 0.8438,
+          "n_commit_items": 8,
+          "n_navigate_items": 8,
+          "n_independent_items": 16,
+          "n_ordered_pairs": 64,
+          "ci_95_bootstrap_over_items": [
+            0.6094,
+            1.0
+          ],
+          "_ci_unit": "labels, not ordered pairs"
+        },
+        "A2_anchor_on_raw_minilm_384d": {
+          "auc": 0.7656,
+          "n_commit_items": 8,
+          "n_navigate_items": 8,
+          "n_independent_items": 16,
+          "n_ordered_pairs": 64,
+          "ci_95_bootstrap_over_items": [
+            0.5,
+            0.9688
+          ],
+          "_ci_unit": "labels, not ordered pairs"
+        },
+        "anchor_on_trigram_hash_32d": {
+          "auc": 0.5156,
+          "n_commit_items": 8,
+          "n_navigate_items": 8,
+          "n_independent_items": 16,
+          "n_ordered_pairs": 64,
+          "ci_95_bootstrap_over_items": [
+            0.2188,
+            0.8125
+          ],
+          "_ci_unit": "labels, not ordered pairs"
+        }
+      },
+      "per_label": [
+        {
+          "label": "Finalise the order",
+          "category": "commit",
+          "tokens": [
+            "finalise",
+            "order",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.3758,
+          "A2_anchor_on_raw_minilm_384d": 0.3622,
+          "anchor_on_trigram_hash_32d": 0.2491
+        },
+        {
+          "label": "Ratify the purchase",
+          "category": "commit",
+          "tokens": [
+            "purchase",
+            "ratify",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.4541,
+          "A2_anchor_on_raw_minilm_384d": 0.2831,
+          "anchor_on_trigram_hash_32d": 0.1331
+        },
+        {
+          "label": "Authorise the checkout",
+          "category": "commit",
+          "tokens": [
+            "authorise",
+            "checkout",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.2407,
+          "A2_anchor_on_raw_minilm_384d": 0.1749,
+          "anchor_on_trigram_hash_32d": -0.0342
+        },
+        {
+          "label": "Dispatch the order",
+          "category": "commit",
+          "tokens": [
+            "dispatch",
+            "order",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.5745,
+          "A2_anchor_on_raw_minilm_384d": 0.4179,
+          "anchor_on_trigram_hash_32d": 0.2421
+        },
+        {
+          "label": "Countersign the order",
+          "category": "commit",
+          "tokens": [
+            "countersign",
+            "order",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.3364,
+          "A2_anchor_on_raw_minilm_384d": 0.2225,
+          "anchor_on_trigram_hash_32d": 0.2544
+        },
+        {
+          "label": "Endorse the purchase",
+          "category": "commit",
+          "tokens": [
+            "endorse",
+            "purchase",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.2202,
+          "A2_anchor_on_raw_minilm_384d": 0.2623,
+          "anchor_on_trigram_hash_32d": 0.1644
+        },
+        {
+          "label": "Execute the order",
+          "category": "commit",
+          "tokens": [
+            "execute",
+            "order",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.5907,
+          "A2_anchor_on_raw_minilm_384d": 0.4776,
+          "anchor_on_trigram_hash_32d": 0.2183
+        },
+        {
+          "label": "Validate the checkout",
+          "category": "commit",
+          "tokens": [
+            "checkout",
+            "the",
+            "validate"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.3342,
+          "A2_anchor_on_raw_minilm_384d": 0.2132,
+          "anchor_on_trigram_hash_32d": -0.1101
+        },
+        {
+          "label": "Browse the order history",
+          "category": "navigate",
+          "tokens": [
+            "browse",
+            "history",
+            "order",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.0342,
+          "A2_anchor_on_raw_minilm_384d": 0.0786,
+          "anchor_on_trigram_hash_32d": 0.2389
+        },
+        {
+          "label": "Peruse the purchase records",
+          "category": "navigate",
+          "tokens": [
+            "peruse",
+            "purchase",
+            "records",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.2242,
+          "A2_anchor_on_raw_minilm_384d": 0.2298,
+          "anchor_on_trigram_hash_32d": 0.2935
+        },
+        {
+          "label": "Revisit the checkout guide",
+          "category": "navigate",
+          "tokens": [
+            "checkout",
+            "guide",
+            "revisit",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.1839,
+          "A2_anchor_on_raw_minilm_384d": 0.199,
+          "anchor_on_trigram_hash_32d": 0.0065
+        },
+        {
+          "label": "Skim the order summary",
+          "category": "navigate",
+          "tokens": [
+            "order",
+            "skim",
+            "summary",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": -0.0151,
+          "A2_anchor_on_raw_minilm_384d": 0.0763,
+          "anchor_on_trigram_hash_32d": 0.2099
+        },
+        {
+          "label": "Inspect the order archive",
+          "category": "navigate",
+          "tokens": [
+            "archive",
+            "inspect",
+            "order",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.2543,
+          "A2_anchor_on_raw_minilm_384d": 0.242,
+          "anchor_on_trigram_hash_32d": 0.1774
+        },
+        {
+          "label": "Tour the purchase gallery",
+          "category": "navigate",
+          "tokens": [
+            "gallery",
+            "purchase",
+            "the",
+            "tour"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.2979,
+          "A2_anchor_on_raw_minilm_384d": 0.2554,
+          "anchor_on_trigram_hash_32d": 0.1906
+        },
+        {
+          "label": "Scan the order listings",
+          "category": "navigate",
+          "tokens": [
+            "listings",
+            "order",
+            "scan",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.3809,
+          "A2_anchor_on_raw_minilm_384d": 0.2721,
+          "anchor_on_trigram_hash_32d": 0.0973
+        },
+        {
+          "label": "Survey the checkout statistics",
+          "category": "navigate",
+          "tokens": [
+            "checkout",
+            "statistics",
+            "survey",
+            "the"
+          ],
+          "A1_lexical_frozen_indicator": 1.0,
+          "A1_lexical_count_variant": 1.0,
+          "A2_anchor_on_projected_48d": 0.0646,
+          "A2_anchor_on_raw_minilm_384d": 0.1874,
+          "anchor_on_trigram_hash_32d": 0.027
+        }
+      ]
+    }
+  ],
+  "coverage": {
+    "a1_vocabulary_version": "2026-09-18.frozen",
+    "a1_vocabulary_size": 35,
+    "required_head_words_absent_from_a1": {
+      "finalise": true,
+      "authorise": true,
+      "ratify": true,
+      "dispatch": true
+    },
+    "tier1_labels_with_any_a1_token": [],
+    "tier2_labels_with_no_a1_token": [],
+    "tier1_tokens_also_in_projection_fit_corpus": [
+      "archive",
+      "booking",
+      "browse",
+      "to"
+    ],
+    "labels_appearing_in_held_out_probe": [
+      "Dispatch the parcel"
+    ],
+    "_asymmetry": "A1 has never seen any tier-1 token. The projection was fitted on a corpus that contains some of them. That asymmetry is the experiment's subject, not a flaw -- a word list cannot generalise past its words and an embedding is supposed to -- but it means a tier-1 win for A2 is evidence about *this* fitted projection, not about sentence embeddings in general.",
+    "rows": [
+      {
+        "tier": "tier1_out_of_list",
+        "category": "commit",
+        "label": "Finalise the booking",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [
+          "booking"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "commit",
+        "label": "Authorise the transaction",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "commit",
+        "label": "Ratify the agreement",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "commit",
+        "label": "Dispatch the parcel",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": true
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "commit",
+        "label": "Endorse the document",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "commit",
+        "label": "Execute the contract",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "commit",
+        "label": "Enact the amendment",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "commit",
+        "label": "Lodge the appeal",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "commit",
+        "label": "Remit the balance",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "commit",
+        "label": "Countersign the lease",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "commit",
+        "label": "Commission the artwork",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "commit",
+        "label": "Validate the entry",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "navigate",
+        "label": "Browse the archive",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [
+          "archive",
+          "browse"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "navigate",
+        "label": "Peruse the listings",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "navigate",
+        "label": "Revisit the earlier screen",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "navigate",
+        "label": "Wander through the gallery",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "navigate",
+        "label": "Skim the announcements",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "navigate",
+        "label": "Inspect the directory",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "navigate",
+        "label": "Traverse the sitemap",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "navigate",
+        "label": "Navigate to the lobby",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [
+          "to"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "navigate",
+        "label": "Explore the showroom",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "navigate",
+        "label": "Scan the bulletin",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "navigate",
+        "label": "Visit the reading room",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier1_out_of_list",
+        "category": "navigate",
+        "label": "Tour the exhibition",
+        "tokens_in_a1": [],
+        "tokens_in_projection_fit_corpus": [],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "commit",
+        "label": "Finalise the order",
+        "tokens_in_a1": [
+          "order"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "order"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "commit",
+        "label": "Ratify the purchase",
+        "tokens_in_a1": [
+          "purchase"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "purchase"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "commit",
+        "label": "Authorise the checkout",
+        "tokens_in_a1": [
+          "checkout"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "checkout"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "commit",
+        "label": "Dispatch the order",
+        "tokens_in_a1": [
+          "order"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "order"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "commit",
+        "label": "Countersign the order",
+        "tokens_in_a1": [
+          "order"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "order"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "commit",
+        "label": "Endorse the purchase",
+        "tokens_in_a1": [
+          "purchase"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "purchase"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "commit",
+        "label": "Execute the order",
+        "tokens_in_a1": [
+          "order"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "order"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "commit",
+        "label": "Validate the checkout",
+        "tokens_in_a1": [
+          "checkout"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "checkout"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "navigate",
+        "label": "Browse the order history",
+        "tokens_in_a1": [
+          "order"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "browse",
+          "history",
+          "order"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "navigate",
+        "label": "Peruse the purchase records",
+        "tokens_in_a1": [
+          "purchase"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "purchase"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "navigate",
+        "label": "Revisit the checkout guide",
+        "tokens_in_a1": [
+          "checkout"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "checkout"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "navigate",
+        "label": "Skim the order summary",
+        "tokens_in_a1": [
+          "order"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "order"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "navigate",
+        "label": "Inspect the order archive",
+        "tokens_in_a1": [
+          "order"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "archive",
+          "order"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "navigate",
+        "label": "Tour the purchase gallery",
+        "tokens_in_a1": [
+          "purchase"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "purchase"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "navigate",
+        "label": "Scan the order listings",
+        "tokens_in_a1": [
+          "order"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "order"
+        ],
+        "label_string_in_held_out_probe": false
+      },
+      {
+        "tier": "tier2_partial_coverage",
+        "category": "navigate",
+        "label": "Survey the checkout statistics",
+        "tokens_in_a1": [
+          "checkout"
+        ],
+        "tokens_in_projection_fit_corpus": [
+          "checkout"
+        ],
+        "label_string_in_held_out_probe": false
+      }
+    ]
+  },
+  "limitations": [
+    "**This is not an experiment about policies.** Nothing here runs an environment, a browser or a learner. A scorer that ranks labels well may still not change what an agent does, and the A0/A1/A2 run is what speaks to that.",
+    "**The label sets were written by one author who knew A2's anchors.** They were frozen in git before the first run, which rules out tuning against results, not the possibility that the phrasing unconsciously suits the anchors. The trigram-hash row is the floor control that makes that visible: if the hash also scores well, the population is separable by surface form rather than by meaning.",
+    "**Category assignment is a judgement.** 'Commit-like' and 'navigate-like' were assigned by the author before scoring and not revised. Someone else might place `Inspect the directory` differently.",
+    "**n is 24 items in tier 1 and 16 in tier 2.** The intervals resample labels and are correspondingly wide. This is a cheap diagnostic, and it is powered to separate 'holds up' from 'collapses', not to resolve small differences.",
+    "**A2's projection was fitted on a corpus sharing some of these tokens; A1's list was not.** The coverage table above gives the exact overlap. A tier-1 win for A2 is evidence about this fitted projection, not about frozen sentence embeddings in general."
+  ],
+  "verdict": "PREDICTION PARTIALLY MET. A2 reaches AUC 0.764 with a 95% lower bound of 0.556 -- above chance, below the pre-specified 0.80. Some discrimination survives outside A1's vocabulary, less than the clean reading required."
+}
