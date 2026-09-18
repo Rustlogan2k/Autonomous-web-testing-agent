@@ -1,0 +1,194 @@
+{
+  "_purpose": "Was A1's word list written before the deep fixture was inspected?",
+  "generated_at": "2026-09-18T12:47:41+00:00",
+  "git_head": "c4708baf8b30f0f125a9a7fda4f50744d58ae2d7",
+  "order_of_events": {
+    "fixture_first_committed_in": "3844914",
+    "fixture_first_committed_at": "2026-08-10 11:37:00 +0530",
+    "a1_frozen_in": "0d104f3",
+    "a1_frozen_at": "2026-09-18 11:38:43 +0530",
+    "a1_frozen_after_the_fixture_existed": true,
+    "freezing_document_cites_deep_fixture_measurements": [
+      "0.6%",
+      "85.5%",
+      "deep fixture",
+      "order-4",
+      "review page"
+    ],
+    "_reading": "The word list was frozen after the fixture had existed for weeks, and the document that freezes it quotes measurements taken on that fixture (0.6%, 85.5%, deep fixture, order-4, review page). The author therefore knew which decision the prior had to resolve, and on which page, at the moment the list was written."
+  },
+  "decisive_control_coverage": {
+    "decisions": [
+      {
+        "page": "index.html",
+        "correct_control": "Start order",
+        "correct_score": 1.0,
+        "distractor_scores": {
+          "Catalog": 0.0,
+          "Support": 0.0,
+          "About": 0.0,
+          "Terms": 0.0,
+          "Privacy": 0.0,
+          "Status": 0.0,
+          "Contact us": 0.0
+        },
+        "best_distractor_score": 0.0,
+        "a1_ranks_it_strictly_first": true,
+        "margin": 1.0
+      },
+      {
+        "page": "order-1.html",
+        "correct_control": "Continue",
+        "correct_score": 1.0,
+        "distractor_scores": {
+          "Back": -1.0,
+          "Cancel order": 0.0,
+          "Home": 0.0,
+          "Catalog": 0.0
+        },
+        "best_distractor_score": 0.0,
+        "a1_ranks_it_strictly_first": true,
+        "margin": 1.0
+      },
+      {
+        "page": "order-2.html",
+        "correct_control": "Continue",
+        "correct_score": 1.0,
+        "distractor_scores": {
+          "Back": -1.0,
+          "Cancel order": 0.0,
+          "Home": 0.0,
+          "Catalog": 0.0
+        },
+        "best_distractor_score": 0.0,
+        "a1_ranks_it_strictly_first": true,
+        "margin": 1.0
+      },
+      {
+        "page": "order-3.html",
+        "correct_control": "Continue",
+        "correct_score": 1.0,
+        "distractor_scores": {
+          "Back": -1.0,
+          "Cancel order": 0.0,
+          "Home": 0.0,
+          "Catalog": 0.0
+        },
+        "best_distractor_score": 0.0,
+        "a1_ranks_it_strictly_first": true,
+        "margin": 1.0
+      },
+      {
+        "page": "order-4.html",
+        "correct_control": "Place order",
+        "correct_score": 1.0,
+        "distractor_scores": {
+          "Back": -1.0,
+          "Cancel order": 0.0,
+          "Home": 0.0,
+          "Catalog": 0.0,
+          "Support": 0.0,
+          "About": 0.0,
+          "Terms": 0.0,
+          "Privacy": 0.0,
+          "Status": 0.0
+        },
+        "best_distractor_score": 0.0,
+        "a1_ranks_it_strictly_first": true,
+        "margin": 1.0
+      }
+    ],
+    "decisions_a1_orders_correctly": 5,
+    "decisions_total": 5,
+    "_reading": "A1 ranks the correct control strictly above every listed distractor at 5 of 5 gated decisions. It therefore resolves the whole flow on its own, which is the result the A0/A1/A2 experiment was designed to test -- and a result a list written with this fixture in view would be expected to produce."
+  },
+  "vocabulary_exercised": {
+    "fixture_labels_total": 33,
+    "labels_a1_fires_on": {
+      "Back": [
+        "back"
+      ],
+      "Back to home": [
+        "back"
+      ],
+      "Cancel order": [
+        "cancel",
+        "order"
+      ],
+      "Continue": [
+        "continue"
+      ],
+      "Order confirmed": [
+        "order"
+      ],
+      "Place an order": [
+        "order",
+        "place"
+      ],
+      "Place order": [
+        "order",
+        "place"
+      ],
+      "Review your order": [
+        "order"
+      ],
+      "Start an order": [
+        "order"
+      ],
+      "Start order": [
+        "order"
+      ]
+    },
+    "a1_tokens_present_in_the_fixture": [
+      "back",
+      "cancel",
+      "continue",
+      "order",
+      "place"
+    ],
+    "a1_tokens_total": 35,
+    "_reading": "5 of A1's 35 tokens appear anywhere in the fixture (back, cancel, continue, order, place). The list as a whole is generic; the part of it that does any work on this fixture is five words, and those five are precisely the ones that separate the correct control from its distractors at every gate."
+  },
+  "a1_vocabulary": {
+    "positive": [
+      "apply",
+      "buy",
+      "checkout",
+      "complete",
+      "confirm",
+      "continue",
+      "create",
+      "done",
+      "finish",
+      "next",
+      "order",
+      "pay",
+      "place",
+      "proceed",
+      "purchase",
+      "register",
+      "save",
+      "send",
+      "signup",
+      "submit",
+      "subscribe"
+    ],
+    "negative": [
+      "abort",
+      "back",
+      "cancel",
+      "clear",
+      "close",
+      "delete",
+      "discard",
+      "exit",
+      "logout",
+      "previous",
+      "remove",
+      "reset",
+      "return",
+      "signout"
+    ]
+  },
+  "verdict": "CONTAMINATED with respect to the deep-flow fixture, in a specific and limited sense.\n\nWhat is clean: the list was committed before A1 or A2 had an implementation and before either was ever run, so it cannot have been tuned against a result. The freezing commit is a genuine pre-registration against post-hoc adjustment.\n\nWhat is not: the list is not independent of the fixture it is about to be evaluated on. It was written 39 days after that fixture was committed, by an author who had already traced A0's stall to `order-4.html` and who quotes that measurement in the freezing document itself. Its five decisive tokens order every gate correctly.\n\nConsequence for the write-up: A1 and A2 results on DEEP-01 are an UPPER BOUND on what a generic fixed prior achieves, not clean evidence of one. They answer 'can label information resolve this decision at all' -- which is the question the A0/A1/A2 experiment was approved to answer -- and they do not answer 'would a prior written without this fixture in view have resolved it'. Only an application the list was not written beside can answer that, which is what the out-of-list probe and the transfer suite are for.\n\nThis does not invalidate running A0/A1/A2. It fixes how the result may be read."
+}
