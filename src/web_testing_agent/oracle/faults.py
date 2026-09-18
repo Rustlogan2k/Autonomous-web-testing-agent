@@ -74,6 +74,13 @@ class AssertionKind(str, enum.Enum):
     NUMERIC_EQUALS = "numeric_equals"
     #: A guarded state was reached even though the input that guards it was invalid.
     REACHED_WITH_INVALID_INPUT = "reached_with_invalid_input"
+    #: A region the application's own contract says must carry a value is empty. Distinct
+    #: from TEXT_ABSENT, which asks whether a particular literal is missing: this asks
+    #: whether *anything at all* was rendered. A confirmation page that displays a blank
+    #: delivery address is the canonical constraint-bypass symptom, and stating it as
+    #: "must contain X" would require the fault to name a value the application never
+    #: produced.
+    REGION_EMPTY = "region_empty"
 
 
 @dataclass(frozen=True, slots=True)

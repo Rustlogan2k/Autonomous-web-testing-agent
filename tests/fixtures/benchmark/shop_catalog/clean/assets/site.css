@@ -1,0 +1,45 @@
+/* Fernbrook Outfitters. A deliberately different visual and DOM idiom from the
+   deep-flow fixture: semantic sectioning elements, class-based hooks rather than
+   ids everywhere, and a basket that persists in sessionStorage. */
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.55 Georgia, "Times New Roman", serif; color: #23201c;
+       background: #faf7f2; }
+a { color: #8a5a2b; }
+.masthead { display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 28px; border-bottom: 2px solid #e2d8c8; background: #fffdf9; }
+.wordmark { font-weight: 700; font-size: 19px; text-decoration: none; color: #3d3226; }
+.wordmark span { color: #8a5a2b; font-style: italic; }
+.primary a { margin-left: 18px; text-decoration: none; }
+.page { max-width: 62rem; margin: 0 auto; padding: 26px; }
+.hero h1 { margin: 0 0 6px; font-size: 27px; }
+.lede { color: #6b5f50; margin-top: 0; }
+.tile-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.tile { flex: 1 1 15rem; border: 1px solid #e2d8c8; background: #fffdf9;
+        border-radius: 4px; padding: 14px; }
+.tile h3 { margin: 0 0 6px; }
+.tile-action { display: inline-block; margin-top: 8px; }
+.disabled { color: #a99d8c; }
+.notice-list { padding-left: 18px; }
+.product-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+.product-table th, .product-table td { text-align: left; padding: 9px 10px;
+                                       border-bottom: 1px solid #e8e0d2; }
+.product-table th { background: #f3ece1; font-size: 13px; text-transform: uppercase;
+                    letter-spacing: .04em; }
+.panel { border: 1px solid #e2d8c8; background: #fffdf9; border-radius: 4px;
+         padding: 16px; margin: 16px 0; }
+.field-row { margin: 10px 0; }
+.field-row label { display: block; font-size: 13px; color: #6b5f50; margin-bottom: 3px; }
+input, select { padding: 6px 8px; border: 1px solid #c9bda9; border-radius: 3px;
+                font: inherit; background: #fff; }
+.action { display: inline-block; padding: 7px 14px; background: #8a5a2b; color: #fff;
+          border: none; border-radius: 3px; text-decoration: none; cursor: pointer;
+          font: inherit; }
+.action.quiet { background: #efe7da; color: #5c4c38; }
+.hidden { display: none; }
+.warn { color: #9d3b2f; font-size: 13px; }
+.footer { border-top: 2px solid #e2d8c8; padding: 16px 28px; background: #fffdf9;
+          font-size: 13px; }
+.footer a { margin-right: 14px; }
+.summary-line { display: flex; justify-content: space-between; padding: 4px 0; }
+.summary-line.total { border-top: 1px solid #e2d8c8; margin-top: 6px; padding-top: 8px;
+                      font-weight: 700; }

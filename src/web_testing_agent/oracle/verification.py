@@ -309,10 +309,12 @@ class PlaywrightTrajectoryRunner:
                     if index < len(info.get("action_specs") or []) else None
                 observation, _reward, terminated, truncated, info = env.step(index)
                 page = info.get("page") or {}
+                executed = info.get("action_spec") or spec
                 records.append({
                     "url": page.get("url", ""),
                     "html": page.get("html", ""),
-                    "action": _replay_step_of(info.get("action_spec") or spec),
+                    "action": _replay_step_of(executed),
+                    "entered": _entered_value(executed),
                 })
                 if terminated or truncated:
                     break
@@ -321,6 +323,27 @@ class PlaywrightTrajectoryRunner:
             if callable(close):
                 close()
         return build_trajectory(records)
+
+
+def _entered_value(spec) -> dict | None:  # noqa: ANN001
+    """`{field_label: value}` for an action that entered one, read off the live spec.
+
+    The label is `element_id` -- the registry's human-facing name for the control
+    (`"quantity"`), not its DOM id (`"qty"`). A fault's `input_field` therefore names
+    something a person would recognise and does not have to track the fixture's markup.
+    """
+    if spec is None:
+        return None
+    from ..envs.types import ActionType
+
+    if spec.action_type not in (ActionType.TYPE, ActionType.SELECT):
+        return None
+    params = spec.params or {}
+    value = params.get("value", params.get("option"))
+    label = (spec.element_id or "").strip()
+    if not label or value is None:
+        return None
+    return {label: str(value)}
 
 
 def _replay_step_of(spec) -> dict | None:  # noqa: ANN001

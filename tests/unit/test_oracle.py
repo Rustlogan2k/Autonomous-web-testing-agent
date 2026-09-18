@@ -484,3 +484,38 @@ def test_the_oracle_package_imports_no_agent_reward_or_judge():
                         "openai", "llm")):
                     offenders.append(f"{source.name}: {name}")
     assert not offenders, offenders
+
+
+# -- REGION_EMPTY, added while validating application 1 -----------------------------------
+
+
+def test_region_empty_fires_on_a_blank_required_region():
+    """The constraint-bypass symptom: a value was committed that the app never had."""
+    fault = FaultSpec(
+        fault_id="R-01", fault_class=FaultClass.CONSTRAINT_BYPASS, description="",
+        trigger_condition="", expected_behaviour="", observable_violation="",
+        assertions=(AssertionSpec(kind=AssertionKind.REGION_EMPTY, where=r"receipt",
+                                  region="quantity"),),
+    )
+    blank = '<html><body><p id="r-qty"></p><p id="r-total">Total: 9.99</p></body></html>'
+    assert verify_fault(fault, app_with(fault),
+                        trajectory_reaching_receipt("42", blank)).violated
+    assert not verify_fault(fault, app_with(fault),
+                            trajectory_reaching_receipt("42", RECEIPT_HTML)).violated
+
+
+def test_region_empty_is_inconclusive_when_the_region_is_absent_entirely():
+    """An element not rendered and an element rendered blank are different observations.
+
+    Only the second is evidence that the application committed a value it did not have;
+    the first usually means the trajectory never reached the page being judged.
+    """
+    fault = FaultSpec(
+        fault_id="R-02", fault_class=FaultClass.CONSTRAINT_BYPASS, description="",
+        trigger_condition="", expected_behaviour="", observable_violation="",
+        assertions=(AssertionSpec(kind=AssertionKind.REGION_EMPTY, where=r"receipt",
+                                  region="quantity"),),
+    )
+    verdict = verify_fault(fault, app_with(fault),
+                           trajectory_reaching_receipt("42", "<html><body>Thanks</body></html>"))
+    assert verdict.inconclusive and not verdict.violated

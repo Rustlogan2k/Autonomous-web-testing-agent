@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout — Fernbrook Outfitters</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<header class="masthead">
+  <a class="wordmark" href="index.html">Fernbrook<span>Outfitters</span></a>
+  <nav class="primary" aria-label="Primary">
+    <a href="index.html">Store</a>
+    <a href="collection-shelter.html">Shelter</a>
+    <a href="collection-cooking.html">Cooking</a>
+    <a href="basket.html" id="basket-link">Basket</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Checkout</h1>
+
+  <div id="no-basket" class="panel hidden">
+    <p>There is nothing to check out.</p>
+    <a class="action" href="index.html">Back to the store</a>
+  </div>
+
+  <div id="checkout-panel" class="panel hidden">
+    <div class="field-row">
+      <label for="contact">Email for the receipt</label>
+      <input type="email" id="contact" name="contact" placeholder="name@example.com">
+    </div>
+    <div class="field-row">
+      <label for="postcode">Delivery postcode</label>
+      <input type="text" id="postcode" name="postcode" placeholder="FB1 2AA">
+    </div>
+    <div class="field-row">
+      <label for="dispatch">Dispatch method</label>
+      <select id="dispatch" name="dispatch">
+        <option value="standard">Standard, 2 working days</option>
+        <option value="express">Express, next working day</option>
+        <option value="collect">Collect from the counter</option>
+      </select>
+    </div>
+    <p class="warn hidden" id="checkout-warning">Enter a valid email address and postcode.</p>
+    <p>
+      <button class="action" id="confirm-order" type="button">Confirm and place the order</button>
+      <a class="action quiet" href="basket.html">Back to the basket</a>
+    </p>
+  </div>
+
+  <p><a href="returns.html">Returns policy</a> &middot; <a href="privacy.html">Privacy notice</a></p>
+</main>
+<footer class="footer">
+  <a href="delivery.html">Delivery</a>
+  <a href="returns.html">Returns</a>
+  <a href="sizing.html">Sizing</a>
+  <a href="stockists.html">Stockists</a>
+  <a href="privacy.html">Privacy notice</a>
+</footer>
+<script src="assets/basket.js"></script>
+<script>
+  (function () {
+    var lines = basketLines();
+    if (!lines.length) {
+      document.getElementById('no-basket').classList.remove('hidden');
+      return;
+    }
+    document.getElementById('checkout-panel').classList.remove('hidden');
+
+    document.getElementById('confirm-order').addEventListener('click', function () {
+      var contact = document.getElementById('contact').value.trim();
+      var postcode = document.getElementById('postcode').value.trim();
+      var warning = document.getElementById('checkout-warning');
+
+      // The guard the confirmation page depends on: an order may only be placed with a
+      // syntactically valid email and a non-empty postcode.
+      var emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contact);
+      var postcodeOk = postcode.length >= 3;
+      if (!emailOk || !postcodeOk) {
+        warning.classList.remove('hidden');
+        return;
+      }
+      warning.classList.add('hidden');
+
+      try {
+        sessionStorage.setItem('fernbrook.order', JSON.stringify({
+          contact: contact,
+          postcode: postcode,
+          dispatch: document.getElementById('dispatch').value,
+          lines: lines,
+          subtotal: basketTotal()
+        }));
+      } catch (e) {}
+      window.location.href = 'confirmation.html';
+    });
+  })();
+</script>
+</body>
+</html>

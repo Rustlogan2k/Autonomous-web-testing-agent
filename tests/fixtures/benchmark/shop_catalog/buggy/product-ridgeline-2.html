@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ridgeline 2 tent — Fernbrook Outfitters</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<header class="masthead">
+  <a class="wordmark" href="index.html">Fernbrook<span>Outfitters</span></a>
+  <nav class="primary" aria-label="Primary">
+    <a href="index.html">Store</a>
+    <a href="collection-shelter.html">Shelter</a>
+    <a href="collection-cooking.html">Cooking</a>
+    <a href="basket.html" id="basket-link">Basket</a>
+  </nav>
+</header>
+<main class="page">
+  <h1>Ridgeline 2 tent</h1>
+  <p class="lede">Two-person, 3.1 kg packed. &pound;249.00 including VAT.</p>
+  <div class="panel">
+    <div class="field-row">
+      <label for="qty">How many?</label>
+      <input type="number" id="qty" name="quantity" min="1" max="100" step="1" value="1">
+    </div>
+    <p class="warn hidden" id="qty-warning">Choose between 1 and 100.</p>
+    <button class="action" id="add-to-basket" type="button">Add to basket</button>
+    <a class="action quiet" href="collection-shelter.html">Back to shelter</a>
+  </div>
+  <p><a href="sizing.html">Sizing and fit guidance</a> &middot;
+     <a href="delivery.html">Delivery times</a></p>
+</main>
+<footer class="footer">
+  <a href="delivery.html">Delivery</a>
+  <a href="returns.html">Returns</a>
+  <a href="sizing.html">Sizing</a>
+  <a href="stockists.html">Stockists</a>
+  <a href="privacy.html">Privacy notice</a>
+</footer>
+<script src="assets/basket.js"></script>
+<script>
+  (function () {
+    var input = document.getElementById('qty');
+    var warning = document.getElementById('qty-warning');
+    document.getElementById('add-to-basket').addEventListener('click', function () {
+      var quantity = parseInt(input.value, 10);
+      if (!(quantity >= 1 && quantity <= 100)) {
+        warning.classList.remove('hidden');
+        return;
+      }
+      warning.classList.add('hidden');
+      addToBasket('ridgeline-2', quantity);
+      window.location.href = 'basket.html';
+    });
+  })();
+</script>
+</body>
+</html>

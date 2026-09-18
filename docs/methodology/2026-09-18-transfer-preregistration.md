@@ -302,4 +302,5 @@ not amended on the basis of observed results.
 
 | date | change | commit | reason |
 |---|---|---|---|
-| — | — | — | — |
+| 2026-09-18 | Added the `region_empty` assertion kind to the oracle grammar. | (this commit) | Found while validating application 1 end to end. The grammar states checks as *expected behaviour*, with the violation being the deviation, and it had no way to say "a region the application's contract requires to carry a value is blank" — which is the canonical constraint-bypass symptom. Stating it as `text_contains` would have required the fault to name a value the application never produced. No metric, arm, budget, fold or statistical decision changed; this adds a way to express a fault class the taxonomy already declared. |
+| 2026-09-18 | Widened application 1's quantity guard from 1–20 to 1–100. | (this commit) | The action registry generates exactly five values per numeric field (`42`, `0`, `999999999`, `''`, `not-a-number`). A 1–20 guard admits none of them, so no policy could have completed the workflow and the application would have measured nothing. Same reachability constraint the Deep fixture's answer key records. Fixed before any measurement was taken. |

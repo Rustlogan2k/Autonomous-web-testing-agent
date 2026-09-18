@@ -1,0 +1,82 @@
+{
+  "app_id": "shop_catalog",
+  "name": "Fernbrook Outfitters",
+  "entry": "index.html",
+  "_note": "Benchmark application 1. Excluded from nothing; the Deep fixture is the one excluded from transfer evaluation. Regions are named so assertions never contain a CSS selector, which lets the DOM be restructured without rewriting the fault library.",
+  "regions": {
+    "confirm_quantity": ".confirm-qty",
+    "confirm_subtotal": "#confirm-subtotal",
+    "confirm_total": "#confirm-total",
+    "confirm_contact": "#confirm-contact",
+    "confirm_postcode": "#confirm-postcode",
+    "basket_quantity": ".basket-qty",
+    "basket_subtotal": "#basket-subtotal",
+    "checkout_warning": "#checkout-warning"
+  },
+  "faults": [
+    {
+      "fault_id": "SHOP-01",
+      "fault_class": "state_corruption",
+      "description": "The order confirmation reports the number of distinct basket lines as the quantity, rather than the quantity actually ordered. A single-line order of five units confirms as one unit.",
+      "trigger_condition": "Open a product, set a quantity of 2 or more, add it to the basket, continue to checkout, supply a valid email and postcode, and confirm the order.",
+      "expected_behaviour": "The confirmation echoes the quantity the user entered on the product page.",
+      "observable_violation": "The quantity cell on the confirmation shows a different number from the one entered. The page returns 200, logs nothing, and the basket one step earlier showed the correct number.",
+      "assertions": [
+        {
+          "kind": "echoes_input",
+          "where": "confirmation\\.html",
+          "region": "confirm_quantity",
+          "input_field": "quantity",
+          "describes": "the confirmation's quantity cell must echo the quantity entered on the product page"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "minimization_keep": [],
+      "observation_horizon": 3,
+      "shortest_path": 6,
+      "_horizon_note": "The triggering action (setting the quantity) is three state transitions before the page where the violation becomes observable: product -> basket -> checkout -> confirmation. Documented because H >= 3 may be useful for a delayed-credit study later; that experiment is deferred and this fixture was not designed for it."
+    },
+    {
+      "fault_id": "SHOP-02",
+      "fault_class": "constraint_bypass",
+      "description": "The checkout declares that a delivery postcode is required, but the guard is not enforced, so an order can be placed with the postcode field left empty.",
+      "trigger_condition": "Reach the checkout with a non-empty basket, enter a valid email, leave the postcode empty, and confirm the order.",
+      "expected_behaviour": "Confirming with an empty postcode is refused and the validation warning is shown.",
+      "observable_violation": "The confirmation page is reached, and the delivery postcode it shows is empty.",
+      "assertions": [
+        {
+          "kind": "url_matches",
+          "where": ".*",
+          "expected": "checkout\\.html",
+          "describes": "with an empty postcode the guard must refuse the order, so the run must still be on the checkout page when it ends"
+        },
+        {
+          "kind": "region_empty",
+          "where": "confirmation\\.html",
+          "region": "confirm_postcode",
+          "describes": "the confirmation displays a blank delivery postcode, because the order was committed without one"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "minimization_keep": [],
+      "observation_horizon": 1,
+      "shortest_path": 6,
+      "_assertion_note": "Stated as expected behaviour, which is how this grammar works. Conjunct 1: the guard should keep the run on checkout.html, so the violation is the final step being elsewhere. Conjunct 2: the confirmation renders a blank delivery postcode, which is only possible if the order was committed without one. Scoped to confirmation.html, so a run that never got there is inconclusive rather than a false positive. Two earlier drafts were inverted -- url_matches and text_contains both mean 'must', so neither fires when the thing is present."
+    }
+  ],
+  "characterization": {
+    "_status": "measured by scripts/characterize_benchmark.py; see reports/benchmark_shop_catalog.json",
+    "pages": 16,
+    "shortest_fault_path_d_star": 6,
+    "delayed_observation_horizon_H": 3,
+    "distractor_pages": 5,
+    "workflow_state_representation": "sessionStorage, not the URL query string",
+    "_contrast_with_deep_fixture": "The deep-flow fixture carries flow state in the query string and gates each stage by revealing a hidden Continue link. This application keeps workflow state in sessionStorage so it is invisible in the URL, uses a table-driven catalogue rather than a linear wizard, and gates on form validation rather than on link reveal. Vocabulary, DOM idiom (semantic sectioning and class hooks rather than ids everywhere) and visual style are all different."
+  }
+}

@@ -154,9 +154,18 @@ def build_trajectory(records: list[dict]) -> TrajectoryView:
     inputs: dict[str, str] = {}
     for index, record in enumerate(records):
         action = record.get("action")
-        entered = input_field_of(action)
-        if entered is not None:
-            inputs[entered[0]] = entered[1]
+        # `entered` is the authoritative record when the caller has one: the live runner
+        # reads the field's human-facing name and the value actually typed off the
+        # `ActionSpec`. Parsing the replay step is the fallback, and it can only see the
+        # DOM id -- which would tie a fault's `input_field` to the application's markup
+        # and break the moment a fixture renames an element.
+        explicit = record.get("entered")
+        if isinstance(explicit, dict):
+            inputs.update({str(k): str(v) for k, v in explicit.items()})
+        else:
+            entered = input_field_of(action)
+            if entered is not None:
+                inputs[entered[0]] = entered[1]
         view.steps.append(ObservedStep(
             index=index,
             url=str(record.get("url", "")),

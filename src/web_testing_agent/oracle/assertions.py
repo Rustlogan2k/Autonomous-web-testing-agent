@@ -216,6 +216,16 @@ def _apply(spec: AssertionSpec, step, text: str, source: str,  # noqa: PLR0911
                                expected=f"{spec.expression} = {wanted:g}",
                                detail=f"{source}: expected {spec.expression!r}")
 
+    if kind is AssertionKind.REGION_EMPTY:
+        # A region that is *absent* is handled earlier as inconclusive: an element that is
+        # not rendered and an element rendered empty are different observations, and only
+        # the second is evidence that the application committed a value it did not have.
+        violated = not text.strip()
+        return AssertionResult(**common, violated=violated, observed=text[:200],
+                               expected="a non-empty value",
+                               detail=f"{source}: the application's contract requires a "
+                                      f"value here")
+
     if kind is AssertionKind.REACHED_WITH_INVALID_INPUT:
         entered = step.inputs.get(spec.input_field)
         if entered is None:
