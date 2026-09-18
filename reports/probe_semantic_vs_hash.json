@@ -1,0 +1,6696 @@
+{
+  "_purpose": "The project is moving to a transferable action prior. The current action label representation is a 32-dim character-trigram hash, and `reports/probe_action_representation.json` already showed that its apparent semantic signal is shared-token overlap (0.502 for synonyms sharing a word, 0.081 for synonyms sharing none). This probe asks whether a frozen sentence embedding sees meaning where the hash sees spelling, on the same pairs.",
+  "_decisive_statistic": "mean cosine(synonyms with no shared token) - mean cosine(lexical traps). Positive means the representation tracks meaning; negative means it tracks characters, which is worse than no signal because it conflates committing a flow with abandoning it.",
+  "git": {
+    "head": "0d104f39cd75722f938235a364fa26aa1aebf7c2"
+  },
+  "pair_counts": {
+    "synonym_shared_token": 12,
+    "synonym_no_shared_token": 18,
+    "lexical_trap": 10,
+    "random": 400
+  },
+  "pair_source": "SEMANTIC_GROUPS and LEXICAL_TRAPS from scripts/probe_action_representation.py, imported unchanged",
+  "encoder": {
+    "semantic": "sentence-transformers/all-MiniLM-L6-v2",
+    "frozen": true,
+    "device": "cpu"
+  },
+  "bootstrap_resamples": 10000,
+  "results": {
+    "hashed_trigram_32d": {
+      "representation": "hashed_trigram_32d",
+      "description": "Signed blake2b character-trigram hashing, L2-normalised (current).",
+      "dimensions": 32,
+      "encode_seconds": 0.0,
+      "by_kind": {
+        "lexical_trap": {
+          "n": 10,
+          "mean": 0.4557,
+          "median": 0.4584,
+          "sd": 0.2518,
+          "min": 0.126,
+          "max": 0.8853,
+          "p25": 0.2486,
+          "p75": 0.5502
+        },
+        "random": {
+          "n": 400,
+          "mean": 0.0302,
+          "median": 0.0,
+          "sd": 0.2113,
+          "min": -0.5345,
+          "max": 0.7412,
+          "p25": -0.1077,
+          "p75": 0.1536
+        },
+        "synonym_no_shared_token": {
+          "n": 18,
+          "mean": 0.0807,
+          "median": 0.0,
+          "sd": 0.3191,
+          "min": -0.2981,
+          "max": 0.7715,
+          "p25": -0.1443,
+          "p75": 0.2304
+        },
+        "synonym_shared_token": {
+          "n": 12,
+          "mean": 0.5018,
+          "median": 0.5113,
+          "sd": 0.189,
+          "min": 0.1543,
+          "max": 0.8273,
+          "p25": 0.3817,
+          "p75": 0.6183
+        }
+      },
+      "contrasts": {
+        "no_shared_token_synonyms_minus_lexical_traps": {
+          "difference": -0.375,
+          "ci": [
+            -0.5775,
+            -0.1645
+          ]
+        },
+        "no_shared_token_synonyms_minus_random": {
+          "difference": 0.0504,
+          "ci": [
+            -0.0874,
+            0.2018
+          ]
+        },
+        "shared_token_synonyms_minus_no_shared_token_synonyms": {
+          "difference": 0.4212,
+          "ci": [
+            0.2388,
+            0.5941
+          ]
+        },
+        "lexical_traps_minus_random": {
+          "difference": 0.4255,
+          "ci": [
+            0.2816,
+            0.5791
+          ]
+        }
+      },
+      "pairs": [
+        {
+          "left": "Place order",
+          "right": "Submit order",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.4881
+        },
+        {
+          "left": "Place order",
+          "right": "Confirm order",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.275
+        },
+        {
+          "left": "Submit order",
+          "right": "Confirm order",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.3381
+        },
+        {
+          "left": "Back",
+          "right": "Go back",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.5669
+        },
+        {
+          "left": "Back",
+          "right": "Return",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Go back",
+          "right": "Return",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": -0.1336
+        },
+        {
+          "left": "Cancel",
+          "right": "Cancel order",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.6325
+        },
+        {
+          "left": "Cancel",
+          "right": "Abort",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": -0.2108
+        },
+        {
+          "left": "Cancel order",
+          "right": "Abort",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": -0.25
+        },
+        {
+          "left": "Search",
+          "right": "Find",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.1443
+        },
+        {
+          "left": "Search",
+          "right": "Search products",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.4951
+        },
+        {
+          "left": "Find",
+          "right": "Search products",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.1715
+        },
+        {
+          "left": "Login",
+          "right": "Sign in",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.1429
+        },
+        {
+          "left": "Login",
+          "right": "Log in",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.7715
+        },
+        {
+          "left": "Sign in",
+          "right": "Log in",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.1543
+        },
+        {
+          "left": "Logout",
+          "right": "Sign out",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.3953
+        },
+        {
+          "left": "Logout",
+          "right": "Log out",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.7628
+        },
+        {
+          "left": "Sign out",
+          "right": "Log out",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.5276
+        },
+        {
+          "left": "Add to cart",
+          "right": "Add item to cart",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.8273
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Remove item",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.3963
+        },
+        {
+          "left": "Checkout",
+          "right": "Proceed to checkout",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.6136
+        },
+        {
+          "left": "Next",
+          "right": "Continue",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": -0.1443
+        },
+        {
+          "left": "Previous",
+          "right": "Back",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Delete",
+          "right": "Remove",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.2835
+        },
+        {
+          "left": "Edit",
+          "right": "Modify",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": -0.1443
+        },
+        {
+          "left": "Save",
+          "right": "Apply changes",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": -0.2981
+        },
+        {
+          "left": "Home",
+          "right": "Go home",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.7071
+        },
+        {
+          "left": "Register",
+          "right": "Sign up",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": -0.1925
+        },
+        {
+          "left": "Register",
+          "right": "Create account",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.25
+        },
+        {
+          "left": "Sign up",
+          "right": "Create account",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": -0.0962
+        },
+        {
+          "left": "Place order",
+          "right": "Cancel order",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.4244
+        },
+        {
+          "left": "Add to cart",
+          "right": "Remove from cart",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.198
+        },
+        {
+          "left": "Sign in",
+          "right": "Sign out",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.5669
+        },
+        {
+          "left": "Log in",
+          "right": "Log out",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.4924
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Decrease quantity",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.8083
+        },
+        {
+          "left": "Select option A",
+          "right": "Select option B",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.8853
+        },
+        {
+          "left": "Search products",
+          "right": "Search orders",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.2194
+        },
+        {
+          "left": "Go back",
+          "right": "Go home",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.126
+        },
+        {
+          "left": "Delete account",
+          "right": "Create account",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.5
+        },
+        {
+          "left": "Order history",
+          "right": "Place order",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.3363
+        },
+        {
+          "left": "Search orders",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1741
+        },
+        {
+          "left": "Delete account",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Abort",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0861
+        },
+        {
+          "left": "Save",
+          "right": "Proceed to checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.21
+        },
+        {
+          "left": "Login",
+          "right": "Place order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0917
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1768
+        },
+        {
+          "left": "Sign out",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1768
+        },
+        {
+          "left": "Register",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1667
+        },
+        {
+          "left": "Go home",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1617
+        },
+        {
+          "left": "Add item to cart",
+          "right": "Return",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0754
+        },
+        {
+          "left": "Checkout",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0953
+        },
+        {
+          "left": "Search orders",
+          "right": "Abort",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1005
+        },
+        {
+          "left": "Delete account",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1491
+        },
+        {
+          "left": "Submit order",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1581
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1534
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Place order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Go back",
+          "right": "Log in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1543
+        },
+        {
+          "left": "Submit order",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3227
+        },
+        {
+          "left": "Register",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1443
+        },
+        {
+          "left": "Search",
+          "right": "Register",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1179
+        },
+        {
+          "left": "Select option A",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3208
+        },
+        {
+          "left": "Next",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3333
+        },
+        {
+          "left": "Go back",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1195
+        },
+        {
+          "left": "Home",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2132
+        },
+        {
+          "left": "Select option A",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0497
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0816
+        },
+        {
+          "left": "Remove",
+          "right": "Order history",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0741
+        },
+        {
+          "left": "Return",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Select option B",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Continue",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1443
+        },
+        {
+          "left": "Apply changes",
+          "right": "Add to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3757
+        },
+        {
+          "left": "Search",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.433
+        },
+        {
+          "left": "Apply changes",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3131
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Search products",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3032
+        },
+        {
+          "left": "Select option A",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2222
+        },
+        {
+          "left": "Return",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1021
+        },
+        {
+          "left": "Next",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1443
+        },
+        {
+          "left": "Sign out",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.189
+        },
+        {
+          "left": "Delete account",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Select option A",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1455
+        },
+        {
+          "left": "Add to cart",
+          "right": "Sign in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0917
+        },
+        {
+          "left": "Place order",
+          "right": "Return",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Add to cart",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0934
+        },
+        {
+          "left": "Place order",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1715
+        },
+        {
+          "left": "Sign out",
+          "right": "Order history",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.416
+        },
+        {
+          "left": "Log in",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1231
+        },
+        {
+          "left": "Login",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.504
+        },
+        {
+          "left": "Logout",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Home",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3651
+        },
+        {
+          "left": "Sign in",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3024
+        },
+        {
+          "left": "Cancel",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2828
+        },
+        {
+          "left": "Select option A",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0962
+        },
+        {
+          "left": "Search products",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0767
+        },
+        {
+          "left": "Sign up",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Find",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Sign out",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0945
+        },
+        {
+          "left": "Search orders",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.114
+        },
+        {
+          "left": "Edit",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2462
+        },
+        {
+          "left": "Search",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0786
+        },
+        {
+          "left": "Sign up",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Home",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0481
+        },
+        {
+          "left": "Register",
+          "right": "Add item to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1231
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1543
+        },
+        {
+          "left": "Login",
+          "right": "Add item to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0806
+        },
+        {
+          "left": "Delete account",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0772
+        },
+        {
+          "left": "Login",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.378
+        },
+        {
+          "left": "Add to cart",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1455
+        },
+        {
+          "left": "Find",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Home",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3402
+        },
+        {
+          "left": "Cancel order",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2041
+        },
+        {
+          "left": "Delete",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0707
+        },
+        {
+          "left": "Select option A",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4082
+        },
+        {
+          "left": "Cancel",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1118
+        },
+        {
+          "left": "Return",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.125
+        },
+        {
+          "left": "Next",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.099
+        },
+        {
+          "left": "Search",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3397
+        },
+        {
+          "left": "Log in",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2887
+        },
+        {
+          "left": "Save",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2611
+        },
+        {
+          "left": "Remove",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0891
+        },
+        {
+          "left": "Go back",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0976
+        },
+        {
+          "left": "Order history",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0801
+        },
+        {
+          "left": "Sign out",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1508
+        },
+        {
+          "left": "Sign out",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Order history",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4181
+        },
+        {
+          "left": "Home",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0857
+        },
+        {
+          "left": "Abort",
+          "right": "Back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.5
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Proceed to checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1455
+        },
+        {
+          "left": "Delete",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1768
+        },
+        {
+          "left": "Place order",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1819
+        },
+        {
+          "left": "Cancel",
+          "right": "Add item to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2023
+        },
+        {
+          "left": "Add to cart",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2182
+        },
+        {
+          "left": "Log out",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2611
+        },
+        {
+          "left": "Sign out",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2004
+        },
+        {
+          "left": "Abort",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0962
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Login",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Select option A",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0556
+        },
+        {
+          "left": "Previous",
+          "right": "Login",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1091
+        },
+        {
+          "left": "Next",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0913
+        },
+        {
+          "left": "Add to cart",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.21
+        },
+        {
+          "left": "Select option A",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2309
+        },
+        {
+          "left": "Save",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1021
+        },
+        {
+          "left": "Logout",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1054
+        },
+        {
+          "left": "Place order",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2353
+        },
+        {
+          "left": "Next",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Register",
+          "right": "Back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1443
+        },
+        {
+          "left": "Search",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3273
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0808
+        },
+        {
+          "left": "Select option B",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0816
+        },
+        {
+          "left": "Confirm order",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1091
+        },
+        {
+          "left": "Logout",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Apply changes",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0816
+        },
+        {
+          "left": "Next",
+          "right": "Add item to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1741
+        },
+        {
+          "left": "Abort",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2357
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1826
+        },
+        {
+          "left": "Sign up",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Order history",
+          "right": "Proceed to checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.4036
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Order history",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1601
+        },
+        {
+          "left": "Apply changes",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2309
+        },
+        {
+          "left": "Log out",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1066
+        },
+        {
+          "left": "Delete account",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.5477
+        },
+        {
+          "left": "Sign in",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": true,
+          "cosine": 0.6547
+        },
+        {
+          "left": "Edit",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2108
+        },
+        {
+          "left": "Select option A",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Log in",
+          "right": "Order history",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1132
+        },
+        {
+          "left": "Cancel",
+          "right": "Return",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2236
+        },
+        {
+          "left": "Delete",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Apply changes",
+          "right": "Order history",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1432
+        },
+        {
+          "left": "Apply changes",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1826
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4201
+        },
+        {
+          "left": "Add item to cart",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2571
+        },
+        {
+          "left": "Register",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1155
+        },
+        {
+          "left": "Delete account",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3651
+        },
+        {
+          "left": "Add item to cart",
+          "right": "Log in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1741
+        },
+        {
+          "left": "Login",
+          "right": "Register",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Back",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0833
+        },
+        {
+          "left": "Confirm order",
+          "right": "Login",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Sign out",
+          "right": "Add item to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0533
+        },
+        {
+          "left": "Previous",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1741
+        },
+        {
+          "left": "Save",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0673
+        },
+        {
+          "left": "Search orders",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Login",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Submit order",
+          "right": "Register",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3873
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Abort",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1283
+        },
+        {
+          "left": "Sign up",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2425
+        },
+        {
+          "left": "Remove",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.6944
+        },
+        {
+          "left": "Return",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Register",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2357
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4125
+        },
+        {
+          "left": "Home",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1336
+        },
+        {
+          "left": "Next",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2582
+        },
+        {
+          "left": "Checkout",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2108
+        },
+        {
+          "left": "Remove item",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1068
+        },
+        {
+          "left": "Confirm order",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.114
+        },
+        {
+          "left": "Remove",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.6236
+        },
+        {
+          "left": "Search",
+          "right": "Abort",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Search orders",
+          "right": "Add to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3656
+        },
+        {
+          "left": "Home",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2041
+        },
+        {
+          "left": "Sign up",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3849
+        },
+        {
+          "left": "Login",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0845
+        },
+        {
+          "left": "Log in",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Cancel order",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1336
+        },
+        {
+          "left": "Delete",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1581
+        },
+        {
+          "left": "Order history",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1132
+        },
+        {
+          "left": "Delete",
+          "right": "Back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1768
+        },
+        {
+          "left": "Apply changes",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0516
+        },
+        {
+          "left": "Abort",
+          "right": "Log in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2722
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1111
+        },
+        {
+          "left": "Register",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Log out",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3693
+        },
+        {
+          "left": "Cancel",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Logout",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0913
+        },
+        {
+          "left": "Delete",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.25
+        },
+        {
+          "left": "Edit",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2582
+        },
+        {
+          "left": "Remove",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": true,
+          "cosine": 0.7412
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Place order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0467
+        },
+        {
+          "left": "Cancel",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0877
+        },
+        {
+          "left": "Continue",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.378
+        },
+        {
+          "left": "Sign up",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Sign in",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3637
+        },
+        {
+          "left": "Remove",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.169
+        },
+        {
+          "left": "Order history",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1132
+        },
+        {
+          "left": "Confirm order",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1336
+        },
+        {
+          "left": "Modify",
+          "right": "Add item to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0754
+        },
+        {
+          "left": "Checkout",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0913
+        },
+        {
+          "left": "Register",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1021
+        },
+        {
+          "left": "Next",
+          "right": "Return",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Go home",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3402
+        },
+        {
+          "left": "Previous",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0801
+        },
+        {
+          "left": "Create account",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0913
+        },
+        {
+          "left": "Order history",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Cancel order",
+          "right": "Add to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1819
+        },
+        {
+          "left": "Next",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Cancel order",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0962
+        },
+        {
+          "left": "Select option B",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2121
+        },
+        {
+          "left": "Delete account",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1021
+        },
+        {
+          "left": "Submit order",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0913
+        },
+        {
+          "left": "Select option A",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0786
+        },
+        {
+          "left": "Previous",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2236
+        },
+        {
+          "left": "Order history",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1754
+        },
+        {
+          "left": "Confirm order",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1195
+        },
+        {
+          "left": "Sign up",
+          "right": "Back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Log in",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0786
+        },
+        {
+          "left": "Search",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1179
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3608
+        },
+        {
+          "left": "Previous",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0913
+        },
+        {
+          "left": "Confirm order",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Cancel order",
+          "right": "Sign in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.378
+        },
+        {
+          "left": "Save",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2357
+        },
+        {
+          "left": "Search",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Remove item",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2691
+        },
+        {
+          "left": "Back",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2041
+        },
+        {
+          "left": "Modify",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1961
+        },
+        {
+          "left": "Confirm order",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1336
+        },
+        {
+          "left": "Sign out",
+          "right": "Abort",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0833
+        },
+        {
+          "left": "Logout",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2121
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1512
+        },
+        {
+          "left": "Log out",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3814
+        },
+        {
+          "left": "Order history",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2265
+        },
+        {
+          "left": "Sign up",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1179
+        },
+        {
+          "left": "Submit order",
+          "right": "Proceed to checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3796
+        },
+        {
+          "left": "Search",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1443
+        },
+        {
+          "left": "Select option A",
+          "right": "Back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Back",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1581
+        },
+        {
+          "left": "Continue",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.125
+        },
+        {
+          "left": "Checkout",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3586
+        },
+        {
+          "left": "Next",
+          "right": "Login",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1543
+        },
+        {
+          "left": "Search orders",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2509
+        },
+        {
+          "left": "Previous",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2041
+        },
+        {
+          "left": "Home",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.125
+        },
+        {
+          "left": "Next",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Return",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Place order",
+          "right": "Log in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.198
+        },
+        {
+          "left": "Log in",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Logout",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1118
+        },
+        {
+          "left": "Select option A",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2321
+        },
+        {
+          "left": "Return",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1066
+        },
+        {
+          "left": "Edit",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1633
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1571
+        },
+        {
+          "left": "Add to cart",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0606
+        },
+        {
+          "left": "Next",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1361
+        },
+        {
+          "left": "Place order",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3267
+        },
+        {
+          "left": "Add to cart",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0934
+        },
+        {
+          "left": "Place order",
+          "right": "Add to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0588
+        },
+        {
+          "left": "Checkout",
+          "right": "Place order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1534
+        },
+        {
+          "left": "Home",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1336
+        },
+        {
+          "left": "Login",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Remove item",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4804
+        },
+        {
+          "left": "Add to cart",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1715
+        },
+        {
+          "left": "Log in",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2108
+        },
+        {
+          "left": "Return",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Go home",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.5774
+        },
+        {
+          "left": "Checkout",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1118
+        },
+        {
+          "left": "Remove",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.101
+        },
+        {
+          "left": "Save",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Previous",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3501
+        },
+        {
+          "left": "Go home",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Order history",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1601
+        },
+        {
+          "left": "Login",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1543
+        },
+        {
+          "left": "Continue",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.125
+        },
+        {
+          "left": "Modify",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1443
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1217
+        },
+        {
+          "left": "Back",
+          "right": "Sign in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.378
+        },
+        {
+          "left": "Create account",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1741
+        },
+        {
+          "left": "Select option A",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2901
+        },
+        {
+          "left": "Place order",
+          "right": "Add item to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2068
+        },
+        {
+          "left": "Login",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.4364
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0857
+        },
+        {
+          "left": "Create account",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1667
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Proceed to checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.14
+        },
+        {
+          "left": "Return",
+          "right": "Order history",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Previous",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3273
+        },
+        {
+          "left": "Cancel order",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3162
+        },
+        {
+          "left": "Place order",
+          "right": "Abort",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Continue",
+          "right": "Place order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Place order",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0495
+        },
+        {
+          "left": "Log out",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1809
+        },
+        {
+          "left": "Return",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.4243
+        },
+        {
+          "left": "Order history",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Return",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0884
+        },
+        {
+          "left": "Apply changes",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1952
+        },
+        {
+          "left": "Logout",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1217
+        },
+        {
+          "left": "Order history",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Submit order",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1195
+        },
+        {
+          "left": "Delete",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2236
+        },
+        {
+          "left": "Modify",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1361
+        },
+        {
+          "left": "Delete",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": true,
+          "cosine": 0.6124
+        },
+        {
+          "left": "Create account",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1443
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1265
+        },
+        {
+          "left": "Add item to cart",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2571
+        },
+        {
+          "left": "Place order",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3881
+        },
+        {
+          "left": "Sign up",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2108
+        },
+        {
+          "left": "Sign in",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1195
+        },
+        {
+          "left": "Checkout",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Create account",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0833
+        },
+        {
+          "left": "Add to cart",
+          "right": "Log in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.297
+        },
+        {
+          "left": "Search",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1443
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Sign in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1455
+        },
+        {
+          "left": "Apply changes",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1549
+        },
+        {
+          "left": "Next",
+          "right": "Sign in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Edit",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1179
+        },
+        {
+          "left": "Log out",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Search orders",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0909
+        },
+        {
+          "left": "Cancel",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Delete",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1961
+        },
+        {
+          "left": "Cancel",
+          "right": "Proceed to checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Register",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3608
+        },
+        {
+          "left": "Go home",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Search orders",
+          "right": "Proceed to checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1463
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0857
+        },
+        {
+          "left": "Home",
+          "right": "Order history",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0981
+        },
+        {
+          "left": "Search products",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0917
+        },
+        {
+          "left": "Cancel order",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.051
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0589
+        },
+        {
+          "left": "Cancel order",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3608
+        },
+        {
+          "left": "Go back",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1048
+        },
+        {
+          "left": "Add to cart",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2572
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Sign in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2268
+        },
+        {
+          "left": "Register",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4364
+        },
+        {
+          "left": "Continue",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2236
+        },
+        {
+          "left": "Delete account",
+          "right": "Log in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Order history",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1754
+        },
+        {
+          "left": "Go back",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3086
+        },
+        {
+          "left": "Place order",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2194
+        },
+        {
+          "left": "Go home",
+          "right": "Return",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3536
+        },
+        {
+          "left": "Sign in",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1543
+        },
+        {
+          "left": "Sign up",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.126
+        },
+        {
+          "left": "Modify",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1443
+        },
+        {
+          "left": "Edit",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Abort",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Order history",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Go home",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2222
+        },
+        {
+          "left": "Apply changes",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0913
+        },
+        {
+          "left": "Find",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Log in",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1291
+        },
+        {
+          "left": "Remove",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0772
+        },
+        {
+          "left": "Home",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1179
+        },
+        {
+          "left": "Save",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2165
+        },
+        {
+          "left": "Add item to cart",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Submit order",
+          "right": "Return",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2372
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2121
+        },
+        {
+          "left": "Log in",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.4364
+        },
+        {
+          "left": "Login",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0945
+        },
+        {
+          "left": "Sign out",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.125
+        },
+        {
+          "left": "Delete account",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Log out",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1463
+        },
+        {
+          "left": "Log in",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3536
+        },
+        {
+          "left": "Return",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1414
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1667
+        },
+        {
+          "left": "Go home",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1925
+        },
+        {
+          "left": "Cancel",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Search products",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.099
+        },
+        {
+          "left": "Continue",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4714
+        },
+        {
+          "left": "Search",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": true,
+          "cosine": 0.6155
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3333
+        },
+        {
+          "left": "Remove",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Delete account",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2165
+        },
+        {
+          "left": "Back",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3162
+        },
+        {
+          "left": "Sign in",
+          "right": "Place order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0917
+        },
+        {
+          "left": "Logout",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1054
+        },
+        {
+          "left": "Checkout",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.3651
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3529
+        },
+        {
+          "left": "Cancel",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1907
+        },
+        {
+          "left": "Go home",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4082
+        },
+        {
+          "left": "Modify",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Home",
+          "right": "Login",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.5345
+        },
+        {
+          "left": "Remove item",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0925
+        },
+        {
+          "left": "Search",
+          "right": "Return",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2887
+        },
+        {
+          "left": "Sign up",
+          "right": "Order history",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2774
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1664
+        },
+        {
+          "left": "Remove item",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0801
+        },
+        {
+          "left": "Cancel order",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0884
+        },
+        {
+          "left": "Edit",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Search",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1633
+        },
+        {
+          "left": "Apply changes",
+          "right": "Place order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2505
+        },
+        {
+          "left": "Remove",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Order history",
+          "right": "Login",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Find",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Order history",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": true,
+          "cosine": 0.1048
+        },
+        {
+          "left": "Continue",
+          "right": "Sign in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2673
+        },
+        {
+          "left": "Abort",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0667
+        },
+        {
+          "left": "Edit",
+          "right": "Back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.068
+        },
+        {
+          "left": "Create account",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3482
+        },
+        {
+          "left": "Select option B",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.12
+        },
+        {
+          "left": "Cancel",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.2372
+        },
+        {
+          "left": "Cancel order",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1936
+        },
+        {
+          "left": "Previous",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.1291
+        },
+        {
+          "left": "Cancel order",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.189
+        },
+        {
+          "left": "Register",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1021
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.14
+        },
+        {
+          "left": "Sign up",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1491
+        },
+        {
+          "left": "Confirm order",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0
+        }
+      ]
+    },
+    "minilm_frozen_384d": {
+      "representation": "minilm_frozen_384d",
+      "description": "sentence-transformers/all-MiniLM-L6-v2, frozen, mean-pooled, L2-normalised.",
+      "dimensions": 384,
+      "encode_seconds": 0.06,
+      "by_kind": {
+        "lexical_trap": {
+          "n": 10,
+          "mean": 0.6363,
+          "median": 0.6212,
+          "sd": 0.1307,
+          "min": 0.438,
+          "max": 0.9022,
+          "p25": 0.5563,
+          "p75": 0.6938
+        },
+        "random": {
+          "n": 400,
+          "mean": 0.2292,
+          "median": 0.2132,
+          "sd": 0.1292,
+          "min": -0.0127,
+          "max": 0.7199,
+          "p25": 0.1307,
+          "p75": 0.3051
+        },
+        "synonym_no_shared_token": {
+          "n": 18,
+          "mean": 0.5986,
+          "median": 0.5539,
+          "sd": 0.177,
+          "min": 0.2206,
+          "max": 0.9323,
+          "p25": 0.4853,
+          "p75": 0.7287
+        },
+        "synonym_shared_token": {
+          "n": 12,
+          "mean": 0.7137,
+          "median": 0.6894,
+          "sd": 0.1109,
+          "min": 0.5232,
+          "max": 0.8759,
+          "p25": 0.6678,
+          "p75": 0.7898
+        }
+      },
+      "contrasts": {
+        "no_shared_token_synonyms_minus_lexical_traps": {
+          "difference": -0.0378,
+          "ci": [
+            -0.1502,
+            0.0748
+          ]
+        },
+        "no_shared_token_synonyms_minus_random": {
+          "difference": 0.3694,
+          "ci": [
+            0.2891,
+            0.4495
+          ]
+        },
+        "shared_token_synonyms_minus_no_shared_token_synonyms": {
+          "difference": 0.1151,
+          "ci": [
+            0.0162,
+            0.2162
+          ]
+        },
+        "lexical_traps_minus_random": {
+          "difference": 0.4071,
+          "ci": [
+            0.3322,
+            0.4887
+          ]
+        }
+      },
+      "pairs": [
+        {
+          "left": "Place order",
+          "right": "Submit order",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.5567
+        },
+        {
+          "left": "Place order",
+          "right": "Confirm order",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.5232
+        },
+        {
+          "left": "Submit order",
+          "right": "Confirm order",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.6708
+        },
+        {
+          "left": "Back",
+          "right": "Go back",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.6722
+        },
+        {
+          "left": "Back",
+          "right": "Return",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.5364
+        },
+        {
+          "left": "Go back",
+          "right": "Return",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.5538
+        },
+        {
+          "left": "Cancel",
+          "right": "Cancel order",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.7847
+        },
+        {
+          "left": "Cancel",
+          "right": "Abort",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.5884
+        },
+        {
+          "left": "Cancel order",
+          "right": "Abort",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.4831
+        },
+        {
+          "left": "Search",
+          "right": "Find",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.6734
+        },
+        {
+          "left": "Search",
+          "right": "Search products",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.6944
+        },
+        {
+          "left": "Find",
+          "right": "Search products",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.4133
+        },
+        {
+          "left": "Login",
+          "right": "Sign in",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.7916
+        },
+        {
+          "left": "Login",
+          "right": "Log in",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.9323
+        },
+        {
+          "left": "Sign in",
+          "right": "Log in",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.8674
+        },
+        {
+          "left": "Logout",
+          "right": "Sign out",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.7364
+        },
+        {
+          "left": "Logout",
+          "right": "Log out",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.8683
+        },
+        {
+          "left": "Sign out",
+          "right": "Log out",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.8052
+        },
+        {
+          "left": "Add to cart",
+          "right": "Add item to cart",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.8759
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Remove item",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.6589
+        },
+        {
+          "left": "Checkout",
+          "right": "Proceed to checkout",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.7706
+        },
+        {
+          "left": "Next",
+          "right": "Continue",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.4501
+        },
+        {
+          "left": "Previous",
+          "right": "Back",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.4799
+        },
+        {
+          "left": "Delete",
+          "right": "Remove",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.7576
+        },
+        {
+          "left": "Edit",
+          "right": "Modify",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.7055
+        },
+        {
+          "left": "Save",
+          "right": "Apply changes",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.2206
+        },
+        {
+          "left": "Home",
+          "right": "Go home",
+          "kind": "synonym_shared_token",
+          "shares_token": true,
+          "cosine": 0.6843
+        },
+        {
+          "left": "Register",
+          "right": "Sign up",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.4919
+        },
+        {
+          "left": "Register",
+          "right": "Create account",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.554
+        },
+        {
+          "left": "Sign up",
+          "right": "Create account",
+          "kind": "synonym_no_shared_token",
+          "shares_token": false,
+          "cosine": 0.5375
+        },
+        {
+          "left": "Place order",
+          "right": "Cancel order",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.438
+        },
+        {
+          "left": "Add to cart",
+          "right": "Remove from cart",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.5242
+        },
+        {
+          "left": "Sign in",
+          "right": "Sign out",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.6961
+        },
+        {
+          "left": "Log in",
+          "right": "Log out",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.6867
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Decrease quantity",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.751
+        },
+        {
+          "left": "Select option A",
+          "right": "Select option B",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.9022
+        },
+        {
+          "left": "Search products",
+          "right": "Search orders",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.5714
+        },
+        {
+          "left": "Go back",
+          "right": "Go home",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.6276
+        },
+        {
+          "left": "Delete account",
+          "right": "Create account",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.6148
+        },
+        {
+          "left": "Order history",
+          "right": "Place order",
+          "kind": "lexical_trap",
+          "shares_token": true,
+          "cosine": 0.5512
+        },
+        {
+          "left": "Search orders",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1857
+        },
+        {
+          "left": "Delete account",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2001
+        },
+        {
+          "left": "Abort",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0392
+        },
+        {
+          "left": "Save",
+          "right": "Proceed to checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1431
+        },
+        {
+          "left": "Login",
+          "right": "Place order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1278
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1309
+        },
+        {
+          "left": "Sign out",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3144
+        },
+        {
+          "left": "Register",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2108
+        },
+        {
+          "left": "Go home",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.043
+        },
+        {
+          "left": "Add item to cart",
+          "right": "Return",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0806
+        },
+        {
+          "left": "Checkout",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2844
+        },
+        {
+          "left": "Search orders",
+          "right": "Abort",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0892
+        },
+        {
+          "left": "Delete account",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0531
+        },
+        {
+          "left": "Submit order",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.092
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2853
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Place order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1189
+        },
+        {
+          "left": "Go back",
+          "right": "Log in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2509
+        },
+        {
+          "left": "Submit order",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.166
+        },
+        {
+          "left": "Register",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.375
+        },
+        {
+          "left": "Search",
+          "right": "Register",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1975
+        },
+        {
+          "left": "Select option A",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1313
+        },
+        {
+          "left": "Next",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1033
+        },
+        {
+          "left": "Go back",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4228
+        },
+        {
+          "left": "Home",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3075
+        },
+        {
+          "left": "Select option A",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1943
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1103
+        },
+        {
+          "left": "Remove",
+          "right": "Order history",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.11
+        },
+        {
+          "left": "Return",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2688
+        },
+        {
+          "left": "Select option B",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.141
+        },
+        {
+          "left": "Continue",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1268
+        },
+        {
+          "left": "Apply changes",
+          "right": "Add to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.122
+        },
+        {
+          "left": "Search",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2843
+        },
+        {
+          "left": "Apply changes",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0434
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1837
+        },
+        {
+          "left": "Search products",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0263
+        },
+        {
+          "left": "Select option A",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1476
+        },
+        {
+          "left": "Return",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1248
+        },
+        {
+          "left": "Next",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2272
+        },
+        {
+          "left": "Sign out",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2761
+        },
+        {
+          "left": "Delete account",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1068
+        },
+        {
+          "left": "Select option A",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2756
+        },
+        {
+          "left": "Add to cart",
+          "right": "Sign in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2953
+        },
+        {
+          "left": "Place order",
+          "right": "Return",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1756
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1328
+        },
+        {
+          "left": "Add to cart",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3249
+        },
+        {
+          "left": "Place order",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2099
+        },
+        {
+          "left": "Sign out",
+          "right": "Order history",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0777
+        },
+        {
+          "left": "Log in",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1253
+        },
+        {
+          "left": "Login",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2969
+        },
+        {
+          "left": "Logout",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2201
+        },
+        {
+          "left": "Home",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0691
+        },
+        {
+          "left": "Sign in",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1702
+        },
+        {
+          "left": "Cancel",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2229
+        },
+        {
+          "left": "Select option A",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1604
+        },
+        {
+          "left": "Search products",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0226
+        },
+        {
+          "left": "Sign up",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1348
+        },
+        {
+          "left": "Find",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0889
+        },
+        {
+          "left": "Sign out",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3688
+        },
+        {
+          "left": "Search orders",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0418
+        },
+        {
+          "left": "Edit",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2941
+        },
+        {
+          "left": "Search",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1878
+        },
+        {
+          "left": "Sign up",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0759
+        },
+        {
+          "left": "Home",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2839
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1477
+        },
+        {
+          "left": "Register",
+          "right": "Add item to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1074
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2254
+        },
+        {
+          "left": "Login",
+          "right": "Add item to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0565
+        },
+        {
+          "left": "Delete account",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.524
+        },
+        {
+          "left": "Login",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1422
+        },
+        {
+          "left": "Add to cart",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1573
+        },
+        {
+          "left": "Find",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3803
+        },
+        {
+          "left": "Home",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1627
+        },
+        {
+          "left": "Cancel order",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2039
+        },
+        {
+          "left": "Delete",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2623
+        },
+        {
+          "left": "Select option A",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1994
+        },
+        {
+          "left": "Cancel",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.5133
+        },
+        {
+          "left": "Return",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4108
+        },
+        {
+          "left": "Next",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1734
+        },
+        {
+          "left": "Search",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1553
+        },
+        {
+          "left": "Log in",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2943
+        },
+        {
+          "left": "Save",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0169
+        },
+        {
+          "left": "Remove",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.287
+        },
+        {
+          "left": "Go back",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0927
+        },
+        {
+          "left": "Order history",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0597
+        },
+        {
+          "left": "Sign out",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0641
+        },
+        {
+          "left": "Sign out",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1542
+        },
+        {
+          "left": "Order history",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.6515
+        },
+        {
+          "left": "Home",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.129
+        },
+        {
+          "left": "Abort",
+          "right": "Back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2218
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Proceed to checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1704
+        },
+        {
+          "left": "Delete",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.455
+        },
+        {
+          "left": "Place order",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0999
+        },
+        {
+          "left": "Cancel",
+          "right": "Add item to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.05
+        },
+        {
+          "left": "Add to cart",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0964
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1009
+        },
+        {
+          "left": "Log out",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4709
+        },
+        {
+          "left": "Sign out",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4268
+        },
+        {
+          "left": "Abort",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.33
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Login",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.102
+        },
+        {
+          "left": "Select option A",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1736
+        },
+        {
+          "left": "Previous",
+          "right": "Login",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3674
+        },
+        {
+          "left": "Next",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2752
+        },
+        {
+          "left": "Add to cart",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0754
+        },
+        {
+          "left": "Select option A",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1641
+        },
+        {
+          "left": "Save",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.5093
+        },
+        {
+          "left": "Logout",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3591
+        },
+        {
+          "left": "Place order",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1425
+        },
+        {
+          "left": "Next",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.152
+        },
+        {
+          "left": "Register",
+          "right": "Back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1767
+        },
+        {
+          "left": "Search",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3043
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2938
+        },
+        {
+          "left": "Select option B",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1448
+        },
+        {
+          "left": "Confirm order",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2253
+        },
+        {
+          "left": "Logout",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2808
+        },
+        {
+          "left": "Apply changes",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0649
+        },
+        {
+          "left": "Next",
+          "right": "Add item to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0784
+        },
+        {
+          "left": "Abort",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2272
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2096
+        },
+        {
+          "left": "Sign up",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2983
+        },
+        {
+          "left": "Order history",
+          "right": "Proceed to checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2274
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2694
+        },
+        {
+          "left": "Order history",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1084
+        },
+        {
+          "left": "Apply changes",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1842
+        },
+        {
+          "left": "Log out",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2994
+        },
+        {
+          "left": "Delete account",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.224
+        },
+        {
+          "left": "Sign in",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2564
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": true,
+          "cosine": 0.5986
+        },
+        {
+          "left": "Edit",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3349
+        },
+        {
+          "left": "Select option A",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1102
+        },
+        {
+          "left": "Log in",
+          "right": "Order history",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1029
+        },
+        {
+          "left": "Cancel",
+          "right": "Return",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4404
+        },
+        {
+          "left": "Delete",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2119
+        },
+        {
+          "left": "Apply changes",
+          "right": "Order history",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0534
+        },
+        {
+          "left": "Apply changes",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2244
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1673
+        },
+        {
+          "left": "Add item to cart",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0017
+        },
+        {
+          "left": "Register",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0301
+        },
+        {
+          "left": "Delete account",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4398
+        },
+        {
+          "left": "Add item to cart",
+          "right": "Log in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0871
+        },
+        {
+          "left": "Login",
+          "right": "Register",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4512
+        },
+        {
+          "left": "Back",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3485
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0571
+        },
+        {
+          "left": "Confirm order",
+          "right": "Login",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3136
+        },
+        {
+          "left": "Sign out",
+          "right": "Add item to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0014
+        },
+        {
+          "left": "Previous",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3
+        },
+        {
+          "left": "Save",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1346
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1497
+        },
+        {
+          "left": "Search orders",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0965
+        },
+        {
+          "left": "Login",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2864
+        },
+        {
+          "left": "Submit order",
+          "right": "Register",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3078
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Abort",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0824
+        },
+        {
+          "left": "Sign up",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1287
+        },
+        {
+          "left": "Remove",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4207
+        },
+        {
+          "left": "Return",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2054
+        },
+        {
+          "left": "Register",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2003
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1527
+        },
+        {
+          "left": "Home",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3227
+        },
+        {
+          "left": "Next",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3146
+        },
+        {
+          "left": "Checkout",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2901
+        },
+        {
+          "left": "Remove item",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1715
+        },
+        {
+          "left": "Confirm order",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.5029
+        },
+        {
+          "left": "Remove",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2637
+        },
+        {
+          "left": "Search",
+          "right": "Abort",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1197
+        },
+        {
+          "left": "Search orders",
+          "right": "Add to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1897
+        },
+        {
+          "left": "Home",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1356
+        },
+        {
+          "left": "Sign up",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.266
+        },
+        {
+          "left": "Login",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.26
+        },
+        {
+          "left": "Log in",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0866
+        },
+        {
+          "left": "Cancel order",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.338
+        },
+        {
+          "left": "Delete",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2338
+        },
+        {
+          "left": "Order history",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2286
+        },
+        {
+          "left": "Delete",
+          "right": "Back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4115
+        },
+        {
+          "left": "Apply changes",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2125
+        },
+        {
+          "left": "Abort",
+          "right": "Log in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1741
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.197
+        },
+        {
+          "left": "Register",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1597
+        },
+        {
+          "left": "Log out",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2628
+        },
+        {
+          "left": "Cancel",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3298
+        },
+        {
+          "left": "Logout",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.314
+        },
+        {
+          "left": "Delete",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4792
+        },
+        {
+          "left": "Edit",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2963
+        },
+        {
+          "left": "Remove",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": true,
+          "cosine": 0.7199
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Place order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1855
+        },
+        {
+          "left": "Cancel",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3293
+        },
+        {
+          "left": "Continue",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4023
+        },
+        {
+          "left": "Sign up",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3131
+        },
+        {
+          "left": "Sign in",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1981
+        },
+        {
+          "left": "Remove",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2587
+        },
+        {
+          "left": "Order history",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1205
+        },
+        {
+          "left": "Confirm order",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3516
+        },
+        {
+          "left": "Modify",
+          "right": "Add item to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1465
+        },
+        {
+          "left": "Checkout",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.235
+        },
+        {
+          "left": "Register",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2591
+        },
+        {
+          "left": "Next",
+          "right": "Return",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2737
+        },
+        {
+          "left": "Go home",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0991
+        },
+        {
+          "left": "Previous",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2381
+        },
+        {
+          "left": "Create account",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0655
+        },
+        {
+          "left": "Order history",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1036
+        },
+        {
+          "left": "Cancel order",
+          "right": "Add to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2158
+        },
+        {
+          "left": "Next",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3368
+        },
+        {
+          "left": "Cancel order",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1648
+        },
+        {
+          "left": "Select option B",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1418
+        },
+        {
+          "left": "Delete account",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2154
+        },
+        {
+          "left": "Submit order",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.159
+        },
+        {
+          "left": "Select option A",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1458
+        },
+        {
+          "left": "Previous",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2176
+        },
+        {
+          "left": "Order history",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.228
+        },
+        {
+          "left": "Confirm order",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.209
+        },
+        {
+          "left": "Sign up",
+          "right": "Back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2365
+        },
+        {
+          "left": "Log in",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0891
+        },
+        {
+          "left": "Search",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.086
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0648
+        },
+        {
+          "left": "Previous",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3224
+        },
+        {
+          "left": "Confirm order",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2767
+        },
+        {
+          "left": "Cancel order",
+          "right": "Sign in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1615
+        },
+        {
+          "left": "Save",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2017
+        },
+        {
+          "left": "Search",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3199
+        },
+        {
+          "left": "Remove item",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1297
+        },
+        {
+          "left": "Back",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2664
+        },
+        {
+          "left": "Modify",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3623
+        },
+        {
+          "left": "Confirm order",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2219
+        },
+        {
+          "left": "Sign out",
+          "right": "Abort",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3385
+        },
+        {
+          "left": "Logout",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1507
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1232
+        },
+        {
+          "left": "Log out",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2993
+        },
+        {
+          "left": "Order history",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1347
+        },
+        {
+          "left": "Sign up",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3015
+        },
+        {
+          "left": "Submit order",
+          "right": "Proceed to checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3746
+        },
+        {
+          "left": "Search",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3708
+        },
+        {
+          "left": "Select option A",
+          "right": "Back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2509
+        },
+        {
+          "left": "Back",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3693
+        },
+        {
+          "left": "Continue",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4689
+        },
+        {
+          "left": "Checkout",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4254
+        },
+        {
+          "left": "Next",
+          "right": "Login",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2861
+        },
+        {
+          "left": "Search orders",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1459
+        },
+        {
+          "left": "Previous",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4417
+        },
+        {
+          "left": "Home",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3487
+        },
+        {
+          "left": "Next",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3024
+        },
+        {
+          "left": "Return",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3552
+        },
+        {
+          "left": "Place order",
+          "right": "Log in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1303
+        },
+        {
+          "left": "Log in",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4752
+        },
+        {
+          "left": "Logout",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.509
+        },
+        {
+          "left": "Select option A",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1472
+        },
+        {
+          "left": "Return",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3327
+        },
+        {
+          "left": "Edit",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1954
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1242
+        },
+        {
+          "left": "Add to cart",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1464
+        },
+        {
+          "left": "Next",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2791
+        },
+        {
+          "left": "Place order",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1825
+        },
+        {
+          "left": "Add to cart",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2059
+        },
+        {
+          "left": "Place order",
+          "right": "Add to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2163
+        },
+        {
+          "left": "Checkout",
+          "right": "Place order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4247
+        },
+        {
+          "left": "Home",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.203
+        },
+        {
+          "left": "Login",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.6764
+        },
+        {
+          "left": "Remove item",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1792
+        },
+        {
+          "left": "Add to cart",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2806
+        },
+        {
+          "left": "Log in",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0998
+        },
+        {
+          "left": "Return",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4006
+        },
+        {
+          "left": "Go home",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2976
+        },
+        {
+          "left": "Checkout",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2517
+        },
+        {
+          "left": "Remove",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3575
+        },
+        {
+          "left": "Save",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2748
+        },
+        {
+          "left": "Previous",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1684
+        },
+        {
+          "left": "Go home",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2119
+        },
+        {
+          "left": "Order history",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.144
+        },
+        {
+          "left": "Login",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3156
+        },
+        {
+          "left": "Continue",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3485
+        },
+        {
+          "left": "Modify",
+          "right": "Next",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3467
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2306
+        },
+        {
+          "left": "Back",
+          "right": "Sign in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2845
+        },
+        {
+          "left": "Create account",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2313
+        },
+        {
+          "left": "Select option A",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1743
+        },
+        {
+          "left": "Place order",
+          "right": "Add item to cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.137
+        },
+        {
+          "left": "Login",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1591
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3943
+        },
+        {
+          "left": "Create account",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0698
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Proceed to checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.21
+        },
+        {
+          "left": "Return",
+          "right": "Order history",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1114
+        },
+        {
+          "left": "Previous",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2566
+        },
+        {
+          "left": "Cancel order",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2923
+        },
+        {
+          "left": "Place order",
+          "right": "Abort",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.144
+        },
+        {
+          "left": "Continue",
+          "right": "Place order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1981
+        },
+        {
+          "left": "Place order",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1452
+        },
+        {
+          "left": "Log out",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2223
+        },
+        {
+          "left": "Return",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2084
+        },
+        {
+          "left": "Order history",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2693
+        },
+        {
+          "left": "Return",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3364
+        },
+        {
+          "left": "Apply changes",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1176
+        },
+        {
+          "left": "Logout",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0951
+        },
+        {
+          "left": "Order history",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1217
+        },
+        {
+          "left": "Submit order",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2301
+        },
+        {
+          "left": "Delete",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.5129
+        },
+        {
+          "left": "Modify",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3157
+        },
+        {
+          "left": "Delete",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": true,
+          "cosine": 0.6617
+        },
+        {
+          "left": "Create account",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0127
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2197
+        },
+        {
+          "left": "Add item to cart",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1031
+        },
+        {
+          "left": "Place order",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1932
+        },
+        {
+          "left": "Sign up",
+          "right": "Checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4148
+        },
+        {
+          "left": "Sign in",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2525
+        },
+        {
+          "left": "Checkout",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2574
+        },
+        {
+          "left": "Create account",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2182
+        },
+        {
+          "left": "Add to cart",
+          "right": "Log in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2432
+        },
+        {
+          "left": "Search",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2751
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Sign in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0712
+        },
+        {
+          "left": "Apply changes",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.311
+        },
+        {
+          "left": "Next",
+          "right": "Sign in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2873
+        },
+        {
+          "left": "Edit",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4868
+        },
+        {
+          "left": "Log out",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0826
+        },
+        {
+          "left": "Search orders",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0476
+        },
+        {
+          "left": "Cancel",
+          "right": "Select option A",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.238
+        },
+        {
+          "left": "Delete",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.491
+        },
+        {
+          "left": "Cancel",
+          "right": "Proceed to checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3395
+        },
+        {
+          "left": "Register",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1121
+        },
+        {
+          "left": "Go home",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2988
+        },
+        {
+          "left": "Search orders",
+          "right": "Proceed to checkout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.275
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1574
+        },
+        {
+          "left": "Home",
+          "right": "Order history",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1116
+        },
+        {
+          "left": "Search products",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.065
+        },
+        {
+          "left": "Cancel order",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3563
+        },
+        {
+          "left": "Remove from cart",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0103
+        },
+        {
+          "left": "Cancel order",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3493
+        },
+        {
+          "left": "Go back",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1484
+        },
+        {
+          "left": "Add to cart",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1452
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Sign in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0533
+        },
+        {
+          "left": "Register",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2764
+        },
+        {
+          "left": "Continue",
+          "right": "Logout",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3979
+        },
+        {
+          "left": "Delete account",
+          "right": "Log in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4693
+        },
+        {
+          "left": "Order history",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.097
+        },
+        {
+          "left": "Go back",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.17
+        },
+        {
+          "left": "Place order",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.5708
+        },
+        {
+          "left": "Go home",
+          "right": "Return",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3724
+        },
+        {
+          "left": "Sign in",
+          "right": "Edit",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3429
+        },
+        {
+          "left": "Sign up",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2317
+        },
+        {
+          "left": "Modify",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3343
+        },
+        {
+          "left": "Edit",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1381
+        },
+        {
+          "left": "Abort",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2329
+        },
+        {
+          "left": "Order history",
+          "right": "Delete",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1905
+        },
+        {
+          "left": "Go home",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2403
+        },
+        {
+          "left": "Apply changes",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1044
+        },
+        {
+          "left": "Find",
+          "right": "Log out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2322
+        },
+        {
+          "left": "Log in",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.236
+        },
+        {
+          "left": "Remove",
+          "right": "Create account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1964
+        },
+        {
+          "left": "Home",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3228
+        },
+        {
+          "left": "Save",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3349
+        },
+        {
+          "left": "Add item to cart",
+          "right": "Home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0481
+        },
+        {
+          "left": "Submit order",
+          "right": "Return",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2359
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3276
+        },
+        {
+          "left": "Log in",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3514
+        },
+        {
+          "left": "Login",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.187
+        },
+        {
+          "left": "Sign out",
+          "right": "Cancel order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3133
+        },
+        {
+          "left": "Delete account",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2926
+        },
+        {
+          "left": "Log out",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0502
+        },
+        {
+          "left": "Log in",
+          "right": "Previous",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3229
+        },
+        {
+          "left": "Return",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2277
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0895
+        },
+        {
+          "left": "Go home",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0636
+        },
+        {
+          "left": "Cancel",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.132
+        },
+        {
+          "left": "Search products",
+          "right": "Remove from cart",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1164
+        },
+        {
+          "left": "Continue",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3555
+        },
+        {
+          "left": "Search",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": true,
+          "cosine": 0.5919
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0434
+        },
+        {
+          "left": "Remove",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1285
+        },
+        {
+          "left": "Delete account",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.48
+        },
+        {
+          "left": "Back",
+          "right": "Cancel",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3236
+        },
+        {
+          "left": "Sign in",
+          "right": "Place order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1275
+        },
+        {
+          "left": "Logout",
+          "right": "Go home",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4046
+        },
+        {
+          "left": "Checkout",
+          "right": "Save",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.232
+        },
+        {
+          "left": "Proceed to checkout",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1051
+        },
+        {
+          "left": "Cancel",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1077
+        },
+        {
+          "left": "Go home",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1493
+        },
+        {
+          "left": "Modify",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.5938
+        },
+        {
+          "left": "Home",
+          "right": "Login",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3369
+        },
+        {
+          "left": "Remove item",
+          "right": "Sign up",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0544
+        },
+        {
+          "left": "Search",
+          "right": "Return",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.214
+        },
+        {
+          "left": "Sign up",
+          "right": "Order history",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0852
+        },
+        {
+          "left": "Decrease quantity",
+          "right": "Remove item",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3421
+        },
+        {
+          "left": "Remove item",
+          "right": "Delete account",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3879
+        },
+        {
+          "left": "Cancel order",
+          "right": "Modify",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2054
+        },
+        {
+          "left": "Edit",
+          "right": "Increase quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1803
+        },
+        {
+          "left": "Search",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0966
+        },
+        {
+          "left": "Apply changes",
+          "right": "Place order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1193
+        },
+        {
+          "left": "Remove",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2894
+        },
+        {
+          "left": "Order history",
+          "right": "Login",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1224
+        },
+        {
+          "left": "Find",
+          "right": "Remove",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4418
+        },
+        {
+          "left": "Order history",
+          "right": "Confirm order",
+          "kind": "random",
+          "shares_token": true,
+          "cosine": 0.5262
+        },
+        {
+          "left": "Continue",
+          "right": "Sign in",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2556
+        },
+        {
+          "left": "Abort",
+          "right": "Select option B",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1965
+        },
+        {
+          "left": "Edit",
+          "right": "Back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.3597
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Find",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1029
+        },
+        {
+          "left": "Create account",
+          "right": "Search orders",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": -0.0018
+        },
+        {
+          "left": "Select option B",
+          "right": "Decrease quantity",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1814
+        },
+        {
+          "left": "Cancel",
+          "right": "Sign out",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.4379
+        },
+        {
+          "left": "Cancel order",
+          "right": "Apply changes",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.0843
+        },
+        {
+          "left": "Previous",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2052
+        },
+        {
+          "left": "Cancel order",
+          "right": "Go back",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.224
+        },
+        {
+          "left": "Register",
+          "right": "Continue",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2202
+        },
+        {
+          "left": "Increase quantity",
+          "right": "Search products",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1395
+        },
+        {
+          "left": "Sign up",
+          "right": "Submit order",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.2849
+        },
+        {
+          "left": "Confirm order",
+          "right": "Search",
+          "kind": "random",
+          "shares_token": false,
+          "cosine": 0.1852
+        }
+      ]
+    }
+  },
+  "verdicts": {
+    "hashed_trigram_32d": {
+      "tracks_meaning_over_spelling": false,
+      "statistic": "mean cosine(synonyms with no shared token) - mean cosine(lexical traps)",
+      "value": -0.375,
+      "ci": [
+        -0.5775,
+        -0.1645
+      ],
+      "reading": "Synonyms that share no word score -0.375 against pairs that share a word and mean the opposite (95% CI [-0.578, -0.165]). The representation does NOT separate meaning from spelling: a control that commits a flow and one that abandons it are scored as similar whenever they share a word."
+    },
+    "minilm_frozen_384d": {
+      "tracks_meaning_over_spelling": false,
+      "statistic": "mean cosine(synonyms with no shared token) - mean cosine(lexical traps)",
+      "value": -0.0378,
+      "ci": [
+        -0.1502,
+        0.0748
+      ],
+      "reading": "Synonyms that share no word score -0.038 against pairs that share a word and mean the opposite (95% CI [-0.150, +0.075]). The representation does NOT separate meaning from spelling: a control that commits a flow and one that abandons it are scored as similar whenever they share a word."
+    }
+  },
+  "secondary_post_hoc": {
+    "hashed_trigram_32d": {
+      "_status": "POST HOC, added after the primary statistic was seen.",
+      "anchor_axis": {
+        "commit": {
+          "n": 12,
+          "mean": 0.1288,
+          "median": 0.2197,
+          "sd": 0.2433,
+          "min": -0.2569,
+          "max": 0.4646,
+          "p25": -0.0118,
+          "p75": 0.2874
+        },
+        "abandon": {
+          "n": 12,
+          "mean": -0.1519,
+          "median": -0.162,
+          "sd": 0.2147,
+          "min": -0.5577,
+          "max": 0.2928,
+          "p25": -0.2439,
+          "p75": -0.0994
+        },
+        "separation": {
+          "difference": 0.2807,
+          "ci": [
+            0.0977,
+            0.4531
+          ]
+        },
+        "rank_separation_auc": 0.7639,
+        "per_label": [
+          {
+            "label": "Place order",
+            "group": "commit",
+            "axis_score": 0.3167
+          },
+          {
+            "label": "Submit order",
+            "group": "commit",
+            "axis_score": 0.4646
+          },
+          {
+            "label": "Confirm order",
+            "group": "commit",
+            "axis_score": 0.3323
+          },
+          {
+            "label": "Checkout",
+            "group": "commit",
+            "axis_score": -0.1951
+          },
+          {
+            "label": "Proceed to checkout",
+            "group": "commit",
+            "axis_score": 0.0493
+          },
+          {
+            "label": "Continue",
+            "group": "commit",
+            "axis_score": 0.1703
+          },
+          {
+            "label": "Next",
+            "group": "commit",
+            "axis_score": -0.2569
+          },
+          {
+            "label": "Save",
+            "group": "commit",
+            "axis_score": 0.2728
+          },
+          {
+            "label": "Apply changes",
+            "group": "commit",
+            "axis_score": -0.2391
+          },
+          {
+            "label": "Register",
+            "group": "commit",
+            "axis_score": 0.0844
+          },
+          {
+            "label": "Sign up",
+            "group": "commit",
+            "axis_score": 0.2776
+          },
+          {
+            "label": "Create account",
+            "group": "commit",
+            "axis_score": 0.2691
+          },
+          {
+            "label": "Cancel",
+            "group": "abandon",
+            "axis_score": 0.0886
+          },
+          {
+            "label": "Cancel order",
+            "group": "abandon",
+            "axis_score": 0.2928
+          },
+          {
+            "label": "Abort",
+            "group": "abandon",
+            "axis_score": -0.1287
+          },
+          {
+            "label": "Back",
+            "group": "abandon",
+            "axis_score": -0.1715
+          },
+          {
+            "label": "Go back",
+            "group": "abandon",
+            "axis_score": -0.1257
+          },
+          {
+            "label": "Return",
+            "group": "abandon",
+            "axis_score": -0.5577
+          },
+          {
+            "label": "Previous",
+            "group": "abandon",
+            "axis_score": -0.2353
+          },
+          {
+            "label": "Logout",
+            "group": "abandon",
+            "axis_score": -0.2697
+          },
+          {
+            "label": "Sign out",
+            "group": "abandon",
+            "axis_score": -0.1526
+          },
+          {
+            "label": "Log out",
+            "group": "abandon",
+            "axis_score": -0.368
+          },
+          {
+            "label": "Delete",
+            "group": "abandon",
+            "axis_score": -0.0208
+          },
+          {
+            "label": "Remove",
+            "group": "abandon",
+            "axis_score": -0.1739
+          }
+        ]
+      },
+      "cross_vocabulary_margin": {
+        "synonym_no_shared_token_mean": 0.0807,
+        "random_mean": 0.0302,
+        "margin_over_random": 0.0505,
+        "margin_in_random_sds": 0.24
+      }
+    },
+    "minilm_frozen_384d": {
+      "_status": "POST HOC, added after the primary statistic was seen.",
+      "anchor_axis": {
+        "commit": {
+          "n": 12,
+          "mean": 0.3162,
+          "median": 0.2698,
+          "sd": 0.122,
+          "min": 0.1586,
+          "max": 0.5011,
+          "p25": 0.2191,
+          "p75": 0.4217
+        },
+        "abandon": {
+          "n": 12,
+          "mean": -0.1748,
+          "median": -0.1663,
+          "sd": 0.1791,
+          "min": -0.4735,
+          "max": 0.0474,
+          "p25": -0.2963,
+          "p75": -0.0111
+        },
+        "separation": {
+          "difference": 0.491,
+          "ci": [
+            0.3766,
+            0.6086
+          ]
+        },
+        "rank_separation_auc": 1.0,
+        "per_label": [
+          {
+            "label": "Place order",
+            "group": "commit",
+            "axis_score": 0.4304
+          },
+          {
+            "label": "Submit order",
+            "group": "commit",
+            "axis_score": 0.3746
+          },
+          {
+            "label": "Confirm order",
+            "group": "commit",
+            "axis_score": 0.5005
+          },
+          {
+            "label": "Checkout",
+            "group": "commit",
+            "axis_score": 0.2208
+          },
+          {
+            "label": "Proceed to checkout",
+            "group": "commit",
+            "axis_score": 0.2288
+          },
+          {
+            "label": "Continue",
+            "group": "commit",
+            "axis_score": 0.2143
+          },
+          {
+            "label": "Next",
+            "group": "commit",
+            "axis_score": 0.2066
+          },
+          {
+            "label": "Save",
+            "group": "commit",
+            "axis_score": 0.4189
+          },
+          {
+            "label": "Apply changes",
+            "group": "commit",
+            "axis_score": 0.1586
+          },
+          {
+            "label": "Register",
+            "group": "commit",
+            "axis_score": 0.2812
+          },
+          {
+            "label": "Sign up",
+            "group": "commit",
+            "axis_score": 0.2584
+          },
+          {
+            "label": "Create account",
+            "group": "commit",
+            "axis_score": 0.5011
+          },
+          {
+            "label": "Cancel",
+            "group": "abandon",
+            "axis_score": -0.3106
+          },
+          {
+            "label": "Cancel order",
+            "group": "abandon",
+            "axis_score": 0.0474
+          },
+          {
+            "label": "Abort",
+            "group": "abandon",
+            "axis_score": 0.043
+          },
+          {
+            "label": "Back",
+            "group": "abandon",
+            "axis_score": -0.139
+          },
+          {
+            "label": "Go back",
+            "group": "abandon",
+            "axis_score": -0.1843
+          },
+          {
+            "label": "Return",
+            "group": "abandon",
+            "axis_score": -0.1974
+          },
+          {
+            "label": "Previous",
+            "group": "abandon",
+            "axis_score": -0.1483
+          },
+          {
+            "label": "Logout",
+            "group": "abandon",
+            "axis_score": -0.4413
+          },
+          {
+            "label": "Sign out",
+            "group": "abandon",
+            "axis_score": -0.2916
+          },
+          {
+            "label": "Log out",
+            "group": "abandon",
+            "axis_score": -0.4735
+          },
+          {
+            "label": "Delete",
+            "group": "abandon",
+            "axis_score": -0.0211
+          },
+          {
+            "label": "Remove",
+            "group": "abandon",
+            "axis_score": 0.0188
+          }
+        ]
+      },
+      "cross_vocabulary_margin": {
+        "synonym_no_shared_token_mean": 0.5986,
+        "random_mean": 0.2292,
+        "margin_over_random": 0.3694,
+        "margin_in_random_sds": 2.86
+      }
+    }
+  },
+  "decision": "**Primary statistic: both representations fail, and that stands.** Neither separates meaning from spelling pairwise \u2014 the hash at -0.375 and MiniLM at -0.038 (CI [-0.1502, 0.0748], containing zero). MiniLM scores `Place order` against `Cancel order` as highly as it scores genuine synonyms, because sentence embeddings encode topic rather than polarity. **The direct consequence: raw pairwise label cosine must not be used as a policy feature, in either representation.** It would tell the agent that the control which commits a workflow and the one that abandons it are the same kind of thing.\n\n**Secondary, post hoc: the two representations are nonetheless far apart on the two properties transfer actually needs.**\n\n1. *Cross-vocabulary synonymy.* Measured against each encoder's own null, MiniLM puts no-shared-word synonyms **2.86 random SDs** above chance; the hash manages **0.24**. Recognising that `Place order` on one application and `Submit purchase` on another are the same control is the whole mechanism a transferable prior would rely on, and the hash effectively cannot do it.\n\n2. *Polarity, via a projection rather than a similarity.* On A2's frozen positive-minus-negative anchor axis, MiniLM separates commit-style labels from abandon-style ones with rank AUC **1.000** against the hash's **0.764** (mean separation +0.491, CI [0.3766, 0.6086]). The polarity that pairwise cosine loses is recoverable by projecting onto a task-relevant axis \u2014 which is what A2 already does, frozen before this probe was written.\n\n**Decision: adopt the frozen sentence embedding for the action label, as a feature vector for a learned scorer and for anchor projections \u2014 never as a raw pairwise similarity.** The trigram hash stays where it is correct, which is identity work: state deduplication, the archive, and novelty counting, where spelling *is* the question being asked. That is the architectural split the project direction states as 'identity is for counting, semantics are for learning', and this probe is the measurement behind it.",
+  "plot": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\reports\\probe_semantic_vs_hash.png",
+  "limitations": [
+    "One pair list, written for the earlier probe and reused unchanged. It is web-UI vocabulary, not a general semantic benchmark.",
+    "Cosine between label embeddings is a property of the encoder, not evidence that a policy will exploit it. Whether the agent uses the signal is a separate question this probe cannot answer.",
+    "The lexical traps are adversarial by construction. A representation that scores them low is doing the right thing here, but the set is small (10).",
+    "MiniLM is frozen and general-purpose. It has not been adapted to web UI vocabulary, which is deliberate: an adapted encoder would be trained on these fixtures and could not then be used to argue transfer."
+  ]
+}
