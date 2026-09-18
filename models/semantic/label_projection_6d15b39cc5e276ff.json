@@ -1,0 +1,9 @@
+{
+  "fingerprint": "6d15b39cc5e276ff",
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "embedding_dim": 384,
+  "label_dim": 48,
+  "vocabulary_version": "2026-09-18.1",
+  "vocabulary_size": 199,
+  "_note": "Fitted once on a frozen generic web-UI vocabulary containing no label harvested from any benchmark fixture. Never refit per application: a per-application projection would make 'the same representation across applications' untrue."
+}
