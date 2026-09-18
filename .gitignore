@@ -115,3 +115,10 @@ reports/*.json.tmp
 # Ruff's cache (the linter is declared in the dev extra and runs in CI).
 .ruff_cache/
 .pytest_cache/
+
+# --- Web application runtime state (added with the product layer) -------------
+# One directory per test run: the run record, the report JSON/Markdown the research
+# pipeline produced, the event log and the captured evidence tree. All of it is
+# regenerable by re-running a test, and an uploaded repository's report has no business
+# in this repository's history.
+var/

@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui %}
+
+{% block title %}Run {{ run.display_id }} · {{ product_name }}{% endblock %}
+{% block heading %}Test Run {{ run.display_id }}{% endblock %}
+{% block subheading %}{{ run.source.name }} · {{ run.agent_label }}{% endblock %}
+
+{% block actions %}
+  <button class="btn danger" id="stop-btn" {{ 'hidden' if not run.is_active }}>Stop run</button>
+  <a class="btn" id="preview-btn" href="{{ run.preview_url }}" target="_blank" rel="noopener"
+     {{ 'hidden' if not (run.is_active and run.preview_url) }}>Open Tested Application</a>
+  <a class="btn primary" id="report-btn" href="/runs/{{ run.run_id }}/report"
+     {{ 'hidden' if run.status.value != 'completed' }}>View Report</a>
+{% endblock %}
+
+{% block content %}
+<div id="error-banner" class="alert error" {{ '' if run.error else 'hidden' }}>
+  <strong>Run failed.</strong> <span id="error-text">{{ run.error }}</span>
+</div>
+
+<div class="grid cols-4">
+  <div class="card stat">
+    <div class="label">Status</div>
+    <div class="value" style="font-size:19px" id="status-value">{{ run.status.label }}</div>
+    <div class="foot" id="duration-value">{{ run.duration_human }}</div>
+  </div>
+  {{ ui.stat_card('Episodes', '', '') if false }}
+  <div class="card stat">
+    <div class="label">Episodes</div>
+    <div class="value" id="episodes-value">
+      {{ run.progress.episodes_done }} <span class="faint" style="font-size:18px">/ {{ run.progress.episodes_total }}</span>
+    </div>
+    <div class="foot">Exploration passes</div>
+  </div>
+  <div class="card stat">
+    <div class="label">Actions</div>
+    <div class="value" id="steps-value">{{ run.progress.steps }}</div>
+    <div class="foot" id="states-foot">{{ run.progress.states }} distinct states</div>
+  </div>
+  <div class="card stat">
+    <div class="label">Findings</div>
+    <div class="value" id="findings-value">{{ run.progress.findings }}</div>
+    <div class="foot">Signals raised</div>
+  </div>
+</div>
+
+<div class="card mt-16">
+  <div class="card-body">
+    <div class="flex between center gap-8 mb-16">
+      <h3 class="mb-0">Progress</h3>
+      <span class="small muted mono" id="progress-label">
+        {{ run.progress.steps }} / {{ run.progress.steps_total }} actions
+      </span>
+    </div>
+    <div class="progress"><span id="progress-bar"
+      style="width: {{ (run.progress.fraction * 100) | round(1) }}%"></span></div>
+  </div>
+</div>
+
+<div class="grid cols-3 mt-16">
+  <div class="card">
+    <div class="card-head"><h2>Pipeline</h2></div>
+    <div class="card-body">
+      <div class="components" id="components">
+        {% for key, label in [('environment', 'Environment'), ('browser', 'Browser'), ('agent', 'Agent')] %}
+          <div class="component" data-component="{{ key }}">
+            <span class="name">{{ label }}</span>
+            <span class="badge neutral state">{{ run.components.get(key, 'pending') }}</span>
+          </div>
+        {% endfor %}
+      </div>
+      <dl class="kv mt-16">
+        <dt>Target</dt>
+        <dd class="mono small" id="base-url">{{ run.base_url or '—' }}</dd>
+        <dt>Image</dt>
+        <dd class="mono small">{{ run.image_tag or '—' }}</dd>
+        <dt>Container</dt>
+        <dd class="mono small">{{ run.container_id or '—' }}</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card" style="grid-column: span 2">
+    <div class="card-head">
+      <h2>Activity</h2>
+      <span class="small muted" id="stream-state">
+        {% if run.is_active %}<span class="spinner"></span> live{% else %}complete{% endif %}
+      </span>
+    </div>
+    <div class="stream" id="stream">
+      {% for event in events %}
+        <div class="line {{ event.kind }}">
+          <span class="t">{{ event.clock }}</span><span class="m">{{ event.message }}</span>
+        </div>
+      {% endfor %}
+      {% if not events %}
+        <div class="line"><span class="t">—</span><span class="m faint">Waiting for the run to start…</span></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="card mt-16">
+  <div class="card-head"><h2>Configuration</h2></div>
+  <div class="card-body">
+    <div class="grid cols-4">
+      <dl class="kv"><dt>Source</dt><dd>{{ run.source.kind }}</dd></dl>
+      <dl class="kv"><dt>Agent</dt><dd>{{ run.agent_label }}</dd></dl>
+      <dl class="kv"><dt>Episodes</dt><dd>{{ run.settings.episodes }}</dd></dl>
+      <dl class="kv"><dt>Steps/episode</dt><dd>{{ run.settings.steps }}</dd></dl>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var runId = {{ run.run_id | tojson }};
+  var active = {{ run.is_active | tojson }};
+  var stream = document.getElementById('stream');
+  var seen = stream.querySelectorAll('.line').length;
+
+  function badgeClass(state) {
+    return state === 'done' ? 'low' : state === 'active' ? 'accent'
+      : state === 'error' ? 'high' : 'neutral';
+  }
+
+  function paint(run) {
+    document.getElementById('status-value').textContent = run.status_label;
+    document.getElementById('duration-value').textContent = run.duration_human;
+    document.getElementById('episodes-value').innerHTML =
+      run.progress.episodes_done + ' <span class="faint" style="font-size:18px">/ ' +
+      run.progress.episodes_total + '</span>';
+    document.getElementById('steps-value').textContent = run.progress.steps;
+    document.getElementById('states-foot').textContent = run.progress.states + ' distinct states';
+    document.getElementById('findings-value').textContent = run.progress.findings;
+    document.getElementById('progress-bar').style.width = (run.progress.fraction * 100) + '%';
+    document.getElementById('progress-label').textContent =
+      run.progress.steps + ' / ' + run.progress.steps_total + ' actions';
+    document.getElementById('base-url').textContent = run.base_url || '—';
+
+    Object.keys(run.components || {}).forEach(function (key) {
+      var row = document.querySelector('[data-component="' + key + '"] .state');
+      if (!row) return;
+      row.textContent = run.components[key];
+      row.className = 'badge state ' + badgeClass(run.components[key]);
+    });
+
+    var preview = document.getElementById('preview-btn');
+    if (run.is_active && run.preview_url) {
+      preview.href = run.preview_url; preview.hidden = false;
+    } else { preview.hidden = true; }
+
+    document.getElementById('stop-btn').hidden = !run.is_active;
+    document.getElementById('report-btn').hidden = run.status !== 'completed';
+
+    if (run.error) {
+      document.getElementById('error-text').textContent = run.error;
+      document.getElementById('error-banner').hidden = false;
+    }
+    if (!run.is_active) {
+      document.getElementById('stream-state').textContent = 'complete';
+    }
+  }
+
+  function append(event) {
+    if (!event) return;
+    var atBottom = stream.scrollHeight - stream.scrollTop - stream.clientHeight < 60;
+    var placeholder = stream.querySelector('.faint');
+    if (placeholder && seen === 1) { stream.innerHTML = ''; }
+    var line = document.createElement('div');
+    line.className = 'line ' + (event.kind || '');
+    var time = document.createElement('span');
+    time.className = 't'; time.textContent = event.clock;
+    var message = document.createElement('span');
+    message.className = 'm'; message.textContent = event.message;
+    line.appendChild(time); line.appendChild(message);
+    stream.appendChild(line);
+    seen += 1;
+    if (atBottom) stream.scrollTop = stream.scrollHeight;
+  }
+
+  stream.scrollTop = stream.scrollHeight;
+
+  // Server-sent events for the live stream, with a polling fallback so the page still
+  // updates if EventSource is unavailable or the connection is dropped by a proxy.
+  if (active && typeof EventSource !== 'undefined') {
+    var source = new EventSource('/api/runs/' + runId + '/stream');
+    source.onmessage = function (message) {
+      var payload = JSON.parse(message.data);
+      if (payload.run) paint(payload.run);
+      if (payload.event) append(payload.event);
+      if (payload.final) {
+        source.close();
+        setTimeout(function () { location.reload(); }, 900);
+      }
+    };
+    source.onerror = function () { source.close(); poll(); };
+  } else if (active) {
+    poll();
+  }
+
+  function poll() {
+    var timer = setInterval(function () {
+      fetch('/api/runs/' + runId).then(function (r) { return r.json(); }).then(function (data) {
+        paint(data.run);
+        return fetch('/api/runs/' + runId + '/events?offset=' + seen);
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        (data.events || []).forEach(append);
+        if (!document.getElementById('stop-btn').hidden === false) {}
+      }).catch(function () {});
+    }, 1500);
+    window.addEventListener('beforeunload', function () { clearInterval(timer); });
+  }
+
+  document.getElementById('stop-btn').addEventListener('click', function () {
+    var button = this;
+    button.disabled = true;
+    button.textContent = 'Stopping…';
+    fetch('/api/runs/' + runId + '/stop', { method: 'POST' }).catch(function () {
+      button.disabled = false; button.textContent = 'Stop run';
+    });
+  });
+})();
+</script>
+{% endblock %}

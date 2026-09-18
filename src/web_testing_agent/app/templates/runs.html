@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui %}
+
+{% block heading %}Test Runs{% endblock %}
+{% block subheading %}Every run this platform has executed{% endblock %}
+{% block actions %}<a class="btn primary" href="/new">New Test</a>{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-head">
+    <h2>All runs</h2>
+    <span class="small muted">{{ runs | length }} total</span>
+  </div>
+  <div class="card-body tight">
+    {% if runs %}{{ ui.runs_table(runs) }}
+    {% else %}
+      {{ ui.empty_state('▦', 'No test runs yet',
+         'Runs appear here once you start one. The demo applications need no upload.',
+         '/new', 'Run your first test') }}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{#- Shared fragments. Kept in one file so a status pill or a severity badge looks the
+    same on every page and changes in one place. -#}
+
+{% macro status_pill(run) -%}
+  {%- set cls = 'completed' if run.status.value == 'completed'
+        else 'failed' if run.status.value == 'failed'
+        else 'stopped' if run.status.value == 'stopped' else 'running' -%}
+  <span class="status {{ cls }}">
+    <span class="dot {{ 'pulse' if run.is_active }}"></span>
+    {{ run.status.label }}
+  </span>
+{%- endmacro %}
+
+{% macro severity_badge(severity) -%}
+  {%- set label = severity | severity -%}
+  <span class="badge {{ label }}">{{ label | upper }}</span>
+{%- endmacro %}
+
+{% macro stat_card(label, value, foot='') -%}
+  <div class="card stat">
+    <div class="label">{{ label }}</div>
+    <div class="value">{{ value }}</div>
+    {% if foot %}<div class="foot">{{ foot }}</div>{% endif %}
+  </div>
+{%- endmacro %}
+
+{% macro empty_state(icon, title, body, action_href='', action_label='') -%}
+  <div class="empty">
+    <div class="icon">{{ icon }}</div>
+    <h3>{{ title }}</h3>
+    <p class="muted">{{ body }}</p>
+    {% if action_href %}
+      <a class="btn primary mt-8" href="{{ action_href }}">{{ action_label }}</a>
+    {% endif %}
+  </div>
+{%- endmacro %}
+
+{#- `compact` drops the columns that do not fit a half-width dashboard card. The full
+    table keeps them; this is a layout choice, not two different sets of facts. -#}
+{% macro runs_table(runs, limit=None, compact=False) -%}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Run</th><th>Application</th>
+          {% if not compact %}<th>Agent</th>{% endif %}
+          <th>Status</th><th class="right">Findings</th>
+          {% if not compact %}<th class="right">Duration</th>{% endif %}
+          <th>Started</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for run in (runs[:limit] if limit else runs) %}
+          <tr class="clickable" onclick="location.href='/runs/{{ run.run_id }}'">
+            <td class="mono nowrap">{{ run.display_id }}</td>
+            <td>{{ run.source.name or 'Repository' }}</td>
+            {% if not compact %}
+              <td class="small muted nowrap">{{ run.agent_label or '—' }}</td>
+            {% endif %}
+            <td>{{ status_pill(run) }}</td>
+            <td class="right">
+              {% if run.counts.get('total') %}
+                <span class="badge neutral">{{ run.counts.get('total') }}</span>
+              {% else %}<span class="faint">0</span>{% endif %}
+            </td>
+            {% if not compact %}
+              <td class="right mono small nowrap">{{ run.duration_human }}</td>
+            {% endif %}
+            <td class="small muted nowrap">{{ run.created_at | ago }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{%- endmacro %}
+
+{% macro findings_table(findings, limit=None, show_app=True, compact=False) -%}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Severity</th><th>Finding</th>
+          {% if show_app %}<th>Application</th>{% endif %}
+          <th>Run</th>
+          {% if not compact %}<th>Source</th>{% endif %}
+          <th>Discovered</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in (findings[:limit] if limit else findings) %}
+          <tr class="clickable"
+              onclick="location.href='/runs/{{ f.run_id }}/report#finding-{{ f.index }}'">
+            <td>{{ severity_badge(f.severity) }}</td>
+            <td>{{ f.title }}</td>
+            {% if show_app %}<td class="small muted">{{ f.application }}</td>{% endif %}
+            <td class="mono small nowrap">{{ f.run_display }}</td>
+            {% if not compact %}
+              <td><span class="badge neutral">{{ f.source }}</span></td>
+            {% endif %}
+            <td class="small muted nowrap">{{ f.discovered_at | ago }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{%- endmacro %}

@@ -168,6 +168,116 @@ If there is one transferable lesson here, it is that: **on a new target, the com
 
 ---
 
+## Web Application
+
+A browser interface over the testing system: upload a Dockerised repository (or pick a
+bundled demo), watch the agent explore it live, and read the report it produces. The
+application is a **product layer** — it orchestrates the existing pipeline and adds no
+testing logic of its own. `src/web_testing_agent/app/` imports from the research packages;
+nothing in the research packages imports from it.
+
+### Start
+
+```bash
+pip install -r requirements.txt     # adds fastapi, uvicorn, python-multipart
+pip install -e .
+
+python -m web_testing_agent.app     # or: python scripts/run_app.py
+```
+
+Then open **http://localhost:8000**.
+
+`--port` and `--host` are available. It binds to `127.0.0.1` by default on purpose: this
+application builds and runs user-supplied repositories, so it should not be reachable off
+the machine without a deliberate decision.
+
+**Docker is required for uploads, not for the demos.** Uploaded repositories are built and
+run in a container; the two static demo applications are served locally and need no daemon.
+The dashboard says which mode is available.
+
+### Demo
+
+Click **New Test → Try Demo**. Three bundled applications, all existing research fixtures,
+used unmodified:
+
+| Demo | Needs Docker | What it shows |
+|---|---|---|
+| Acme Tools (`toy_site`) | no | The 10-bug validation site. Produces real findings — broken navigation, HTTP errors, console errors. |
+| Northwind Supply (`deep_flow_site`) | no | The four-stage gated flow. Deterministic ceiling is 0 by construction, so it demonstrates depth and coverage rather than findings. |
+| Northwind static site (`demo_repo`) | **yes** | The full container path: policy gate → image build → sandboxed run → health check. |
+
+A reviewer with a fresh clone can run one command, click *Try Demo* on Acme Tools, and see
+a complete report in about a minute.
+
+### Upload a Repository
+
+**New Test → Upload a repository**, or drag a `.zip` onto the drop zone. The archive must
+contain a `Dockerfile` in its root or one level down; a single GitHub-style wrapper
+directory is unwrapped automatically.
+
+The upload is validated before anything executes — path traversal, absolute and
+drive-qualified entries, symlink entries, entry-count and expansion limits, and the
+compression ratio are all checked, then the build definition goes through the same policy
+gate `scripts/run_repo.py` uses. The page then shows the repository name, size, file count,
+detected build file, exposed ports and detected languages, with a validation verdict.
+
+### Run a Test
+
+Pick an agent, the number of episodes, and the steps per episode, then **Start Test**. You
+are redirected to `/runs/<run_id>`, which streams the run live over server-sent events:
+pipeline component status, progress counters, and an activity log of the actual actions the
+agent takes. **Open Tested Application** opens the target while it is running, and
+**Stop run** cancels at the next step, tearing the sandbox down through the normal path.
+
+Four agents are selectable:
+
+| Agent | Trained? | Notes |
+|---|---|---|
+| Search (hand priority) | no | Deterministic, application-agnostic action priority. The default. |
+| Random (masked baseline) | no | Uniform over valid actions — the project's reference baseline. |
+| AC-DQN | research checkpoint | Trained on one bundled fixture at a 4,000-step budget. |
+| Contextual Bandit | research checkpoint | Myopic control, same fixture-specific caveat. |
+
+**The reinforcement-learning agent is an active research component** (see §5 of
+`PROJECT_CONTEXT.md`). The two checkpoint-backed agents load read-only and are labelled in
+the UI as research-stage; their learned preferences are specific to the fixture they were
+trained on. Nothing in this application trains anything — training is an experiment, not a
+web request. Adding the finished agent later means one entry in
+`app/agents.py`; no route, template or frontend change.
+
+### View Findings
+
+**Findings** lists every finding across every run with severity, application and run;
+clicking one opens it in that run's report. **Reports** lists completed reports with
+**Download JSON** and **Download Markdown** — these are the *existing* artifacts, written by
+`build_report()` and `render_markdown()`, byte-identical to what `scripts/run_repo.py`
+produces.
+
+### Security boundary
+
+Uploaded repositories are untrusted input and are treated as such:
+
+- extracted into a temporary directory **outside the project tree**, never over project files
+- built as a container image and run with `cap_drop: ALL`, `no-new-privileges`, a read-only
+  root filesystem, a tmpfs `/tmp`, 2 CPUs / 2 GB / 256 PIDs, `user 1000:1000`, and an
+  internal-only bridge network (`SANDBOX_RUN_ARGS` in `intake/compose_policy.py`)
+- no host bind mounts and **no Docker socket** in the target container
+- build-time network egress denied by default (`--build-network none`)
+- workspace deleted when the run ends, on the success and the failure path
+- orphaned workspaces from a killed process are swept at startup
+
+**The known limitation, stated plainly:** `docker build` executes the repository's own
+`RUN` commands *before* any `docker run` restriction exists. A hostile repository does not
+need to escape the container — it can act during the build. This is the same boundary
+`scripts/run_repo.py` documents, and it is recorded in every report's `run_meta.scope_note`.
+Point this at a disposable machine if the input is not genuinely trusted. The application's
+own process needs Docker access; the target container is never given any.
+
+Run state lives in `var/app/` (gitignored) — one directory per run holding the run record,
+the report, the event log and the evidence tree.
+
+---
+
 ## Quickstart
 
 Requires Python 3.11 and Docker (for real target applications).

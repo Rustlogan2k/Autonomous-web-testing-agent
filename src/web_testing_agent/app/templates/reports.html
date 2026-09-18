@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui %}
+
+{% block heading %}Reports{% endblock %}
+{% block subheading %}Completed reports, exportable as JSON and Markdown{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-head">
+    <h2>Generated reports</h2>
+    <span class="small muted">{{ rows | length }} available</span>
+  </div>
+  <div class="card-body tight">
+    {% if rows %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Run</th><th>Application</th><th>Generated</th>
+              <th class="right">Findings</th><th class="right">High</th><th>Export</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+              {% set counts = row.report.counts or {} %}
+              <tr>
+                <td class="mono nowrap">
+                  <a href="/runs/{{ row.run.run_id }}/report">{{ row.run.display_id }}</a>
+                </td>
+                <td>{{ row.run.source.name }}</td>
+                <td class="small muted nowrap">{{ row.run.finished_at | ago }}</td>
+                <td class="right">{{ counts.get('total', 0) }}</td>
+                <td class="right">
+                  {% if counts.get('high') %}<span class="badge high">{{ counts.get('high') }}</span>
+                  {% else %}<span class="faint">0</span>{% endif %}
+                </td>
+                <td>
+                  <div class="btn-row">
+                    <a class="btn sm" href="/api/runs/{{ row.run.run_id }}/download/json">JSON</a>
+                    <a class="btn sm" href="/api/runs/{{ row.run.run_id }}/download/markdown">Markdown</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      {{ ui.empty_state('▤', 'No reports yet',
+         'A report is written when a run reaches the reporting stage.',
+         '/new', 'Run a test') }}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

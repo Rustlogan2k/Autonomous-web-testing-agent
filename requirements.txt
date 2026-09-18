@@ -88,3 +88,10 @@ markdown>=3.6,<4.0.0
 
 # --- LLM judge (offline scoring; the frontier-model ceiling measurement) ---
 anthropic>=0.40.0
+
+# --- Web application (the product layer over the research system) ---
+# Needed only by `python -m web_testing_agent.app`. Nothing in the research packages
+# imports these, so a research-only environment can omit the three of them.
+fastapi>=0.115.0,<1.0.0
+uvicorn[standard]>=0.30.0,<1.0.0
+python-multipart>=0.0.9         # multipart/form-data, i.e. the repository upload

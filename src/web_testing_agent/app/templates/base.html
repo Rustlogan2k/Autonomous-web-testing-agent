@@ -1,0 +1,83 @@
+{#- Shell: sidebar navigation, top bar, content slot. Every page extends this. -#}
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ product_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232a6df4'/><text x='16' y='22' font-size='16' font-family='sans-serif' font-weight='700' fill='white' text-anchor='middle'>W</text></svg>">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">W</div>
+      <div>
+        <div class="brand-name">Autonomous<br>Web Testing</div>
+        <div class="brand-sub">Platform</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      {% set items = [
+        ('dashboard', '/', 'Dashboard', 'M3 3h7v7H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 14h7v7H3z'),
+        ('new', '/new', 'New Test', 'M12 5v14M5 12h14'),
+        ('runs', '/runs', 'Test Runs', 'M4 6h16M4 12h16M4 18h10'),
+        ('findings', '/findings', 'Findings', 'M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z'),
+        ('reports', '/reports', 'Reports', 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h5')
+      ] %}
+      {% for key, href, label, path in items %}
+        <a href="{{ href }}" class="{{ 'active' if nav == key or (key == 'runs' and nav == 'run') }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round"><path d="{{ path }}"/></svg>
+          {{ label }}
+        </a>
+      {% endfor %}
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="row">
+        <span>Research build</span>
+        <button class="btn sm" id="theme-toggle" type="button" title="Toggle theme">◐</button>
+      </div>
+      <div class="mt-8 faint">
+        Agent development is ongoing. Runtime behaviour reflects the agent selected per run.
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <h1>{% block heading %}{% endblock %}</h1>
+        <div class="sub">{% block subheading %}{% endblock %}</div>
+      </div>
+      <div class="btn-row">{% block actions %}{% endblock %}</div>
+    </header>
+    <main class="content">{% block content %}{% endblock %}</main>
+  </div>
+</div>
+
+<script>
+  // Theme preference, remembered per browser. Wrapped because storage throws in some
+  // embedded contexts and a theme toggle must never break the page.
+  (function () {
+    try {
+      var saved = localStorage.getItem('wta-theme');
+      if (saved) document.documentElement.dataset.theme = saved;
+    } catch (e) {}
+    var button = document.getElementById('theme-toggle');
+    if (!button) return;
+    button.addEventListener('click', function () {
+      var root = document.documentElement;
+      var isDark = root.dataset.theme === 'dark' ||
+        (!root.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);
+      root.dataset.theme = isDark ? 'light' : 'dark';
+      try { localStorage.setItem('wta-theme', root.dataset.theme); } catch (e) {}
+    });
+  })();
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

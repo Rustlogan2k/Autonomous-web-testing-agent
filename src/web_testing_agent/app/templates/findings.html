@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui %}
+
+{% block heading %}Findings{% endblock %}
+{% block subheading %}Every finding across every run, newest first{% endblock %}
+
+{% block content %}
+{% set high = findings | selectattr('severity', 'ge', 7.0) | list | length %}
+{% set medium = findings | selectattr('severity', 'ge', 4.0) | list | length - high %}
+<div class="grid cols-4 mb-16">
+  {{ ui.stat_card('Total findings', findings | length, 'Across all runs') }}
+  {{ ui.stat_card('High', high, 'Severity ≥ 7.0') }}
+  {{ ui.stat_card('Medium', medium, 'Severity 4.0 – 6.9') }}
+  {{ ui.stat_card('Low', findings | length - high - medium, 'Severity < 4.0') }}
+</div>
+
+<div class="card">
+  <div class="card-head"><h2>All findings</h2></div>
+  <div class="card-body tight">
+    {% if findings %}{{ ui.findings_table(findings) }}
+    {% else %}
+      {{ ui.empty_state('◇', 'No findings yet',
+         'A finding is recorded when a deterministic trigger fires or the judge reports a grounded discrepancy.',
+         '/new', 'Run a test') }}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

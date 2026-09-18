@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui %}
+
+{% block heading %}Dashboard{% endblock %}
+{% block subheading %}Autonomous exploration and functional-bug detection across tested applications{% endblock %}
+{% block actions %}<a class="btn primary" href="/new">New Test</a>{% endblock %}
+
+{% block content %}
+  {% if not docker_ok %}
+    <div class="alert warn">
+      <strong>Docker is not reachable.</strong> Uploaded repositories are built and run in a
+      container, so uploads are unavailable until the daemon is started. The bundled demo
+      applications that do not need a container still run normally.
+    </div>
+  {% endif %}
+
+  <div class="grid cols-4">
+    {{ ui.stat_card('Test runs', stats.total_runs,
+                    stats.completed_runs ~ ' completed · ' ~ stats.failed_runs ~ ' failed') }}
+    {{ ui.stat_card('Findings', stats.findings,
+                    stats.by_severity.high ~ ' high · ' ~ stats.by_severity.medium ~ ' medium · ' ~ stats.by_severity.low ~ ' low') }}
+    {{ ui.stat_card('Applications tested', stats.applications, 'Distinct targets') }}
+    {{ ui.stat_card('Active now', stats.active_runs,
+                    'Running' if stats.active_runs else 'Idle') }}
+  </div>
+
+  <div class="grid cols-2 mt-24">
+    <div class="card">
+      <div class="card-head">
+        <h2>Latest test runs</h2>
+        <a class="small" href="/runs">View all</a>
+      </div>
+      <div class="card-body tight">
+        {% if runs %}{{ ui.runs_table(runs, 6, compact=True) }}
+        {% else %}
+          {{ ui.empty_state('▦', 'No test runs yet',
+             'Start with a bundled demo application, or upload a Dockerised repository.',
+             '/new', 'Run your first test') }}
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Latest findings</h2>
+        <a class="small" href="/findings">View all</a>
+      </div>
+      <div class="card-body tight">
+        {% if findings %}{{ ui.findings_table(findings, 6, show_app=False, compact=True) }}
+        {% else %}
+          {{ ui.empty_state('◇', 'No findings yet',
+             'Findings appear here once a test run completes and produces a report.') }}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-24">
+    <div class="card-head"><h2>How a test runs</h2></div>
+    <div class="card-body">
+      <p class="muted small mb-16">
+        Each stage below is performed by the existing testing system; this interface
+        orchestrates it and reports what happened.
+      </p>
+      <div class="grid cols-3">
+        {% for title, body in [
+          ('1 · Validate', 'The archive is checked for traversal, symlinks and expansion limits, then the build definition is read and passed through the security policy gate.'),
+          ('2 · Sandbox', 'A container image is built and started with all capabilities dropped, a read-only root filesystem, no new privileges, CPU/memory/PID limits and an internal-only network.'),
+          ('3 · Explore', 'A headless browser drives the application. The selected agent chooses actions from a page-derived, masked action space.'),
+          ('4 · Judge', 'Deterministic triggers watch for console errors, unexpected HTTP failures, stuck pages and broken navigation on every step.'),
+          ('5 · Evidence', 'Page bodies and frames are content-addressed as the run proceeds, so every reported finding can be traced back to what produced it.'),
+          ('6 · Report', 'Findings are deduplicated into a report, exportable as JSON and Markdown in the same format the research pipeline produces.')
+        ] %}
+          <div>
+            <h3>{{ title }}</h3>
+            <p class="muted small mt-8 mb-0">{{ body }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

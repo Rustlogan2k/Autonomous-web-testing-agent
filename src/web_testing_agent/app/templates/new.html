@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui %}
+
+{% block heading %}New Test{% endblock %}
+{% block subheading %}Run against a bundled application, or upload a Dockerised repository{% endblock %}
+
+{% block content %}
+<div class="grid cols-2">
+
+  {# ---- Demo ------------------------------------------------------------- #}
+  <div class="card">
+    <div class="card-head">
+      <h2>Try a demo application</h2>
+      <span class="badge accent">No upload needed</span>
+    </div>
+    <div class="card-body">
+      <p class="muted small">
+        These are the validation applications this project develops against. They run the
+        same pipeline an upload does and produce a real report.
+      </p>
+      {% for demo in demos %}
+        <div class="card mt-16" style="box-shadow:none">
+          <div class="card-body">
+            <div class="flex between center gap-8 wrap">
+              <div style="min-width:0">
+                <h3>{{ demo.name }}</h3>
+                <p class="muted small mt-8 mb-0">{{ demo.summary }}</p>
+              </div>
+              {% if demo.needs_docker %}<span class="badge neutral">Docker</span>{% endif %}
+            </div>
+            <p class="small faint mt-8 mb-0"><strong>Expect:</strong> {{ demo.expectation }}</p>
+            <div class="btn-row mt-16">
+              {% if not demo.available %}
+                <button class="btn" disabled>Fixture not present</button>
+              {% elif demo.needs_docker and not docker_ok %}
+                <button class="btn" disabled title="Start Docker Desktop to enable this">
+                  Requires Docker
+                </button>
+              {% else %}
+                <button class="btn primary demo-start" data-target="{{ demo.key }}">
+                  Try Demo
+                </button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# ---- Upload ------------------------------------------------------------ #}
+  <div class="card">
+    <div class="card-head">
+      <h2>Upload a repository</h2>
+      <span class="badge neutral">ZIP · max {{ max_mb }} MB</span>
+    </div>
+    <div class="card-body">
+      {% if not docker_ok %}
+        <div class="alert warn">
+          Docker is not reachable, so an uploaded repository cannot be built or run.
+          Start Docker Desktop and reload this page.
+        </div>
+      {% endif %}
+
+      <div id="dropzone" class="dropzone">
+        <div class="big">Drop a .zip here</div>
+        <div class="small">or click to choose a file — the archive must contain a Dockerfile</div>
+        <input type="file" id="file-input" accept=".zip,application/zip" hidden>
+      </div>
+      <div id="upload-error" class="alert error mt-16" hidden></div>
+      <div id="upload-busy" class="flex center gap-8 mt-16" hidden>
+        <span class="spinner"></span><span class="small muted">Validating archive…</span>
+      </div>
+
+      <div id="upload-result" hidden>
+        <div class="card mt-16" style="box-shadow:none">
+          <div class="card-head"><h3>Repository</h3><span id="validation-badge"></span></div>
+          <div class="card-body">
+            <dl class="kv">
+              <dt>Name</dt><dd id="r-name" class="mono"></dd>
+              <dt>Size</dt><dd id="r-size"></dd>
+              <dt>Files</dt><dd id="r-files"></dd>
+              <dt>Build</dt><dd id="r-build"></dd>
+              <dt>Exposed ports</dt><dd id="r-ports"></dd>
+              <dt>Languages</dt><dd id="r-langs"></dd>
+            </dl>
+            <p id="r-message" class="small muted mt-16 mb-0"></p>
+          </div>
+        </div>
+      </div>
+
+      <p class="small faint mt-16 mb-0">
+        Uploaded code is extracted to a temporary directory outside this project, built as a
+        container image, and run with all capabilities dropped, a read-only root filesystem
+        and no host mounts. The workspace is deleted when the run finishes.
+      </p>
+    </div>
+  </div>
+</div>
+
+{# ---- Shared configuration --------------------------------------------- #}
+<div class="card mt-24">
+  <div class="card-head">
+    <h2>Test configuration</h2>
+    <span class="small muted">Applies to whichever test you start</span>
+  </div>
+  <div class="card-body">
+    <div class="grid cols-3">
+      <label class="field">
+        <span class="name">Agent</span>
+        <select id="agent">
+          {% for agent in agents %}
+            <option value="{{ agent.key }}" {{ 'selected' if agent.key == default_agent }}
+                    {{ 'disabled' if not agent.available }}>
+              {{ agent.name }}{% if not agent.available %} — unavailable{% endif %}
+            </option>
+          {% endfor %}
+        </select>
+        <span class="hint" id="agent-hint"></span>
+      </label>
+      <label class="field">
+        <span class="name">Episodes</span>
+        <input type="number" id="episodes" value="2" min="1" max="20">
+        <span class="hint">Independent exploration passes, each from the landing page.</span>
+      </label>
+      <label class="field">
+        <span class="name">Steps per episode</span>
+        <input type="number" id="steps" value="25" min="5" max="200">
+        <span class="hint">Browser actions per episode. Higher means deeper, and slower.</span>
+      </label>
+    </div>
+
+    <div class="alert info mb-0">
+      <strong>On agent status.</strong> The reinforcement-learning agent is an active
+      research component. Agents marked <em>research checkpoint</em> were trained on one
+      bundled fixture at a limited budget, so their learned preferences are specific to
+      that application. The search and random policies need no training and work on any
+      target.
+    </div>
+
+    <div class="btn-row mt-16">
+      <button class="btn primary" id="start-upload" disabled>Start Test</button>
+      <span class="small muted" id="start-hint">Upload a repository or pick a demo above.</span>
+    </div>
+  </div>
+</div>
+
+<script id="agent-data" type="application/json">{{ agents | tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var agents = {};
+  try {
+    JSON.parse(document.getElementById('agent-data').textContent).forEach(function (a) {
+      agents[a.key] = a;
+    });
+  } catch (e) {}
+
+  var dropzone = document.getElementById('dropzone');
+  var input = document.getElementById('file-input');
+  var busy = document.getElementById('upload-busy');
+  var errorBox = document.getElementById('upload-error');
+  var result = document.getElementById('upload-result');
+  var startBtn = document.getElementById('start-upload');
+  var startHint = document.getElementById('start-hint');
+  var accepted = null;
+
+  function showError(message) {
+    errorBox.textContent = message;
+    errorBox.hidden = false;
+    result.hidden = true;
+    startBtn.disabled = true;
+    accepted = null;
+  }
+
+  function settings() {
+    return {
+      agent: document.getElementById('agent').value,
+      episodes: document.getElementById('episodes').value,
+      steps: document.getElementById('steps').value
+    };
+  }
+
+  function describeAgent() {
+    var chosen = agents[document.getElementById('agent').value];
+    var hint = document.getElementById('agent-hint');
+    if (!chosen) { hint.textContent = ''; return; }
+    hint.textContent = chosen.available
+      ? chosen.summary
+      : chosen.summary + ' — ' + chosen.unavailable_reason;
+  }
+  document.getElementById('agent').addEventListener('change', describeAgent);
+  describeAgent();
+
+  // -- upload ------------------------------------------------------------
+  dropzone.addEventListener('click', function () { input.click(); });
+  ['dragenter', 'dragover'].forEach(function (name) {
+    dropzone.addEventListener(name, function (e) {
+      e.preventDefault(); dropzone.classList.add('over');
+    });
+  });
+  ['dragleave', 'drop'].forEach(function (name) {
+    dropzone.addEventListener(name, function (e) {
+      e.preventDefault(); dropzone.classList.remove('over');
+    });
+  });
+  dropzone.addEventListener('drop', function (e) {
+    if (e.dataTransfer.files.length) upload(e.dataTransfer.files[0]);
+  });
+  input.addEventListener('change', function () {
+    if (input.files.length) upload(input.files[0]);
+  });
+
+  function upload(file) {
+    errorBox.hidden = true;
+    result.hidden = true;
+    busy.hidden = false;
+    startBtn.disabled = true;
+
+    var body = new FormData();
+    body.append('file', file);
+    fetch('/api/uploads', { method: 'POST', body: body })
+      .then(function (response) {
+        return response.json().then(function (data) { return { ok: response.ok, data: data }; });
+      })
+      .then(function (out) {
+        busy.hidden = true;
+        if (!out.ok || !out.data.ok) {
+          showError(out.data.error || 'The archive could not be accepted.');
+          return;
+        }
+        render(out.data);
+      })
+      .catch(function () {
+        busy.hidden = true;
+        showError('The upload failed. Check that the server is still running.');
+      });
+  }
+
+  function render(info) {
+    accepted = info;
+    document.getElementById('r-name').textContent = info.name;
+    document.getElementById('r-size').textContent = info.size_human;
+    document.getElementById('r-files').textContent = info.file_count + ' files';
+    document.getElementById('r-build').textContent =
+      info.dockerfile_found ? (info.build_file + ' (Dockerfile)') : (info.build_file || 'not found');
+    document.getElementById('r-ports').textContent =
+      info.exposed_ports && info.exposed_ports.length ? info.exposed_ports.join(', ') : 'not declared';
+    document.getElementById('r-langs').textContent =
+      info.languages && info.languages.length ? info.languages.join(', ') : 'not detected';
+    document.getElementById('r-message').textContent = info.validation_message || '';
+    document.getElementById('validation-badge').innerHTML = info.validation_ok
+      ? '<span class="badge low">VALIDATED</span>'
+      : '<span class="badge high">REJECTED</span>';
+    result.hidden = false;
+    startBtn.disabled = !info.validation_ok;
+    startHint.textContent = info.validation_ok
+      ? 'Ready to build and test in an isolated container.'
+      : (info.validation_message || 'This repository cannot be deployed.');
+  }
+
+  // -- start -------------------------------------------------------------
+  startBtn.addEventListener('click', function () {
+    if (!accepted) return;
+    startBtn.disabled = true;
+    startBtn.textContent = 'Starting…';
+    var body = new FormData();
+    var config = settings();
+    body.append('workspace', accepted.workspace);
+    body.append('repo', accepted.repo);
+    body.append('name', accepted.name);
+    body.append('agent', config.agent);
+    body.append('episodes', config.episodes);
+    body.append('steps', config.steps);
+    post('/api/runs', body);
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.demo-start'), function (button) {
+    button.addEventListener('click', function () {
+      button.disabled = true;
+      button.textContent = 'Starting…';
+      var body = new FormData();
+      var config = settings();
+      body.append('target', button.dataset.target);
+      body.append('agent', config.agent);
+      body.append('episodes', config.episodes);
+      body.append('steps', config.steps);
+      post('/api/runs/demo', body, button);
+    });
+  });
+
+  function post(url, body, button) {
+    fetch(url, { method: 'POST', body: body })
+      .then(function (response) {
+        return response.json().then(function (data) { return { ok: response.ok, data: data }; });
+      })
+      .then(function (out) {
+        if (!out.ok) throw new Error(out.data.detail || 'Could not start the test run.');
+        location.href = out.data.url;
+      })
+      .catch(function (err) {
+        showError(err.message || 'Could not start the test run.');
+        if (button) { button.disabled = false; button.textContent = 'Try Demo'; }
+        startBtn.disabled = false;
+        startBtn.textContent = 'Start Test';
+      });
+  }
+})();
+</script>
+{% endblock %}

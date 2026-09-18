@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui %}
+
+{% block title %}Report {{ run.display_id }} · {{ product_name }}{% endblock %}
+{% block heading %}Test Report{% endblock %}
+{% block subheading %}
+  {{ run.source.name }} · Run {{ run.display_id }} · {{ run.status.label }} · {{ run.duration_human }}
+{% endblock %}
+
+{% block actions %}
+  <a class="btn" href="/runs/{{ run.run_id }}">Run detail</a>
+  <a class="btn" href="/api/runs/{{ run.run_id }}/download/json">Download JSON</a>
+  <a class="btn primary" href="/api/runs/{{ run.run_id }}/download/markdown">Download Markdown</a>
+{% endblock %}
+
+{% block content %}
+{% if not report %}
+  {{ ui.empty_state('◇', 'No report for this run',
+     'This run did not reach the reporting stage. The run page shows what happened.',
+     '/runs/' ~ run.run_id, 'Open run detail') }}
+{% else %}
+  {% set counts = report.counts or {} %}
+
+  <div class="grid cols-4">
+    {{ ui.stat_card('Findings', counts.get('total', 0),
+                    counts.get('deterministic', 0) ~ ' deterministic · ' ~ counts.get('judge', 0) ~ ' judged') }}
+    {{ ui.stat_card('High severity', counts.get('high', 0), 'Score ≥ 7.0') }}
+    {{ ui.stat_card('States explored', rollout.get('unique_states', 0), 'Distinct page states') }}
+    {{ ui.stat_card('Actions executed', rollout.get('steps', 0),
+                    (rollout.get('episodes', 0) | string) ~ ' episodes') }}
+  </div>
+
+  <div class="grid cols-2 mt-16">
+    <div class="card">
+      <div class="card-head"><h2>Run metadata</h2></div>
+      <div class="card-body">
+        <dl class="kv">
+          <dt>Target</dt><dd class="mono small">{{ report.target }}</dd>
+          <dt>Generated</dt><dd class="small">{{ report.generated_at }}</dd>
+          <dt>Agent</dt><dd>{{ run.agent_label }}</dd>
+          <dt>Episodes</dt><dd>{{ report.run.get('episodes', run.settings.episodes) }}</dd>
+          <dt>Steps/episode</dt><dd>{{ report.run.get('steps_per_episode', run.settings.steps) }}</dd>
+          <dt>Judge</dt><dd>{{ report.run.get('judge', 'stub') }}</dd>
+          <dt>Image</dt><dd class="mono small">{{ report.run.get('image') or '—' }}</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>Severity breakdown</h2></div>
+      <div class="card-body">
+        {% for label in ['high', 'medium', 'low'] %}
+          {% set value = counts.get(label, 0) %}
+          {% set total = [counts.get('total', 0), 1] | max %}
+          <div class="flex between center gap-8 mb-16">
+            <span class="badge {{ label }}">{{ label | upper }}</span>
+            <div class="progress" style="flex:1">
+              <span style="width: {{ (value / total * 100) | round(1) }}%;
+                           background: var(--{{ label }})"></span>
+            </div>
+            <span class="mono small nowrap">{{ value }}</span>
+          </div>
+        {% endfor %}
+        {% if counts.get('ungrounded_excluded') %}
+          <p class="small faint mb-0">
+            {{ counts.get('ungrounded_excluded') }} verdict(s) were excluded as ungrounded —
+            their cited evidence was not found in the observed page.
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-16">
+    <div class="card-head">
+      <h2>Findings</h2>
+      <span class="small muted">{{ report.bugs | length }} reported</span>
+    </div>
+    <div class="card-body">
+      {% if not report.bugs %}
+        <div class="empty" style="padding:28px">
+          <div class="icon">✓</div>
+          <h3>No findings reported</h3>
+          <p class="muted">
+            The run completed without any deterministic trigger firing and without a judged
+            discrepancy. On a fixture whose seeded defects need a language model, this is the
+            expected result with the stub judge.
+          </p>
+        </div>
+      {% endif %}
+
+      {% for bug in report.bugs %}
+        {% set label = bug.severity | severity %}
+        <div class="finding" id="finding-{{ loop.index0 }}">
+          <div class="finding-head">
+            <div class="severity-bar {{ label }}"></div>
+            <div style="flex:1; min-width:0">
+              <div class="flex center gap-8 wrap">
+                <span class="badge {{ label }}">{{ label | upper }}</span>
+                <span class="title">{{ bug.title }}</span>
+              </div>
+              <div class="meta">
+                {{ bug.bug_type }} · severity {{ '%.1f' | format(bug.severity) }} ·
+                step {{ bug.step }}{% if bug.times_seen > 1 %} · seen {{ bug.times_seen }}×{% endif %}
+                · source: {{ bug.source }}
+              </div>
+            </div>
+          </div>
+          <div class="finding-body">
+            {% if bug.url %}
+              <section>
+                <h4>Location</h4>
+                <pre>{{ bug.url }}</pre>
+              </section>
+            {% endif %}
+            {% if bug.discrepancy %}
+              <section><h4>Description</h4><p class="mb-0">{{ bug.discrepancy }}</p></section>
+            {% endif %}
+            {% if bug.expected %}
+              <section><h4>Expected</h4><p class="mb-0">{{ bug.expected }}</p></section>
+            {% endif %}
+            {% if bug.observed %}
+              <section><h4>Observed</h4><p class="mb-0">{{ bug.observed }}</p></section>
+            {% endif %}
+            {% if bug.evidence %}
+              <section><h4>Evidence</h4><pre>{{ bug.evidence }}</pre></section>
+            {% endif %}
+            {% if bug.repro %}
+              <section>
+                <h4>Reproduction</h4>
+                <ol>{% for step in bug.repro %}<li>{{ step }}</li>{% endfor %}</ol>
+              </section>
+            {% endif %}
+            <section>
+              <div class="btn-row">
+                <a class="btn sm" href="/api/runs/{{ run.run_id }}/download/json">View Evidence</a>
+                <a class="btn sm" href="/api/runs/{{ run.run_id }}/download/rollout">View Trace</a>
+              </div>
+              <p class="small faint mt-8 mb-0">
+                Evidence and trace are the run's captured artifacts, served as recorded.
+              </p>
+            </section>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if report.run.get('scope_note') %}
+    <div class="alert info mt-16">
+      <strong>Scope.</strong> {{ report.run.get('scope_note') }}
+    </div>
+  {% endif %}
+{% endif %}
+{% endblock %}
