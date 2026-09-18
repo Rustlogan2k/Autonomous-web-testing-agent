@@ -1,0 +1,870 @@
+{
+  "_purpose": "Audit the anchor-projection AUC: provenance, the lexical control, held-out concept versus word, and an interval over the right unit.",
+  "git_head": "0e57cc9985c735a7a4a69a8ecfdc5ad9910b6bf0",
+  "provenance": {
+    "anchors_frozen_in": "0d104f3",
+    "anchors_frozen_at": "2026-09-18 11:38:43 +0530",
+    "probe_committed_in": "8329f51",
+    "probe_committed_at": "2026-09-18 11:45:14 +0530",
+    "anchors_precede_probe": true,
+    "evaluation_population_shipped_with_the_anchor_analysis": true,
+    "_verdict": "The anchors WERE frozen before the probe ran (07 minutes earlier, in a separate commit). But COMMIT_LABELS/ABANDON_LABELS -- the population the AUC is computed over -- were written in the SAME commit as the anchor-axis analysis, which was itself added AFTER the pre-registered primary statistic came back negative. The evaluation population was therefore chosen with knowledge of both the anchors and the negative primary result.",
+    "_consequence": "The AUC 1.000 is NOT clean pre-registered evidence and must not be reported as such. It is a post-hoc measurement on a self-chosen population. The A1 lexical control below is what tells us whether it means anything.",
+    "_what_would_have_been_clean": "Freezing the evaluation population in the same commit as the anchors, before running anything."
+  },
+  "held_out_audit": {
+    "phrases": 28,
+    "held_out_as_strings": 28,
+    "held_out_as_concepts": 11,
+    "rows": [
+      {
+        "phrase": "Dispatch the parcel",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "dispatch",
+          "parcel"
+        ],
+        "words_also_in_fit_vocabulary": [],
+        "concept_held_out": true
+      },
+      {
+        "phrase": "Send the parcel",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "parcel",
+          "send"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "send"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Authorise the transfer",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "authorise",
+          "transfer"
+        ],
+        "words_also_in_fit_vocabulary": [],
+        "concept_held_out": true
+      },
+      {
+        "phrase": "Approve the transfer",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "approve",
+          "transfer"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "approve"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Enrol in the course",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "course",
+          "enrol"
+        ],
+        "words_also_in_fit_vocabulary": [],
+        "concept_held_out": true
+      },
+      {
+        "phrase": "Register for the course",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "course",
+          "register"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "register"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Withdraw the application",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "application",
+          "withdraw"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "application"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Cancel the application",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "application",
+          "cancel"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "application",
+          "cancel"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Publish the article",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "article",
+          "publish"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "publish"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Release the article",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "article",
+          "release"
+        ],
+        "words_also_in_fit_vocabulary": [],
+        "concept_held_out": true
+      },
+      {
+        "phrase": "Amend the record",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "amend",
+          "record"
+        ],
+        "words_also_in_fit_vocabulary": [],
+        "concept_held_out": true
+      },
+      {
+        "phrase": "Edit the record",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "edit",
+          "record"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "edit"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Terminate the session",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "session",
+          "terminate"
+        ],
+        "words_also_in_fit_vocabulary": [],
+        "concept_held_out": true
+      },
+      {
+        "phrase": "End the session",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "end",
+          "session"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "end"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Acquire the licence",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "acquire",
+          "licence"
+        ],
+        "words_also_in_fit_vocabulary": [],
+        "concept_held_out": true
+      },
+      {
+        "phrase": "Purchase the licence",
+        "relation": "same",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "licence",
+          "purchase"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "purchase"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Confirm the reservation",
+        "relation": "opposite",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "confirm",
+          "reservation"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "confirm"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Cancel the reservation",
+        "relation": "opposite",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "cancel",
+          "reservation"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "cancel"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Activate the account",
+        "relation": "opposite",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "account",
+          "activate"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "account"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Deactivate the account",
+        "relation": "opposite",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "account",
+          "deactivate"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "account"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Grant access",
+        "relation": "opposite",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "access",
+          "grant"
+        ],
+        "words_also_in_fit_vocabulary": [],
+        "concept_held_out": true
+      },
+      {
+        "phrase": "Revoke access",
+        "relation": "opposite",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "access",
+          "revoke"
+        ],
+        "words_also_in_fit_vocabulary": [],
+        "concept_held_out": true
+      },
+      {
+        "phrase": "Accept the invitation",
+        "relation": "opposite",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "accept",
+          "invitation"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "accept"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Decline the invitation",
+        "relation": "opposite",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "decline",
+          "invitation"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "decline"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Mount the drive",
+        "relation": "opposite",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "drive",
+          "mount"
+        ],
+        "words_also_in_fit_vocabulary": [],
+        "concept_held_out": true
+      },
+      {
+        "phrase": "Unmount the drive",
+        "relation": "opposite",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "drive",
+          "unmount"
+        ],
+        "words_also_in_fit_vocabulary": [],
+        "concept_held_out": true
+      },
+      {
+        "phrase": "Expand the section",
+        "relation": "opposite",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "expand",
+          "section"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "expand"
+        ],
+        "concept_held_out": false
+      },
+      {
+        "phrase": "Collapse the section",
+        "relation": "opposite",
+        "string_in_fit_vocabulary": false,
+        "content_words": [
+          "collapse",
+          "section"
+        ],
+        "words_also_in_fit_vocabulary": [
+          "collapse"
+        ],
+        "concept_held_out": false
+      }
+    ],
+    "_verdict": "28/28 phrases are absent from the fit vocabulary as strings, but only 11/28 are absent as concepts. The generalization check is therefore a HELD-OUT-WORD check, not a HELD-OUT-CONCEPT check, and the earlier '3.85 random SDs on words the projection never saw' must be read that way: it shows the projection is not memorising surface strings, NOT that it transfers to unfamiliar concepts."
+  },
+  "populations": [
+    {
+      "population": "self_chosen_post_hoc",
+      "provenance": "Written in the same commit as the anchor-axis analysis, AFTER the primary statistic came back negative. Post hoc and self-chosen.",
+      "commit_labels": [
+        "Place order",
+        "Submit order",
+        "Confirm order",
+        "Checkout",
+        "Proceed to checkout",
+        "Continue",
+        "Next",
+        "Save",
+        "Apply changes",
+        "Register",
+        "Sign up",
+        "Create account"
+      ],
+      "abandon_labels": [
+        "Cancel",
+        "Cancel order",
+        "Abort",
+        "Back",
+        "Go back",
+        "Return",
+        "Previous",
+        "Logout",
+        "Sign out",
+        "Log out",
+        "Delete",
+        "Remove"
+      ],
+      "results": {
+        "A1_lexical_wordlist": {
+          "auc": 0.9896,
+          "n_commit_items": 12,
+          "n_abandon_items": 12,
+          "n_ordered_pairs": 144,
+          "ci_95_bootstrap_over_items": [
+            0.9583,
+            1.0
+          ],
+          "_note": "The CI resamples the 24 labels, not the 144 ordered pairs."
+        },
+        "A2_anchor_on_raw_minilm": {
+          "auc": 1.0,
+          "n_commit_items": 12,
+          "n_abandon_items": 12,
+          "n_ordered_pairs": 144,
+          "ci_95_bootstrap_over_items": [
+            1.0,
+            1.0
+          ],
+          "_note": "The CI resamples the 24 labels, not the 144 ordered pairs."
+        },
+        "A2_anchor_on_projected_48d": {
+          "auc": 1.0,
+          "n_commit_items": 12,
+          "n_abandon_items": 12,
+          "n_ordered_pairs": 144,
+          "ci_95_bootstrap_over_items": [
+            1.0,
+            1.0
+          ],
+          "_note": "The CI resamples the 24 labels, not the 144 ordered pairs."
+        },
+        "anchor_on_trigram_hash": {
+          "auc": 0.7639,
+          "n_commit_items": 12,
+          "n_abandon_items": 12,
+          "n_ordered_pairs": 144,
+          "ci_95_bootstrap_over_items": [
+            0.5417,
+            0.9444
+          ],
+          "_note": "The CI resamples the 24 labels, not the 144 ordered pairs."
+        }
+      },
+      "lexical_control_reading": "A1's plain word list reaches AUC 0.990 on this population; the projected anchor scorer reaches 1.000. The anchor projection exceeds what the word list achieves here, so the embedding is contributing on this population.",
+      "per_label": [
+        {
+          "label": "Place order",
+          "group": "commit",
+          "A1_lexical_wordlist": 2.0,
+          "A2_anchor_on_raw_minilm": 0.4304,
+          "A2_anchor_on_projected_48d": 0.5801,
+          "anchor_on_trigram_hash": 0.3167
+        },
+        {
+          "label": "Submit order",
+          "group": "commit",
+          "A1_lexical_wordlist": 2.0,
+          "A2_anchor_on_raw_minilm": 0.3746,
+          "A2_anchor_on_projected_48d": 0.5469,
+          "anchor_on_trigram_hash": 0.4646
+        },
+        {
+          "label": "Confirm order",
+          "group": "commit",
+          "A1_lexical_wordlist": 2.0,
+          "A2_anchor_on_raw_minilm": 0.5005,
+          "A2_anchor_on_projected_48d": 0.6496,
+          "anchor_on_trigram_hash": 0.3323
+        },
+        {
+          "label": "Checkout",
+          "group": "commit",
+          "A1_lexical_wordlist": 1.0,
+          "A2_anchor_on_raw_minilm": 0.2208,
+          "A2_anchor_on_projected_48d": 0.3065,
+          "anchor_on_trigram_hash": -0.1951
+        },
+        {
+          "label": "Proceed to checkout",
+          "group": "commit",
+          "A1_lexical_wordlist": 2.0,
+          "A2_anchor_on_raw_minilm": 0.2288,
+          "A2_anchor_on_projected_48d": 0.3177,
+          "anchor_on_trigram_hash": 0.0493
+        },
+        {
+          "label": "Continue",
+          "group": "commit",
+          "A1_lexical_wordlist": 1.0,
+          "A2_anchor_on_raw_minilm": 0.2143,
+          "A2_anchor_on_projected_48d": 0.3213,
+          "anchor_on_trigram_hash": 0.1703
+        },
+        {
+          "label": "Next",
+          "group": "commit",
+          "A1_lexical_wordlist": 1.0,
+          "A2_anchor_on_raw_minilm": 0.2066,
+          "A2_anchor_on_projected_48d": 0.2711,
+          "anchor_on_trigram_hash": -0.2569
+        },
+        {
+          "label": "Save",
+          "group": "commit",
+          "A1_lexical_wordlist": 1.0,
+          "A2_anchor_on_raw_minilm": 0.4189,
+          "A2_anchor_on_projected_48d": 0.5188,
+          "anchor_on_trigram_hash": 0.2728
+        },
+        {
+          "label": "Apply changes",
+          "group": "commit",
+          "A1_lexical_wordlist": 1.0,
+          "A2_anchor_on_raw_minilm": 0.1586,
+          "A2_anchor_on_projected_48d": 0.1677,
+          "anchor_on_trigram_hash": -0.2391
+        },
+        {
+          "label": "Register",
+          "group": "commit",
+          "A1_lexical_wordlist": 1.0,
+          "A2_anchor_on_raw_minilm": 0.2812,
+          "A2_anchor_on_projected_48d": 0.4131,
+          "anchor_on_trigram_hash": 0.0844
+        },
+        {
+          "label": "Sign up",
+          "group": "commit",
+          "A1_lexical_wordlist": 0.0,
+          "A2_anchor_on_raw_minilm": 0.2584,
+          "A2_anchor_on_projected_48d": 0.3188,
+          "anchor_on_trigram_hash": 0.2776
+        },
+        {
+          "label": "Create account",
+          "group": "commit",
+          "A1_lexical_wordlist": 1.0,
+          "A2_anchor_on_raw_minilm": 0.5011,
+          "A2_anchor_on_projected_48d": 0.5919,
+          "anchor_on_trigram_hash": 0.2691
+        },
+        {
+          "label": "Cancel",
+          "group": "abandon",
+          "A1_lexical_wordlist": -1.0,
+          "A2_anchor_on_raw_minilm": -0.3106,
+          "A2_anchor_on_projected_48d": -0.4972,
+          "anchor_on_trigram_hash": 0.0886
+        },
+        {
+          "label": "Cancel order",
+          "group": "abandon",
+          "A1_lexical_wordlist": 0.0,
+          "A2_anchor_on_raw_minilm": 0.0474,
+          "A2_anchor_on_projected_48d": 0.0113,
+          "anchor_on_trigram_hash": 0.2928
+        },
+        {
+          "label": "Abort",
+          "group": "abandon",
+          "A1_lexical_wordlist": -1.0,
+          "A2_anchor_on_raw_minilm": 0.043,
+          "A2_anchor_on_projected_48d": -0.0392,
+          "anchor_on_trigram_hash": -0.1287
+        },
+        {
+          "label": "Back",
+          "group": "abandon",
+          "A1_lexical_wordlist": -1.0,
+          "A2_anchor_on_raw_minilm": -0.139,
+          "A2_anchor_on_projected_48d": -0.3472,
+          "anchor_on_trigram_hash": -0.1715
+        },
+        {
+          "label": "Go back",
+          "group": "abandon",
+          "A1_lexical_wordlist": -1.0,
+          "A2_anchor_on_raw_minilm": -0.1843,
+          "A2_anchor_on_projected_48d": -0.4002,
+          "anchor_on_trigram_hash": -0.1257
+        },
+        {
+          "label": "Return",
+          "group": "abandon",
+          "A1_lexical_wordlist": -1.0,
+          "A2_anchor_on_raw_minilm": -0.1974,
+          "A2_anchor_on_projected_48d": -0.4357,
+          "anchor_on_trigram_hash": -0.5577
+        },
+        {
+          "label": "Previous",
+          "group": "abandon",
+          "A1_lexical_wordlist": -1.0,
+          "A2_anchor_on_raw_minilm": -0.1483,
+          "A2_anchor_on_projected_48d": -0.2505,
+          "anchor_on_trigram_hash": -0.2353
+        },
+        {
+          "label": "Logout",
+          "group": "abandon",
+          "A1_lexical_wordlist": -1.0,
+          "A2_anchor_on_raw_minilm": -0.4413,
+          "A2_anchor_on_projected_48d": -0.7247,
+          "anchor_on_trigram_hash": -0.2697
+        },
+        {
+          "label": "Sign out",
+          "group": "abandon",
+          "A1_lexical_wordlist": 0.0,
+          "A2_anchor_on_raw_minilm": -0.2916,
+          "A2_anchor_on_projected_48d": -0.468,
+          "anchor_on_trigram_hash": -0.1526
+        },
+        {
+          "label": "Log out",
+          "group": "abandon",
+          "A1_lexical_wordlist": 0.0,
+          "A2_anchor_on_raw_minilm": -0.4735,
+          "A2_anchor_on_projected_48d": -0.692,
+          "anchor_on_trigram_hash": -0.368
+        },
+        {
+          "label": "Delete",
+          "group": "abandon",
+          "A1_lexical_wordlist": -1.0,
+          "A2_anchor_on_raw_minilm": -0.0211,
+          "A2_anchor_on_projected_48d": -0.1391,
+          "anchor_on_trigram_hash": -0.0208
+        },
+        {
+          "label": "Remove",
+          "group": "abandon",
+          "A1_lexical_wordlist": -1.0,
+          "A2_anchor_on_raw_minilm": 0.0188,
+          "A2_anchor_on_projected_48d": -0.1137,
+          "anchor_on_trigram_hash": -0.1739
+        }
+      ]
+    },
+    {
+      "population": "lexical_traps_predating_anchors",
+      "provenance": "Labels taken from LEXICAL_TRAPS in scripts/probe_action_representation.py, whose mtime predates the anchors by two weeks. Commit/abandon direction assigned now, with the exclusion rule recorded.",
+      "commit_labels": [
+        "Place order",
+        "Add to cart",
+        "Sign in",
+        "Log in",
+        "Create account"
+      ],
+      "abandon_labels": [
+        "Cancel order",
+        "Remove from cart",
+        "Sign out",
+        "Log out",
+        "Delete account"
+      ],
+      "results": {
+        "A1_lexical_wordlist": {
+          "auc": 0.82,
+          "n_commit_items": 5,
+          "n_abandon_items": 5,
+          "n_ordered_pairs": 25,
+          "ci_95_bootstrap_over_items": [
+            0.6,
+            0.98
+          ],
+          "_note": "The CI resamples the 24 labels, not the 144 ordered pairs."
+        },
+        "A2_anchor_on_raw_minilm": {
+          "auc": 0.96,
+          "n_commit_items": 5,
+          "n_abandon_items": 5,
+          "n_ordered_pairs": 25,
+          "ci_95_bootstrap_over_items": [
+            0.76,
+            1.0
+          ],
+          "_note": "The CI resamples the 24 labels, not the 144 ordered pairs."
+        },
+        "A2_anchor_on_projected_48d": {
+          "auc": 0.96,
+          "n_commit_items": 5,
+          "n_abandon_items": 5,
+          "n_ordered_pairs": 25,
+          "ci_95_bootstrap_over_items": [
+            0.76,
+            1.0
+          ],
+          "_note": "The CI resamples the 24 labels, not the 144 ordered pairs."
+        },
+        "anchor_on_trigram_hash": {
+          "auc": 0.64,
+          "n_commit_items": 5,
+          "n_abandon_items": 5,
+          "n_ordered_pairs": 25,
+          "ci_95_bootstrap_over_items": [
+            0.24,
+            1.0
+          ],
+          "_note": "The CI resamples the 24 labels, not the 144 ordered pairs."
+        }
+      },
+      "lexical_control_reading": "A1's plain word list reaches AUC 0.820 on this population; the projected anchor scorer reaches 0.960. The anchor projection exceeds what the word list achieves here, so the embedding is contributing on this population.",
+      "per_label": [
+        {
+          "label": "Place order",
+          "group": "commit",
+          "A1_lexical_wordlist": 2.0,
+          "A2_anchor_on_raw_minilm": 0.4304,
+          "A2_anchor_on_projected_48d": 0.5801,
+          "anchor_on_trigram_hash": 0.3167
+        },
+        {
+          "label": "Add to cart",
+          "group": "commit",
+          "A1_lexical_wordlist": 0.0,
+          "A2_anchor_on_raw_minilm": 0.1995,
+          "A2_anchor_on_projected_48d": 0.2369,
+          "anchor_on_trigram_hash": -0.3126
+        },
+        {
+          "label": "Sign in",
+          "group": "commit",
+          "A1_lexical_wordlist": 0.0,
+          "A2_anchor_on_raw_minilm": 0.1399,
+          "A2_anchor_on_projected_48d": 0.1457,
+          "anchor_on_trigram_hash": 0.0111
+        },
+        {
+          "label": "Log in",
+          "group": "commit",
+          "A1_lexical_wordlist": 0.0,
+          "A2_anchor_on_raw_minilm": -0.0223,
+          "A2_anchor_on_projected_48d": -0.0684,
+          "anchor_on_trigram_hash": -0.1019
+        },
+        {
+          "label": "Create account",
+          "group": "commit",
+          "A1_lexical_wordlist": 1.0,
+          "A2_anchor_on_raw_minilm": 0.5011,
+          "A2_anchor_on_projected_48d": 0.5919,
+          "anchor_on_trigram_hash": 0.2691
+        },
+        {
+          "label": "Cancel order",
+          "group": "abandon",
+          "A1_lexical_wordlist": 0.0,
+          "A2_anchor_on_raw_minilm": 0.0474,
+          "A2_anchor_on_projected_48d": 0.0113,
+          "anchor_on_trigram_hash": 0.2928
+        },
+        {
+          "label": "Remove from cart",
+          "group": "abandon",
+          "A1_lexical_wordlist": -1.0,
+          "A2_anchor_on_raw_minilm": -0.0377,
+          "A2_anchor_on_projected_48d": -0.2255,
+          "anchor_on_trigram_hash": 0.0786
+        },
+        {
+          "label": "Sign out",
+          "group": "abandon",
+          "A1_lexical_wordlist": 0.0,
+          "A2_anchor_on_raw_minilm": -0.2916,
+          "A2_anchor_on_projected_48d": -0.468,
+          "anchor_on_trigram_hash": -0.1526
+        },
+        {
+          "label": "Log out",
+          "group": "abandon",
+          "A1_lexical_wordlist": 0.0,
+          "A2_anchor_on_raw_minilm": -0.4735,
+          "A2_anchor_on_projected_48d": -0.692,
+          "anchor_on_trigram_hash": -0.368
+        },
+        {
+          "label": "Delete account",
+          "group": "abandon",
+          "A1_lexical_wordlist": -1.0,
+          "A2_anchor_on_raw_minilm": -0.0909,
+          "A2_anchor_on_projected_48d": -0.1455,
+          "anchor_on_trigram_hash": -0.1457
+        }
+      ],
+      "excluded_pairs": [
+        [
+          "Increase quantity",
+          "Decrease quantity"
+        ],
+        [
+          "Select option A",
+          "Select option B"
+        ],
+        [
+          "Search products",
+          "Search orders"
+        ],
+        [
+          "Go back",
+          "Go home"
+        ],
+        [
+          "Order history",
+          "Place order"
+        ]
+      ],
+      "exclusion_rule": "Pairs with no unambiguous commit/abandon direction are excluded: quantity increase/decrease, option A/B, two different searches, and back/home are all same-polarity or direction-free."
+    }
+  ],
+  "anchors": {
+    "positive": [
+      "submit the form",
+      "confirm and place the order",
+      "proceed to the next step",
+      "complete the purchase",
+      "save these changes",
+      "create the account"
+    ],
+    "negative": [
+      "cancel and discard changes",
+      "go back to the previous page",
+      "return to the home page",
+      "log out of the account",
+      "read the terms and conditions",
+      "contact customer support"
+    ]
+  },
+  "a1_vocabulary": {
+    "positive": [
+      "apply",
+      "buy",
+      "checkout",
+      "complete",
+      "confirm",
+      "continue",
+      "create",
+      "done",
+      "finish",
+      "next",
+      "order",
+      "pay",
+      "place",
+      "proceed",
+      "purchase",
+      "register",
+      "save",
+      "send",
+      "signup",
+      "submit",
+      "subscribe"
+    ],
+    "negative": [
+      "abort",
+      "back",
+      "cancel",
+      "clear",
+      "close",
+      "delete",
+      "discard",
+      "exit",
+      "logout",
+      "previous",
+      "remove",
+      "reset",
+      "return",
+      "signout"
+    ]
+  }
+}
