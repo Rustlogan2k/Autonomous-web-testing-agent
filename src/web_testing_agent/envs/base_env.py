@@ -32,6 +32,7 @@ from .types import CANONICAL_VIEWPORT, MAX_ACTIONS, SCREENSHOT_SHAPE, ActionSpec
 logger = get_logger(__name__)
 
 _HTML_TEXT_MAX = 200_000
+_VISIBLE_TEXT_MAX = 20_000
 _NETWORK_TEXT_MAX = 100_000
 
 # `page.content()` serializes DOM *attributes*, but user input lives in *properties*:
@@ -675,6 +676,10 @@ class WebTestingEnv(gym.Env, ABC):
             screenshot = np.zeros(SCREENSHOT_SHAPE, dtype=np.uint8)
 
         html = self._capture_html(page)
+        try:
+            visible_text = str(page.evaluate("() => document.body ? document.body.innerText : ''"))
+        except Exception:  # noqa: BLE001 - mid-navigation; the markup is still captured
+            visible_text = ""
 
         network_events = self._carried_network_events + self._network_recorder.drain()
         self._carried_network_events = []
@@ -684,6 +689,7 @@ class WebTestingEnv(gym.Env, ABC):
         return RawObservation(
             screenshot=screenshot,
             html=html,
+            visible_text=visible_text[:_VISIBLE_TEXT_MAX],
             network_events=network_events,
             url=page.url,
             console_errors=console_errors,
@@ -774,6 +780,7 @@ class WebTestingEnv(gym.Env, ABC):
         return {
             "url": raw.url,
             "html": raw.html[:_HTML_TEXT_MAX],
+            "visible_text": raw.visible_text,
             "network": network_json,
             "network_truncated": truncated,
             "console_errors": list(raw.console_errors),

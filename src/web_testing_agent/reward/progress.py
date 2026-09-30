@@ -54,9 +54,12 @@ from ..utils.logging import get_logger
 
 logger = get_logger(__name__)
 
-PROMPT_VERSION = "progress-v1"
+PROMPT_VERSION = "progress-v2"
 DEFAULT_MODEL = "qwen2.5:7b-instruct"
-DEFAULT_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
+# 127.0.0.1, not "localhost": on Windows `localhost` resolves to ::1 first and the
+# connection falls back to IPv4 only after a timeout. Measured: 2.04 s per request through
+# `localhost` against 0.01 s through 127.0.0.1 -- two thirds of every judgment's latency.
+DEFAULT_HOST = os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434")
 
 _DEFAULT_CACHE = Path(__file__).resolve().parents[3] / "data" / "llm_cache"
 #: Overrides the judgment cache location (a mounted volume in a container, for instance).
@@ -90,7 +93,7 @@ reference number, saved record or applied change that reflects what the user did
 Use the odd numbers when a page sits between two anchors. Judge only from the snapshot. \
 A page is not further along merely because it has many links or a lot of text.
 
-Answer with JSON only: {"reason": "<at most 25 words>", "stage": "<one of: \
+Answer with JSON only: {"reason": "<at most 12 words>", "stage": "<one of: \
 landing_or_information, browsing, task_opened, task_in_progress, ready_to_commit, \
 outcome_displayed>", "progress": <integer 0-10>}"""
 
@@ -219,13 +222,16 @@ def _collapse_runs(text: str, limit: int) -> str:
     return collapsed if len(collapsed) <= limit else collapsed[:limit].rstrip() + " ..."
 
 
-def page_digest(url: str, html: str) -> str:
+def page_digest(url: str, html: str, visible_text: str | None = None) -> str:
     """The text snapshot a progress judgment is made from, and is cached under.
 
     Host and port are dropped: a locally served fixture gets a fresh port every run, and
     including it would make every judgment a cache miss. Typed values appear only as
     "empty", a short literal, or a length -- enough to tell a filled form from an empty
     one, without letting two pages that differ in one keystroke cost two model calls.
+
+    `visible_text` is the browser's rendered text. When supplied it replaces the text
+    recovered from the markup, which cannot tell a CSS-hidden panel from a shown one.
     """
     parser = _DigestParser()
     try:
@@ -242,7 +248,8 @@ def page_digest(url: str, html: str) -> str:
     lines = [f"PAGE: {location}", f"TITLE: {parser.title or '(none)'}"]
     if parser.headings:
         lines.append("HEADINGS: " + " | ".join(parser.headings[:6]))
-    lines.append("TEXT: " + _collapse_runs(" ".join(parser.text), 900))
+    body = visible_text if visible_text is not None else " ".join(parser.text)
+    lines.append("TEXT: " + _collapse_runs(body, 900))
     if parser.fields:
         lines.append("FORM FIELDS: " + "; ".join(parser.fields[:20]))
     if parser.controls:
@@ -401,14 +408,15 @@ class ProgressScorer:
         payload = "\x00".join((PROMPT_VERSION, self.model, str(self.votes), context, digest))
         return hashlib.sha256(payload.encode("utf-8", "replace")).hexdigest()[:40]
 
-    def potential(self, url: str, html: str, *, context: str = "") -> Judgment | None:
+    def potential(self, url: str, html: str, *, context: str = "",
+                  visible_text: str | None = None) -> Judgment | None:
         """The judgment for this page, from the cache or the model. None when unavailable.
 
         `context` is a short description of the application (its landing-page title), so
         the model reads a snapshot knowing what the product is. It is part of the cache
         key: the same snapshot under a different stated purpose is a different question.
         """
-        digest = page_digest(url, html)
+        digest = page_digest(url, html, visible_text)
         key = self.key_for(digest, context)
         self.stats.lookups += 1
         cached = self.cache.get(key)
@@ -451,7 +459,7 @@ class ProgressScorer:
             "messages": [{"role": "system", "content": SYSTEM_PROMPT},
                          {"role": "user", "content": user}],
             "options": {"temperature": temperature, "seed": seed,
-                        "num_ctx": 4096, "num_predict": 120},
+                        "num_ctx": 4096, "num_predict": 70},
         }
         body = json.dumps(request).encode("utf-8")
         http_request = urllib.request.Request(  # noqa: S310 - host is operator-configured

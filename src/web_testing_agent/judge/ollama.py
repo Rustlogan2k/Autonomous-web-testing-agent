@@ -28,7 +28,8 @@ from .verdict import VERDICT_SCHEMA, Verdict
 
 logger = get_logger(__name__)
 
-DEFAULT_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
+# 127.0.0.1 rather than localhost: on Windows localhost tries ::1 first and costs ~2 s per request.
+DEFAULT_HOST = os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434")
 DEFAULT_MODEL = "qwen2.5:7b-instruct"
 
 # Set explicitly and never left to the server default, which is commonly 4096 and can

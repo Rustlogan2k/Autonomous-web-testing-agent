@@ -19,10 +19,16 @@ terms for information the older representation did not carry:
 
 * `value_already_set` -- retyping the value a field already holds is a wasted step;
 * an observed-no-effect penalty -- an action that has been tried here and has never once
-  changed the page is deprioritised in proportion to how reliably it did nothing.
+  changed the page is deprioritised in proportion to how reliably it did nothing;
+* a penalty on controls already used *anywhere* in the run. Visit counts are per state,
+  so a site-wide navigation link ("Store", "Delivery") is untried again on every page it
+  appears on, and without this term the search walks the navigation bar indefinitely --
+  measured on the development application, where it never pressed a single in-page
+  button in 400 steps.
 
-Both are statements about web applications in general and both use only what the learner
-is also shown. They were fixed before any transfer run and are not tuned.
+All three are statements about web applications in general and use only what the learner
+is also shown. The third was added after that measurement on `shop_catalog`, a
+development application, and all three were fixed before any transfer run.
 """
 
 from __future__ import annotations
@@ -46,6 +52,8 @@ ALGORITHM = "feature_search"
 W_VALUE_ALREADY_SET = -3.0
 #: Penalty, scaled by (1 - observed change rate), for an action tried here before.
 W_OBSERVED_NO_EFFECT = -2.0
+#: Penalty on the log count of this control's use anywhere in the run.
+W_TAKEN_ANYWHERE = -3.0
 
 
 def build_weights(label_prior: str = "anchor") -> np.ndarray:
@@ -61,6 +69,7 @@ def build_weights(label_prior: str = "anchor") -> np.ndarray:
     for name in ("value_ordinal", "taken_here", "taken_this_episode"):
         weights[numeric_index(name)] = HAND_PRIORITY_WEIGHTS[name]
     weights[numeric_index("value_already_set")] = W_VALUE_ALREADY_SET
+    weights[numeric_index("taken_anywhere")] = W_TAKEN_ANYWHERE
     if label_prior == "anchor":
         weights[numeric_index("anchor_commit_score")] = W_LABEL_PRIOR
     elif label_prior == "lexical":
@@ -116,5 +125,6 @@ class FeatureSearchPolicy:
             "epsilon": self.epsilon, "steps": self.steps,
             "exploratory_steps": self.exploratory_steps,
             "extra_terms": {"value_already_set": W_VALUE_ALREADY_SET,
-                            "observed_no_effect": W_OBSERVED_NO_EFFECT},
+                            "observed_no_effect": W_OBSERVED_NO_EFFECT,
+                            "taken_anywhere": W_TAKEN_ANYWHERE},
         }

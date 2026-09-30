@@ -159,6 +159,11 @@ class RawObservation:
     console_errors: list[str]
     page_errors: list[str]
     captured_at: float = field(default_factory=time.time)
+    #: The text a person actually sees: `document.body.innerText`, which omits anything
+    #: CSS hides. The markup cannot say that -- an "Your basket is empty" panel hidden by a
+    #: class is present in `html` whether or not it is shown -- so any reader that must
+    #: judge the page as a person would (the LLM progress potential) reads this instead.
+    visible_text: str = ""
 
 
 @dataclass(slots=True)

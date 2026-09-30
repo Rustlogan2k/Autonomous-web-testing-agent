@@ -125,7 +125,8 @@ class RewardComposer:
         if marker == self._last_potential[0]:
             return self._last_potential[1]
         judgment = self.scorer.potential(page.get("url", ""), page.get("html", ""),
-                                         context=self.context)
+                                         context=self.context,
+                                         visible_text=page.get("visible_text"))
         value = judgment.value if judgment is not None else None
         self._last_potential = (marker, value)
         return value
