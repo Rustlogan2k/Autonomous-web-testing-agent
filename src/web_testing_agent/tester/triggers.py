@@ -50,7 +50,8 @@ def _path(url: str) -> str:
 
 
 def _normalise(text: str) -> str:
-    return _VOLATILE.sub("", (text or "").strip())[:160]
+    """Volatile parts removed and whitespace collapsed, so one defect has one identity."""
+    return " ".join(_VOLATILE.sub("", text or "").split())[:160]
 
 
 def signatures(info: dict) -> list[tuple[str, str, str]]:
