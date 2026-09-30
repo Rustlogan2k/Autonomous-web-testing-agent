@@ -17,6 +17,16 @@ is a real replay, so the cost is bounded deliberately: `max_trials` caps the num
 replays, and the minimizer returns the best sequence found so far when it runs out. A
 minimizer that runs unbounded would dominate the experiment's wall clock.
 
+**Why a clean-build control is part of confirmation.** An assertion is a statement about
+observed pages, and some traces trip it on a correct application: typing a quantity and
+then adding the same product twice makes the confirmation disagree with "the quantity
+entered" on a build with no fault in it. Such a trace reproduces perfectly, every time,
+and is not a finding. A seeded fault is a *difference between the two builds*, so the
+definition is applied literally: when a control runner is supplied, a candidate is
+confirmed only if the trace violates on the faulty build and does **not** violate on the
+clean one. The control is deterministic and consults no model, so the oracle's
+independence is unchanged.
+
 **The replayer is the existing `ScriptedPolicy`.** It already resolves a step against the
 live action space by id or visible label, already retries a step whose target has not
 rendered yet, and already records misses. Writing a second replay path would mean two
@@ -63,6 +73,8 @@ class ReplayOutcome:
     steps_observed: int
     verdict: dict = field(default_factory=dict)
     error: str = ""
+    #: Scripted steps the replay could not resolve on the live page.
+    misses: int = 0
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -88,6 +100,12 @@ class ConfirmedFinding:
     verification_steps: int = 0
     wall_clock_s: float = 0.0
     rejected_because: str = ""
+    #: Why a candidate was not confirmed, as a closed vocabulary so rejections can be
+    #: tallied: `assertion_silent`, `fires_on_clean_build`, `not_reproduced`. Empty when
+    #: the finding is confirmed.
+    rejection_kind: str = ""
+    #: The clean-build control: whether one ran, and what it concluded.
+    control: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -170,7 +188,8 @@ class VerificationPipeline:
     """
 
     def __init__(self, app: BenchmarkApp, runner: TrajectoryRunner,
-                 *, max_minimization_trials: int = DEFAULT_MAX_TRIALS) -> None:
+                 *, control_runner: TrajectoryRunner | None = None,
+                 max_minimization_trials: int = DEFAULT_MAX_TRIALS) -> None:
         problems = app.validate()
         if problems:
             # Loud and early. A fixture whose assertions name a region it does not define
@@ -178,6 +197,10 @@ class VerificationPipeline:
             raise ValueError(f"{app.app_id} has unusable fault metadata: {problems}")
         self.app = app
         self.runner = runner
+        #: Replays a trace against the build with no seeded fault. Optional, because an
+        #: application under test in the field has no clean twin; on the benchmark it is
+        #: always supplied, and it is what keeps a trace artefact out of the metric.
+        self.control_runner = control_runner
         self.max_minimization_trials = max_minimization_trials
 
     # -- candidate detection ---------------------------------------------------------
@@ -203,10 +226,30 @@ class VerificationPipeline:
         finding.candidate_verdict = candidate.to_dict()
         if not candidate.violated:
             finding.rejected_because = "the candidate's assertions did not fire"
+            finding.rejection_kind = "assertion_silent"
             finding.wall_clock_s = round(time.monotonic() - started, 2)
             return finding
 
         spent = 0
+
+        # The control runs first because it is one replay and the commonest reason a
+        # candidate is not a finding: rejecting here saves the reproduction replays.
+        if self.control_runner is not None:
+            control = self._replay_once(fault, trajectory.actions, self.control_runner)
+            spent += control.steps_observed
+            finding.control = {"checked": True, "violated_on_clean": control.reproduced,
+                               "inconclusive": control.inconclusive, "error": control.error}
+            if control.reproduced:
+                finding.rejected_because = (
+                    "the same trace violates the assertion on the clean build, so it is "
+                    "an artefact of the trace and not the seeded fault")
+                finding.rejection_kind = "fires_on_clean_build"
+                finding.verification_steps = spent
+                finding.wall_clock_s = round(time.monotonic() - started, 2)
+                return finding
+        else:
+            finding.control = {"checked": False}
+
         outcomes: list[ReplayOutcome] = []
         for attempt in range(fault.reproduction.replays):
             outcome = self._replay_once(fault, trajectory.actions)
@@ -223,6 +266,7 @@ class VerificationPipeline:
                 f"({sum(o.reproduced for o in outcomes)}/{len(outcomes)} reproduced, "
                 f"rule requires {fault.reproduction.replays} "
                 f"{'all' if fault.reproduction.must_all_reproduce else 'any'})")
+            finding.rejection_kind = "not_reproduced"
             finding.verification_steps = spent
             finding.wall_clock_s = round(time.monotonic() - started, 2)
             return finding
@@ -238,7 +282,15 @@ class VerificationPipeline:
         def reproduces(candidate_actions: list[dict]) -> bool:
             outcome = self._replay_once(fault, candidate_actions)
             trial_steps[0] += outcome.steps_observed
-            return outcome.reproduced
+            if not outcome.reproduced or self.control_runner is None:
+                return outcome.reproduced
+            # A shorter trace must still be a trace of *the fault*. Delta debugging will
+            # happily shrink towards any sequence that trips the assertion, including one
+            # that trips it on a correct build, so every accepted reduction is held to
+            # the same definition the original candidate was.
+            control = self._replay_once(fault, candidate_actions, self.control_runner)
+            trial_steps[0] += control.steps_observed
+            return not control.reproduced
 
         minimized = minimize_trace(
             trajectory.actions, reproduces,
@@ -255,10 +307,11 @@ class VerificationPipeline:
                     minimized.minimized_length, minimized.trials)
         return finding
 
-    def _replay_once(self, fault: FaultSpec, actions: list[dict]) -> ReplayOutcome:
+    def _replay_once(self, fault: FaultSpec, actions: list[dict],
+                     runner: TrajectoryRunner | None = None) -> ReplayOutcome:
         """One independent replay, asserted afresh. Never raises into the caller."""
         try:
-            observed = self.runner.run(list(actions))
+            observed = (runner or self.runner).run(list(actions))
         except Exception as exc:  # noqa: BLE001 - a failed replay is data, not a crash
             logger.warning("replay of {} raised: {}: {}", fault.fault_id,
                            type(exc).__name__, exc)
@@ -267,7 +320,8 @@ class VerificationPipeline:
         verdict = verify_fault(fault, self.app, observed)
         return ReplayOutcome(
             reproduced=verdict.violated, inconclusive=verdict.inconclusive,
-            steps_observed=len(observed.actions), verdict=verdict.to_dict())
+            steps_observed=len(observed.actions), verdict=verdict.to_dict(),
+            misses=observed.replay_misses)
 
 
 # -- the real runner -------------------------------------------------------------------------
@@ -291,65 +345,34 @@ class PlaywrightTrajectoryRunner:
 
     def run(self, actions: list[dict]) -> TrajectoryView:
         from ..evaluation import ScriptedPolicy
+        from .replay import observed_record
 
         env = self.env_factory()
         records: list[dict] = []
+        policy = ScriptedPolicy(list(actions), name="oracle-replay")
         try:
-            policy = ScriptedPolicy(list(actions), name="oracle-replay")
             observation, info = env.reset()
             policy.reset()
-            records.append({"url": (info.get("page") or {}).get("url", ""),
-                            "html": (info.get("page") or {}).get("html", ""),
-                            "action": None})
-            for _ in range(min(self.max_steps, max(len(actions), 1))):
+            records.append(observed_record(info))
+            # The bound is on *iterations*, not on scripted steps. A step whose target has
+            # not rendered yet is retried, and each retry is an iteration that executes a
+            # no-op; bounding by `len(actions)` let one transient miss push the final
+            # action off the end of the loop, so the trace that was asserted was missing
+            # the very step that triggers the fault.
+            budget = min(self.max_steps, max(len(actions), 1) * (policy.max_retries + 1))
+            for _ in range(budget):
                 if policy.finished:
                     break
+                available = list(info.get("action_specs") or [])
                 index = policy.act(observation, info)
-                spec = (info.get("action_specs") or [None] * (index + 1))[index] \
-                    if index < len(info.get("action_specs") or []) else None
                 observation, _reward, terminated, truncated, info = env.step(index)
-                page = info.get("page") or {}
-                executed = info.get("action_spec") or spec
-                records.append({
-                    "url": page.get("url", ""),
-                    "html": page.get("html", ""),
-                    "action": _replay_step_of(executed),
-                    "entered": _entered_value(executed),
-                })
+                records.append(observed_record(info, info.get("action_spec"), available))
                 if terminated or truncated:
                     break
         finally:
             close = getattr(env, "close", None)
             if callable(close):
                 close()
-        return build_trajectory(records)
-
-
-def _entered_value(spec) -> dict | None:  # noqa: ANN001
-    """`{field_label: value}` for an action that entered one, read off the live spec.
-
-    The label is `element_id` -- the registry's human-facing name for the control
-    (`"quantity"`), not its DOM id (`"qty"`). A fault's `input_field` therefore names
-    something a person would recognise and does not have to track the fixture's markup.
-    """
-    if spec is None:
-        return None
-    from ..envs.types import ActionType
-
-    if spec.action_type not in (ActionType.TYPE, ActionType.SELECT):
-        return None
-    params = spec.params or {}
-    value = params.get("value", params.get("option"))
-    label = (spec.element_id or "").strip()
-    if not label or value is None:
-        return None
-    return {label: str(value)}
-
-
-def _replay_step_of(spec) -> dict | None:  # noqa: ANN001
-    """The executed action in the replay schema, via the existing serializer."""
-    if spec is None:
-        return None
-    from ..agents.go_explore import to_replay_step
-
-    return to_replay_step(spec)
+        view = build_trajectory(records)
+        view.replay_misses = len(policy.misses) + (0 if policy.finished else 1)
+        return view

@@ -1,0 +1,748 @@
+% references.bib -- literature review for the RL web-testing agent project.
+%
+% Every entry below was verified against a page or metadata record fetched on
+% 2026-09-30 (arXiv API record, Crossref DOI record, PMLR / NeurIPS / OpenReview
+% proceedings page, publisher or author page, or the first page of the PDF itself).
+% The per-entry verification source is listed in docs/references/README.md.
+% Fields that could not be verified (e.g. page ranges for some proceedings) are
+% deliberately omitted rather than filled in from memory.
+
+% ---------------------------------------------------------------------------
+% 1. Reinforcement learning for web application testing and crawling
+% ---------------------------------------------------------------------------
+
+@inproceedings{zheng2021webexplor,
+  author    = {Yan Zheng and Yi Liu and Xiaofei Xie and Yepang Liu and Lei Ma and Jianye Hao and Yang Liu},
+  title     = {Automatic Web Testing Using Curiosity-Driven Reinforcement Learning},
+  booktitle = {2021 IEEE/ACM 43rd International Conference on Software Engineering (ICSE)},
+  pages     = {423--435},
+  year      = {2021},
+  doi       = {10.1109/ICSE43902.2021.00048},
+  eprint    = {2103.06018},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2103.06018}
+}
+
+@article{sherin2023qexplore,
+  author  = {Salman Sherin and Asmar Muqeet and Muhammad Uzair Khan and Muhammad Zohaib Iqbal},
+  title   = {{QExplore}: An Exploration Strategy for Dynamic Web Applications Using Guided Search},
+  journal = {Journal of Systems and Software},
+  volume  = {195},
+  pages   = {111512},
+  year    = {2023},
+  doi     = {10.1016/j.jss.2022.111512},
+  url     = {https://doi.org/10.1016/j.jss.2022.111512}
+}
+
+@inproceedings{chang2023webqt,
+  author    = {Xiaoning Chang and Zheheng Liang and Yifei Zhang and Lei Cui and Zhenyue Long and Guoquan Wu and Yu Gao and Wei Chen and Jun Wei and Tao Huang},
+  title     = {A Reinforcement Learning Approach to Generating Test Cases for Web Applications},
+  booktitle = {2023 IEEE/ACM International Conference on Automation of Software Test (AST)},
+  pages     = {13--23},
+  year      = {2023},
+  doi       = {10.1109/AST58925.2023.00006},
+  url       = {https://doi.org/10.1109/AST58925.2023.00006},
+  note      = {Introduces the WebQT tool}
+}
+
+@inproceedings{fan2024marg,
+  author    = {Yujia Fan and Sinan Wang and Zebang Fei and Yao Qin and Huaxuan Li and Yepang Liu},
+  title     = {Can Cooperative Multi-Agent Reinforcement Learning Boost Automatic Web Testing? An Exploratory Study},
+  booktitle = {Proceedings of the 39th IEEE/ACM International Conference on Automated Software Engineering (ASE)},
+  pages     = {14--26},
+  year      = {2024},
+  doi       = {10.1145/3691620.3694983},
+  url       = {https://doi.org/10.1145/3691620.3694983},
+  note      = {Introduces the MARG system}
+}
+
+@misc{gu2025webrled,
+  author     = {Zhiyu Gu and Chenxu Liu and Guoquan Wu and Yifei Zhang and ChenXi Yang and Zheheng Liang and Wei Chen and Jun Wei},
+  title      = {Deep Reinforcement Learning for Automated Web {GUI} Testing},
+  year       = {2025},
+  eprint     = {2504.19237},
+  eprinttype = {arXiv},
+  url        = {https://arxiv.org/abs/2504.19237},
+  note       = {arXiv preprint; introduces WebRLED. A journal article on WebRLED by an overlapping author list is registered at doi:10.1145/3843235 (ACM TOSEM, 2026)}
+}
+
+@inproceedings{wang2024vetl,
+  author    = {Siyi Wang and Sinan Wang and Yujia Fan and Xiaolei Li and Yepang Liu},
+  title     = {Leveraging Large Vision-Language Model for Better Automatic Web {GUI} Testing},
+  booktitle = {2024 IEEE International Conference on Software Maintenance and Evolution (ICSME)},
+  pages     = {125--137},
+  year      = {2024},
+  doi       = {10.1109/ICSME58944.2024.00022},
+  eprint    = {2410.12157},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2410.12157},
+  note      = {Introduces VETL}
+}
+
+@misc{fan2026webcq,
+  author     = {Yujia Fan and Sinan Wang and Zebang Fei and Yao Qin and Huaxuan Li and Yepang Liu},
+  title      = {{WebCQ}: Cooperative Multi-Agent Deep Reinforcement Learning for Scalable Web {GUI} Testing},
+  year       = {2026},
+  eprint     = {2606.22502},
+  eprinttype = {arXiv},
+  url        = {https://arxiv.org/abs/2606.22502},
+  note       = {arXiv preprint; the arXiv record states it is accepted to the 41st IEEE/ACM International Conference on Automated Software Engineering (ASE 2026)}
+}
+
+@misc{liu2026webgui,
+  author     = {Chenxu Liu and Wei Yang and Ying Zhang and Tao Xie},
+  title      = {Understanding Automated Web {GUI} Testing: An Empirical Study Across Exploration Strategies and State Abstractions},
+  year       = {2026},
+  eprint     = {2606.16650},
+  eprinttype = {arXiv},
+  url        = {https://arxiv.org/abs/2606.16650},
+  note       = {arXiv preprint}
+}
+
+@article{liu2024crawler,
+  author  = {Chien-Hung Liu and Shingchern D. You and Ying-Chieh Chiu},
+  title   = {A Reinforcement Learning Approach to Guide Web Crawler to Explore Web Applications for Improving Code Coverage},
+  journal = {Electronics},
+  volume  = {13},
+  number  = {2},
+  pages   = {427},
+  year    = {2024},
+  doi     = {10.3390/electronics13020427},
+  url     = {https://doi.org/10.3390/electronics13020427}
+}
+
+% ---------------------------------------------------------------------------
+% 2. Reinforcement / deep learning for mobile GUI testing
+% ---------------------------------------------------------------------------
+
+@inproceedings{pan2020qtesting,
+  author    = {Minxue Pan and An Huang and Guoxin Wang and Tian Zhang and Xuandong Li},
+  title     = {Reinforcement Learning Based Curiosity-Driven Testing of {Android} Applications},
+  booktitle = {Proceedings of the 29th ACM SIGSOFT International Symposium on Software Testing and Analysis (ISSTA)},
+  pages     = {153--164},
+  year      = {2020},
+  doi       = {10.1145/3395363.3397354},
+  url       = {https://doi.org/10.1145/3395363.3397354},
+  note      = {Introduces Q-testing}
+}
+
+@inproceedings{li2019humanoid,
+  author    = {Yuanchun Li and Ziyue Yang and Yao Guo and Xiangqun Chen},
+  title     = {Humanoid: A Deep Learning-Based Approach to Automated Black-box {Android} App Testing},
+  booktitle = {2019 34th IEEE/ACM International Conference on Automated Software Engineering (ASE)},
+  pages     = {1070--1073},
+  year      = {2019},
+  doi       = {10.1109/ASE.2019.00104},
+  eprint    = {1901.02633},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1901.02633}
+}
+
+@article{romdhana2022ares,
+  author  = {Andrea Romdhana and Alessio Merlo and Mariano Ceccato and Paolo Tonella},
+  title   = {Deep Reinforcement Learning for Black-Box Testing of {Android} Apps},
+  journal = {ACM Transactions on Software Engineering and Methodology},
+  volume  = {31},
+  number  = {4},
+  year    = {2022},
+  doi     = {10.1145/3502868},
+  eprint  = {2101.02636},
+  eprinttype = {arXiv},
+  url     = {https://arxiv.org/abs/2101.02636},
+  note    = {Introduces ARES}
+}
+
+@article{zhao2024dinodroid,
+  author  = {Yu Zhao and Brent Harrison and Tingting Yu},
+  title   = {{DinoDroid}: Testing {Android} Apps Using Deep {Q}-Networks},
+  journal = {ACM Transactions on Software Engineering and Methodology},
+  volume  = {33},
+  number  = {5},
+  year    = {2024},
+  doi     = {10.1145/3652150},
+  eprint  = {2210.06307},
+  eprinttype = {arXiv},
+  url     = {https://arxiv.org/abs/2210.06307}
+}
+
+% ---------------------------------------------------------------------------
+% 3. LLM-driven GUI / web testing agents and web-navigation benchmarks
+% ---------------------------------------------------------------------------
+
+@inproceedings{liu2024gptdroid,
+  author    = {Zhe Liu and Chunyang Chen and Junjie Wang and Mengzhuo Chen and Boyu Wu and Xing Che and Dandan Wang and Qing Wang},
+  title     = {Make {LLM} a Testing Expert: Bringing Human-like Interaction to Mobile {GUI} Testing via Functionality-aware Decisions},
+  booktitle = {Proceedings of the IEEE/ACM 46th International Conference on Software Engineering (ICSE)},
+  year      = {2024},
+  doi       = {10.1145/3597503.3639180},
+  eprint    = {2310.15780},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2310.15780},
+  note      = {Introduces GPTDroid}
+}
+
+@inproceedings{yoon2024droidagent,
+  author    = {Juyeon Yoon and Robert Feldt and Shin Yoo},
+  title     = {Intent-Driven Mobile {GUI} Testing with Autonomous Large Language Model Agents},
+  booktitle = {2024 IEEE Conference on Software Testing, Verification and Validation (ICST)},
+  pages     = {129--139},
+  year      = {2024},
+  doi       = {10.1109/ICST60714.2024.00020},
+  eprint    = {2311.08649},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2311.08649},
+  note      = {Introduces DroidAgent. The arXiv preprint is titled ``Autonomous Large Language Model Agents Enabling Intent-Driven Mobile GUI Testing''}
+}
+
+@inproceedings{taeb2024axnav,
+  author    = {Maryam Taeb and Amanda Swearngin and Eldon Schoop and Ruijia Cheng and Yue Jiang and Jeffrey Nichols},
+  title     = {{AXNav}: Replaying Accessibility Tests from Natural Language},
+  booktitle = {Proceedings of the CHI Conference on Human Factors in Computing Systems (CHI)},
+  year      = {2024},
+  doi       = {10.1145/3613904.3642777},
+  eprint    = {2310.02424},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2310.02424}
+}
+
+@inproceedings{zhou2024webarena,
+  author    = {Shuyan Zhou and Frank F. Xu and Hao Zhu and Xuhui Zhou and Robert Lo and Abishek Sridhar and Xianyi Cheng and Tianyue Ou and Yonatan Bisk and Daniel Fried and Uri Alon and Graham Neubig},
+  title     = {{WebArena}: A Realistic Web Environment for Building Autonomous Agents},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2024},
+  eprint    = {2307.13854},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2307.13854}
+}
+
+@inproceedings{deng2023mind2web,
+  author    = {Xiang Deng and Yu Gu and Boyuan Zheng and Shijie Chen and Samuel Stevens and Boshi Wang and Huan Sun and Yu Su},
+  title     = {{Mind2Web}: Towards a Generalist Agent for the Web},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS), Datasets and Benchmarks Track},
+  year      = {2023},
+  eprint    = {2306.06070},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2306.06070}
+}
+
+@inproceedings{shi2017worldofbits,
+  author    = {Tianlin Shi and Andrej Karpathy and Linxi Fan and Jonathan Hernandez and Percy Liang},
+  title     = {World of Bits: An Open-Domain Platform for Web-Based Agents},
+  booktitle = {Proceedings of the 34th International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {70},
+  pages     = {3135--3144},
+  year      = {2017},
+  url       = {https://proceedings.mlr.press/v70/shi17a.html}
+}
+
+@inproceedings{liu2018workflow,
+  author    = {Evan Zheran Liu and Kelvin Guu and Panupong Pasupat and Tianlin Shi and Percy Liang},
+  title     = {Reinforcement Learning on Web Interfaces Using Workflow-Guided Exploration},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2018},
+  eprint    = {1802.08802},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1802.08802}
+}
+
+% ---------------------------------------------------------------------------
+% 4. LLM- and VLM-derived rewards for reinforcement learning
+% ---------------------------------------------------------------------------
+
+@inproceedings{kwon2023reward,
+  author    = {Minae Kwon and Sang Michael Xie and Kalesha Bullard and Dorsa Sadigh},
+  title     = {Reward Design with Language Models},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2023},
+  eprint    = {2303.00001},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2303.00001}
+}
+
+@inproceedings{du2023ellm,
+  author    = {Yuqing Du and Olivia Watkins and Zihan Wang and C{\'e}dric Colas and Trevor Darrell and Pieter Abbeel and Abhishek Gupta and Jacob Andreas},
+  title     = {Guiding Pretraining in Reinforcement Learning with Large Language Models},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {202},
+  pages     = {8657--8677},
+  year      = {2023},
+  eprint    = {2302.06692},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2302.06692},
+  note      = {Introduces ELLM}
+}
+
+@inproceedings{ma2024eureka,
+  author    = {Yecheng Jason Ma and William Liang and Guanzhi Wang and De-An Huang and Osbert Bastani and Dinesh Jayaraman and Yuke Zhu and Linxi Fan and Anima Anandkumar},
+  title     = {Eureka: Human-Level Reward Design via Coding Large Language Models},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2024},
+  eprint    = {2310.12931},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2310.12931}
+}
+
+@inproceedings{xie2024text2reward,
+  author    = {Tianbao Xie and Siheng Zhao and Chen Henry Wu and Yitao Liu and Qian Luo and Victor Zhong and Yanchao Yang and Tao Yu},
+  title     = {{Text2Reward}: Reward Shaping with Language Models for Reinforcement Learning},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2024},
+  eprint    = {2309.11489},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2309.11489}
+}
+
+@inproceedings{klissarov2024motif,
+  author    = {Martin Klissarov and Pierluca D'Oro and Shagun Sodhani and Roberta Raileanu and Pierre-Luc Bacon and Pascal Vincent and Amy Zhang and Mikael Henaff},
+  title     = {Motif: Intrinsic Motivation from Artificial Intelligence Feedback},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2024},
+  eprint    = {2310.00166},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2310.00166}
+}
+
+@misc{du2023success,
+  author     = {Yuqing Du and Ksenia Konyushkova and Misha Denil and Akhil Raju and Jessica Landon and Felix Hill and Nando de Freitas and Serkan Cabi},
+  title      = {Vision-Language Models as Success Detectors},
+  year       = {2023},
+  eprint     = {2303.07280},
+  eprinttype = {arXiv},
+  url        = {https://arxiv.org/abs/2303.07280},
+  note       = {arXiv preprint}
+}
+
+@inproceedings{rocamonde2024vlmrm,
+  author    = {Juan Rocamonde and Victoriano Montesinos and Elvis Nava and Ethan Perez and David Lindner},
+  title     = {Vision-Language Models are Zero-Shot Reward Models for Reinforcement Learning},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2024},
+  eprint    = {2310.12921},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2310.12921}
+}
+
+@misc{bhambri2024heuristics,
+  author     = {Siddhant Bhambri and Amrita Bhattacharjee and Durgesh Kalwar and Lin Guan and Huan Liu and Subbarao Kambhampati},
+  title      = {Extracting Heuristics from Large Language Models for Reward Shaping in Reinforcement Learning},
+  year       = {2024},
+  eprint     = {2405.15194},
+  eprinttype = {arXiv},
+  url        = {https://arxiv.org/abs/2405.15194},
+  note       = {arXiv preprint (OpenReview lists an ICLR 2025 submission of this title as withdrawn; treat as not peer reviewed)}
+}
+
+@inproceedings{lin2024noisy,
+  author    = {Muhan Lin and Shuyang Shi and Yue Guo and Behdad Chalaki and Vaishnav Tadiparthi and Ehsan Moradi Pari and Simon Stepputtis and Joseph Campbell and Katia Sycara},
+  title     = {Navigating Noisy Feedback: Enhancing Reinforcement Learning with Error-Prone Language Models},
+  booktitle = {The 2024 Conference on Empirical Methods in Natural Language Processing (EMNLP)},
+  year      = {2024},
+  eprint    = {2410.17389},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2410.17389}
+}
+
+@inproceedings{klissarov2025modeling,
+  author    = {Martin Klissarov and Devon Hjelm and Alexander Toshev and Bogdan Mazoure},
+  title     = {On the Modeling Capabilities of Large Language Models for Sequential Decision Making},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2025},
+  eprint    = {2410.05656},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2410.05656}
+}
+
+@misc{muller2026vlmpbrs,
+  author     = {Henrik M{\"u}ller and Daniel Kudenko},
+  title      = {Automating Potential-based Reward Shaping with Vision Language Model Guidance},
+  year       = {2026},
+  eprint     = {2606.27180},
+  eprinttype = {arXiv},
+  url        = {https://arxiv.org/abs/2606.27180},
+  note       = {arXiv preprint}
+}
+
+% ---------------------------------------------------------------------------
+% 5. Reward-shaping theory
+% ---------------------------------------------------------------------------
+
+@inproceedings{ng1999policy,
+  author    = {Andrew Y. Ng and Daishi Harada and Stuart Russell},
+  title     = {Policy Invariance Under Reward Transformations: Theory and Application to Reward Shaping},
+  booktitle = {Proceedings of the 16th International Conference on Machine Learning (ICML)},
+  pages     = {278--287},
+  year      = {1999},
+  url       = {https://people.eecs.berkeley.edu/~russell/papers/icml99-shaping.pdf}
+}
+
+@article{wiewiora2003potential,
+  author  = {E. Wiewiora},
+  title   = {Potential-Based Shaping and {Q}-Value Initialization are Equivalent},
+  journal = {Journal of Artificial Intelligence Research},
+  volume  = {19},
+  pages   = {205--208},
+  year    = {2003},
+  doi     = {10.1613/jair.1190},
+  eprint  = {1106.5267},
+  eprinttype = {arXiv},
+  url     = {https://arxiv.org/abs/1106.5267}
+}
+
+@inproceedings{devlin2012dynamic,
+  author    = {Sam Devlin and Daniel Kudenko},
+  title     = {Dynamic Potential-Based Reward Shaping},
+  booktitle = {Proceedings of the 11th International Conference on Autonomous Agents and Multiagent Systems (AAMAS)},
+  pages     = {433--440},
+  year      = {2012},
+  url       = {https://www.ifaamas.org/Proceedings/aamas2012/papers/2C_3.pdf}
+}
+
+% ---------------------------------------------------------------------------
+% 6. Core deep-RL components
+% ---------------------------------------------------------------------------
+
+@misc{mnih2013atari,
+  author     = {Volodymyr Mnih and Koray Kavukcuoglu and David Silver and Alex Graves and Ioannis Antonoglou and Daan Wierstra and Martin Riedmiller},
+  title      = {Playing {Atari} with Deep Reinforcement Learning},
+  year       = {2013},
+  eprint     = {1312.5602},
+  eprinttype = {arXiv},
+  url        = {https://arxiv.org/abs/1312.5602},
+  note       = {NIPS Deep Learning Workshop 2013}
+}
+
+@article{mnih2015human,
+  author  = {Volodymyr Mnih and Koray Kavukcuoglu and David Silver and Andrei A. Rusu and Joel Veness and Marc G. Bellemare and Alex Graves and Martin Riedmiller and Andreas K. Fidjeland and Georg Ostrovski and Stig Petersen and Charles Beattie and Amir Sadik and Ioannis Antonoglou and Helen King and Dharshan Kumaran and Daan Wierstra and Shane Legg and Demis Hassabis},
+  title   = {Human-Level Control Through Deep Reinforcement Learning},
+  journal = {Nature},
+  volume  = {518},
+  number  = {7540},
+  pages   = {529--533},
+  year    = {2015},
+  doi     = {10.1038/nature14236},
+  url     = {https://doi.org/10.1038/nature14236}
+}
+
+@inproceedings{vanhasselt2016double,
+  author    = {Hado van Hasselt and Arthur Guez and David Silver},
+  title     = {Deep Reinforcement Learning with Double {Q}-Learning},
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume    = {30},
+  number    = {1},
+  year      = {2016},
+  doi       = {10.1609/aaai.v30i1.10295},
+  eprint    = {1509.06461},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1509.06461}
+}
+
+@inproceedings{wang2016dueling,
+  author    = {Ziyu Wang and Tom Schaul and Matteo Hessel and Hado van Hasselt and Marc Lanctot and Nando de Freitas},
+  title     = {Dueling Network Architectures for Deep Reinforcement Learning},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {48},
+  pages     = {1995--2003},
+  year      = {2016},
+  eprint    = {1511.06581},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1511.06581}
+}
+
+@inproceedings{schaul2016prioritized,
+  author    = {Tom Schaul and John Quan and Ioannis Antonoglou and David Silver},
+  title     = {Prioritized Experience Replay},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2016},
+  eprint    = {1511.05952},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1511.05952}
+}
+
+@inproceedings{hessel2018rainbow,
+  author    = {Matteo Hessel and Joseph Modayil and Hado van Hasselt and Tom Schaul and Georg Ostrovski and Will Dabney and Dan Horgan and Bilal Piot and Mohammad Azar and David Silver},
+  title     = {Rainbow: Combining Improvements in Deep Reinforcement Learning},
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume    = {32},
+  number    = {1},
+  year      = {2018},
+  doi       = {10.1609/aaai.v32i1.11796},
+  eprint    = {1710.02298},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1710.02298}
+}
+
+@inproceedings{bellemare2016unifying,
+  author    = {Marc G. Bellemare and Sriram Srinivasan and Georg Ostrovski and Tom Schaul and David Saxton and Remi Munos},
+  title     = {Unifying Count-Based Exploration and Intrinsic Motivation},
+  booktitle = {Advances in Neural Information Processing Systems (NIPS)},
+  year      = {2016},
+  eprint    = {1606.01868},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1606.01868}
+}
+
+@inproceedings{tang2017exploration,
+  author    = {Haoran Tang and Rein Houthooft and Davis Foote and Adam Stooke and Xi Chen and Yan Duan and John Schulman and Filip De Turck and Pieter Abbeel},
+  title     = {{\#Exploration}: A Study of Count-Based Exploration for Deep Reinforcement Learning},
+  booktitle = {Advances in Neural Information Processing Systems (NIPS)},
+  year      = {2017},
+  eprint    = {1611.04717},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1611.04717}
+}
+
+@inproceedings{burda2019rnd,
+  author    = {Yuri Burda and Harrison Edwards and Amos Storkey and Oleg Klimov},
+  title     = {Exploration by Random Network Distillation},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2019},
+  eprint    = {1810.12894},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1810.12894}
+}
+
+@article{ecoffet2021first,
+  author  = {Adrien Ecoffet and Joost Huizinga and Joel Lehman and Kenneth O. Stanley and Jeff Clune},
+  title   = {First Return, Then Explore},
+  journal = {Nature},
+  volume  = {590},
+  number  = {7847},
+  pages   = {580--586},
+  year    = {2021},
+  doi     = {10.1038/s41586-020-03157-9},
+  eprint  = {2004.12919},
+  eprinttype = {arXiv},
+  url     = {https://arxiv.org/abs/2004.12919},
+  note    = {The Go-Explore family of algorithms}
+}
+
+% ---------------------------------------------------------------------------
+% 7. Action representations for large / variable discrete action sets
+% ---------------------------------------------------------------------------
+
+@misc{dulacarnold2015large,
+  author     = {Gabriel Dulac-Arnold and Richard Evans and Hado van Hasselt and Peter Sunehag and Timothy Lillicrap and Jonathan Hunt and Timothy Mann and Theophane Weber and Thomas Degris and Ben Coppin},
+  title      = {Deep Reinforcement Learning in Large Discrete Action Spaces},
+  year       = {2015},
+  eprint     = {1512.07679},
+  eprinttype = {arXiv},
+  url        = {https://arxiv.org/abs/1512.07679},
+  note       = {arXiv preprint}
+}
+
+@inproceedings{he2016drrn,
+  author    = {Ji He and Jianshu Chen and Xiaodong He and Jianfeng Gao and Lihong Li and Li Deng and Mari Ostendorf},
+  title     = {Deep Reinforcement Learning with a Natural Language Action Space},
+  booktitle = {Annual Meeting of the Association for Computational Linguistics (ACL)},
+  year      = {2016},
+  eprint    = {1511.04636},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1511.04636},
+  note      = {Introduces the deep reinforcement relevance network (DRRN)}
+}
+
+@inproceedings{jain2020generalization,
+  author    = {Ayush Jain and Andrew Szot and Joseph J. Lim},
+  title     = {Generalization to New Actions in Reinforcement Learning},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {119},
+  pages     = {4661--4672},
+  year      = {2020},
+  eprint    = {2011.01928},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2011.01928}
+}
+
+% ---------------------------------------------------------------------------
+% 8. Generalisation and transfer in reinforcement learning
+% ---------------------------------------------------------------------------
+
+@article{kirk2023survey,
+  author  = {Robert Kirk and Amy Zhang and Edward Grefenstette and Tim Rockt{\"a}schel},
+  title   = {A Survey of Zero-shot Generalisation in Deep Reinforcement Learning},
+  journal = {Journal of Artificial Intelligence Research},
+  volume  = {76},
+  pages   = {201--264},
+  year    = {2023},
+  doi     = {10.1613/jair.1.14174},
+  eprint  = {2111.09794},
+  eprinttype = {arXiv},
+  url     = {https://arxiv.org/abs/2111.09794}
+}
+
+@inproceedings{cobbe2019quantifying,
+  author    = {Karl Cobbe and Oleg Klimov and Chris Hesse and Taehoon Kim and John Schulman},
+  title     = {Quantifying Generalization in Reinforcement Learning},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {97},
+  pages     = {1282--1289},
+  year      = {2019},
+  eprint    = {1812.02341},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1812.02341},
+  note      = {Introduces CoinRun}
+}
+
+@inproceedings{cobbe2020procgen,
+  author    = {Karl Cobbe and Christopher Hesse and Jacob Hilton and John Schulman},
+  title     = {Leveraging Procedural Generation to Benchmark Reinforcement Learning},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {119},
+  pages     = {2048--2056},
+  year      = {2020},
+  eprint    = {1912.01588},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1912.01588},
+  note      = {Introduces the Procgen Benchmark}
+}
+
+% ---------------------------------------------------------------------------
+% 9. Test oracles, debugging, and seeded-fault validity
+% ---------------------------------------------------------------------------
+
+@article{barr2015oracle,
+  author  = {Earl T. Barr and Mark Harman and Phil McMinn and Muzammil Shahbaz and Shin Yoo},
+  title   = {The Oracle Problem in Software Testing: A Survey},
+  journal = {IEEE Transactions on Software Engineering},
+  volume  = {41},
+  number  = {5},
+  pages   = {507--525},
+  year    = {2015},
+  doi     = {10.1109/TSE.2014.2372785},
+  url     = {https://doi.org/10.1109/TSE.2014.2372785}
+}
+
+@article{zeller2002simplifying,
+  author  = {Andreas Zeller and Ralf Hildebrandt},
+  title   = {Simplifying and Isolating Failure-Inducing Input},
+  journal = {IEEE Transactions on Software Engineering},
+  volume  = {28},
+  number  = {2},
+  pages   = {183--200},
+  year    = {2002},
+  doi     = {10.1109/32.988498},
+  url     = {https://www.st.cs.uni-saarland.de/papers/tse2002/}
+}
+
+@inproceedings{just2014mutants,
+  author    = {Ren{\'e} Just and Darioush Jalali and Laura Inozemtseva and Michael D. Ernst and Reid Holmes and Gordon Fraser},
+  title     = {Are Mutants a Valid Substitute for Real Faults in Software Testing?},
+  booktitle = {Proceedings of the 22nd ACM SIGSOFT International Symposium on Foundations of Software Engineering (FSE)},
+  pages     = {654--665},
+  year      = {2014},
+  doi       = {10.1145/2635868.2635929},
+  url       = {https://doi.org/10.1145/2635868.2635929}
+}
+
+% ---------------------------------------------------------------------------
+% 10. Evaluation statistics for randomized algorithms
+% ---------------------------------------------------------------------------
+
+@inproceedings{arcuri2011practical,
+  author    = {Andrea Arcuri and Lionel Briand},
+  title     = {A Practical Guide for Using Statistical Tests to Assess Randomized Algorithms in Software Engineering},
+  booktitle = {Proceedings of the 33rd International Conference on Software Engineering (ICSE)},
+  pages     = {1--10},
+  year      = {2011},
+  doi       = {10.1145/1985793.1985795},
+  url       = {https://doi.org/10.1145/1985793.1985795}
+}
+
+@inproceedings{agarwal2021precipice,
+  author    = {Rishabh Agarwal and Max Schwarzer and Pablo Samuel Castro and Aaron Courville and Marc G. Bellemare},
+  title     = {Deep Reinforcement Learning at the Edge of the Statistical Precipice},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2021},
+  eprint    = {2108.13264},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2108.13264}
+}
+
+@inproceedings{henderson2018matters,
+  author    = {Peter Henderson and Riashat Islam and Philip Bachman and Joelle Pineau and Doina Precup and David Meger},
+  title     = {Deep Reinforcement Learning That Matters},
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume    = {32},
+  number    = {1},
+  year      = {2018},
+  doi       = {10.1609/aaai.v32i1.11694},
+  eprint    = {1709.06560},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1709.06560}
+}
+
+@inproceedings{klees2018evaluating,
+  author    = {George Klees and Andrew Ruef and Benji Cooper and Shiyi Wei and Michael Hicks},
+  title     = {Evaluating Fuzz Testing},
+  booktitle = {Proceedings of the ACM Conference on Computer and Communications Security (CCS)},
+  year      = {2018},
+  eprint    = {1808.09700},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1808.09700}
+}
+
+@article{hazimeh2020magma,
+  author  = {Ahmad Hazimeh and Adrian Herrera and Mathias Payer},
+  title   = {Magma: A Ground-Truth Fuzzing Benchmark},
+  journal = {Proceedings of the ACM on Measurement and Analysis of Computing Systems (POMACS)},
+  volume  = {4},
+  number  = {3},
+  year    = {2020},
+  doi     = {10.1145/3428334},
+  eprint  = {2009.01120},
+  eprinttype = {arXiv},
+  url     = {https://arxiv.org/abs/2009.01120},
+  note    = {Article 49}
+}
+
+@inproceedings{schloegel2024sok,
+  author    = {Moritz Schloegel and Nils Bars and Nico Schiller and Lukas Bernhard and Tobias Scharnowski and Addison Crump and Arash Ale-Ebrahim and Nicolai Bissantz and Marius Muench and Thorsten Holz},
+  title     = {{SoK}: Prudent Evaluation Practices for Fuzzing},
+  booktitle = {2024 IEEE Symposium on Security and Privacy (SP)},
+  pages     = {1974--1993},
+  year      = {2024},
+  doi       = {10.1109/SP54263.2024.00137},
+  eprint    = {2405.10220},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2405.10220}
+}
+
+@inproceedings{herrera2021seed,
+  author    = {Adrian Herrera and Hendra Gunadi and Shane Magrath and Michael Norrish and Mathias Payer and Antony L. Hosking},
+  title     = {Seed Selection for Successful Fuzzing},
+  booktitle = {Proceedings of the 30th ACM SIGSOFT International Symposium on Software Testing and Analysis (ISSTA)},
+  pages     = {230--243},
+  year      = {2021},
+  doi       = {10.1145/3460319.3464795},
+  url       = {https://hexhive.epfl.ch/publications/files/21ISSTA2.pdf}
+}
+
+% ---------------------------------------------------------------------------
+% 11. Sentence embeddings used for semantic action labels
+% ---------------------------------------------------------------------------
+
+@inproceedings{reimers2019sbert,
+  author    = {Nils Reimers and Iryna Gurevych},
+  title     = {Sentence-{BERT}: Sentence Embeddings using Siamese {BERT}-Networks},
+  booktitle = {Conference on Empirical Methods in Natural Language Processing (EMNLP)},
+  year      = {2019},
+  eprint    = {1908.10084},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/1908.10084}
+}
+
+@inproceedings{wang2020minilm,
+  author    = {Wenhui Wang and Furu Wei and Li Dong and Hangbo Bao and Nan Yang and Ming Zhou},
+  title     = {{MiniLM}: Deep Self-Attention Distillation for Task-Agnostic Compression of Pre-Trained Transformers},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2020},
+  eprint    = {2002.10957},
+  eprinttype = {arXiv},
+  url       = {https://arxiv.org/abs/2002.10957}
+}

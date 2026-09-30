@@ -9,7 +9,12 @@ from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from ..reward.base import FunctionalRewardModel, NullRewardModel
 from ..reward.functional_triggers import FunctionalRewardWeights, compose_reward, detect_bug_signals
 from ..utils.logging import get_logger
-from .action_registry import build_action_specs, scan_page_elements
+from .action_registry import (
+    LEGACY_OPTIONS,
+    RegistryOptions,
+    build_action_specs,
+    scan_page_elements,
+)
 from .base_env import StepContext, WebTestingEnv
 from .types import VIEWPORT_PRESETS, ActionSpec, ActionType
 
@@ -34,6 +39,8 @@ class WebFunctionalEnv(WebTestingEnv):
         reward_weights: FunctionalRewardWeights | None = None,
         repetition_window: int = 20,
         setup_actions: list[dict] | None = None,
+        settle_quiet_ms: int | None = None,
+        registry_options: RegistryOptions | None = None,
     ) -> None:
         super().__init__(
             base_url=base_url,
@@ -42,7 +49,11 @@ class WebFunctionalEnv(WebTestingEnv):
             render_mode=render_mode,
             repetition_window=repetition_window,
             setup_actions=setup_actions,
+            settle_quiet_ms=settle_quiet_ms,
         )
+        # Default is the original registry, so every pre-benchmark experiment re-runs
+        # against the action space it was measured on. See `RegistryOptions`.
+        self.registry_options = registry_options or LEGACY_OPTIONS
         self.reward_model = reward_model or NullRewardModel()
         self.reward_weights = reward_weights or FunctionalRewardWeights()
 
@@ -56,7 +67,7 @@ class WebFunctionalEnv(WebTestingEnv):
         # The page's own URL decides whether a link is a self-link, and a self-link
         # cannot be a broken navigation. Read here rather than cached, because the scan
         # describes whatever document is loaded *now*.
-        return build_action_specs(elements, page_url=page.url)
+        return build_action_specs(elements, page_url=page.url, options=self.registry_options)
 
     def _execute_action(self, spec: ActionSpec) -> dict:
         page = self._browser.page

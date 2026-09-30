@@ -106,6 +106,12 @@ class TrajectoryView:
 
     steps: list[ObservedStep] = field(default_factory=list)
     actions: list[dict] = field(default_factory=list)
+    #: Scripted steps a replay could not resolve against the live page. Zero for a
+    #: trajectory observed during exploration. Non-zero on a replay means the trace that
+    #: was asserted is not the trace that was asked for, and the verdict is about a
+    #: different action sequence -- so the pipeline treats such a replay as inconclusive
+    #: rather than as evidence either way.
+    replay_misses: int = 0
 
     def matching(self, where: str) -> list[ObservedStep]:
         """Steps whose URL matches `where`, in order."""
@@ -121,6 +127,7 @@ class TrajectoryView:
             "n_actions": len(self.actions),
             "urls": [step.url for step in self.steps],
             "actions": list(self.actions),
+            "replay_misses": self.replay_misses,
         }
 
 

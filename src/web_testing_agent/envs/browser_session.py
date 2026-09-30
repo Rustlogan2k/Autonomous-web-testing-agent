@@ -11,6 +11,7 @@ this raw observation has already been captured.
 
 from __future__ import annotations
 
+import threading
 from typing import Callable
 from urllib.parse import urlparse
 
@@ -56,23 +57,101 @@ _QUIESCENCE_JS = """
 """
 
 
-class BrowserSession:
-    """One Playwright instance -> one Chromium browser -> one fresh context+page per episode."""
+class _SharedChromium:
+    """One Playwright driver and one Chromium per thread, shared by every session in it.
 
-    def __init__(self, headless: bool = True) -> None:
+    **Why sessions share a browser.** Playwright's sync API runs its event loop on the
+    thread that started it, and refuses to start a second driver on the same thread. The
+    fault oracle needs exactly that: while an exploring env is open, a candidate finding
+    has to be replayed in a *second*, fresh session before the exploration continues. With
+    one driver per session that replay could only run after the explorer had been closed.
+
+    Sharing the process does not share any application state. Every session still gets its
+    own `BrowserContext`, which is the isolation boundary for cookies, storage and
+    history -- two contexts in one Chromium see nothing of each other, which is what
+    "independent replay" requires.
+
+    It is also what makes minimization affordable: delta debugging replays a trace dozens
+    of times, and a fresh context costs a few milliseconds where a fresh Chromium costs
+    about a second.
+
+    Reference counted, so the browser goes away with the last session that used it.
+    """
+
+    _local = threading.local()
+
+    @classmethod
+    def _slots(cls) -> dict:
+        slots = getattr(cls._local, "slots", None)
+        if slots is None:
+            slots = cls._local.slots = {}
+        return slots
+
+    @classmethod
+    def acquire(cls, headless: bool) -> Browser:
+        slots = cls._slots()
+        slot = slots.get(headless)
+        if slot is None or not slot["browser"].is_connected():
+            driver: Playwright | None = getattr(cls._local, "driver", None)
+            if driver is None:
+                logger.info("Starting the Playwright driver for this thread")
+                driver = cls._local.driver = sync_playwright().start()
+            logger.info("Launching Playwright Chromium (headless={})", headless)
+            slot = slots[headless] = {
+                "browser": driver.chromium.launch(headless=headless), "users": 0}
+        slot["users"] += 1
+        return slot["browser"]
+
+    @classmethod
+    def release(cls, headless: bool) -> None:
+        slots = cls._slots()
+        slot = slots.get(headless)
+        if slot is None:
+            return
+        slot["users"] -= 1
+        if slot["users"] > 0:
+            return
+        del slots[headless]
+        try:
+            slot["browser"].close()
+        except Exception:  # noqa: BLE001 - best-effort teardown
+            logger.warning("Error closing browser")
+        if not slots:
+            driver = getattr(cls._local, "driver", None)
+            cls._local.driver = None
+            if driver is not None:
+                try:
+                    driver.stop()
+                except Exception:  # noqa: BLE001
+                    logger.warning("Error stopping Playwright")
+
+
+class BrowserSession:
+    """One fresh context+page per episode, in the thread's shared Chromium.
+
+    `quiet_ms` is how long the DOM must stay unmutated to count as settled. The default is
+    right for a real application; a locally served static fixture, whose scripts run
+    synchronously, settles far sooner and an experiment may say so explicitly. It is a
+    constructor argument rather than a module constant so the value used is recorded with
+    the run instead of being an ambient property of the build.
+    """
+
+    def __init__(self, headless: bool = True, quiet_ms: int | None = None) -> None:
         self._headless = headless
-        self._playwright: Playwright | None = None
+        self._quiet_ms = DOM_QUIET_MS if quiet_ms is None else int(quiet_ms)
         self._browser: Browser | None = None
         self.context: BrowserContext | None = None
         self.page: Page | None = None
         self._known_pages: set[int] = set()
 
+    @property
+    def quiet_ms(self) -> int:
+        return self._quiet_ms
+
     def start(self) -> None:
-        if self._playwright is not None:
+        if self._browser is not None:
             return
-        logger.info("Launching Playwright Chromium (headless={})", self._headless)
-        self._playwright = sync_playwright().start()
-        self._browser = self._playwright.chromium.launch(headless=self._headless)
+        self._browser = _SharedChromium.acquire(self._headless)
 
     def new_episode(self, base_url: str) -> Page:
         """Fresh context (no cookies/storage carried over from any previous episode) + navigate."""
@@ -260,7 +339,7 @@ class BrowserSession:
         except Exception:  # noqa: BLE001
             logger.debug("Could not reset viewport")
 
-    def wait_settled(self, timeout_ms: int = SETTLE_TIMEOUT_MS, quiet_ms: int = DOM_QUIET_MS) -> bool:
+    def wait_settled(self, timeout_ms: int = SETTLE_TIMEOUT_MS, quiet_ms: int | None = None) -> bool:
         """Wait until the DOM stops mutating. Returns False if it never settled in time.
 
         A False return is the honest signal behind the spec's "loading spinner visible
@@ -268,6 +347,8 @@ class BrowserSession:
         """
         if self.page is None:
             return False
+        if quiet_ms is None:
+            quiet_ms = self._quiet_ms
         try:
             self.page.wait_for_load_state("domcontentloaded", timeout=timeout_ms)
         except Exception:  # noqa: BLE001 - still navigating; the quiescence probe below still applies
@@ -307,16 +388,7 @@ class BrowserSession:
             except Exception:  # noqa: BLE001 - best-effort teardown
                 logger.warning("Error closing browser context")
         if self._browser is not None:
-            try:
-                self._browser.close()
-            except Exception:  # noqa: BLE001
-                logger.warning("Error closing browser")
-        if self._playwright is not None:
-            try:
-                self._playwright.stop()
-            except Exception:  # noqa: BLE001
-                logger.warning("Error stopping Playwright")
+            _SharedChromium.release(self._headless)
         self.context = None
         self.page = None
         self._browser = None
-        self._playwright = None

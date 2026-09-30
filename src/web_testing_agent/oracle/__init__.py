@@ -30,6 +30,7 @@ from .faults import (
     FaultSpec,
     ReproductionRule,
 )
+from .replay import entered_value, observed_record, replay_step_of
 from .trajectory import (
     ObservedStep,
     TrajectoryView,
@@ -52,7 +53,7 @@ __all__ = [
     "ConfirmedFinding", "FaultClass", "FaultSpec", "FaultVerdict",
     "MinimizationResult", "ObservedStep", "PlaywrightTrajectoryRunner",
     "ReplayOutcome", "ReproductionRule", "TrajectoryRunner", "TrajectoryView",
-    "VerificationPipeline", "build_trajectory", "evaluate_assertion",
-    "evaluate_expression", "minimize_trace", "region_text", "verify_all",
-    "verify_fault", "visible_text",
+    "VerificationPipeline", "build_trajectory", "entered_value", "evaluate_assertion",
+    "evaluate_expression", "minimize_trace", "observed_record", "region_text",
+    "replay_step_of", "verify_all", "verify_fault", "visible_text",
 ]

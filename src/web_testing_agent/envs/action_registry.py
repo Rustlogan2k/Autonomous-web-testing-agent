@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
+from collections import Counter
+from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
@@ -28,6 +29,40 @@ _NON_TEXT_INPUT_TYPES = {"checkbox", "radio", "hidden", "file", "button", "submi
 # positional fallback MUST use this same selector, otherwise `nth=` counts within a
 # different match set than the scan did and silently resolves to the wrong element.
 SCAN_SELECTOR = "input, textarea, select, button, a[href]"
+
+@dataclass(frozen=True, slots=True)
+class RegistryOptions:
+    """What the action space offers beyond the original registry. Defaults are the original.
+
+    Every figure published before the benchmark suite existed was measured through the
+    default, so the default is frozen: one SELECT action per dropdown (its last option),
+    and form controls named by their DOM `name`. Both limits are real restrictions on what
+    an agent can do to an application, and the benchmark lifts them explicitly rather than
+    by changing what the old experiments would do on a re-run.
+
+    * `max_select_options` -- how many of a dropdown's options become actions. With one, a
+      booking form offering four time slots can only ever be submitted with the last; a
+      fault that depends on any other choice is unreachable by construction.
+    * `capture_field_labels` -- attach the text a *person* reads beside a control (its
+      `<label>`, `aria-label` or placeholder) as `params["label_text"]`. A field's DOM name
+      (`qty`, `f_3`) is identity; its label (`How many?`) is meaning, and meaning is what
+      a representation has to carry to a site it has never seen.
+    * `disambiguate_shared_names` -- radios in a group share a `name` by design, so a
+      name-based selector resolves every one of them to the first. With this set, a
+      non-unique name falls back to the positional selector.
+    """
+
+    max_select_options: int = 1
+    capture_field_labels: bool = False
+    disambiguate_shared_names: bool = False
+
+
+#: The registry as it was for every pre-benchmark measurement.
+LEGACY_OPTIONS = RegistryOptions()
+#: The registry the benchmark suite and the product path use.
+EXTENDED_OPTIONS = RegistryOptions(
+    max_select_options=4, capture_field_labels=True, disambiguate_shared_names=True)
+
 
 # Single JS round-trip: pull every attribute we need for action-building in one call
 # instead of paying a Python<->browser round trip per element.
@@ -70,6 +105,21 @@ els => els.map((el, i) => {
         visible: visible,
         inViewport: inViewport,
         options: options,
+        // The text a person reads beside a form control, in the order a browser's own
+        // accessible-name computation prefers it: an explicit aria-label, a <label for>,
+        // a wrapping <label>, then the placeholder. Empty for links and buttons, whose
+        // visible text is already their label.
+        label: (() => {
+            if (!['INPUT', 'SELECT', 'TEXTAREA'].includes(el.tagName)) return '';
+            const clean = t => (t || '').replace(/\\s+/g, ' ').trim().slice(0, 60);
+            const aria = clean(el.getAttribute('aria-label'));
+            if (aria) return aria;
+            if (el.labels && el.labels.length) {
+                const viaLabel = clean(el.labels[0].innerText);
+                if (viaLabel) return viaLabel;
+            }
+            return clean(el.getAttribute('placeholder')) || clean(el.getAttribute('title'));
+        })(),
     };
 })
 """
@@ -88,18 +138,21 @@ def _escape_attr(value: str) -> str:
     return value.replace("\\", "\\\\").replace('"', '\\"')
 
 
-def _selector_for(el: dict) -> str:
+def _selector_for(el: dict, shared_names: frozenset[str] = frozenset()) -> str:
     """Build a Playwright selector that resolves to exactly the element that was scanned.
 
     `id`/`name` are preferred because they survive small DOM reshuffles between the
     scan and the action executing one step later. The positional fallback is indexed
     against `SCAN_SELECTOR` — the same match set `el["index"]` came from.
+
+    `shared_names` lists names carried by more than one scanned element. A name-based
+    selector for any of those resolves to the first, so they take the positional form.
     """
     if el.get("id"):
         # Attribute form, not `#id`: framework-generated ids routinely contain `:`, `.`
         # or `/`, which are CSS combinators and would produce an invalid `#`-selector.
         return f'[id="{_escape_attr(el["id"])}"]'
-    if el.get("name"):
+    if el.get("name") and el["name"] not in shared_names:
         return f'{el["tag"]}[name="{_escape_attr(el["name"])}"]'
     return f"{SCAN_SELECTOR} >> nth={el['index']}"
 
@@ -205,7 +258,26 @@ def _fixed_action_specs() -> list[ActionSpec]:
     return specs
 
 
-def build_action_specs(elements: list[dict], page_url: str = "") -> list[ActionSpec]:
+def _select_choices(options: list[str], limit: int) -> list[str]:
+    """Which of a dropdown's options become actions: the last, then the leading ones.
+
+    The last option is always kept and listed first so that with `limit=1` this is exactly
+    the original registry. Beyond that the leading options are added in document order,
+    which is where an application puts its defaults and its commonest choices.
+    """
+    if limit <= 1 or len(options) <= 1:
+        return options[-1:]
+    chosen = [options[-1]]
+    for option in options[:-1]:
+        if len(chosen) >= limit:
+            break
+        if option not in chosen:
+            chosen.append(option)
+    return chosen
+
+
+def build_action_specs(elements: list[dict], page_url: str = "",
+                       options: RegistryOptions = LEGACY_OPTIONS) -> list[ActionSpec]:
     """Turn raw scanned elements into a prioritized, budget-truncated list of ActionSpecs.
 
     Two orthogonal priorities decide what survives truncation:
@@ -225,7 +297,20 @@ def build_action_specs(elements: list[dict], page_url: str = "") -> list[ActionS
     whether a link points back at that same document (see `_is_self_link`); passing it
     empty preserves the pre-2026-08-27 behaviour, in which every non-fragment link was
     called navigational and a self-link therefore read as a broken one.
+
+    `options` widens the action space; the default reproduces the original registry
+    exactly. See `RegistryOptions`.
     """
+    registry_options = options
+    shared_names: frozenset[str] = frozenset()
+    if registry_options.disambiguate_shared_names:
+        counts = Counter(el["name"] for el in elements if el.get("name") and not el.get("id"))
+        shared_names = frozenset(name for name, count in counts.items() if count > 1)
+
+    def label_params(el: dict) -> dict:
+        text = (el.get("label") or "").strip() if registry_options.capture_field_labels else ""
+        return {"label_text": text} if text else {}
+
     fixed = _fixed_action_specs()
     budget = MAX_ACTIONS - len(fixed)
 
@@ -279,7 +364,7 @@ def build_action_specs(elements: list[dict], page_url: str = "") -> list[ActionS
             continue
 
         if tag == "input" and el_type in ("checkbox", "radio"):
-            selector = _selector_for(el)
+            selector = _selector_for(el, shared_names)
             label = el.get("name") or selector
             clicks.append(
                 ActionSpec(
@@ -287,32 +372,34 @@ def build_action_specs(elements: list[dict], page_url: str = "") -> list[ActionS
                     action_type=ActionType.CLICK,
                     selector=selector,
                     element_id=label,
-                    params={"navigational": False, "in_viewport": in_viewport},
+                    params={"navigational": False, "in_viewport": in_viewport,
+                            **label_params(el)},
                     description=f"toggle {label}",
                 )
             )
             continue
 
         if tag == "select":
-            options = el.get("options") or []
-            if not options:
+            choices = el.get("options") or []
+            if not choices:
                 continue
-            selector = _selector_for(el)
-            target_option = options[-1]
-            selects.append(
-                ActionSpec(
-                    index=-1,
-                    action_type=ActionType.SELECT,
-                    selector=selector,
-                    element_id=el.get("name") or selector,
-                    params={"option": target_option, "in_viewport": in_viewport},
-                    description=f"select {target_option!r} in {selector}",
+            selector = _selector_for(el, shared_names)
+            for target_option in _select_choices(choices, registry_options.max_select_options):
+                selects.append(
+                    ActionSpec(
+                        index=-1,
+                        action_type=ActionType.SELECT,
+                        selector=selector,
+                        element_id=el.get("name") or selector,
+                        params={"option": target_option, "in_viewport": in_viewport,
+                                **label_params(el)},
+                        description=f"select {target_option!r} in {selector}",
+                    )
                 )
-            )
             continue
 
         if tag in ("input", "textarea") and el_type not in _NON_TEXT_INPUT_TYPES:
-            selector = _selector_for(el)
+            selector = _selector_for(el, shared_names)
             field_label = el.get("name") or el.get("id") or selector
             html_type = "textarea" if tag == "textarea" else (el_type or "text")
             for category, bucket in (
@@ -332,6 +419,7 @@ def build_action_specs(elements: list[dict], page_url: str = "") -> list[ActionS
                             "value": generate_input_value(html_type, category),
                             "category": category.value,
                             "in_viewport": in_viewport,
+                            **label_params(el),
                         },
                         description=f"type {category.value} into {field_label!r}",
                     )

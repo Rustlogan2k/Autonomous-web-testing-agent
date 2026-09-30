@@ -168,6 +168,13 @@ class FaultSpec:
     observation_horizon: int = 0
     #: Shortest known fault-triggering path length, for benchmark characterization.
     shortest_path: int = 0
+    #: One action sequence known to trigger the fault, in the scripted-step schema. This is
+    #: the fault's **reachability witness**: the benchmark validator replays it on the
+    #: faulty build (it must be confirmed) and on the clean build (it must not fire) before
+    #: the application is admitted to the suite. A fault with no witness cannot be told
+    #: apart from a fault no agent could ever reach, and a censored run against it would
+    #: measure the fixture rather than the policy. Never shown to any agent or reward.
+    trigger_trace: tuple[dict, ...] = ()
 
     def to_dict(self) -> dict:
         return {
@@ -182,6 +189,7 @@ class FaultSpec:
             "minimization_keep": list(self.minimization_keep),
             "observation_horizon": self.observation_horizon,
             "shortest_path": self.shortest_path,
+            "trigger_trace": [dict(step) for step in self.trigger_trace],
         }
 
     @classmethod
@@ -198,6 +206,7 @@ class FaultSpec:
             minimization_keep=tuple(data.get("minimization_keep") or ()),
             observation_horizon=int(data.get("observation_horizon", 0) or 0),
             shortest_path=int(data.get("shortest_path", 0) or 0),
+            trigger_trace=tuple(dict(step) for step in data.get("trigger_trace") or ()),
         )
 
 
@@ -217,6 +226,10 @@ class BenchmarkApp:
     faults: tuple[FaultSpec, ...] = ()
     #: Characterization metrics from the pre-registration, filled in by measurement.
     characterization: dict[str, Any] = field(default_factory=dict)
+    #: Action sequences that use the application *correctly* and must trip no assertion on
+    #: either build. The negative half of the reachability check: an oracle that fires on
+    #: a correct walk through the workflow is measuring the walk.
+    benign_traces: tuple[tuple[dict, ...], ...] = ()
 
     def fault(self, fault_id: str) -> FaultSpec | None:
         return next((f for f in self.faults if f.fault_id == fault_id), None)
@@ -227,6 +240,7 @@ class BenchmarkApp:
             "regions": dict(self.regions),
             "faults": [f.to_dict() for f in self.faults],
             "characterization": dict(self.characterization),
+            "benign_traces": [[dict(step) for step in trace] for trace in self.benign_traces],
         }
 
     @classmethod
@@ -238,6 +252,8 @@ class BenchmarkApp:
             regions=dict(data.get("regions") or {}),
             faults=tuple(FaultSpec.from_dict(f) for f in data.get("faults", [])),
             characterization=dict(data.get("characterization") or {}),
+            benign_traces=tuple(
+                tuple(dict(step) for step in trace) for trace in data.get("benign_traces") or ()),
         )
 
     @classmethod

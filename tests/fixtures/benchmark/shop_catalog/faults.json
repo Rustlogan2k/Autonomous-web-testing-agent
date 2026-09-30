@@ -36,8 +36,51 @@
       },
       "minimization_keep": [],
       "observation_horizon": 3,
-      "shortest_path": 6,
-      "_horizon_note": "The triggering action (setting the quantity) is three state transitions before the page where the violation becomes observable: product -> basket -> checkout -> confirmation. Documented because H >= 3 may be useful for a delayed-credit study later; that experiment is deferred and this fixture was not designed for it."
+      "_horizon_note": "The triggering action (setting the quantity) is three state transitions before the page where the violation becomes observable: product -> basket -> checkout -> confirmation. Documented because H >= 3 may be useful for a delayed-credit study later; that experiment is deferred and this fixture was not designed for it.",
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "text": "Shelter"
+        },
+        {
+          "type": "CLICK",
+          "text": "Ridgeline 2 tent"
+        },
+        {
+          "type": "TYPE",
+          "id": "qty",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "text": "Add to basket"
+        },
+        {
+          "type": "CLICK",
+          "text": "Continue to checkout"
+        },
+        {
+          "type": "TYPE",
+          "id": "contact",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "postcode",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "text": "Confirm and place the order"
+        }
+      ],
+      "shortest_path": 8
     },
     {
       "fault_id": "SHOP-02",
@@ -66,17 +109,92 @@
       },
       "minimization_keep": [],
       "observation_horizon": 1,
-      "shortest_path": 6,
-      "_assertion_note": "Stated as expected behaviour, which is how this grammar works. Conjunct 1: the guard should keep the run on checkout.html, so the violation is the final step being elsewhere. Conjunct 2: the confirmation renders a blank delivery postcode, which is only possible if the order was committed without one. Scoped to confirmation.html, so a run that never got there is inconclusive rather than a false positive. Two earlier drafts were inverted -- url_matches and text_contains both mean 'must', so neither fires when the thing is present."
+      "_assertion_note": "Stated as expected behaviour, which is how this grammar works. Conjunct 1: the guard should keep the run on checkout.html, so the violation is the final step being elsewhere. Conjunct 2: the confirmation renders a blank delivery postcode, which is only possible if the order was committed without one. Scoped to confirmation.html, so a run that never got there is inconclusive rather than a false positive. Two earlier drafts were inverted -- url_matches and text_contains both mean 'must', so neither fires when the thing is present.",
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "text": "Shelter"
+        },
+        {
+          "type": "CLICK",
+          "text": "Ridgeline 2 tent"
+        },
+        {
+          "type": "TYPE",
+          "id": "qty",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "text": "Add to basket"
+        },
+        {
+          "type": "CLICK",
+          "text": "Continue to checkout"
+        },
+        {
+          "type": "TYPE",
+          "id": "contact",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "text": "Confirm and place the order"
+        }
+      ],
+      "shortest_path": 7
     }
   ],
   "characterization": {
-    "_status": "measured by scripts/characterize_benchmark.py; see reports/benchmark_shop_catalog.json",
-    "pages": 16,
-    "shortest_fault_path_d_star": 6,
+    "_status": "reachability and minimized path lengths are measured by scripts/validate_benchmark.py; see reports/benchmark_validation.json",
+    "pages": 17,
+    "shortest_fault_path_d_star": 7,
     "delayed_observation_horizon_H": 3,
     "distractor_pages": 5,
     "workflow_state_representation": "sessionStorage, not the URL query string",
     "_contrast_with_deep_fixture": "The deep-flow fixture carries flow state in the query string and gates each stage by revealing a hidden Continue link. This application keeps workflow state in sessionStorage so it is invisible in the URL, uses a table-driven catalogue rather than a linear wizard, and gates on form validation rather than on link reveal. Vocabulary, DOM idiom (semantic sectioning and class hooks rather than ids everywhere) and visual style are all different."
-  }
+  },
+  "benign_traces": [
+    [
+      {
+        "type": "CLICK",
+        "text": "Shelter"
+      },
+      {
+        "type": "CLICK",
+        "text": "Ridgeline 2 tent"
+      },
+      {
+        "type": "CLICK",
+        "text": "Add to basket"
+      },
+      {
+        "type": "CLICK",
+        "text": "Continue to checkout"
+      },
+      {
+        "type": "TYPE",
+        "id": "contact",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "TYPE",
+        "id": "postcode",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "text": "Confirm and place the order"
+      }
+    ]
+  ],
+  "_benign_note": "A correct single-unit order: the quantity field is left at its default of 1, so the buggy render (line count = 1) coincides with the ordered quantity, and the postcode is supplied. No assertion may fire on either build."
 }

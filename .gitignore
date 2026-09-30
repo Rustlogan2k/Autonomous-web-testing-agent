@@ -126,3 +126,14 @@ reports/*.json.tmp
 # regenerable by re-running a test, and an uploaded repository's report has no business
 # in this repository's history.
 var/
+
+# Third-party papers downloaded for the literature review. Indexed with links in
+# docs/references/README.md; not redistributed from this repository.
+docs/references/pdf/
+
+# Per-process shards of the semantic label cache (regenerable).
+models/semantic/label_store/
+
+# Per-process shards of the LLM judgment cache; `compact()` merges them into
+# data/llm_cache/progress.jsonl, which is tracked.
+data/llm_cache/progress.shard.*.jsonl

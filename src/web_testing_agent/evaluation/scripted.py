@@ -101,11 +101,6 @@ class ScriptedPolicy:
         so a script that uses `text` should be checked against `misses` after capture,
         which `capture_traces.py` reports loudly.
         """
-        wanted_type = ActionType(step["type"])
-        wanted_id = step.get("id")
-        wanted_text = (step.get("text") or "").strip().lower()
-        selector = f'[id="{wanted_id}"]' if wanted_id else None
-        constraints = step.get("params") or {}
         # Which of several identical labels to take, 0-based. Real applications repeat
         # them constantly: Gitea's login page has two controls reading "Sign In" — the
         # navbar link and the form's submit button — and taking the first silently
@@ -114,16 +109,38 @@ class ScriptedPolicy:
         skip = int(step.get("nth", 0))
 
         for spec in specs:
-            if spec.action_type is not wanted_type:
-                continue
-            if selector is not None and spec.selector != selector:
-                continue
-            if wanted_text and wanted_text not in (spec.element_id or "").strip().lower():
-                continue
-            if any(spec.params.get(key) != value for key, value in constraints.items()):
+            if not ScriptedPolicy.accepts(step, spec):
                 continue
             if skip:
                 skip -= 1
                 continue
             return spec.index
         return None
+
+    @staticmethod
+    def accepts(step: dict, spec: ActionSpec) -> bool:
+        """Whether `spec` is a control this step could mean, ignoring `nth`.
+
+        Public because the oracle's trace serializer has to count *how many earlier
+        controls the matcher would also have accepted* in order to emit an `nth` that
+        resolves back to the control the agent actually used. A second copy of this
+        predicate over there would be free to drift from the one that does the matching.
+
+        `selector` is the third way to name a target, after `id` and `text`: an exact
+        match on the registry's own selector. It exists for controls that have neither a
+        DOM id nor a visible label -- an unlabelled icon button addressed positionally --
+        which the other two cannot name at all.
+        """
+        if spec.action_type is not ActionType(step["type"]):
+            return False
+        wanted_id = step.get("id")
+        if wanted_id and spec.selector != f'[id="{wanted_id}"]':
+            return False
+        wanted_selector = step.get("selector")
+        if wanted_selector and spec.selector != wanted_selector:
+            return False
+        wanted_text = (step.get("text") or "").strip().lower()
+        if wanted_text and wanted_text not in (spec.element_id or "").strip().lower():
+            return False
+        constraints = step.get("params") or {}
+        return not any(spec.params.get(key) != value for key, value in constraints.items())
