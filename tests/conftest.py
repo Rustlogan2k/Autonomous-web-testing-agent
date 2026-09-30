@@ -48,10 +48,13 @@ HEAVY_MODULES = frozenset({
     "test_gating.py",
     "test_network_canonicalization.py",
     "test_trained_policy_eval.py",
+    "test_transfer_rl.py",
 })
 
 DOCKER_MODULES = frozenset({"test_intake_docker_smoke.py"})
-BROWSER_MODULES = frozenset({"test_form_state_capture.py", "test_offsite_navigation.py"})
+BROWSER_MODULES = frozenset({
+    "test_form_state_capture.py", "test_offsite_navigation.py", "test_shop_catalog_oracle.py",
+})
 
 
 @functools.lru_cache(maxsize=1)
