@@ -1,0 +1,49 @@
+# Pinned runtime for the learning tester, the benchmark and the transfer experiment.
+#
+# Exactly the versions the reported results were produced with (from the development
+# virtualenv), except torch, which is installed CPU-only in the container: the policy
+# network is small and the workload is browser-bound, so a GPU buys nothing there
+# (measured: 75% of an environment step is the page settling). Install torch first from
+# the CPU index, then this file:
+#
+#   pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+#   pip install -r docker/requirements-runtime.txt
+#
+# The language model is not a Python dependency: it runs in Ollama, on the host or on a
+# GPU machine, and the experiment can replay its cached judgments with no model at all
+# (`--llm-offline`).
+
+numpy==2.4.4
+scipy==1.17.1
+gymnasium==1.3.0
+stable_baselines3==2.9.0
+playwright==1.61.0
+pillow==12.2.0
+loguru==0.7.3
+sentence-transformers==5.6.0
+transformers==5.14.1
+tokenizers==0.22.2
+safetensors==0.8.0
+scikit-learn==1.9.0
+pandas==3.0.3
+tqdm==4.69.0
+PyYAML==6.0.3
+requests==2.34.2
+httpx==0.28.1
+beautifulsoup4==4.15.0
+lxml==6.1.1
+Jinja2==3.1.6
+Markdown==3.10.2
+pydantic==2.13.4
+rich==15.0.0
+docker==7.2.0
+anthropic==0.120.2
+
+# Web application
+fastapi==0.141.1
+uvicorn==0.53.0
+python-multipart==0.0.32
+
+# Tests
+pytest==9.1.1
+pytest-asyncio==1.4.0

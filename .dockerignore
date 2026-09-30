@@ -1,0 +1,16 @@
+# Keep the image to what a worker needs; everything here is local state or regenerable.
+.git
+venv
+.venv
+**/__pycache__
+.pytest_cache
+.ruff_cache
+runs
+runs_*.log
+var
+logs
+models/checkpoints
+docs/references/pdf
+reports/sessions
+*.tmp
+.env
