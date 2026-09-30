@@ -137,3 +137,8 @@ models/semantic/label_store/
 # Per-process shards of the LLM judgment cache; `compact()` merges them into
 # data/llm_cache/progress.jsonl, which is tracked.
 data/llm_cache/progress.shard.*.jsonl
+
+# Experiment working directories: raw per-job results, checkpoints, reward logs.
+# Final analyses are written to reports/ and committed from there.
+runs/
+runs_*.log

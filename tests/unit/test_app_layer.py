@@ -334,17 +334,31 @@ def test_uploading_a_malicious_archive_returns_a_readable_error(client: TestClie
     assert "Traceback" not in body["error"]
 
 
-def test_a_repository_without_a_dockerfile_is_rejected_without_leaking_a_host_path(
+def test_an_archive_that_is_neither_a_site_nor_a_build_is_rejected_without_leaking_a_host_path(
     client: TestClient,
 ):
+    data = make_zip({"README.md": "no build and no index.html"})
+    response = client.post("/api/uploads",
+                           files={"file": ("notes.zip", data, "application/zip")})
+    assert response.status_code == 400
+    error = response.json()["error"]
+    assert "Dockerfile" in error and "index.html" in error
+    for leak in ("C:\\", "/tmp/", "AppData", uploads.WORKSPACE_PREFIX):
+        assert leak not in error
+
+
+def test_a_static_site_is_accepted_without_docker(client: TestClient):
     data = make_zip({"index.html": "<h1>no docker</h1>"})
     response = client.post("/api/uploads",
                            files={"file": ("static.zip", data, "application/zip")})
-    assert response.status_code == 400
-    error = response.json()["error"]
-    assert "Dockerfile" in error
-    for leak in ("C:\\", "/tmp/", "AppData", uploads.WORKSPACE_PREFIX):
-        assert leak not in error
+    body = response.json()
+    try:
+        assert response.status_code == 200 and body["validation_ok"]
+        assert body["build_kind"] == "static"
+    finally:
+        import shutil
+
+        shutil.rmtree(body.get("workspace", ""), ignore_errors=True)
 
 
 def test_a_valid_upload_is_described_for_the_user(client: TestClient):

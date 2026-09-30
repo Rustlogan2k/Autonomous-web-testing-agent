@@ -126,6 +126,9 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
         run = registry.get(run_id)
         if run is None:
             raise HTTPException(404, "Run not found")
+        session_report = registry.directory(run_id) / "session" / "report.html"
+        if session_report.is_file():
+            return HTMLResponse(session_report.read_text(encoding="utf-8"))
         report = registry.read_json(run_id, REPORT_JSON)
         rollout = registry.read_json(run_id, ROLLOUT_JSON) or {}
         return page(request, "report.html", run=run, report=report, rollout=rollout)
@@ -147,8 +150,8 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
 
     @app.post("/api/runs/demo")
     def start_demo(target: str = Form(...), agent: str = Form(agent_registry.DEFAULT_AGENT),
-                   episodes: int = Form(2), steps: int = Form(25)):  # noqa: ANN202
-        """Start a run against a bundled fixture. No upload, and no user code executed."""
+                   budget: int = Form(400), llm: bool = Form(True)):  # noqa: ANN202
+        """Start a test session against a bundled application. No user code is executed."""
         demo = target_registry.demo_target(target)
         if demo is None or not demo.available:
             raise HTTPException(400, "Unknown demo target")
@@ -156,33 +159,33 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
             raise HTTPException(
                 400, "This demo builds a container and the Docker daemon is not reachable. "
                      "Start Docker Desktop, or pick a demo that does not need it.")
-
-        settings = TestSettings(episodes=episodes, steps=steps, agent=agent).clamped()
-        choice = agent_registry.resolve(settings.agent)
-        settings.agent = choice.key
-
+        settings, choice = _session_settings(agent, budget, llm)
         size, count = uploads.directory_stats(demo.path)
         source = SourceInfo(
             kind="demo", name=demo.name, size_bytes=size, file_count=count,
-            workspace=str(demo.path),
-            build_kind="docker" if demo.needs_docker else "static",
+            workspace=str(demo.path), build_kind=demo.session[0],
             build_file="Dockerfile" if demo.needs_docker else demo.entry,
-            dockerfile_found=demo.needs_docker,
-            validation_ok=True,
-            validation_message="Bundled fixture shipped with this repository.",
-        )
+            dockerfile_found=demo.needs_docker, validation_ok=True,
+            validation_message="Bundled application shipped with this repository.")
         run = registry.create(source, settings, agent_label=choice.name)
+        manager.start_session(run, *demo.session)
+        return JSONResponse({"run_id": run.run_id, "url": f"/runs/{run.run_id}"})
 
-        if demo.needs_docker:
-            deployer = target_registry.docker_deployer()
-            detector = None
-            repo = demo.path
-        else:
-            deployer = target_registry.static_deployer(demo.path, demo.entry)
-            detector = target_registry.static_detector(demo.path)
-            repo = demo.path
+    @app.post("/api/runs/url")
+    def start_url(url: str = Form(...), agent: str = Form(agent_registry.DEFAULT_AGENT),
+                  budget: int = Form(400), llm: bool = Form(True)):  # noqa: ANN202
+        """Start a test session against an application that is already running."""
+        from urllib.parse import urlsplit
 
-        _launch(manager, run, repo, deployer, detector, cleanup=None)
+        parts = urlsplit(url.strip())
+        if parts.scheme not in ("http", "https") or not parts.netloc:
+            raise HTTPException(400, "Enter a full http:// or https:// address.")
+        settings, choice = _session_settings(agent, budget, llm)
+        source = SourceInfo(kind="url", name=parts.netloc[:80], workspace="",
+                            build_kind="url", build_file=url.strip()[:200], validation_ok=True,
+                            validation_message="Live application; nothing is deployed.")
+        run = registry.create(source, settings, agent_label=choice.name)
+        manager.start_session(run, "url", url.strip())
         return JSONResponse({"run_id": run.run_id, "url": f"/runs/{run.run_id}"})
 
     @app.post("/api/uploads")
@@ -206,23 +209,22 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
     def start_upload_run(workspace: str = Form(...), repo: str = Form(...),  # noqa: ANN202
                          name: str = Form(...),
                          agent: str = Form(agent_registry.DEFAULT_AGENT),
-                         episodes: int = Form(2), steps: int = Form(25)):
-        """Start a sandboxed run against a previously validated upload."""
+                         budget: int = Form(400), llm: bool = Form(True)):
+        """Start a test session against a previously validated upload."""
         workspace_path = Path(workspace)
         repo_path = Path(repo)
         if not _is_upload_workspace(workspace_path) or not repo_path.is_dir():
             raise HTTPException(400, "That upload is no longer available. Upload it again.")
         if not _within(repo_path, workspace_path):
             raise HTTPException(400, "Invalid workspace")
-        if not _docker_available():
+        static = _static_root(repo_path) is not None and not _has_dockerfile(repo_path)
+        if not static and not _docker_available():
             shutil.rmtree(workspace_path, ignore_errors=True)
             raise HTTPException(
                 400, "Testing an uploaded repository requires Docker, and the daemon is "
                      "not reachable. Start Docker Desktop and try again.")
 
-        settings = TestSettings(episodes=episodes, steps=steps, agent=agent).clamped()
-        choice = agent_registry.resolve(settings.agent)
-        settings.agent = choice.key
+        settings, choice = _session_settings(agent, budget, llm)
 
         size, count = uploads.directory_stats(repo_path)
         detail = _inspect_build(repo_path)
@@ -243,7 +245,7 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
             shutil.rmtree(workspace_path, ignore_errors=True)
             logger.info("removed upload workspace for run {}", run.run_id)
 
-        _launch(manager, run, repo_path, target_registry.docker_deployer(), None, cleanup)
+        manager.start_session(run, "site" if static else "repo", str(repo_path), cleanup)
         return JSONResponse({"run_id": run.run_id, "url": f"/runs/{run.run_id}"})
 
     @app.post("/api/runs/{run_id}/stop")
@@ -407,6 +409,30 @@ def _docker_available() -> bool:
     return True
 
 
+def _static_root(repo: Path) -> Path | None:
+    """The directory holding the site's `index.html`, if this upload is a static site."""
+    try:
+        from ..tester.targets import _site_root
+
+        return _site_root(repo)
+    except (FileNotFoundError, OSError):
+        return None
+
+
+def _has_dockerfile(repo: Path) -> bool:
+    return any((base / name).is_file() for base in [repo, *[p for p in repo.iterdir() if p.is_dir()]]
+               for name in ("Dockerfile", "dockerfile"))
+
+
+def _session_settings(agent: str, budget: int, llm: bool):  # noqa: ANN202
+    """User settings for a test session, clamped, with the agent resolved."""
+    choice = agent_registry.resolve(agent)
+    if choice.key not in agent_registry.SESSION_AGENTS:
+        choice = agent_registry.resolve(agent_registry.DEFAULT_AGENT)
+    settings = TestSettings(agent=choice.key, budget=budget, llm=llm).clamped()
+    return settings, choice
+
+
 def _describe_repository(extracted: uploads.ExtractedUpload) -> dict:
     """What the New Test page shows after an upload: identity, build, validation."""
     detail = _inspect_build(extracted.root)
@@ -447,9 +473,18 @@ def _inspect_build(repo: Path) -> dict:
         # The detector's message embeds the workspace path, which is a host temp
         # directory and has no business in a browser. Logged, then replaced.
         logger.info("no build definition in {}: {}", repo, exc)
+        site = _static_root(repo)
+        if site is not None:
+            out.update(build_kind="static", validation_ok=True,
+                       build_file=str(site.relative_to(repo) / "index.html").replace("\\", "/"),
+                       validation_message=(
+                           "Static site: served locally with no build step and no Docker. "
+                           "The learning tester explores it in a fresh browser session."))
+            return out
         out["validation_message"] = (
-            "No Dockerfile was found in the archive root or one level down. This version "
-            "deploys repositories that describe their own build with a Dockerfile.")
+            "Neither a Dockerfile nor an index.html was found in the archive root or one "
+            "level down. Upload a static site (with index.html) or a repository that "
+            "describes its own build with a Dockerfile.")
         return out
 
     out["build_kind"] = plan.kind

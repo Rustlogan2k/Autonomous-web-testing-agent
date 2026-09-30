@@ -180,6 +180,140 @@ class RunManager:
             self._threads[run.run_id] = thread
         thread.start()
 
+    def start_session(self, run: Run, kind: str, value: str, on_cleanup=None) -> None:  # noqa: ANN001
+        """Launch a test session (`tester.run_session`) against a URL, site, repo or benchmark.
+
+        The product path. `start` remains for the original repo-to-report pipeline and the
+        research checkpoints that only run through it.
+        """
+        stop = threading.Event()
+        thread = threading.Thread(
+            target=self._execute_session, name=f"session-{run.run_id}",
+            args=(run, kind, value, stop, on_cleanup), daemon=True)
+        with self._lock:
+            self._stops[run.run_id] = stop
+            self._threads[run.run_id] = thread
+        thread.start()
+
+    def _execute_session(self, run: Run, kind: str, value: str,  # noqa: PLR0915
+                         stop: threading.Event, on_cleanup) -> None:  # noqa: ANN001
+        from ..tester import SessionSettings, run_session
+        from ..tester.report import render_markdown, write_report
+        from ..tester.session import SessionStopped
+        from ..tester.targets import provide
+
+        deadline = time.time() + RUN_DEADLINE_S
+
+        def emit(kind_: str, message: str, data: dict | None = None) -> None:
+            event = RunEvent(at=time.time(), kind=kind_, message=message, data=data or {})
+            self.registry.append_event(run.run_id, event)
+            self._publish(run.run_id, {"event": event.to_dict(), "run": run.to_dict()})
+
+        def persist(status: RunStatus | None = None) -> None:
+            if status is not None:
+                run.status = status
+            self.registry.save(run)
+
+        def should_stop() -> bool:
+            if stop.is_set():
+                return True
+            if time.time() > deadline:
+                stop.set()
+                emit("error", "Run exceeded its time limit and was stopped.")
+                return True
+            return False
+
+        last_saved = [0.0]
+
+        def on_event(kind_: str, data: dict) -> None:
+            if kind_ == "step":
+                run.progress.steps = int(data.get("step", 0))
+                run.progress.episodes_done = max(0, int(data.get("episode", 1)) - 1)
+                run.progress.current_url = str(data.get("url", ""))[:300]
+                if run.progress.steps % 10 == 0:
+                    emit("step", f"step {run.progress.steps}: {data.get('action', '')}",
+                         {"url": run.progress.current_url})
+                now = time.time()
+                if now - last_saved[0] > 1.0:
+                    last_saved[0] = now
+                    try:
+                        self.registry.save(run)
+                    except OSError as exc:
+                        logger.warning("progress snapshot skipped for {}: {}", run.run_id, exc)
+            else:
+                emit("warning" if kind_ == "warning" else "stage", str(data.get("message", data)))
+
+        session_agent = agent_registry.SESSION_AGENTS.get(run.settings.agent, "rl")
+        settings = SessionSettings(
+            budget=run.settings.budget, seed=run.settings.seed, agent=session_agent,
+            llm_reward=run.settings.llm, llm_review=run.settings.llm,
+            settle_quiet_ms=80 if kind in ("site", "benchmark") else None)
+        run.progress.steps_total = settings.budget
+        run.progress.episodes_total = max(1, settings.budget // settings.episode_steps)
+        run.started_at = time.time()
+        persist(RunStatus.VALIDATING)
+        emit("status", f"Run {run.display_id} started")
+        emit("info", f"Agent: {run.agent_label}")
+        out_dir = self.registry.directory(run.run_id) / "session"
+
+        try:
+            run.components["environment"] = ComponentState.ACTIVE.value
+            persist(RunStatus.BUILDING if kind == "repo" else RunStatus.STARTING)
+            with provide(kind, value) as target:
+                run.base_url = target.url
+                run.preview_url = target.url
+                run.components["environment"] = ComponentState.DONE.value
+                run.components["browser"] = ComponentState.ACTIVE.value
+                persist(RunStatus.TESTING)
+                emit("stage", f"Application is answering at {target.url}", {"base_url": target.url})
+                run.components["agent"] = ComponentState.ACTIVE.value
+                result = run_session(
+                    target.url, settings, app_name=target.name, out_dir=out_dir,
+                    seeded_app=target.seeded_app, clean_url=target.clean_url,
+                    on_event=on_event, should_stop=should_stop)
+            persist(RunStatus.REPORTING)
+            emit("stage", "Exploration finished; writing the report")
+            write_report(result, out_dir)
+            self.registry.write_artifact(run.run_id, REPORT_MD, render_markdown(result))
+            triggers = result.triggers or {}
+            seeded = result.seeded or {}
+            verified = int(triggers.get("verified", 0)) + int(seeded.get("verified") or 0)
+            run.counts = {"total": verified, "verified": verified,
+                          "candidates": int(triggers.get("candidates", 0)),
+                          "llm_observations": sum(1 for r in result.reviews if r.get("concern"))}
+            run.progress.findings = verified
+            run.progress.states = int(result.hunt.get("unique_states", 0) or 0)
+            for note in result.degradations:
+                emit("warning", note)
+            run.status = RunStatus.COMPLETED
+            run.finished_at = time.time()
+            run.components = {k: ComponentState.DONE.value for k in run.components}
+            persist()
+            emit("status", f"Run completed in {run.duration_human}: {verified} verified finding(s)")
+        except SessionStopped:
+            run.status = RunStatus.STOPPED
+            run.finished_at = time.time()
+            persist()
+            emit("status", "Run stopped by user.")
+        except Exception as exc:  # noqa: BLE001 - every failure is reported, never raw
+            message, detail = _explain(exc)
+            run.status = RunStatus.FAILED
+            run.finished_at = time.time()
+            run.error, run.error_detail = message, detail
+            persist()
+            logger.error("session {} failed: {}", run.run_id, detail)
+            emit("error", message)
+        finally:
+            with self._lock:
+                self._stops.pop(run.run_id, None)
+                self._threads.pop(run.run_id, None)
+            if on_cleanup is not None:
+                try:
+                    on_cleanup()
+                except Exception as exc:  # noqa: BLE001
+                    logger.warning("cleanup for run {} failed: {}", run.run_id, exc)
+            self._publish(run.run_id, {"event": None, "run": run.to_dict(), "final": True})
+
     def stop(self, run_id: str) -> bool:
         """Ask a run to stop at its next step. Teardown then follows the normal path."""
         with self._lock:

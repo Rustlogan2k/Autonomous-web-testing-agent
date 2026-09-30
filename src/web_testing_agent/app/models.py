@@ -148,8 +148,12 @@ class TestSettings:
 
     episodes: int = 2
     steps: int = 25
-    agent: str = "random"
+    agent: str = "rl"
     seed: int = 0
+    #: Browser interactions for a test session (the learning tester's unit of effort).
+    budget: int = 400
+    #: Use the local language model for the progress reward and the outcome review.
+    llm: bool = True
 
     def clamped(self) -> "TestSettings":
         """Bound to what the product supports, so a hand-edited request cannot ask for a
@@ -159,6 +163,8 @@ class TestSettings:
             steps=max(5, min(int(self.steps), 200)),
             agent=self.agent,
             seed=max(0, min(int(self.seed), 2**31 - 1)),
+            budget=max(50, min(int(self.budget), 3000)),
+            llm=bool(self.llm),
         )
 
     def to_dict(self) -> dict:

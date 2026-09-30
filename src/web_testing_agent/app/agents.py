@@ -38,12 +38,21 @@ CHECKPOINTS = REPO_ROOT / "models" / "checkpoints"
 _AC_DQN_CHECKPOINT = CHECKPOINTS / "postmarkov_baseline" / "ac_dqn_seed0_final.zip"
 _BANDIT_CHECKPOINT = CHECKPOINTS / "contextual_bandit" / "contextual_bandit_seed0_final.zip"
 
+AGENT_RL = "rl"
 AGENT_RANDOM = "random"
 AGENT_SEARCH = "search"
 AGENT_AC_DQN = "ac_dqn"
 AGENT_BANDIT = "contextual_bandit"
 
-DEFAULT_AGENT = AGENT_SEARCH
+#: The learning tester is the product's agent. It needs no checkpoint to run -- without one
+#: it learns from scratch on the target and the report says so.
+DEFAULT_AGENT = AGENT_RL
+TESTER_CHECKPOINT = REPO_ROOT / "models" / "tester" / "tester_all_apps.pt"
+
+#: Agents that run through the test-session path (`tester.run_session`), and the
+#: session's name for each. The two research checkpoints predate it and run through the
+#: original pipeline only.
+SESSION_AGENTS = {AGENT_RL: "rl", AGENT_SEARCH: "search", AGENT_RANDOM: "random"}
 
 
 def _torch_available() -> bool:
@@ -60,14 +69,29 @@ def available_agents() -> list[AgentChoice]:
     torch_ok = _torch_available()
     missing_torch = "Requires the deep-learning stack (torch, stable-baselines3)."
 
+    has_weights = TESTER_CHECKPOINT.is_file()
     choices = [
+        AgentChoice(
+            key=AGENT_RL,
+            name="Learning tester (RL + LLM reward)",
+            summary=("Action-conditioned Double DQN pretrained on the six benchmark "
+                     "applications, adapting online to this one through a residual head, "
+                     "rewarded for novelty and for functional progress as judged by a local "
+                     "language model. Findings are verified by replay and minimized."
+                     if has_weights else
+                     "Action-conditioned Double DQN with the LLM progress reward. No "
+                     "pretrained weights are on this machine, so it learns from scratch on "
+                     "the target; the report states this."),
+            available=torch_ok,
+            unavailable_reason="" if torch_ok else missing_torch,
+        ),
         AgentChoice(
             key=AGENT_SEARCH,
             name="Search (hand priority)",
-            summary="Deterministic search with a hand-designed, application-agnostic action "
-                    "priority. Prefers newly revealed controls, then form fields, then "
-                    "navigation, and avoids repeating itself. No training required, so it "
-                    "works on any application.",
+            summary="Non-learning search over the same features the learning tester reads, "
+                    "with a hand-designed, application-agnostic priority: newly revealed "
+                    "controls, then form fields, then navigation, avoiding anything already "
+                    "tried. No training required.",
         ),
         AgentChoice(
             key=AGENT_RANDOM,
@@ -138,6 +162,18 @@ def build_policy(key: str, settings) -> Callable[[Any], Any]:  # noqa: ANN001
     so this drops into `PipelineDependencies(policy_factory=...)` unchanged.
     """
     choice = resolve(key)
+
+    if choice.key == AGENT_RL:
+        def factory(run_settings):  # noqa: ANN001, ANN202
+            # The original pipeline has no learning hook, so here the tester acts from its
+            # weights without adapting. The test-session path is where it learns online.
+            from ..rl import AgentConfig, QAgent
+
+            config = AgentConfig(learn=False, seed=run_settings.seed)
+            if TESTER_CHECKPOINT.is_file():
+                return QAgent.load(TESTER_CHECKPOINT, config)
+            return QAgent(config)
+        return factory
 
     if choice.key == AGENT_RANDOM:
         def factory(run_settings):  # noqa: ANN001, ANN202

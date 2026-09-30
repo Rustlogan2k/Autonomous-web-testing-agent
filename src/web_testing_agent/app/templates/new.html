@@ -2,7 +2,7 @@
 {% import "_macros.html" as ui %}
 
 {% block heading %}New Test{% endblock %}
-{% block subheading %}Run against a bundled application, or upload a Dockerised repository{% endblock %}
+{% block subheading %}Test a bundled application, a live URL, a static site or a Dockerised repository{% endblock %}
 
 {% block content %}
 <div class="grid cols-2">
@@ -51,20 +51,35 @@
   {# ---- Upload ------------------------------------------------------------ #}
   <div class="card">
     <div class="card-head">
-      <h2>Upload a repository</h2>
+      <h2>Test a live URL</h2>
+      <span class="badge neutral">Nothing deployed</span>
+    </div>
+    <div class="card-body">
+      <label class="field">
+        <span class="name">Application address</span>
+        <input type="url" id="target-url" placeholder="https://your-app.example/">
+        <span class="hint">The tester stays on this origin: links to other sites are refused
+          and undone. Only test applications you are allowed to test.</span>
+      </label>
+      <div class="btn-row mt-8">
+        <button class="btn primary" id="start-url">Test URL</button>
+      </div>
+    </div>
+    <div class="card-head">
+      <h2>Upload a site or repository</h2>
       <span class="badge neutral">ZIP · max {{ max_mb }} MB</span>
     </div>
     <div class="card-body">
       {% if not docker_ok %}
-        <div class="alert warn">
-          Docker is not reachable, so an uploaded repository cannot be built or run.
-          Start Docker Desktop and reload this page.
+        <div class="alert info">
+          Docker is not reachable: static sites (an <code>index.html</code>) can still be
+          tested; repositories with a Dockerfile need Docker Desktop running.
         </div>
       {% endif %}
 
       <div id="dropzone" class="dropzone">
         <div class="big">Drop a .zip here</div>
-        <div class="small">or click to choose a file — the archive must contain a Dockerfile</div>
+        <div class="small">or click to choose a file — a static site with an index.html, or a repository with a Dockerfile</div>
         <input type="file" id="file-input" accept=".zip,application/zip" hidden>
       </div>
       <div id="upload-error" class="alert error mt-16" hidden></div>
@@ -119,23 +134,25 @@
         <span class="hint" id="agent-hint"></span>
       </label>
       <label class="field">
-        <span class="name">Episodes</span>
-        <input type="number" id="episodes" value="2" min="1" max="20">
-        <span class="hint">Independent exploration passes, each from the landing page.</span>
+        <span class="name">Interaction budget</span>
+        <input type="number" id="budget" value="400" min="50" max="3000" step="50">
+        <span class="hint">Browser actions in total, split into 40-step episodes that each
+          start from the landing page. Verification replays are extra.</span>
       </label>
       <label class="field">
-        <span class="name">Steps per episode</span>
-        <input type="number" id="steps" value="25" min="5" max="200">
-        <span class="hint">Browser actions per episode. Higher means deeper, and slower.</span>
+        <span class="name">Language model</span>
+        <select id="llm"><option value="true" selected>On — progress reward and outcome review</option>
+          <option value="false">Off — deterministic signals only</option></select>
+        <span class="hint">Uses a local Ollama model. The model never decides what is a
+          verified finding; if it is not running the test continues without it.</span>
       </label>
     </div>
 
     <div class="alert info mb-0">
-      <strong>On agent status.</strong> The reinforcement-learning agent is an active
-      research component. Agents marked <em>research checkpoint</em> were trained on one
-      bundled fixture at a limited budget, so their learned preferences are specific to
-      that application. The search and random policies need no training and work on any
-      target.
+      <strong>How findings are decided.</strong> Every verified finding has been reproduced
+      twice in fresh browser sessions and minimized to the shortest reproducing sequence.
+      Things that fired once and did not reproduce are listed as unverified candidates, and
+      the language model's observations are listed separately as unverified.
     </div>
 
     <div class="btn-row mt-16">
@@ -178,8 +195,8 @@
   function settings() {
     return {
       agent: document.getElementById('agent').value,
-      episodes: document.getElementById('episodes').value,
-      steps: document.getElementById('steps').value
+      budget: document.getElementById('budget').value,
+      llm: document.getElementById('llm').value
     };
   }
 
@@ -245,7 +262,9 @@
     document.getElementById('r-size').textContent = info.size_human;
     document.getElementById('r-files').textContent = info.file_count + ' files';
     document.getElementById('r-build').textContent =
-      info.dockerfile_found ? (info.build_file + ' (Dockerfile)') : (info.build_file || 'not found');
+      info.dockerfile_found ? (info.build_file + ' (Dockerfile)')
+        : info.build_kind === 'static' ? (info.build_file + ' (static site)')
+        : (info.build_file || 'not found');
     document.getElementById('r-ports').textContent =
       info.exposed_ports && info.exposed_ports.length ? info.exposed_ports.join(', ') : 'not declared';
     document.getElementById('r-langs').textContent =
@@ -257,7 +276,8 @@
     result.hidden = false;
     startBtn.disabled = !info.validation_ok;
     startHint.textContent = info.validation_ok
-      ? 'Ready to build and test in an isolated container.'
+      ? (info.build_kind === 'static' ? 'Ready to serve locally and test.'
+                                       : 'Ready to build and test in an isolated container.')
       : (info.validation_message || 'This repository cannot be deployed.');
   }
 
@@ -272,9 +292,27 @@
     body.append('repo', accepted.repo);
     body.append('name', accepted.name);
     body.append('agent', config.agent);
-    body.append('episodes', config.episodes);
-    body.append('steps', config.steps);
+    body.append('budget', config.budget);
+    body.append('llm', config.llm);
     post('/api/runs', body);
+  });
+
+  document.getElementById('start-url').addEventListener('click', function () {
+    var button = document.getElementById('start-url');
+    var address = document.getElementById('target-url').value.trim();
+    if (!/^https?:\/\/./i.test(address)) {
+      showError('Enter a full http:// or https:// address.');
+      return;
+    }
+    button.disabled = true;
+    button.textContent = 'Starting…';
+    var body = new FormData();
+    var config = settings();
+    body.append('url', address);
+    body.append('agent', config.agent);
+    body.append('budget', config.budget);
+    body.append('llm', config.llm);
+    post('/api/runs/url', body, button);
   });
 
   Array.prototype.forEach.call(document.querySelectorAll('.demo-start'), function (button) {
@@ -285,8 +323,8 @@
       var config = settings();
       body.append('target', button.dataset.target);
       body.append('agent', config.agent);
-      body.append('episodes', config.episodes);
-      body.append('steps', config.steps);
+      body.append('budget', config.budget);
+      body.append('llm', config.llm);
       post('/api/runs/demo', body, button);
     });
   });
