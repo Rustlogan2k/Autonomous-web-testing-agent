@@ -2,9 +2,9 @@
 
 Living reference document. Update this as scope, design decisions, or progress change — it's meant to let anyone (a future session, evaluators) get fully oriented without re-reading the whole conversation history.
 
-Last updated: 2026-09-16.
+Last updated: 2026-10-01.
 
-**Current research checkpoint: Search-vs-Bandit-vs-AC-DQN completed; advisor-approved confound-resolution experiment is next.** The A0/B/C ladder ran over 8 seeds × 25 evaluation episodes and is recorded in §5 (2026-09-16); its A-vs-B/C reading is **confounded by information access** and the corrected interpretation is in that entry, not in the report artefacts. The next milestone is the five-condition **A0/A1/A2/B/C** comparison, whose definitions must be frozen before the fixture is inspected. **A1 and A2 are not implemented and not run.**
+**Current research checkpoint (2026-10-01): the final push is under way.** Multi-application benchmark (six applications, admission-validated), the transferable RL stack with the dynamic LLM progress reward, the leave-one-application-out runner, and the product tester are built; the transfer experiment is pre-registered with a dated amendment (`docs/methodology/2026-10-01-transfer-amendment.md`). See §5, 2026-09-30 → 10-01. The previous checkpoint (A0/A1/A2) completed on 2026-09-19 and is summarised in the same place.
 
 ---
 
@@ -3172,6 +3172,109 @@ A0/B/C results above are historical and must remain unchanged.
 
 
 ---
+
+### 2026-09-17 → 09-19 — recorded here after the fact (see commits and `docs/methodology/`)
+
+This file was not updated for three days of work that is otherwise recorded in commits:
+the web application layer (`aefc945`), semantic action representation v2 (`f0d9524`), the
+deterministic seeded-fault oracle with replay and minimization (`cf4fec3`), benchmark
+application 1 `shop_catalog` (`c4708ba`), three pre-registrations (`0d104f3`, `195d3d3`,
+`7b6182c`), the out-of-list vocabulary probe (`4776277`; A2 projected AUC 0.764 tier 1 /
+0.844 tier 2, A1 0.500 by construction, "partially met") and the A0/A1/A2 result (`9f1c255`;
+A1 0.865 and A2 0.870 completion against A0 0.005, B 0.545, C 0.580 — label access, not
+learning, explains the deep-fixture decision, with A1's provenance contaminated with respect
+to that fixture). Numbers here are quoted from those commits' reports.
+
+### 2026-09-30 → 10-01 — the final push: owner brief, audit, benchmark harness, transfer stack, product tester
+
+**The brief.** The project owner set the end state: a submission-ready RL web-testing agent
+with dynamic LLM rewards, demonstrated to generalise to applications it was not developed
+on, validated by leave-one-application-out on a multi-application benchmark with a
+held-out/live demonstration, verified findings, reproducibility and an honest report.
+
+**Audit (five parallel read-only audits of the code, not the docs).** The pipeline's broken
+links, in order of consequence: (1) every checkpoint used hash encoders — a page-identity
+code — so nothing could transfer; v2 semantic features had no consumer. (2) The oracle was
+imported only by its tests; no rollout computed budget-to-first-verified-fault. (3) The only
+LLM reward was the bug verdict ×10, never used in training, uncached, unlogged. (4) One
+benchmark application. (5) The product path ran hand-priority search with a stub judge, with
+verification absent and uploads Docker-only. (6) Load-bearing source changes (context 6→9)
+were uncommitted while 16 checkpoints depended on them — committed first (`378af1e`).
+
+**Measured runtime.** 365 ms per env step on `shop_catalog`, **75% of it the 250 ms DOM
+quiescence wait**; near-linear scaling with parallel browsers (8 workers 20.5 steps/s, 14
+workers 34.6 steps/s on the laptop). An 80 ms settle window on the static benchmark apps gave
+identical oracle outcomes at 2.0–2.9× throughput. The workload is browser-bound: a GPU buys
+nothing for the agent, and is used only for the local LLM.
+
+**Oracle soundness fixes** (all found by reading, then pinned by tests): a clean-build control
+(a trace that also violates on the correct build is rejected — needed because some traces trip
+`echoes_input` on a correct build); history actions (REFRESH/BACK/FORWARD) replayable, so
+persistence faults can be verified; `nth` disambiguation for repeated labels; no input
+recorded for a refused fill; iteration-bounded replay. Browser sessions now share one
+Chromium per thread so a candidate can be replayed while exploration is open.
+
+**Benchmark harness.** `benchmark/`: suite discovery (clean and faulty builds on separate
+origins), the online `FaultMonitor` (reached / discovered / verified stamped separately),
+the budgeted `run_hunt`, and admission control (`scripts/validate_benchmark.py`: witness
+fires on faulty, silent on clean, confirmed, minimized trace still fires, benign traces
+silent, `buggy/` = `clean/` + declared patches). `shop_catalog` admitted (witnesses minimized
+8→7 and 7→6). Five further applications specified by `docs/benchmark/CONTRACT.md` and built
+by separate builders from the contract alone.
+
+**The transferable RL stack (`rl/`).** Features v3 shared by learner and search (v2's blocks
+plus value category, the state of the targeted control, the agent's outcome memory, and the
+frozen A1/A2 label scalars); the shared per-action scorer kept (it was already slot-free and
+permutation-equivariant) behind a zero-initialised residual head for adaptation; prioritized
+n-step replay over variable action sets; Double DQN or bandit in one class; interleaved
+multi-application pretraining; a resumable, parallel, provenance-recording experiment runner
+and the pre-registered survival statistics.
+
+**The dynamic LLM reward.** `reward/progress.py`: a local model (`qwen2.5:7b-instruct`)
+rates *functional progress* 0–10 from a snapshot of the rendered page; used as potential-based
+shaping λ(γΦ′−Φ), cached by content, logged per step, never asked about bugs. On the
+`shop_catalog` witness it reads 0 → 2 → 8 → 8 → 8 → 7 → 8 → 8 → 10 with distractor pages at 0.
+Two defects found on the way: the snapshot read CSS-hidden text ("Your basket is empty" on a
+full basket scored 0; fixed by reading `innerText`), and `localhost` on Windows costs 2.04 s
+per request through the IPv6 fallback against 0.01 s via 127.0.0.1 — two thirds of every
+judgment's latency, and of every judge call this project has ever made.
+
+**A finding about the frozen anchor axis, on real labels.** "Store" scores +0.29 and
+"Delivery" +0.24 on the commit axis, above "Add to basket" +0.05 and "Continue to checkout"
++0.06. The axis is a weak discriminator outside the vocabulary it was designed around, which
+is consistent with the out-of-list probe's partial result. The learner receives the full
+48-d embedding and is not limited to this scalar; the search baseline is.
+
+**Search, and one term added after seeing a failure.** The feature-search baseline, with A0's
+weights carried over, walked the site navigation for 400 steps on `shop_catalog` without
+pressing an in-page button: per-state visit counts make a site-wide nav link untried on every
+page. A run-level "control already used anywhere" penalty fixed it (first verified fault at
+501). Recorded in the amendment as conceived after a failure on a development application.
+
+**First end-to-end results (development application only).** Scratch DQN verified SHOP-01 at
+861 (19-action trace minimized to 6) in one smoke run; in the λ=0 dev runs seed 0 verified
+SHOP-02 at 662 and seed 1 never reached the confirmation page in 1,500 steps. Scratch learning
+is slow and high-variance on this application — which is the gap pretraining is meant to close.
+
+**The product tester (`tester/`).** URL / static site / Docker repo / benchmark in; the
+learning tester explores; deterministic triggers verified by two fresh-session replays and
+delta debugging; the seeded-fault oracle when the target declares faults; an LLM review of
+outcome pages kept only when its quote is on the page, reported as unverified; screenshots
+re-captured by replaying minimized traces; one root cause reported once. On Harbor & Pine
+(300 interactions, from scratch): DEMO-01/02/03/05 verified and minimized to 1–2 actions; the
+silent DEMO-04 validation bypass flagged by the LLM review, alongside one false concern. The
+web UI now defaults to this path and accepts live URLs and static-site uploads without Docker.
+
+**Literature review.** 62 papers verified from fetched sources (`docs/literature_review.md`,
+`docs/references/`). Its three constraints are adopted: zero-shot transfer is not expected with
+five training applications (the claim tested is adaptation speed); LLM-derived potentials
+exist in prior work (the contribution is their use and validation in testing); and 4–6 folds
+give wide intervals.
+
+**Cloud.** No AWS credentials are configured on the development machine, so the unattended
+launcher (`cloud/aws/launch_experiment.sh`: spot CPU instance, hard self-termination, S3
+sync, offline LLM replay, budget alarm) is written but untested, and experiments run locally.
+
 
 ## 6. Scoping decisions
 
