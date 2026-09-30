@@ -15,6 +15,15 @@ paid the reveal bonus a second time. C1 keys it on the URL *path* instead.
 These tests drive the real `ExplorationTracker` and `compose_reward` over a faithful
 reconstruction of the two trajectories, rather than reimplementing the reward, so they
 fail if either the tracker or the composer regresses.
+
+**Corrected 2026-09-02.** "Faithful reconstruction" is the load-bearing phrase, and one
+state key was not faithful: the step after `Place order` was modelled as landing on a
+fresh page, when on the fixture `Back to home` returns to `index.html` — the episode's
+own starting state. Confirmed against a live browser walk of the real fixture. The test
+that rested on it asserted that the reward orders `Place order` above `Back`; corrected,
+the ordering depends on the continuation. See
+`test_the_three_step_reward_at_order_4_is_a_continuation_dependent_near_tie`. What C1
+established is unaffected and is now pinned by a test that says so.
 """
 
 from __future__ import annotations
@@ -168,23 +177,92 @@ def test_completing_the_flow_beats_farming_its_gates_at_equal_budget():
     assert sum(flow.rewards) > sum(farm.rewards), (sum(flow.rewards), sum(farm.rewards))
 
 
-def test_place_order_beats_back_under_the_three_step_target():
-    """I2, and the one that actually decides the policy's choice: `n_step=3`, so this is
-    what the Bellman target at order-4 contains. Before C1 this was 2.82 against 4.11
-    and the network correctly preferred the loop."""
-    flow = Walk()
-    _flow(flow)
-    _flow_finish(flow)
-    flow.step(_click("Back to home"), f"{HOST}/index.html", "s:index3")
-    flow.step(_click("Catalog"), f"{HOST}/catalog.html", "s:cat")
-    place = sum(GAMMA ** k * flow.rewards[7 + k] for k in range(3))
+def _three_step_return(walk: Walk) -> float:
+    """The reward chunk the `n_step=3` target at `order-4` accumulates, from step 7."""
+    return sum(GAMMA ** k * walk.rewards[7 + k] for k in range(3))
 
+
+def _back_arm() -> float:
     farm = Walk()
     _flow(farm)
     _farm_lap(farm, 1)
-    back = sum(GAMMA ** k * farm.rewards[7 + k] for k in range(3))
+    return _three_step_return(farm)
 
-    assert place > back, f"place order {place:.3f} must beat Back {back:.3f}"
+
+def test_the_three_step_reward_at_order_4_is_a_continuation_dependent_near_tie():
+    """**This test replaces one that asserted `Place order` simply wins, and the
+    replacement is the finding.**
+
+    The old version modelled the step after `Place order` as `Back to home ->
+    index.html` landing on a state key `s:index3`. On the fixture that link goes to
+    `index.html`, which is the episode's own starting page — so it is already in
+    `_episode_states` and cannot pay novelty. Confirmed live against the real browser,
+    the real action registry and the real `state_fingerprint`: walking
+    `index -> ... -> receipt -> Back to home` returns state key
+    `a6120cf947941dd9751321d14dd346ea`, **bit-identical to the episode's start**, with
+    `novelty_bonus = 0.0` and the step paying exactly `step_penalty` (-0.05).
+
+    That single key was worth +1.0 of novelty, against a claimed margin of +0.197. With
+    it corrected the ordering flips, and with a different — equally plausible —
+    continuation it flips back:
+
+        Back, one farm lap                                  +2.625
+        Place order, then `Back to home` (the real link)     1.832   -> Back wins
+        Place order, then two pages not yet seen             2.822   -> Place wins, by 0.197
+
+    So the reward alone does **not** order this decision. Which action wins depends on
+    what the policy does next, which is precisely the question the bootstrap
+    `gamma^3 * Q(s_t+3)` exists to answer — and the bootstrap is where the measured
+    `order-4` deadlock lives (`reports/diag_phase3_replay_seed{0,2}.json`). Nothing here
+    says C1 failed: C1 removed the duplicate *reveal* payment and the tests above still
+    prove it. It says the "objective is correctly ordered after C1" reading was resting
+    on this state key.
+    """
+    back = _back_arm()
+
+    real = Walk()
+    _flow(real)
+    _flow_finish(real)
+    # `Back to home` returns to the page the episode started on — see the live check above.
+    real.step(_click("Back to home"), f"{HOST}/index.html", "s:index")
+    real.step(_click("Catalog"), f"{HOST}/catalog.html", "s:cat")
+
+    fresh = Walk()
+    _flow(fresh)
+    _flow_finish(fresh)
+    fresh.step(_click("Catalog"), f"{HOST}/catalog.html", "s:cat")
+    fresh.step(_click("Support"), f"{HOST}/support.html", "s:sup")
+
+    place_home = _three_step_return(real)
+    place_fresh = _three_step_return(fresh)
+
+    assert back == pytest.approx(2.6251, abs=5e-4)
+    assert place_home == pytest.approx(1.8316, abs=5e-4)
+    assert place_fresh == pytest.approx(2.8216, abs=5e-4)
+    assert place_home < back < place_fresh, (
+        "the sign of this comparison is set by the continuation, not by the reward: "
+        f"{place_home:.4f} < {back:.4f} < {place_fresh:.4f}"
+    )
+    # And the step that used to carry the phantom novelty pays only the step penalty.
+    assert real.terms[8]["novelty_bonus"] == 0.0
+    assert real.rewards[8] == pytest.approx(W.step_penalty)
+
+
+def test_the_reveal_ledger_is_what_c1_fixed_and_it_still_holds_at_order_4():
+    """What survives from the old I2, stated as what it actually proves.
+
+    Before C1 the `Back` lap collected a *second* +1.5 reveal at `order-3`, worth more
+    than the whole margin. C1 keys the ledger on the URL path, so the lap now earns
+    novelty only — which is why it is a near-tie rather than a rout.
+    """
+    farm = Walk()
+    _flow(farm)
+    _farm_lap(farm, 1)
+    lap_reveal = sum(term["reveal_bonus"] for term in farm.terms[7:10])
+    assert lap_reveal == 0.0, "the Back lap must not re-open a gate it already paid for"
+    # Without C1 the lap would have carried one more reveal, and that alone would have
+    # put it above every continuation of `Place order` measured in the test above.
+    assert _back_arm() + W.reveal_bonus > 2.8216
 
 
 def test_a_second_farm_lap_is_strictly_unprofitable():

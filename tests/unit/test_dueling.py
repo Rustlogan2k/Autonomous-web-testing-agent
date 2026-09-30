@@ -25,6 +25,7 @@ from gymnasium import spaces
 
 from web_testing_agent.agents.ac_dqn import (
     AC_OBS_DIM,
+    ACDQNPolicy,
     ACStateExtractor,
     ActionConditionedQNetwork,
     split_observation,
@@ -70,11 +71,25 @@ def test_output_shape_and_masking_are_unchanged(dueling: bool):
 
 
 @pytest.mark.parametrize("dueling", [True, False])
-def test_an_all_zero_mask_does_not_make_every_action_the_sentinel(dueling: bool):
+def test_an_all_zero_mask_is_refused_rather_than_recovered_from(dueling: bool):
+    """It used to substitute an all-valid mask. That "recovery" made the zero-padded
+    rows selectable and let a malformed observation travel on into the replay buffer.
+
+    `build_action_specs` always emits the nine fixed page-independent actions, so this
+    cannot arise from a live env — which is exactly why continuing past it would mean
+    training on an observation nothing in the system could have produced."""
     obs = _obs()
     obs[:, -MAX_ACTIONS:] = 0.0
-    q = _net(dueling)(obs)
-    assert (q > _MASKED_Q).all()
+    with pytest.raises(ValueError, match="all-zero"):
+        _net(dueling)(obs)
+
+
+@pytest.mark.parametrize("dueling", [True, False])
+def test_one_bad_row_in_a_batch_is_enough_to_refuse(dueling: bool):
+    obs = _obs(batch=4)
+    obs[2, -MAX_ACTIONS:] = 0.0
+    with pytest.raises(ValueError, match="all-zero"):
+        _net(dueling)(obs)
 
 
 # -- the decomposition itself --------------------------------------------------------
@@ -157,3 +172,41 @@ def test_dueling_adds_a_value_stream_to_the_optimizer():
     assert any(n.startswith("value.") for n in names)
     assert any(n.startswith("scorer.") for n in names)
     assert not any(n.startswith("q_net.") for n in names)  # Identity has no parameters
+
+
+# -- the toggle is reachable from a policy, which is what a script can configure ------
+
+def _policy(**kwargs) -> ACDQNPolicy:
+    th.manual_seed(0)
+    return ACDQNPolicy(
+        observation_space=SPACE, action_space=ACTION_SPACE, lr_schedule=lambda _: 1e-4,
+        features_extractor_class=ACStateExtractor,
+        features_extractor_kwargs={"features_dim": FUSED_DIM + EPISODE_CONTEXT_DIM},
+        net_arch=[], **kwargs,
+    )
+
+
+def test_the_policy_defaults_to_dueling_so_no_measured_run_moves():
+    policy = _policy()
+    assert policy.dueling is True
+    assert hasattr(policy.q_net, "value")
+    assert hasattr(policy.q_net_target, "value")
+
+
+def test_the_policy_toggle_actually_builds_the_undueled_network():
+    """`make_q_net` never passed `dueling` through, so the flag existed on the network
+    and was unreachable from any script — which is why `diag_ac_3seed_deep_nodueling`
+    could not be regenerated from this repository."""
+    policy = _policy(dueling=False)
+    assert policy.dueling is False
+    assert not hasattr(policy.q_net, "value")
+    assert not hasattr(policy.q_net_target, "value")
+    names = {n for n, _ in policy.q_net.named_parameters()}
+    assert not any(n.startswith("value.") for n in names)
+
+
+def test_the_flag_survives_a_save_and_reload_of_the_policy():
+    """Without it a checkpoint reloads as dueling whatever it was trained as, which
+    would silently invalidate any comparison made off saved networks."""
+    assert _policy(dueling=False)._get_constructor_parameters()["dueling"] is False
+    assert _policy(dueling=True)._get_constructor_parameters()["dueling"] is True

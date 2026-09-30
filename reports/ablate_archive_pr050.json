@@ -1,0 +1,1794 @@
+{
+  "site": "deep",
+  "encoders": "hash",
+  "complete": true,
+  "seeds_requested": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "seeds_completed": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "seed_sequence": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "runs_completed": {
+    "ac_dqn": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        3,
+        3
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        5,
+        5
+      ],
+      [
+        6,
+        6
+      ],
+      [
+        7,
+        7
+      ]
+    ]
+  },
+  "repeated_seeds": false,
+  "arms_completed": {
+    "ac_dqn": 8
+  },
+  "args": {
+    "site": "deep",
+    "train_steps": 4000,
+    "episode_steps": 40,
+    "eval_episodes": 5,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "eval_epsilon": 0.05,
+    "encoders": "hash",
+    "arms": [
+      "ac_dqn"
+    ],
+    "p_return": 0.5,
+    "n_step": 3,
+    "exploration_fraction": 0.6,
+    "final_eps": 0.1,
+    "out": "reports\\ablate_archive_pr050.json",
+    "dueling": true,
+    "save_checkpoints": "models\\checkpoints\\ablate_archive\\pr050",
+    "probe_q": "order-4.html",
+    "probe_actions": [
+      "Place order",
+      "Back"
+    ],
+    "probe_every": 250,
+    "tag_transitions": "receipt.html"
+  },
+  "summary": {
+    "ac_dqn": {
+      "reward": {
+        "median": 6.34,
+        "min": -3.33,
+        "max": 8.66
+      },
+      "valid%": {
+        "median": 100.0,
+        "min": 100.0,
+        "max": 100.0
+      },
+      "states": {
+        "median": 14.0,
+        "min": 6.0,
+        "max": 21.0
+      },
+      "finds": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "finds_ak": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "finds_un": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "bugs": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "maxD": {
+        "median": 5.0,
+        "min": 1.0,
+        "max": 5.0
+      },
+      "meanD": {
+        "median": 0.84,
+        "min": 0.15,
+        "max": 1.66
+      },
+      "receipt": {
+        "median": 4.5,
+        "min": 0.0,
+        "max": 7.0
+      },
+      "done": {
+        "median": 4.5,
+        "min": 0.0,
+        "max": 5.0
+      },
+      "pastS1": {
+        "median": 5.0,
+        "min": 0.0,
+        "max": 5.0
+      },
+      "states/100": {
+        "median": 7.0,
+        "min": 3.0,
+        "max": 10.5
+      },
+      "finds/100": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "steps/s": {
+        "median": 2.78,
+        "min": 2.18,
+        "max": 3.05
+      },
+      "seeds": 8
+    }
+  },
+  "results_per_seed": {
+    "ac_dqn": [
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:58093/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 72.22,
+        "steps_per_second": 2.769,
+        "total_reward": 31.726,
+        "mean_episode_reward": 6.345,
+        "episode_rewards": [
+          8.85,
+          7.563,
+          6.332,
+          5.203,
+          3.778
+        ],
+        "unique_states": 14,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 1.0,
+        "noop_steps": 1,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 5,
+          "mean_depth": 0.92,
+          "reached_receipt": 5,
+          "reached_review": 10,
+          "flow_completions": 5,
+          "episodes_reaching_review": 5,
+          "episodes_leaving_stage_1": 5
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 0,
+        "replicate": 0,
+        "train_seconds": 1569.5,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 44,
+          "returns_failed": 0,
+          "cells_discovered": 18,
+          "replayed_actions": 197,
+          "reanchored": 395,
+          "return_failure_rate": 0.0,
+          "cells": 19
+        },
+        "training_browser_actions": 4197,
+        "diagnostics": {
+          "q_probe": {
+            "page_match": "order-4.html",
+            "action_a": "Place order",
+            "action_b": "Back",
+            "probe_every": 250,
+            "captured_at_step": 1088,
+            "captured_url": "http://127.0.0.1:58093/order-4.html?product=folders-25&quantity=42&email=tester%40example.com",
+            "arrivals_total": 98,
+            "initial_network": {
+              "step": 1088,
+              "q_a": -0.057649,
+              "q_b": -0.057653,
+              "gap": 4e-06,
+              "a_wins": true,
+              "arrivals": 1,
+              "tagged_stored": 0,
+              "buffer_transitions": 1085,
+              "tagged_draws": 0,
+              "total_draws": 9344,
+              "mean_priority_tagged": null,
+              "mean_priority_other": 0.351237,
+              "which": "initial_network"
+            },
+            "trace": [
+              {
+                "step": 1088,
+                "q_a": -0.288459,
+                "q_b": -0.300625,
+                "gap": 0.012165,
+                "a_wins": true,
+                "arrivals": 1,
+                "tagged_stored": 0,
+                "buffer_transitions": 1085,
+                "tagged_draws": 0,
+                "total_draws": 9344,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.351237
+              },
+              {
+                "step": 1250,
+                "q_a": -0.068045,
+                "q_b": -0.094969,
+                "gap": 0.026924,
+                "a_wins": true,
+                "arrivals": 1,
+                "tagged_stored": 0,
+                "buffer_transitions": 1247,
+                "tagged_draws": 0,
+                "total_draws": 11968,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.37306
+              },
+              {
+                "step": 1500,
+                "q_a": 0.150869,
+                "q_b": 0.077066,
+                "gap": 0.073803,
+                "a_wins": true,
+                "arrivals": 1,
+                "tagged_stored": 0,
+                "buffer_transitions": 1497,
+                "tagged_draws": 0,
+                "total_draws": 15936,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.426462
+              },
+              {
+                "step": 1750,
+                "q_a": 0.439902,
+                "q_b": 0.30828,
+                "gap": 0.131622,
+                "a_wins": true,
+                "arrivals": 1,
+                "tagged_stored": 0,
+                "buffer_transitions": 1747,
+                "tagged_draws": 0,
+                "total_draws": 19968,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.461914
+              },
+              {
+                "step": 2000,
+                "q_a": 0.05813,
+                "q_b": -0.150762,
+                "gap": 0.208892,
+                "a_wins": true,
+                "arrivals": 16,
+                "tagged_stored": 35,
+                "buffer_transitions": 1997,
+                "tagged_draws": 75,
+                "total_draws": 23936,
+                "mean_priority_tagged": 0.787445,
+                "mean_priority_other": 0.495454
+              },
+              {
+                "step": 2250,
+                "q_a": -0.407452,
+                "q_b": -0.579071,
+                "gap": 0.171619,
+                "a_wins": true,
+                "arrivals": 36,
+                "tagged_stored": 84,
+                "buffer_transitions": 2247,
+                "tagged_draws": 225,
+                "total_draws": 27968,
+                "mean_priority_tagged": 0.674961,
+                "mean_priority_other": 0.534604
+              },
+              {
+                "step": 2500,
+                "q_a": -0.253384,
+                "q_b": -0.396997,
+                "gap": 0.143614,
+                "a_wins": true,
+                "arrivals": 49,
+                "tagged_stored": 136,
+                "buffer_transitions": 2497,
+                "tagged_draws": 440,
+                "total_draws": 31936,
+                "mean_priority_tagged": 0.617234,
+                "mean_priority_other": 0.561098
+              },
+              {
+                "step": 2750,
+                "q_a": -0.219458,
+                "q_b": -0.295268,
+                "gap": 0.075811,
+                "a_wins": true,
+                "arrivals": 68,
+                "tagged_stored": 191,
+                "buffer_transitions": 2747,
+                "tagged_draws": 687,
+                "total_draws": 35968,
+                "mean_priority_tagged": 0.586007,
+                "mean_priority_other": 0.567477
+              },
+              {
+                "step": 3000,
+                "q_a": -0.339079,
+                "q_b": -0.429411,
+                "gap": 0.090332,
+                "a_wins": true,
+                "arrivals": 80,
+                "tagged_stored": 230,
+                "buffer_transitions": 2997,
+                "tagged_draws": 962,
+                "total_draws": 39936,
+                "mean_priority_tagged": 0.515161,
+                "mean_priority_other": 0.594552
+              },
+              {
+                "step": 3250,
+                "q_a": -0.595061,
+                "q_b": -0.660529,
+                "gap": 0.065467,
+                "a_wins": true,
+                "arrivals": 85,
+                "tagged_stored": 244,
+                "buffer_transitions": 3247,
+                "tagged_draws": 1213,
+                "total_draws": 43968,
+                "mean_priority_tagged": 0.498807,
+                "mean_priority_other": 0.59554
+              },
+              {
+                "step": 3500,
+                "q_a": -0.829574,
+                "q_b": -0.82479,
+                "gap": -0.004785,
+                "a_wins": false,
+                "arrivals": 91,
+                "tagged_stored": 259,
+                "buffer_transitions": 3497,
+                "tagged_draws": 1479,
+                "total_draws": 47936,
+                "mean_priority_tagged": 0.476879,
+                "mean_priority_other": 0.583098
+              },
+              {
+                "step": 3750,
+                "q_a": -0.887091,
+                "q_b": -0.874514,
+                "gap": -0.012577,
+                "a_wins": false,
+                "arrivals": 96,
+                "tagged_stored": 275,
+                "buffer_transitions": 3747,
+                "tagged_draws": 1728,
+                "total_draws": 51968,
+                "mean_priority_tagged": 0.479596,
+                "mean_priority_other": 0.568588
+              },
+              {
+                "step": 4000,
+                "q_a": -0.976225,
+                "q_b": -0.970367,
+                "gap": -0.005858,
+                "a_wins": false,
+                "arrivals": 98,
+                "tagged_stored": 281,
+                "buffer_transitions": 3997,
+                "tagged_draws": 1964,
+                "total_draws": 55936,
+                "mean_priority_tagged": 0.461002,
+                "mean_priority_other": 0.564135
+              }
+            ]
+          },
+          "tagged_transitions": {
+            "tag_match": "receipt.html",
+            "tagged_stored": 281,
+            "buffer_transitions": 4000,
+            "tagged_draws": 1972,
+            "total_draws": 56000,
+            "mean_priority_tagged": 0.465753,
+            "mean_priority_other": 0.563251
+          }
+        }
+      },
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:58093/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 70.25,
+        "steps_per_second": 2.847,
+        "total_reward": -2.631,
+        "mean_episode_reward": -0.526,
+        "episode_rewards": [
+          2.6,
+          0.286,
+          -1.064,
+          -2.923,
+          -1.53
+        ],
+        "unique_states": 9,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 1.0,
+        "noop_steps": 13,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 1,
+          "mean_depth": 0.57,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 0
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 1,
+        "replicate": 1,
+        "train_seconds": 1518.7,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 39,
+          "returns_failed": 0,
+          "cells_discovered": 10,
+          "replayed_actions": 78,
+          "reanchored": 323,
+          "return_failure_rate": 0.0,
+          "cells": 11
+        },
+        "training_browser_actions": 4078,
+        "diagnostics": {
+          "q_probe": {
+            "page_match": "order-4.html",
+            "action_a": "Place order",
+            "action_b": "Back",
+            "probe_every": 250,
+            "captured_at_step": null,
+            "captured_url": "",
+            "arrivals_total": 0,
+            "initial_network": null,
+            "trace": []
+          },
+          "tagged_transitions": {
+            "tag_match": "receipt.html",
+            "tagged_stored": 0,
+            "buffer_transitions": 4000,
+            "tagged_draws": 0,
+            "total_draws": 56000,
+            "mean_priority_tagged": null,
+            "mean_priority_other": 0.43382
+          }
+        }
+      },
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:58093/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 71.62,
+        "steps_per_second": 2.792,
+        "total_reward": 43.28,
+        "mean_episode_reward": 8.656,
+        "episode_rewards": [
+          13.4,
+          10.267,
+          8.294,
+          3.51,
+          7.809
+        ],
+        "unique_states": 20,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 1.0,
+        "noop_steps": 13,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 5,
+          "mean_depth": 1.25,
+          "reached_receipt": 4,
+          "reached_review": 13,
+          "flow_completions": 4,
+          "episodes_reaching_review": 5,
+          "episodes_leaving_stage_1": 5
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 2,
+        "replicate": 2,
+        "train_seconds": 1563.3,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 47,
+          "returns_failed": 0,
+          "cells_discovered": 24,
+          "replayed_actions": 261,
+          "reanchored": 387,
+          "return_failure_rate": 0.0,
+          "cells": 25
+        },
+        "training_browser_actions": 4261,
+        "diagnostics": {
+          "q_probe": {
+            "page_match": "order-4.html",
+            "action_a": "Place order",
+            "action_b": "Back",
+            "probe_every": 250,
+            "captured_at_step": 1900,
+            "captured_url": "http://127.0.0.1:58093/order-4.html?product=folders-25&quantity=42&email=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa%40example.com",
+            "arrivals_total": 217,
+            "initial_network": {
+              "step": 1900,
+              "q_a": -0.041005,
+              "q_b": -0.033453,
+              "gap": -0.007552,
+              "a_wins": false,
+              "arrivals": 1,
+              "tagged_stored": 0,
+              "buffer_transitions": 1897,
+              "tagged_draws": 0,
+              "total_draws": 22336,
+              "mean_priority_tagged": null,
+              "mean_priority_other": 0.385241,
+              "which": "initial_network"
+            },
+            "trace": [
+              {
+                "step": 1900,
+                "q_a": -0.643175,
+                "q_b": -0.683773,
+                "gap": 0.040598,
+                "a_wins": true,
+                "arrivals": 1,
+                "tagged_stored": 0,
+                "buffer_transitions": 1897,
+                "tagged_draws": 0,
+                "total_draws": 22336,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.385241
+              },
+              {
+                "step": 2000,
+                "q_a": -0.633178,
+                "q_b": -0.715968,
+                "gap": 0.082789,
+                "a_wins": true,
+                "arrivals": 2,
+                "tagged_stored": 0,
+                "buffer_transitions": 1997,
+                "tagged_draws": 0,
+                "total_draws": 23936,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.4024
+              },
+              {
+                "step": 2250,
+                "q_a": -0.564461,
+                "q_b": -0.76714,
+                "gap": 0.202679,
+                "a_wins": true,
+                "arrivals": 23,
+                "tagged_stored": 0,
+                "buffer_transitions": 2247,
+                "tagged_draws": 0,
+                "total_draws": 27968,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.43486
+              },
+              {
+                "step": 2500,
+                "q_a": -0.655359,
+                "q_b": -1.046241,
+                "gap": 0.390883,
+                "a_wins": true,
+                "arrivals": 58,
+                "tagged_stored": 0,
+                "buffer_transitions": 2497,
+                "tagged_draws": 0,
+                "total_draws": 31936,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.466592
+              },
+              {
+                "step": 2750,
+                "q_a": -0.69539,
+                "q_b": -1.09061,
+                "gap": 0.39522,
+                "a_wins": true,
+                "arrivals": 84,
+                "tagged_stored": 0,
+                "buffer_transitions": 2747,
+                "tagged_draws": 0,
+                "total_draws": 35968,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.504712
+              },
+              {
+                "step": 3000,
+                "q_a": -0.66402,
+                "q_b": -1.10954,
+                "gap": 0.445519,
+                "a_wins": true,
+                "arrivals": 108,
+                "tagged_stored": 0,
+                "buffer_transitions": 2997,
+                "tagged_draws": 0,
+                "total_draws": 39936,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.526349
+              },
+              {
+                "step": 3250,
+                "q_a": -0.963952,
+                "q_b": -1.325027,
+                "gap": 0.361075,
+                "a_wins": true,
+                "arrivals": 151,
+                "tagged_stored": 0,
+                "buffer_transitions": 3247,
+                "tagged_draws": 0,
+                "total_draws": 43968,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.552269
+              },
+              {
+                "step": 3500,
+                "q_a": -1.023025,
+                "q_b": -1.326701,
+                "gap": 0.303676,
+                "a_wins": true,
+                "arrivals": 175,
+                "tagged_stored": 0,
+                "buffer_transitions": 3497,
+                "tagged_draws": 0,
+                "total_draws": 47936,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.561743
+              },
+              {
+                "step": 3750,
+                "q_a": -1.530492,
+                "q_b": -1.661024,
+                "gap": 0.130531,
+                "a_wins": true,
+                "arrivals": 200,
+                "tagged_stored": 0,
+                "buffer_transitions": 3747,
+                "tagged_draws": 0,
+                "total_draws": 51968,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.56644
+              },
+              {
+                "step": 4000,
+                "q_a": -1.487648,
+                "q_b": -1.705756,
+                "gap": 0.218108,
+                "a_wins": true,
+                "arrivals": 217,
+                "tagged_stored": 6,
+                "buffer_transitions": 3997,
+                "tagged_draws": 10,
+                "total_draws": 55936,
+                "mean_priority_tagged": 2.070675,
+                "mean_priority_other": 0.573837
+              }
+            ]
+          },
+          "tagged_transitions": {
+            "tag_match": "receipt.html",
+            "tagged_stored": 6,
+            "buffer_transitions": 4000,
+            "tagged_draws": 11,
+            "total_draws": 56000,
+            "mean_priority_tagged": 2.088796,
+            "mean_priority_other": 0.573457
+          }
+        }
+      },
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:58093/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 71.72,
+        "steps_per_second": 2.789,
+        "total_reward": 31.678,
+        "mean_episode_reward": 6.336,
+        "episode_rewards": [
+          11.0,
+          6.323,
+          6.119,
+          4.282,
+          3.955
+        ],
+        "unique_states": 13,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 0.995,
+        "noop_steps": 9,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 5,
+          "mean_depth": 0.77,
+          "reached_receipt": 5,
+          "reached_review": 10,
+          "flow_completions": 5,
+          "episodes_reaching_review": 5,
+          "episodes_leaving_stage_1": 5
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 3,
+        "replicate": 3,
+        "train_seconds": 1578.6,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 45,
+          "returns_failed": 0,
+          "cells_discovered": 30,
+          "replayed_actions": 287,
+          "reanchored": 317,
+          "return_failure_rate": 0.0,
+          "cells": 31
+        },
+        "training_browser_actions": 4287,
+        "diagnostics": {
+          "q_probe": {
+            "page_match": "order-4.html",
+            "action_a": "Place order",
+            "action_b": "Back",
+            "probe_every": 250,
+            "captured_at_step": 1597,
+            "captured_url": "http://127.0.0.1:58093/order-4.html?product=folders-25&quantity=42&email=tester%40example.com",
+            "arrivals_total": 107,
+            "initial_network": {
+              "step": 1597,
+              "q_a": -0.012932,
+              "q_b": -0.010985,
+              "gap": -0.001946,
+              "a_wins": false,
+              "arrivals": 1,
+              "tagged_stored": 0,
+              "buffer_transitions": 1594,
+              "tagged_draws": 0,
+              "total_draws": 17536,
+              "mean_priority_tagged": null,
+              "mean_priority_other": 0.437082,
+              "which": "initial_network"
+            },
+            "trace": [
+              {
+                "step": 1597,
+                "q_a": -0.523039,
+                "q_b": -0.66323,
+                "gap": 0.140191,
+                "a_wins": true,
+                "arrivals": 1,
+                "tagged_stored": 0,
+                "buffer_transitions": 1594,
+                "tagged_draws": 0,
+                "total_draws": 17536,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.437082
+              },
+              {
+                "step": 1750,
+                "q_a": -0.6215,
+                "q_b": -0.844489,
+                "gap": 0.222989,
+                "a_wins": true,
+                "arrivals": 5,
+                "tagged_stored": 18,
+                "buffer_transitions": 1747,
+                "tagged_draws": 43,
+                "total_draws": 19968,
+                "mean_priority_tagged": 0.661338,
+                "mean_priority_other": 0.474813
+              },
+              {
+                "step": 2000,
+                "q_a": -0.318392,
+                "q_b": -0.681642,
+                "gap": 0.363249,
+                "a_wins": true,
+                "arrivals": 11,
+                "tagged_stored": 52,
+                "buffer_transitions": 1997,
+                "tagged_draws": 126,
+                "total_draws": 23936,
+                "mean_priority_tagged": 0.931889,
+                "mean_priority_other": 0.498441
+              },
+              {
+                "step": 2250,
+                "q_a": -0.393086,
+                "q_b": -0.825714,
+                "gap": 0.432629,
+                "a_wins": true,
+                "arrivals": 22,
+                "tagged_stored": 82,
+                "buffer_transitions": 2247,
+                "tagged_draws": 285,
+                "total_draws": 27968,
+                "mean_priority_tagged": 0.678943,
+                "mean_priority_other": 0.527701
+              },
+              {
+                "step": 2500,
+                "q_a": -0.586189,
+                "q_b": -0.963699,
+                "gap": 0.377509,
+                "a_wins": true,
+                "arrivals": 41,
+                "tagged_stored": 135,
+                "buffer_transitions": 2497,
+                "tagged_draws": 504,
+                "total_draws": 31936,
+                "mean_priority_tagged": 0.731213,
+                "mean_priority_other": 0.54956
+              },
+              {
+                "step": 2750,
+                "q_a": -0.532279,
+                "q_b": -0.824487,
+                "gap": 0.292208,
+                "a_wins": true,
+                "arrivals": 60,
+                "tagged_stored": 181,
+                "buffer_transitions": 2747,
+                "tagged_draws": 778,
+                "total_draws": 35968,
+                "mean_priority_tagged": 0.705689,
+                "mean_priority_other": 0.566389
+              },
+              {
+                "step": 3000,
+                "q_a": -0.830965,
+                "q_b": -1.013267,
+                "gap": 0.182302,
+                "a_wins": true,
+                "arrivals": 76,
+                "tagged_stored": 227,
+                "buffer_transitions": 2997,
+                "tagged_draws": 1111,
+                "total_draws": 39936,
+                "mean_priority_tagged": 0.62971,
+                "mean_priority_other": 0.57364
+              },
+              {
+                "step": 3250,
+                "q_a": -1.356228,
+                "q_b": -1.459181,
+                "gap": 0.102953,
+                "a_wins": true,
+                "arrivals": 84,
+                "tagged_stored": 252,
+                "buffer_transitions": 3247,
+                "tagged_draws": 1403,
+                "total_draws": 43968,
+                "mean_priority_tagged": 0.593659,
+                "mean_priority_other": 0.585549
+              },
+              {
+                "step": 3500,
+                "q_a": -1.42545,
+                "q_b": -1.48277,
+                "gap": 0.05732,
+                "a_wins": true,
+                "arrivals": 94,
+                "tagged_stored": 278,
+                "buffer_transitions": 3497,
+                "tagged_draws": 1706,
+                "total_draws": 47936,
+                "mean_priority_tagged": 0.529707,
+                "mean_priority_other": 0.602245
+              },
+              {
+                "step": 3750,
+                "q_a": -1.808167,
+                "q_b": -1.78914,
+                "gap": -0.019027,
+                "a_wins": false,
+                "arrivals": 101,
+                "tagged_stored": 299,
+                "buffer_transitions": 3747,
+                "tagged_draws": 2001,
+                "total_draws": 51968,
+                "mean_priority_tagged": 0.565569,
+                "mean_priority_other": 0.599208
+              },
+              {
+                "step": 4000,
+                "q_a": -2.112572,
+                "q_b": -2.040655,
+                "gap": -0.071917,
+                "a_wins": false,
+                "arrivals": 107,
+                "tagged_stored": 319,
+                "buffer_transitions": 3997,
+                "tagged_draws": 2297,
+                "total_draws": 55936,
+                "mean_priority_tagged": 0.524802,
+                "mean_priority_other": 0.603966
+              }
+            ]
+          },
+          "tagged_transitions": {
+            "tag_match": "receipt.html",
+            "tagged_stored": 319,
+            "buffer_transitions": 4000,
+            "tagged_draws": 2299,
+            "total_draws": 56000,
+            "mean_priority_tagged": 0.524377,
+            "mean_priority_other": 0.604093
+          }
+        }
+      },
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:58093/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 75.58,
+        "steps_per_second": 2.646,
+        "total_reward": 36.356,
+        "mean_episode_reward": 7.271,
+        "episode_rewards": [
+          15.15,
+          2.836,
+          9.216,
+          6.026,
+          3.128
+        ],
+        "unique_states": 20,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 1.0,
+        "noop_steps": 0,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 5,
+          "mean_depth": 1.25,
+          "reached_receipt": 5,
+          "reached_review": 17,
+          "flow_completions": 5,
+          "episodes_reaching_review": 5,
+          "episodes_leaving_stage_1": 5
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 4,
+        "replicate": 4,
+        "train_seconds": 1578.6,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 52,
+          "returns_failed": 0,
+          "cells_discovered": 30,
+          "replayed_actions": 250,
+          "reanchored": 328,
+          "return_failure_rate": 0.0,
+          "cells": 31
+        },
+        "training_browser_actions": 4250,
+        "diagnostics": {
+          "q_probe": {
+            "page_match": "order-4.html",
+            "action_a": "Place order",
+            "action_b": "Back",
+            "probe_every": 250,
+            "captured_at_step": 1865,
+            "captured_url": "http://127.0.0.1:58093/order-4.html?product=folders-25&quantity=42&email=tester%40example.com",
+            "arrivals_total": 154,
+            "initial_network": {
+              "step": 1865,
+              "q_a": -0.069255,
+              "q_b": -0.061575,
+              "gap": -0.00768,
+              "a_wins": false,
+              "arrivals": 1,
+              "tagged_stored": 0,
+              "buffer_transitions": 1862,
+              "tagged_draws": 0,
+              "total_draws": 21824,
+              "mean_priority_tagged": null,
+              "mean_priority_other": 0.455352,
+              "which": "initial_network"
+            },
+            "trace": [
+              {
+                "step": 1865,
+                "q_a": -0.702432,
+                "q_b": -0.764284,
+                "gap": 0.061852,
+                "a_wins": true,
+                "arrivals": 1,
+                "tagged_stored": 0,
+                "buffer_transitions": 1862,
+                "tagged_draws": 0,
+                "total_draws": 21824,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.455352
+              },
+              {
+                "step": 2000,
+                "q_a": -0.554072,
+                "q_b": -0.692663,
+                "gap": 0.138592,
+                "a_wins": true,
+                "arrivals": 11,
+                "tagged_stored": 30,
+                "buffer_transitions": 1997,
+                "tagged_draws": 45,
+                "total_draws": 23936,
+                "mean_priority_tagged": 0.996035,
+                "mean_priority_other": 0.471757
+              },
+              {
+                "step": 2250,
+                "q_a": -0.802022,
+                "q_b": -1.052699,
+                "gap": 0.250677,
+                "a_wins": true,
+                "arrivals": 29,
+                "tagged_stored": 87,
+                "buffer_transitions": 2247,
+                "tagged_draws": 229,
+                "total_draws": 27968,
+                "mean_priority_tagged": 0.835452,
+                "mean_priority_other": 0.484522
+              },
+              {
+                "step": 2500,
+                "q_a": -0.993916,
+                "q_b": -1.25508,
+                "gap": 0.261164,
+                "a_wins": true,
+                "arrivals": 44,
+                "tagged_stored": 146,
+                "buffer_transitions": 2497,
+                "tagged_draws": 510,
+                "total_draws": 31936,
+                "mean_priority_tagged": 0.76365,
+                "mean_priority_other": 0.515168
+              },
+              {
+                "step": 2750,
+                "q_a": -1.157352,
+                "q_b": -1.399864,
+                "gap": 0.242513,
+                "a_wins": true,
+                "arrivals": 68,
+                "tagged_stored": 213,
+                "buffer_transitions": 2747,
+                "tagged_draws": 858,
+                "total_draws": 35968,
+                "mean_priority_tagged": 0.62201,
+                "mean_priority_other": 0.538095
+              },
+              {
+                "step": 3000,
+                "q_a": -1.479571,
+                "q_b": -1.674138,
+                "gap": 0.194567,
+                "a_wins": true,
+                "arrivals": 88,
+                "tagged_stored": 257,
+                "buffer_transitions": 2997,
+                "tagged_draws": 1209,
+                "total_draws": 39936,
+                "mean_priority_tagged": 0.554656,
+                "mean_priority_other": 0.546277
+              },
+              {
+                "step": 3250,
+                "q_a": -1.653199,
+                "q_b": -1.811939,
+                "gap": 0.158741,
+                "a_wins": true,
+                "arrivals": 114,
+                "tagged_stored": 285,
+                "buffer_transitions": 3247,
+                "tagged_draws": 1546,
+                "total_draws": 43968,
+                "mean_priority_tagged": 0.546253,
+                "mean_priority_other": 0.568156
+              },
+              {
+                "step": 3500,
+                "q_a": -1.846856,
+                "q_b": -1.999423,
+                "gap": 0.152567,
+                "a_wins": true,
+                "arrivals": 129,
+                "tagged_stored": 315,
+                "buffer_transitions": 3497,
+                "tagged_draws": 1914,
+                "total_draws": 47936,
+                "mean_priority_tagged": 0.58205,
+                "mean_priority_other": 0.581829
+              },
+              {
+                "step": 3750,
+                "q_a": -1.780069,
+                "q_b": -1.876752,
+                "gap": 0.096682,
+                "a_wins": true,
+                "arrivals": 144,
+                "tagged_stored": 336,
+                "buffer_transitions": 3747,
+                "tagged_draws": 2264,
+                "total_draws": 51968,
+                "mean_priority_tagged": 0.563959,
+                "mean_priority_other": 0.598395
+              },
+              {
+                "step": 4000,
+                "q_a": -2.14468,
+                "q_b": -2.178344,
+                "gap": 0.033664,
+                "a_wins": true,
+                "arrivals": 154,
+                "tagged_stored": 357,
+                "buffer_transitions": 3997,
+                "tagged_draws": 2602,
+                "total_draws": 55936,
+                "mean_priority_tagged": 0.549604,
+                "mean_priority_other": 0.603393
+              }
+            ]
+          },
+          "tagged_transitions": {
+            "tag_match": "receipt.html",
+            "tagged_stored": 357,
+            "buffer_transitions": 4000,
+            "tagged_draws": 2611,
+            "total_draws": 56000,
+            "mean_priority_tagged": 0.543952,
+            "mean_priority_other": 0.6033
+          }
+        }
+      },
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:58093/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 90.24,
+        "steps_per_second": 2.216,
+        "total_reward": 26.821,
+        "mean_episode_reward": 5.364,
+        "episode_rewards": [
+          12.4,
+          5.647,
+          3.265,
+          2.324,
+          3.185
+        ],
+        "unique_states": 14,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 0.99,
+        "noop_steps": 5,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 5,
+          "mean_depth": 0.7,
+          "reached_receipt": 2,
+          "reached_review": 5,
+          "flow_completions": 2,
+          "episodes_reaching_review": 2,
+          "episodes_leaving_stage_1": 5
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 5,
+        "replicate": 5,
+        "train_seconds": 1850.5,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 48,
+          "returns_failed": 0,
+          "cells_discovered": 28,
+          "replayed_actions": 290,
+          "reanchored": 349,
+          "return_failure_rate": 0.0,
+          "cells": 29
+        },
+        "training_browser_actions": 4290,
+        "diagnostics": {
+          "q_probe": {
+            "page_match": "order-4.html",
+            "action_a": "Place order",
+            "action_b": "Back",
+            "probe_every": 250,
+            "captured_at_step": 1399,
+            "captured_url": "http://127.0.0.1:58093/order-4.html?product=folders-25&quantity=42&email=tester%40example.com",
+            "arrivals_total": 169,
+            "initial_network": {
+              "step": 1399,
+              "q_a": -0.010093,
+              "q_b": -0.010765,
+              "gap": 0.000672,
+              "a_wins": true,
+              "arrivals": 1,
+              "tagged_stored": 0,
+              "buffer_transitions": 1396,
+              "tagged_draws": 0,
+              "total_draws": 14336,
+              "mean_priority_tagged": null,
+              "mean_priority_other": 0.451398,
+              "which": "initial_network"
+            },
+            "trace": [
+              {
+                "step": 1399,
+                "q_a": -0.115443,
+                "q_b": -0.24896,
+                "gap": 0.133517,
+                "a_wins": true,
+                "arrivals": 1,
+                "tagged_stored": 0,
+                "buffer_transitions": 1396,
+                "tagged_draws": 0,
+                "total_draws": 14336,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.451398
+              },
+              {
+                "step": 1500,
+                "q_a": 0.074028,
+                "q_b": -0.135808,
+                "gap": 0.209836,
+                "a_wins": true,
+                "arrivals": 4,
+                "tagged_stored": 13,
+                "buffer_transitions": 1497,
+                "tagged_draws": 28,
+                "total_draws": 15936,
+                "mean_priority_tagged": 1.046348,
+                "mean_priority_other": 0.461261
+              },
+              {
+                "step": 1750,
+                "q_a": 0.471294,
+                "q_b": 0.074416,
+                "gap": 0.396879,
+                "a_wins": true,
+                "arrivals": 13,
+                "tagged_stored": 34,
+                "buffer_transitions": 1747,
+                "tagged_draws": 132,
+                "total_draws": 19968,
+                "mean_priority_tagged": 0.654924,
+                "mean_priority_other": 0.50297
+              },
+              {
+                "step": 2000,
+                "q_a": 0.471537,
+                "q_b": -0.016569,
+                "gap": 0.488106,
+                "a_wins": true,
+                "arrivals": 24,
+                "tagged_stored": 66,
+                "buffer_transitions": 1997,
+                "tagged_draws": 270,
+                "total_draws": 23936,
+                "mean_priority_tagged": 0.756825,
+                "mean_priority_other": 0.542973
+              },
+              {
+                "step": 2250,
+                "q_a": 0.258673,
+                "q_b": -0.097542,
+                "gap": 0.356215,
+                "a_wins": true,
+                "arrivals": 43,
+                "tagged_stored": 121,
+                "buffer_transitions": 2247,
+                "tagged_draws": 487,
+                "total_draws": 27968,
+                "mean_priority_tagged": 0.740464,
+                "mean_priority_other": 0.555439
+              },
+              {
+                "step": 2500,
+                "q_a": 0.009044,
+                "q_b": -0.322212,
+                "gap": 0.331256,
+                "a_wins": true,
+                "arrivals": 66,
+                "tagged_stored": 183,
+                "buffer_transitions": 2497,
+                "tagged_draws": 775,
+                "total_draws": 31936,
+                "mean_priority_tagged": 0.679398,
+                "mean_priority_other": 0.565938
+              },
+              {
+                "step": 2750,
+                "q_a": -0.067098,
+                "q_b": -0.357599,
+                "gap": 0.290501,
+                "a_wins": true,
+                "arrivals": 100,
+                "tagged_stored": 245,
+                "buffer_transitions": 2747,
+                "tagged_draws": 1153,
+                "total_draws": 35968,
+                "mean_priority_tagged": 0.593209,
+                "mean_priority_other": 0.582989
+              },
+              {
+                "step": 3000,
+                "q_a": -0.415762,
+                "q_b": -0.593343,
+                "gap": 0.177581,
+                "a_wins": true,
+                "arrivals": 130,
+                "tagged_stored": 297,
+                "buffer_transitions": 2997,
+                "tagged_draws": 1542,
+                "total_draws": 39936,
+                "mean_priority_tagged": 0.589286,
+                "mean_priority_other": 0.603749
+              },
+              {
+                "step": 3250,
+                "q_a": -0.579082,
+                "q_b": -0.738599,
+                "gap": 0.159516,
+                "a_wins": true,
+                "arrivals": 143,
+                "tagged_stored": 321,
+                "buffer_transitions": 3247,
+                "tagged_draws": 1930,
+                "total_draws": 43968,
+                "mean_priority_tagged": 0.582934,
+                "mean_priority_other": 0.625532
+              },
+              {
+                "step": 3500,
+                "q_a": -0.861972,
+                "q_b": -0.919636,
+                "gap": 0.057664,
+                "a_wins": true,
+                "arrivals": 155,
+                "tagged_stored": 348,
+                "buffer_transitions": 3497,
+                "tagged_draws": 2325,
+                "total_draws": 47936,
+                "mean_priority_tagged": 0.569965,
+                "mean_priority_other": 0.631379
+              },
+              {
+                "step": 3750,
+                "q_a": -1.030246,
+                "q_b": -1.111451,
+                "gap": 0.081205,
+                "a_wins": true,
+                "arrivals": 160,
+                "tagged_stored": 364,
+                "buffer_transitions": 3747,
+                "tagged_draws": 2650,
+                "total_draws": 51968,
+                "mean_priority_tagged": 0.561767,
+                "mean_priority_other": 0.632435
+              },
+              {
+                "step": 4000,
+                "q_a": -1.596347,
+                "q_b": -1.551726,
+                "gap": -0.044621,
+                "a_wins": false,
+                "arrivals": 169,
+                "tagged_stored": 386,
+                "buffer_transitions": 3997,
+                "tagged_draws": 2995,
+                "total_draws": 55936,
+                "mean_priority_tagged": 0.557971,
+                "mean_priority_other": 0.629552
+              }
+            ]
+          },
+          "tagged_transitions": {
+            "tag_match": "receipt.html",
+            "tagged_stored": 386,
+            "buffer_transitions": 4000,
+            "tagged_draws": 2999,
+            "total_draws": 56000,
+            "mean_priority_tagged": 0.557331,
+            "mean_priority_other": 0.629304
+          }
+        }
+      },
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:58093/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 91.78,
+        "steps_per_second": 2.179,
+        "total_reward": 38.314,
+        "mean_episode_reward": 7.663,
+        "episode_rewards": [
+          14.4,
+          7.651,
+          6.946,
+          4.335,
+          4.983
+        ],
+        "unique_states": 21,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 0.96,
+        "noop_steps": 0,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 5,
+          "mean_depth": 1.66,
+          "reached_receipt": 7,
+          "reached_review": 23,
+          "flow_completions": 5,
+          "episodes_reaching_review": 5,
+          "episodes_leaving_stage_1": 5
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 6,
+        "replicate": 6,
+        "train_seconds": 2001.5,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 56,
+          "returns_failed": 1,
+          "cells_discovered": 24,
+          "replayed_actions": 344,
+          "reanchored": 362,
+          "return_failure_rate": 0.0179,
+          "cells": 25
+        },
+        "training_browser_actions": 4344,
+        "diagnostics": {
+          "q_probe": {
+            "page_match": "order-4.html",
+            "action_a": "Place order",
+            "action_b": "Back",
+            "probe_every": 250,
+            "captured_at_step": 2018,
+            "captured_url": "http://127.0.0.1:58093/order-4.html?product=folders-25&quantity=42&email=tester%40example.com",
+            "arrivals_total": 119,
+            "initial_network": {
+              "step": 2018,
+              "q_a": -0.039518,
+              "q_b": -0.035444,
+              "gap": -0.004075,
+              "a_wins": false,
+              "arrivals": 1,
+              "tagged_stored": 0,
+              "buffer_transitions": 2015,
+              "tagged_draws": 0,
+              "total_draws": 24256,
+              "mean_priority_tagged": null,
+              "mean_priority_other": 0.406486,
+              "which": "initial_network"
+            },
+            "trace": [
+              {
+                "step": 2018,
+                "q_a": -0.911404,
+                "q_b": -0.980773,
+                "gap": 0.069369,
+                "a_wins": true,
+                "arrivals": 1,
+                "tagged_stored": 0,
+                "buffer_transitions": 2015,
+                "tagged_draws": 0,
+                "total_draws": 24256,
+                "mean_priority_tagged": null,
+                "mean_priority_other": 0.406486
+              },
+              {
+                "step": 2250,
+                "q_a": -0.855021,
+                "q_b": -0.96856,
+                "gap": 0.113539,
+                "a_wins": true,
+                "arrivals": 5,
+                "tagged_stored": 6,
+                "buffer_transitions": 2247,
+                "tagged_draws": 10,
+                "total_draws": 27968,
+                "mean_priority_tagged": 0.811967,
+                "mean_priority_other": 0.447743
+              },
+              {
+                "step": 2500,
+                "q_a": -1.148943,
+                "q_b": -1.339424,
+                "gap": 0.190481,
+                "a_wins": true,
+                "arrivals": 33,
+                "tagged_stored": 53,
+                "buffer_transitions": 2497,
+                "tagged_draws": 115,
+                "total_draws": 31936,
+                "mean_priority_tagged": 0.777349,
+                "mean_priority_other": 0.485418
+              },
+              {
+                "step": 2750,
+                "q_a": -1.557011,
+                "q_b": -1.709621,
+                "gap": 0.15261,
+                "a_wins": true,
+                "arrivals": 59,
+                "tagged_stored": 89,
+                "buffer_transitions": 2747,
+                "tagged_draws": 268,
+                "total_draws": 35968,
+                "mean_priority_tagged": 0.738367,
+                "mean_priority_other": 0.513852
+              },
+              {
+                "step": 3000,
+                "q_a": -1.866958,
+                "q_b": -1.961863,
+                "gap": 0.094905,
+                "a_wins": true,
+                "arrivals": 75,
+                "tagged_stored": 120,
+                "buffer_transitions": 2997,
+                "tagged_draws": 458,
+                "total_draws": 39936,
+                "mean_priority_tagged": 0.670903,
+                "mean_priority_other": 0.526866
+              },
+              {
+                "step": 3250,
+                "q_a": -2.08433,
+                "q_b": -2.124511,
+                "gap": 0.040182,
+                "a_wins": true,
+                "arrivals": 86,
+                "tagged_stored": 168,
+                "buffer_transitions": 3247,
+                "tagged_draws": 733,
+                "total_draws": 43968,
+                "mean_priority_tagged": 0.658731,
+                "mean_priority_other": 0.550513
+              },
+              {
+                "step": 3500,
+                "q_a": -2.760653,
+                "q_b": -2.757915,
+                "gap": -0.002738,
+                "a_wins": false,
+                "arrivals": 103,
+                "tagged_stored": 192,
+                "buffer_transitions": 3497,
+                "tagged_draws": 985,
+                "total_draws": 47936,
+                "mean_priority_tagged": 0.694671,
+                "mean_priority_other": 0.568995
+              },
+              {
+                "step": 3750,
+                "q_a": -2.807793,
+                "q_b": -2.794551,
+                "gap": -0.013242,
+                "a_wins": false,
+                "arrivals": 114,
+                "tagged_stored": 212,
+                "buffer_transitions": 3747,
+                "tagged_draws": 1244,
+                "total_draws": 51968,
+                "mean_priority_tagged": 0.678069,
+                "mean_priority_other": 0.582939
+              },
+              {
+                "step": 4000,
+                "q_a": -2.719092,
+                "q_b": -2.642692,
+                "gap": -0.0764,
+                "a_wins": false,
+                "arrivals": 119,
+                "tagged_stored": 230,
+                "buffer_transitions": 3997,
+                "tagged_draws": 1525,
+                "total_draws": 55936,
+                "mean_priority_tagged": 0.683118,
+                "mean_priority_other": 0.579847
+              }
+            ]
+          },
+          "tagged_transitions": {
+            "tag_match": "receipt.html",
+            "tagged_stored": 230,
+            "buffer_transitions": 4000,
+            "tagged_draws": 1531,
+            "total_draws": 56000,
+            "mean_priority_tagged": 0.686091,
+            "mean_priority_other": 0.580702
+          }
+        }
+      },
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:58093/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 65.56,
+        "steps_per_second": 3.051,
+        "total_reward": -16.645,
+        "mean_episode_reward": -3.329,
+        "episode_rewards": [
+          0.05,
+          -4.143,
+          -4.195,
+          -4.689,
+          -3.668
+        ],
+        "unique_states": 6,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 1.0,
+        "noop_steps": 2,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 1,
+          "mean_depth": 0.15,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 0
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 7,
+        "replicate": 7,
+        "train_seconds": 1495.6,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 54,
+          "returns_failed": 0,
+          "cells_discovered": 10,
+          "replayed_actions": 112,
+          "reanchored": 306,
+          "return_failure_rate": 0.0,
+          "cells": 11
+        },
+        "training_browser_actions": 4112,
+        "diagnostics": {
+          "q_probe": {
+            "page_match": "order-4.html",
+            "action_a": "Place order",
+            "action_b": "Back",
+            "probe_every": 250,
+            "captured_at_step": null,
+            "captured_url": "",
+            "arrivals_total": 0,
+            "initial_network": null,
+            "trace": []
+          },
+          "tagged_transitions": {
+            "tag_match": "receipt.html",
+            "tagged_stored": 0,
+            "buffer_transitions": 4000,
+            "tagged_draws": 0,
+            "total_draws": 56000,
+            "mean_priority_tagged": null,
+            "mean_priority_other": 0.446042
+          }
+        }
+      }
+    ]
+  }
+}

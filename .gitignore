@@ -34,6 +34,10 @@ models/checkpoints/*.pth
 # are 31 MB of the repo, and PROJECT_CONTEXT 9 item 2b says those runs have to be
 # re-run anyway before any state-coverage figure from them can be cited.
 models/checkpoints/*.zip
+# `*.zip` only matches direct children, and `--save-checkpoints DIR` can be pointed at a
+# subdirectory (the RNG-neutrality check uses models/checkpoints/rng_check/). Without
+# this a 25 MB pair of checkpoints is one `git add -A` away from the history.
+models/checkpoints/**/*.zip
 models/reward_model/*.bin
 *.safetensors
 *.gguf

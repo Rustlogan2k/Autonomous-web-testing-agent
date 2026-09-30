@@ -55,10 +55,17 @@ class MaskedQNetwork(QNetwork):
         q_values = super().forward(obs)
         _, mask = split_mask(obs)
         # An all-zero mask would leave every action at -1e8 and make argmax arbitrary.
-        # It should never happen (slot 0 is always NO_OP), but a page that fails to scan
-        # would otherwise fail silently and unpredictably rather than loudly.
-        empty = mask.sum(dim=-1, keepdim=True) == 0
-        mask = torch.where(empty, torch.ones_like(mask), mask)
+        # `build_action_specs` always emits the nine fixed page-independent actions, so
+        # this cannot fire on an observation a live env produced. It used to substitute
+        # an all-valid mask, which recovered by making every invalid slot selectable and
+        # let a malformed observation travel silently into the replay buffer.
+        if bool((mask.sum(dim=-1) == 0).any()):
+            raise ValueError(
+                "Action mask is all-zero for at least one observation in the batch. "
+                "Every page yields at least the nine fixed actions, so this means the "
+                "observation was not built by SemanticPerceptionWrapper/encode_modalities "
+                "with a real `num_valid_actions`."
+            )
         return torch.where(mask > 0.5, q_values, torch.full_like(q_values, _MASKED_Q))
 
 
@@ -125,7 +132,11 @@ class MaskedDQN(DQN):
     def _sample_valid(self, mask: np.ndarray) -> int:
         valid = np.flatnonzero(mask > 0.5)
         if valid.size == 0:
-            # Slot 0 is NO_OP on every page, so this is always a legal fallback.
-            logger.warning("Action mask was empty; falling back to NO_OP")
-            return 0
+            # Was a warning plus a silent NO_OP. See `MaskedQNetwork.forward` for why an
+            # unreadable observation now stops the run instead of continuing into the
+            # replay buffer.
+            raise ValueError(
+                "Action mask was empty during exploration; the observation cannot have "
+                "come from a live env, which always offers at least nine fixed actions."
+            )
         return int(np.random.choice(valid))

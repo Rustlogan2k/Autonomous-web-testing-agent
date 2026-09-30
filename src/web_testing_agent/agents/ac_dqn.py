@@ -147,10 +147,22 @@ class ActionConditionedQNetwork(QNetwork):
         scored = self.scorer(th.cat([expanded, encoded], dim=-1)).squeeze(-1)  # (B, A)
 
         # An all-zero mask would leave every action at the sentinel and make argmax
-        # arbitrary. Slot 0 is NO_OP on every page so this should never happen, but a
-        # page that failed to scan would otherwise fail silently instead of loudly.
-        empty = mask.sum(dim=-1, keepdim=True) == 0
-        mask = th.where(empty, th.ones_like(mask), mask)
+        # arbitrary. `build_action_specs` always emits the nine fixed page-independent
+        # actions, so `num_valid_actions >= 9` on every observation the env produces and
+        # this cannot fire on a live run.
+        #
+        # It used to substitute an all-valid mask instead of raising, which is worse than
+        # it sounds: the padding rows are all-zero action features, so "recover" meant
+        # making a zero-vector action selectable and letting a malformed observation
+        # travel silently into the replay buffer. A run that costs hours must not
+        # continue past an observation it cannot interpret.
+        if bool((mask.sum(dim=-1) == 0).any()):
+            raise ValueError(
+                "Action mask is all-zero for at least one observation in the batch. "
+                "Every page yields at least the nine fixed actions, so this means the "
+                "observation was not built by SemanticPerceptionWrapper/encode_modalities "
+                "with a real `num_valid_actions`."
+            )
         valid = mask > 0.5
 
         if self.dueling:
@@ -182,9 +194,33 @@ class ActionConditionedQNetwork(QNetwork):
 
 
 class ACDQNPolicy(DQNPolicy):
+    """`DQNPolicy` whose Q-net is action-conditioned, and whose dueling flag is reachable.
+
+    **Why `dueling` is plumbed here.** `ActionConditionedQNetwork` has accepted a
+    `dueling` argument since it was written, and `make_q_net` never passed it — so the
+    flag defaulted to True and there was no supported way to build the undueled head.
+    `reports/diag_ac_3seed_deep_nodueling.json` exists, which means the A/B behind
+    "dueling fixed the Q-value discrimination problem" was run from a script that is not
+    in this repository and cannot be re-run from it. Exposing the flag is what makes that
+    comparison reproducible; the default is unchanged, so no measured run moves.
+
+    Set via `policy_kwargs={"dueling": False}`.
+    """
+
+    def __init__(self, *args, dueling: bool = True, **kwargs) -> None:
+        # Assigned before `super().__init__`, because `DQNPolicy.__init__` calls
+        # `_build` -> `make_q_net` before it returns.
+        self.dueling = dueling
+        super().__init__(*args, **kwargs)
+
     def make_q_net(self) -> ActionConditionedQNetwork:
         net_args = self._update_features_extractor(self.net_args, features_extractor=None)
-        return ActionConditionedQNetwork(**net_args).to(self.device)
+        return ActionConditionedQNetwork(**net_args, dueling=self.dueling).to(self.device)
+
+    def _get_constructor_parameters(self) -> dict:
+        # Without this a saved checkpoint reloads as a dueling policy whatever it was
+        # trained as, which would silently invalidate any comparison made off checkpoints.
+        return {**super()._get_constructor_parameters(), "dueling": self.dueling}
 
 
 class ActionConditionedDQN(DQN):
@@ -245,8 +281,13 @@ class ActionConditionedDQN(DQN):
     def _sample_valid(self, mask: np.ndarray) -> int:
         valid = np.flatnonzero(mask > 0.5)
         if valid.size == 0:
-            logger.warning("Action mask was empty; falling back to NO_OP")
-            return 0
+            # Was a warning plus a silent NO_OP. See `ActionConditionedQNetwork.forward`
+            # for why an unreadable observation now stops the run instead of continuing
+            # into the replay buffer.
+            raise ValueError(
+                "Action mask was empty during exploration; the observation cannot have "
+                "come from a live env, which always offers at least nine fixed actions."
+            )
         return int(np.random.choice(valid))
 
     # -- learning -----------------------------------------------------------------

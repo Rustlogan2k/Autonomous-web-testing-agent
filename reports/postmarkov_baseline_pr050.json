@@ -1,0 +1,618 @@
+{
+  "site": "deep",
+  "encoders": "hash",
+  "complete": true,
+  "seeds_requested": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "seeds_completed": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "seed_sequence": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "runs_completed": {
+    "ac_dqn": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        3,
+        3
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        5,
+        5
+      ],
+      [
+        6,
+        6
+      ],
+      [
+        7,
+        7
+      ]
+    ]
+  },
+  "repeated_seeds": false,
+  "arms_completed": {
+    "ac_dqn": 8
+  },
+  "args": {
+    "site": "deep",
+    "train_steps": 4000,
+    "episode_steps": 40,
+    "eval_episodes": 5,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "eval_epsilon": 0.05,
+    "encoders": "hash",
+    "arms": [
+      "ac_dqn"
+    ],
+    "p_return": 0.5,
+    "n_step": 3,
+    "exploration_fraction": 0.6,
+    "final_eps": 0.1,
+    "out": "reports\\postmarkov_baseline_pr050.json",
+    "dueling": true,
+    "save_checkpoints": "models\\checkpoints\\postmarkov_baseline",
+    "probe_q": null,
+    "probe_actions": [
+      "Place order",
+      "Back"
+    ],
+    "probe_every": 250,
+    "tag_transitions": null
+  },
+  "summary": {
+    "ac_dqn": {
+      "reward": {
+        "median": 7.06,
+        "min": 4.39,
+        "max": 10.83
+      },
+      "valid%": {
+        "median": 100.0,
+        "min": 100.0,
+        "max": 100.0
+      },
+      "states": {
+        "median": 17.0,
+        "min": 12.0,
+        "max": 24.0
+      },
+      "finds": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "finds_ak": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "finds_un": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "bugs": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "maxD": {
+        "median": 5.0,
+        "min": 3.0,
+        "max": 5.0
+      },
+      "meanD": {
+        "median": 1.44,
+        "min": 0.79,
+        "max": 2.02
+      },
+      "receipt": {
+        "median": 6.5,
+        "min": 0.0,
+        "max": 16.0
+      },
+      "done": {
+        "median": 5.0,
+        "min": 0.0,
+        "max": 5.0
+      },
+      "pastS1": {
+        "median": 5.0,
+        "min": 5.0,
+        "max": 5.0
+      },
+      "states/100": {
+        "median": 8.5,
+        "min": 6.0,
+        "max": 12.0
+      },
+      "finds/100": {
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "steps/s": {
+        "median": 2.95,
+        "min": 2.23,
+        "max": 2.96
+      },
+      "seeds": 8
+    }
+  },
+  "results_per_seed": {
+    "ac_dqn": [
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:50683/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 70.55,
+        "steps_per_second": 2.835,
+        "total_reward": 54.148,
+        "mean_episode_reward": 10.83,
+        "episode_rewards": [
+          19.05,
+          8.819,
+          11.761,
+          7.964,
+          6.554
+        ],
+        "unique_states": 24,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 1.0,
+        "noop_steps": 6,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 5,
+          "mean_depth": 1.6,
+          "reached_receipt": 8,
+          "reached_review": 23,
+          "flow_completions": 5,
+          "episodes_reaching_review": 5,
+          "episodes_leaving_stage_1": 5
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 0,
+        "replicate": 0,
+        "train_seconds": 1537.0,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 44,
+          "returns_failed": 0,
+          "cells_discovered": 24,
+          "replayed_actions": 219,
+          "reanchored": 417,
+          "return_failure_rate": 0.0,
+          "cells": 25
+        },
+        "training_browser_actions": 4219
+      },
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:50683/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 89.89,
+        "steps_per_second": 2.225,
+        "total_reward": 29.705,
+        "mean_episode_reward": 5.941,
+        "episode_rewards": [
+          12.25,
+          6.873,
+          2.198,
+          4.523,
+          3.862
+        ],
+        "unique_states": 14,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 1.0,
+        "noop_steps": 10,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 4,
+          "mean_depth": 0.79,
+          "reached_receipt": 0,
+          "reached_review": 12,
+          "flow_completions": 0,
+          "episodes_reaching_review": 5,
+          "episodes_leaving_stage_1": 5
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 1,
+        "replicate": 1,
+        "train_seconds": 1640.3,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 42,
+          "returns_failed": 0,
+          "cells_discovered": 22,
+          "replayed_actions": 172,
+          "reanchored": 393,
+          "return_failure_rate": 0.0,
+          "cells": 23
+        },
+        "training_browser_actions": 4172
+      },
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:50683/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 67.92,
+        "steps_per_second": 2.945,
+        "total_reward": 38.166,
+        "mean_episode_reward": 7.633,
+        "episode_rewards": [
+          14.4,
+          7.839,
+          5.153,
+          5.26,
+          5.514
+        ],
+        "unique_states": 19,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 1.0,
+        "noop_steps": 8,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 5,
+          "mean_depth": 2.02,
+          "reached_receipt": 16,
+          "reached_review": 37,
+          "flow_completions": 5,
+          "episodes_reaching_review": 5,
+          "episodes_leaving_stage_1": 5
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 2,
+        "replicate": 2,
+        "train_seconds": 1543.8,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 47,
+          "returns_failed": 0,
+          "cells_discovered": 23,
+          "replayed_actions": 166,
+          "reanchored": 331,
+          "return_failure_rate": 0.0,
+          "cells": 24
+        },
+        "training_browser_actions": 4166
+      },
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:50683/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 67.89,
+        "steps_per_second": 2.946,
+        "total_reward": 37.671,
+        "mean_episode_reward": 7.534,
+        "episode_rewards": [
+          9.7,
+          1.911,
+          11.609,
+          7.882,
+          6.57
+        ],
+        "unique_states": 19,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 0.99,
+        "noop_steps": 8,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 5,
+          "mean_depth": 1.55,
+          "reached_receipt": 8,
+          "reached_review": 16,
+          "flow_completions": 5,
+          "episodes_reaching_review": 5,
+          "episodes_leaving_stage_1": 5
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 3,
+        "replicate": 3,
+        "train_seconds": 1465.3,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 44,
+          "returns_failed": 0,
+          "cells_discovered": 26,
+          "replayed_actions": 264,
+          "reanchored": 321,
+          "return_failure_rate": 0.0,
+          "cells": 27
+        },
+        "training_browser_actions": 4264
+      },
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:50683/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 68.16,
+        "steps_per_second": 2.934,
+        "total_reward": 32.956,
+        "mean_episode_reward": 6.591,
+        "episode_rewards": [
+          10.95,
+          5.763,
+          5.45,
+          6.04,
+          4.754
+        ],
+        "unique_states": 15,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 1.0,
+        "noop_steps": 3,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 3,
+          "mean_depth": 0.88,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 5
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 4,
+        "replicate": 4,
+        "train_seconds": 1422.8,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 48,
+          "returns_failed": 0,
+          "cells_discovered": 15,
+          "replayed_actions": 125,
+          "reanchored": 318,
+          "return_failure_rate": 0.0,
+          "cells": 16
+        },
+        "training_browser_actions": 4125
+      },
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:50683/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 67.53,
+        "steps_per_second": 2.962,
+        "total_reward": 21.972,
+        "mean_episode_reward": 4.394,
+        "episode_rewards": [
+          6.5,
+          3.865,
+          4.303,
+          5.513,
+          1.791
+        ],
+        "unique_states": 12,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 1.0,
+        "noop_steps": 9,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 3,
+          "mean_depth": 1.33,
+          "reached_receipt": 0,
+          "reached_review": 0,
+          "flow_completions": 0,
+          "episodes_reaching_review": 0,
+          "episodes_leaving_stage_1": 5
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 5,
+        "replicate": 5,
+        "train_seconds": 1475.0,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 48,
+          "returns_failed": 0,
+          "cells_discovered": 19,
+          "replayed_actions": 306,
+          "reanchored": 333,
+          "return_failure_rate": 0.0,
+          "cells": 20
+        },
+        "training_browser_actions": 4306
+      },
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:50683/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 67.78,
+        "steps_per_second": 2.951,
+        "total_reward": 28.928,
+        "mean_episode_reward": 5.786,
+        "episode_rewards": [
+          9.95,
+          6.79,
+          4.604,
+          4.941,
+          2.643
+        ],
+        "unique_states": 14,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 0.99,
+        "noop_steps": 0,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 5,
+          "mean_depth": 0.96,
+          "reached_receipt": 5,
+          "reached_review": 10,
+          "flow_completions": 5,
+          "episodes_reaching_review": 5,
+          "episodes_leaving_stage_1": 5
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 6,
+        "replicate": 6,
+        "train_seconds": 1505.9,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 56,
+          "returns_failed": 0,
+          "cells_discovered": 24,
+          "replayed_actions": 394,
+          "reanchored": 362,
+          "return_failure_rate": 0.0,
+          "cells": 25
+        },
+        "training_browser_actions": 4394
+      },
+      {
+        "label": "ac_dqn",
+        "target_url": "http://127.0.0.1:50683/index.html",
+        "episodes": 5,
+        "steps": 200,
+        "wall_clock_s": 67.48,
+        "steps_per_second": 2.964,
+        "total_reward": 43.088,
+        "mean_episode_reward": 8.618,
+        "episode_rewards": [
+          15.8,
+          8.18,
+          9.443,
+          4.553,
+          5.113
+        ],
+        "unique_states": 21,
+        "valid_action_rate": 1.0,
+        "exec_success_rate": 0.885,
+        "noop_steps": 6,
+        "distinct_findings": 0,
+        "trigger_counts": {},
+        "findings": [],
+        "flow": {
+          "max_depth": 5,
+          "mean_depth": 1.75,
+          "reached_receipt": 12,
+          "reached_review": 21,
+          "flow_completions": 5,
+          "episodes_reaching_review": 5,
+          "episodes_leaving_stage_1": 5
+        },
+        "attribution": {
+          "seeded_bugs_found": [],
+          "seeded_bugs_total": 0,
+          "findings_attributed": 0,
+          "findings_unattributed": 0
+        },
+        "seed": 7,
+        "replicate": 7,
+        "train_seconds": 1473.3,
+        "archive": {
+          "episodes": 101,
+          "returns_attempted": 55,
+          "returns_failed": 4,
+          "cells_discovered": 29,
+          "replayed_actions": 287,
+          "reanchored": 360,
+          "return_failure_rate": 0.0727,
+          "cells": 30
+        },
+        "training_browser_actions": 4287
+      }
+    ]
+  }
+}

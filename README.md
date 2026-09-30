@@ -372,7 +372,8 @@ input is not genuinely trusted.
 
 | Script | Purpose |
 |---|---|
-| `compare_agents.py` | Masked DQN vs unmasked vs random, on either fixture |
+| `compare_agents.py` | Masked DQN vs unmasked vs AC-DQN vs random, on either fixture; carries the RL diagnostics (`--probe-q`, `--tag-transitions`, `--save-checkpoints`, `--no-dueling`) |
+| `check_probe_rng_neutrality.py` | Proves those diagnostics leave training bit-identical, before an experiment relies on them |
 | `run_baseline.py` | Random-policy baseline — the bar any agent must clear |
 | `train_toy.py` | Train the DQN and score it against random under an identical reward |
 | `capture_traces.py` | Record a corpus for offline judge development |
@@ -532,16 +533,47 @@ distribution of completions before attempting an exploration fix.
 
 **No candidate RL fix is approved.** The known remaining obstacle is the final
 `order-4 -> receipt` transition, where `Place order` and `Back` sit within ~1.7% of each
-other in Q — a near-tie decided by noise. Diagnosis pointed at sparse experience rather
-than a mis-ordered objective, but **PER sampling of that transition has never been
-measured** (the replay buffer is not saved with checkpoints), so that remains a
-hypothesis.
+other in Q — a near-tie decided by noise.
+
+PER sampling of that transition **has since been measured**, on all three seeds
+(`reports/diag_phase3_replay_seed{0,1,2}.json`), and PER is not the lever. On the seed
+that fails it is 0.23% of the buffer at 2.7x the population's mean priority — correctly
+flagged as surprising, simply collected once at 94% of the way through training. On the
+seed that succeeds it is 8.1% of the buffer at *below* the population's priority, because
+by then it is ordinary. The failure is an exploration/estimation deadlock at one decision
+point, not a replay defect.
 
 Retained for this work: `reports/diag_ac_3seed_deep_{nodueling,dueling,c1}.json` (the
 three-arm comparison), `reports/diag_q_spread_{nodueling,dueling}.json` (Q-value
-evidence), `reports/diag_order4_bottleneck.json`, and six checkpoints under
-`models/checkpoints/` — **gitignored, so they are not in a clone**; re-run
-`scripts/compare_agents.py` to regenerate them.
+evidence), `reports/diag_order4_bottleneck.json`, `reports/diag_phase3_replay_seed*.json`
+(the sampling measurement above), and six checkpoints under `models/checkpoints/` —
+**gitignored, so they are not in a clone**.
+
+**Those artefacts were produced by scripts that were never committed**, and until
+2026-09-02 nothing in this repository could regenerate any of them:
+`scripts/compare_agents.py` saved no checkpoints, had no Q-probe, and could not build the
+undueled head at all (`ActionConditionedQNetwork(dueling=...)` was never plumbed through
+the policy). The instruments now live in `src/web_testing_agent/agents/diagnostics.py`
+and are reachable as `--save-checkpoints`, `--probe-q`, `--tag-transitions` and
+`--no-dueling`. They are off by default, and that they consume no randomness and mutate
+no training state is **measured**, not asserted:
+`test_diagnostics.py::test_instrumented_training_is_bit_identical_to_uninstrumented_training`
+replays a fixed observation stream through a real `learn()` and compares every stored
+transition, the whole PER priority tree and every weight of both networks — and the same
+test detects a single injected `np.random.rand()` on 30 of those fields.
+
+It has to replay a fixed stream rather than use the browser, because **the browser
+harness is itself intermittently non-deterministic on this configuration**: two
+identical, uninstrumented `ac_dqn` runs at one seed usually agree bit-for-bit and
+occasionally do not (1 deviant run in 12 at 200 steps; the one 600-step pair differed).
+The onset is confined to the 384-dim network block with the action sequence still
+identical, and then propagates through the argmax to the whole run.
+`scripts/check_probe_rng_neutrality.py --replicates N` measures that rate
+(`reports/diag_harness_determinism.json`). The mechanism is unidentified — it is not the
+archive and not the `duration_ms` buckets — and whether the flat `dqn_masked` head still
+reproduces is unmeasured. §5's 2026-08-28 bit-reproducibility result was measured on that
+flat head without the archive or the action-feature block, so this narrows it rather than
+contradicting it.
 
 ---
 

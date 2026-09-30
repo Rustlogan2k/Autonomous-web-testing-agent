@@ -1,0 +1,1204 @@
+{
+  "_source": "WebFunctionalEnv._build_action_specs on tests/fixtures/deep_flow_site",
+  "pages": {
+    "about.html": [
+      {
+        "element_id": "",
+        "description": "no-op",
+        "action_type": "NO_OP"
+      },
+      {
+        "element_id": "",
+        "description": "scroll up",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "scroll down",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to mobile",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to tablet",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to desktop",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_BACK",
+        "action_type": "BROWSER_BACK"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_FORWARD",
+        "action_type": "BROWSER_FORWARD"
+      },
+      {
+        "element_id": "",
+        "description": "REFRESH",
+        "action_type": "REFRESH"
+      },
+      {
+        "element_id": "Home",
+        "description": "click 'Home'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Catalog",
+        "description": "click 'Catalog'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Support",
+        "description": "click 'Support'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "About",
+        "description": "click 'About'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Terms",
+        "description": "click 'Terms'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Privacy",
+        "description": "click 'Privacy'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Status",
+        "description": "click 'Status'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Contact us",
+        "description": "click 'Contact us'",
+        "action_type": "CLICK"
+      }
+    ],
+    "catalog.html": [
+      {
+        "element_id": "",
+        "description": "no-op",
+        "action_type": "NO_OP"
+      },
+      {
+        "element_id": "",
+        "description": "scroll up",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "scroll down",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to mobile",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to tablet",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to desktop",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_BACK",
+        "action_type": "BROWSER_BACK"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_FORWARD",
+        "action_type": "BROWSER_FORWARD"
+      },
+      {
+        "element_id": "",
+        "description": "REFRESH",
+        "action_type": "REFRESH"
+      },
+      {
+        "element_id": "Home",
+        "description": "click 'Home'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Catalog",
+        "description": "click 'Catalog'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Support",
+        "description": "click 'Support'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "About",
+        "description": "click 'About'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Paper",
+        "description": "click 'Paper'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Pens and markers",
+        "description": "click 'Pens and markers'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Filing",
+        "description": "click 'Filing'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Start an order",
+        "description": "click 'Start an order'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Terms",
+        "description": "click 'Terms'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Privacy",
+        "description": "click 'Privacy'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Status",
+        "description": "click 'Status'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Contact us",
+        "description": "click 'Contact us'",
+        "action_type": "CLICK"
+      }
+    ],
+    "index.html": [
+      {
+        "element_id": "",
+        "description": "no-op",
+        "action_type": "NO_OP"
+      },
+      {
+        "element_id": "",
+        "description": "scroll up",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "scroll down",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to mobile",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to tablet",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to desktop",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_BACK",
+        "action_type": "BROWSER_BACK"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_FORWARD",
+        "action_type": "BROWSER_FORWARD"
+      },
+      {
+        "element_id": "",
+        "description": "REFRESH",
+        "action_type": "REFRESH"
+      },
+      {
+        "element_id": "Home",
+        "description": "click 'Home'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Catalog",
+        "description": "click 'Catalog'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Support",
+        "description": "click 'Support'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "About",
+        "description": "click 'About'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Start order",
+        "description": "click 'Start order'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "A4 paper, 5 reams",
+        "description": "click 'A4 paper, 5 reams'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Ballpoint pens, box of 50",
+        "description": "click 'Ballpoint pens, box of 50'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Suspension folders",
+        "description": "click 'Suspension folders'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Terms",
+        "description": "click 'Terms'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Privacy",
+        "description": "click 'Privacy'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Status",
+        "description": "click 'Status'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Contact us",
+        "description": "click 'Contact us'",
+        "action_type": "CLICK"
+      }
+    ],
+    "order-1.html": [
+      {
+        "element_id": "",
+        "description": "no-op",
+        "action_type": "NO_OP"
+      },
+      {
+        "element_id": "",
+        "description": "scroll up",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "scroll down",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to mobile",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to tablet",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to desktop",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_BACK",
+        "action_type": "BROWSER_BACK"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_FORWARD",
+        "action_type": "BROWSER_FORWARD"
+      },
+      {
+        "element_id": "",
+        "description": "REFRESH",
+        "action_type": "REFRESH"
+      },
+      {
+        "element_id": "Home",
+        "description": "click 'Home'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Catalog",
+        "description": "click 'Catalog'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Support",
+        "description": "click 'Support'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "About",
+        "description": "click 'About'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Cancel order",
+        "description": "click 'Cancel order'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Terms",
+        "description": "click 'Terms'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Privacy",
+        "description": "click 'Privacy'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Status",
+        "description": "click 'Status'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Contact us",
+        "description": "click 'Contact us'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "product",
+        "description": "select 'folders-25' in [id=\"product\"]",
+        "action_type": "SELECT"
+      }
+    ],
+    "order-2.html": [
+      {
+        "element_id": "",
+        "description": "no-op",
+        "action_type": "NO_OP"
+      },
+      {
+        "element_id": "",
+        "description": "scroll up",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "scroll down",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to mobile",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to tablet",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to desktop",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_BACK",
+        "action_type": "BROWSER_BACK"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_FORWARD",
+        "action_type": "BROWSER_FORWARD"
+      },
+      {
+        "element_id": "",
+        "description": "REFRESH",
+        "action_type": "REFRESH"
+      },
+      {
+        "element_id": "Home",
+        "description": "click 'Home'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Catalog",
+        "description": "click 'Catalog'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Support",
+        "description": "click 'Support'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "About",
+        "description": "click 'About'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Back",
+        "description": "click 'Back'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Cancel order",
+        "description": "click 'Cancel order'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Terms",
+        "description": "click 'Terms'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Privacy",
+        "description": "click 'Privacy'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Status",
+        "description": "click 'Status'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Contact us",
+        "description": "click 'Contact us'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "quantity",
+        "description": "type valid_typical into 'quantity'",
+        "action_type": "TYPE"
+      },
+      {
+        "element_id": "quantity",
+        "description": "type boundary_min into 'quantity'",
+        "action_type": "TYPE"
+      },
+      {
+        "element_id": "quantity",
+        "description": "type boundary_max into 'quantity'",
+        "action_type": "TYPE"
+      },
+      {
+        "element_id": "quantity",
+        "description": "type empty_string into 'quantity'",
+        "action_type": "TYPE"
+      },
+      {
+        "element_id": "quantity",
+        "description": "type type_mismatch into 'quantity'",
+        "action_type": "TYPE"
+      }
+    ],
+    "order-3.html": [
+      {
+        "element_id": "",
+        "description": "no-op",
+        "action_type": "NO_OP"
+      },
+      {
+        "element_id": "",
+        "description": "scroll up",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "scroll down",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to mobile",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to tablet",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to desktop",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_BACK",
+        "action_type": "BROWSER_BACK"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_FORWARD",
+        "action_type": "BROWSER_FORWARD"
+      },
+      {
+        "element_id": "",
+        "description": "REFRESH",
+        "action_type": "REFRESH"
+      },
+      {
+        "element_id": "Home",
+        "description": "click 'Home'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Catalog",
+        "description": "click 'Catalog'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Support",
+        "description": "click 'Support'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "About",
+        "description": "click 'About'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Back",
+        "description": "click 'Back'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Cancel order",
+        "description": "click 'Cancel order'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Terms",
+        "description": "click 'Terms'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Privacy",
+        "description": "click 'Privacy'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Status",
+        "description": "click 'Status'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Contact us",
+        "description": "click 'Contact us'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "email",
+        "description": "type valid_typical into 'email'",
+        "action_type": "TYPE"
+      },
+      {
+        "element_id": "email",
+        "description": "type boundary_min into 'email'",
+        "action_type": "TYPE"
+      },
+      {
+        "element_id": "email",
+        "description": "type boundary_max into 'email'",
+        "action_type": "TYPE"
+      },
+      {
+        "element_id": "email",
+        "description": "type empty_string into 'email'",
+        "action_type": "TYPE"
+      },
+      {
+        "element_id": "email",
+        "description": "type type_mismatch into 'email'",
+        "action_type": "TYPE"
+      }
+    ],
+    "order-4.html": [
+      {
+        "element_id": "",
+        "description": "no-op",
+        "action_type": "NO_OP"
+      },
+      {
+        "element_id": "",
+        "description": "scroll up",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "scroll down",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to mobile",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to tablet",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to desktop",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_BACK",
+        "action_type": "BROWSER_BACK"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_FORWARD",
+        "action_type": "BROWSER_FORWARD"
+      },
+      {
+        "element_id": "",
+        "description": "REFRESH",
+        "action_type": "REFRESH"
+      },
+      {
+        "element_id": "Home",
+        "description": "click 'Home'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Catalog",
+        "description": "click 'Catalog'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Support",
+        "description": "click 'Support'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "About",
+        "description": "click 'About'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Place order",
+        "description": "click 'Place order'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Back",
+        "description": "click 'Back'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Cancel order",
+        "description": "click 'Cancel order'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Terms",
+        "description": "click 'Terms'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Privacy",
+        "description": "click 'Privacy'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Status",
+        "description": "click 'Status'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Contact us",
+        "description": "click 'Contact us'",
+        "action_type": "CLICK"
+      }
+    ],
+    "privacy.html": [
+      {
+        "element_id": "",
+        "description": "no-op",
+        "action_type": "NO_OP"
+      },
+      {
+        "element_id": "",
+        "description": "scroll up",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "scroll down",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to mobile",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to tablet",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to desktop",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_BACK",
+        "action_type": "BROWSER_BACK"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_FORWARD",
+        "action_type": "BROWSER_FORWARD"
+      },
+      {
+        "element_id": "",
+        "description": "REFRESH",
+        "action_type": "REFRESH"
+      },
+      {
+        "element_id": "Home",
+        "description": "click 'Home'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Catalog",
+        "description": "click 'Catalog'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Support",
+        "description": "click 'Support'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "About",
+        "description": "click 'About'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Terms",
+        "description": "click 'Terms'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Privacy",
+        "description": "click 'Privacy'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Status",
+        "description": "click 'Status'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Contact us",
+        "description": "click 'Contact us'",
+        "action_type": "CLICK"
+      }
+    ],
+    "receipt.html": [
+      {
+        "element_id": "",
+        "description": "no-op",
+        "action_type": "NO_OP"
+      },
+      {
+        "element_id": "",
+        "description": "scroll up",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "scroll down",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to mobile",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to tablet",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to desktop",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_BACK",
+        "action_type": "BROWSER_BACK"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_FORWARD",
+        "action_type": "BROWSER_FORWARD"
+      },
+      {
+        "element_id": "",
+        "description": "REFRESH",
+        "action_type": "REFRESH"
+      },
+      {
+        "element_id": "Home",
+        "description": "click 'Home'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Catalog",
+        "description": "click 'Catalog'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Support",
+        "description": "click 'Support'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "About",
+        "description": "click 'About'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Back to home",
+        "description": "click 'Back to home'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Terms",
+        "description": "click 'Terms'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Privacy",
+        "description": "click 'Privacy'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Status",
+        "description": "click 'Status'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Contact us",
+        "description": "click 'Contact us'",
+        "action_type": "CLICK"
+      }
+    ],
+    "status.html": [
+      {
+        "element_id": "",
+        "description": "no-op",
+        "action_type": "NO_OP"
+      },
+      {
+        "element_id": "",
+        "description": "scroll up",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "scroll down",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to mobile",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to tablet",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to desktop",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_BACK",
+        "action_type": "BROWSER_BACK"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_FORWARD",
+        "action_type": "BROWSER_FORWARD"
+      },
+      {
+        "element_id": "",
+        "description": "REFRESH",
+        "action_type": "REFRESH"
+      },
+      {
+        "element_id": "Home",
+        "description": "click 'Home'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Catalog",
+        "description": "click 'Catalog'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Support",
+        "description": "click 'Support'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "About",
+        "description": "click 'About'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Terms",
+        "description": "click 'Terms'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Privacy",
+        "description": "click 'Privacy'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Status",
+        "description": "click 'Status'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Contact us",
+        "description": "click 'Contact us'",
+        "action_type": "CLICK"
+      }
+    ],
+    "support.html": [
+      {
+        "element_id": "",
+        "description": "no-op",
+        "action_type": "NO_OP"
+      },
+      {
+        "element_id": "",
+        "description": "scroll up",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "scroll down",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to mobile",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to tablet",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to desktop",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_BACK",
+        "action_type": "BROWSER_BACK"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_FORWARD",
+        "action_type": "BROWSER_FORWARD"
+      },
+      {
+        "element_id": "",
+        "description": "REFRESH",
+        "action_type": "REFRESH"
+      },
+      {
+        "element_id": "Home",
+        "description": "click 'Home'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Catalog",
+        "description": "click 'Catalog'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Support",
+        "description": "click 'Support'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "About",
+        "description": "click 'About'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Delivery times",
+        "description": "click 'Delivery times'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Returns",
+        "description": "click 'Returns'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Invoices",
+        "description": "click 'Invoices'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Terms",
+        "description": "click 'Terms'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Privacy",
+        "description": "click 'Privacy'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Status",
+        "description": "click 'Status'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Contact us",
+        "description": "click 'Contact us'",
+        "action_type": "CLICK"
+      }
+    ],
+    "terms.html": [
+      {
+        "element_id": "",
+        "description": "no-op",
+        "action_type": "NO_OP"
+      },
+      {
+        "element_id": "",
+        "description": "scroll up",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "scroll down",
+        "action_type": "SCROLL"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to mobile",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to tablet",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "resize viewport to desktop",
+        "action_type": "RESIZE_VIEWPORT"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_BACK",
+        "action_type": "BROWSER_BACK"
+      },
+      {
+        "element_id": "",
+        "description": "BROWSER_FORWARD",
+        "action_type": "BROWSER_FORWARD"
+      },
+      {
+        "element_id": "",
+        "description": "REFRESH",
+        "action_type": "REFRESH"
+      },
+      {
+        "element_id": "Home",
+        "description": "click 'Home'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Catalog",
+        "description": "click 'Catalog'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Support",
+        "description": "click 'Support'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "About",
+        "description": "click 'About'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Terms",
+        "description": "click 'Terms'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Privacy",
+        "description": "click 'Privacy'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Status",
+        "description": "click 'Status'",
+        "action_type": "CLICK"
+      },
+      {
+        "element_id": "Contact us",
+        "description": "click 'Contact us'",
+        "action_type": "CLICK"
+      }
+    ]
+  }
+}

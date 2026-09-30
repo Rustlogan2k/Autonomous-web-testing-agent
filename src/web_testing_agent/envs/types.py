@@ -68,7 +68,34 @@ MAX_ACTIONS = 100
 # observation alone cannot distinguish those cases, which makes the process non-Markov
 # and the Q-target unpredictable from the state. Exposing a compact summary of that
 # history restores the agent's ability to predict its own reward.
-EPISODE_CONTEXT_DIM = 6
+#
+# **Widened 6 -> 9 (2026-09-03).** The original six were introduced to fix exactly this
+# defect, and then two reward terms were added *after* them that reintroduced it:
+#
+# * `novelty_bonus` divides by `sqrt(1 + state_run_visits)`, a **run-level** counter that
+#   nothing in the observation reported. The same (page, action) therefore paid +1.00 on
+#   its first visit of the run and +0.30 on its tenth, with the observation identical.
+# * `reveal_bonus` pays only for identities absent from `_paid_reveals[(url_path, id)]`,
+#   an **episodic hidden ledger**. Re-opening a gate already paid for this episode pays
+#   0.0 where the first opening paid 1.5, again with an identical observation.
+#
+# See `WebTestingEnv._episode_context` for what each slot carries. The three added slots
+# are observation-only: no reward term, counter, or scale was touched when they landed,
+# which is what `tests/unit/test_markov_context.py` pins.
+#
+# **Two further slots were audited out before this shipped**, and the reasons are worth
+# keeping because both are easy to re-propose:
+#
+# * a `remaining_budget` slot was exactly `1 - slot 0` in every reachable case, including
+#   the overrun branch, so it was a collinear duplicate of a feature already present.
+# * a `reveal_paid_this_step` slot reported `len(unpaid_reveals)` from the step that had
+#   just executed. It is **post-action** information: at `o_t` it describes `a_{t-1}` and
+#   never `a_t`, so it cannot predict `r_t` — traced on the live fixture, two steps with
+#   an identical reveal reward of 0.00 carried 0.25 and 0.00 in that slot. Worse, it is a
+#   scaled copy of a *reward component* sitting in the bootstrap target's own input,
+#   which lets `V(s_{t+1})` be fitted from past reward rather than future return. Slot 8
+#   already makes the reveal term fully observable at the correct temporal point.
+EPISODE_CONTEXT_DIM = 9
 
 
 @dataclass(frozen=True, slots=True)

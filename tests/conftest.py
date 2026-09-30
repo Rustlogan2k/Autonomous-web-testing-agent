@@ -37,6 +37,7 @@ import pytest
 # set is a deliberate act.
 HEAVY_MODULES = frozenset({
     "test_archive_start.py",
+    "test_diagnostics.py",
     "test_dueling.py",
     "test_replay_buffer.py",
     "test_vec_wrapper.py",

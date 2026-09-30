@@ -22,7 +22,7 @@ from ..perception.fusion import FUSED_DIM, NETWORK_DIM, STRUCTURAL_DIM, VISUAL_D
 
 
 class FusionFeaturesExtractor(BaseFeaturesExtractor):
-    """`Box(1670,)` from SemanticPerceptionWrapper -> the 256-dim state + episode context.
+    """`Box(1664 + EPISODE_CONTEXT_DIM,)` -> the 256-dim state + episode context.
 
     The three perception modalities go through `FusionMLP`; the episode-context features
     are **concatenated after fusion, not fused**. They are a handful of already-normalized

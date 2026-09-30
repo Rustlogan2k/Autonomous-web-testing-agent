@@ -1,0 +1,5 @@
+arm,rung,seed,completion_count,completion_rate,review_count,review_rate,s1_count,s1_rate,mean_reward,median_reward,std_reward,min_reward,max_reward,mean_depth,max_depth,unique_states_mean,valid_action_rate,invalid_actions,errors
+hand_priority,A,0,0,0.0,1,0.3333,3,1.0,7.1066,8.615,2.9973,3.6547,9.05,0.3917,4,12,1.0,0,
+hand_priority_search,A,0,0,0.0,1,0.3333,2,0.6667,5.3458,8.6914,6.1079,-1.7039,9.05,0.2667,4,10.667,1.0,0,
+contextual_bandit,B,0,3,1.0,3,1.0,3,1.0,8.903,7.8863,1.9489,7.6727,11.15,0.725,5,13,1.0,0,
+ac_dqn,C,0,3,1.0,3,1.0,3,1.0,13.2099,11.7606,5.2672,8.8191,19.05,1.7833,5,19.333,1.0,0,

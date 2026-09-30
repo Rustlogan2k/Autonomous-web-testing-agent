@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import io
 import json
+import math
 import time
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, replace
@@ -249,7 +250,9 @@ class WebTestingEnv(gym.Env, ABC):
             "action_specs": self._action_specs,
             "page": self._page_info(self._last_raw_obs),
             "state_key": self._state_key(self._last_raw_obs),
-            "episode_context": self._episode_context(self._state_key(self._last_raw_obs), None),
+            "episode_context": self._episode_context(
+                self._state_key(self._last_raw_obs), None, self._last_raw_obs.url
+            ),
             "baseline_errors": len(self.error_baseline),
             # Present on reset as well as step. A masked policy reads this on every
             # observation, and the first observation of an episode is no exception —
@@ -390,7 +393,7 @@ class WebTestingEnv(gym.Env, ABC):
             "newly_revealed": sorted(newly_revealed),
             "state_visits": self.exploration.state_visits(state_key),
             "page": self._page_info(post_obs),
-            "episode_context": self._episode_context(state_key, exploration),
+            "episode_context": self._episode_context(state_key, exploration, post_obs.url),
             **reward_info,
         }
         return self._to_gym_obs(post_obs), reward, terminated, truncated, info
@@ -527,7 +530,9 @@ class WebTestingEnv(gym.Env, ABC):
     def _state_key(obs: RawObservation) -> str:
         return state_fingerprint(obs.url, obs.html)
 
-    def _episode_context(self, state_key: str, exploration: ExplorationSignal | None) -> np.ndarray:
+    def _episode_context(
+        self, state_key: str, exploration: ExplorationSignal | None, url: str = ""
+    ) -> np.ndarray:
         """Compact summary of episode history, appended to the agent's observation.
 
         Reward here is history-dependent by design: the novelty bonus pays once per new
@@ -538,16 +543,70 @@ class WebTestingEnv(gym.Env, ABC):
 
         All entries are normalized to roughly [0, 1] so no single term dominates the
         input scale of a network whose other 1664 dims are unit-norm embeddings.
+
+        Slots, in order:
+
+        0. step fraction through the episode
+        1. distinct states seen this episode
+        2. did this step reach a state new to this episode (the novelty gate)
+        3. recent repeats of this action (the repetition penalty's own counter)
+        4. findings already paid at this state this episode
+        5. findings already paid anywhere this episode
+        6. **run-level visits to this state**, log-scaled
+        7. **the novelty decay multiplier itself**, `1/sqrt(1 + visits_before)`
+        8. **reveal identities already paid on this page path this episode**
+
+        Slots 6-8 were added 2026-09-03 to close the non-Markov gap that `novelty_bonus`
+        and `reveal_bonus` reopened after slots 0-5 were introduced. Three notes on why
+        they are shaped this way:
+
+        * **Slot 7 is the multiplier, not just the count.** Slot 6 alone would require the
+          network to learn `1/sqrt(1 + (exp(4x) - 1))` through a log-scaled input, which is
+          precisely the shape a small MLP approximates badly. Supplying the factor the
+          reward actually multiplies by makes the novelty term linear in the observation:
+          `novelty = novelty_bonus * slot_2 * slot_7`, exactly.
+        * **Slot 6 is deliberately NOT reset per episode.** `_state_visits` is run-level,
+          because that is the counter the reward divides by; resetting it here would make
+          the feature disagree with the term it exists to explain. Slot 8 *is* episodic,
+          because `_paid_reveals` is.
+        * **Slot 8 is the only one of the three that is temporally complete**, and it is
+          complete for a structural reason: `observe_action_set` returns a reveal only when
+          the URL is unchanged, so a reveal is always paid on the page the agent is already
+          on. `paid_reveals_at(url_t)` is therefore exactly the ledger state that `a_t`'s
+          payment will be checked against — traced on the live fixture, it predicts the
+          reveal reward of the next action on every step of a gated walk.
+
+        Slots 6 and 7 are a deliberate approximation, and the limit should not be
+        forgotten: novelty pays on a state *new to the episode*, so the run-level count
+        that matters for `r_t` is the one for `s_{t+1}`, not for `s_t`. Exposing that would
+        need per-destination counts, i.e. a transition model. What these two carry is the
+        right variable for the value function — returning here later pays less — rather
+        than a one-step reward predictor.
         """
         window = max(self.exploration.repetition_window, 1)
+        budget = max(self.max_steps, 1)
+        # The count *before* this arrival — the same quantity `compose_reward` divides by.
+        # `observe_step`/`observe_reset` have already incremented by the time this runs, so
+        # on the reset path the increment is subtracted back off rather than read from a
+        # signal that does not exist yet.
+        visits_before = (
+            exploration.state_run_visits if exploration is not None
+            else max(0, self.exploration.state_visits(state_key) - 1)
+        )
         return np.array(
             [
-                min(self._steps_taken / max(self.max_steps, 1), 1.0),
+                min(self._steps_taken / budget, 1.0),
                 min(self.exploration.episode_states_seen / 32.0, 1.0),
                 1.0 if (exploration is not None and exploration.is_novel_state) else 0.0,
                 min((exploration.repeat_count if exploration else 0) / window, 1.0),
                 min(self.finding_ledger.paid_at(state_key) / 8.0, 1.0),
                 min(len(self.finding_ledger) / 16.0, 1.0),
+                # log1p/4 matches `ActionFeatureExtractor`'s convention for a visit count,
+                # so the two places a count reaches the network are scaled the same way.
+                # Saturates near 54 visits, well past anything a 40-step episode reaches.
+                min(math.log1p(visits_before) / 4.0, 1.0),
+                1.0 / math.sqrt(1.0 + visits_before),
+                min(self.exploration.paid_reveals_at(url) / 4.0, 1.0),
             ],
             dtype=np.float32,
         )

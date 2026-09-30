@@ -64,7 +64,12 @@ from stable_baselines3.common.vec_env import DummyVecEnv  # noqa: E402
 
 from web_testing_agent.agents.ac_dqn import ACStateExtractor, ActionConditionedDQN  # noqa: E402
 from web_testing_agent.agents.action_features import ActionFeatureExtractor  # noqa: E402
+from web_testing_agent.agents.contextual_bandit import ContextualBandit  # noqa: E402
 from web_testing_agent.agents.archive_start import ArchiveStartWrapper  # noqa: E402
+from web_testing_agent.agents.diagnostics import (  # noqa: E402
+    QGapProbe,
+    TaggedPrioritizedNStepReplayBuffer,
+)
 from web_testing_agent.agents.features import FusionFeaturesExtractor  # noqa: E402
 from web_testing_agent.agents.go_explore import Archive  # noqa: E402
 from web_testing_agent.agents.masked_dqn import MaskedDQN  # noqa: E402
@@ -127,7 +132,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--arms", nargs="+",
         default=["dqn_masked", "ac_dqn", "random_masked"],
-        choices=["dqn_unmasked", "dqn_masked", "ac_dqn", "random_unmasked", "random_masked"],
+        choices=["dqn_unmasked", "dqn_masked", "ac_dqn", "contextual_bandit",
+                 "random_unmasked", "random_masked"],
         help="which policies to run. The default is the Phase 1-4 comparison: the new "
              "action-conditioned agent against the existing masked DQN and masked random.",
     )
@@ -139,6 +145,50 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--exploration-fraction", type=float, default=0.6)
     parser.add_argument("--final-eps", type=float, default=0.10)
     parser.add_argument("--out", type=Path, default=None)
+
+    # -- diagnostics. Every one of these is off by default; with all of them off the code
+    #    path is the pre-instrumentation one exactly (`callback=None`, the unmodified
+    #    replay buffer, no saves). Switched on, they consume no randomness and mutate no
+    #    training state — measured, not asserted, by test_diagnostics.py's
+    #    `test_instrumented_training_is_bit_identical_to_uninstrumented_training`,
+    #    which replays a fixed observation stream because the browser harness itself is
+    #    intermittently non-deterministic and cannot serve as the control (see
+    #    `scripts/check_probe_rng_neutrality.py --replicates`).
+    diag = parser.add_argument_group(
+        "diagnostics (ac_dqn arm only; all off by default and RNG-neutral when on)"
+    )
+    diag.add_argument(
+        "--dueling", dest="dueling", action="store_true", default=True,
+        help="action-conditioned head uses Q = V(s) + A(s,a) - mean_a' A(s,a'). The "
+             "default, and what every ac_dqn figure in PROJECT_CONTEXT was measured on.",
+    )
+    diag.add_argument(
+        "--no-dueling", dest="dueling", action="store_false",
+        help="plain Q(s,a) head. Until now `ActionConditionedQNetwork(dueling=...)` was "
+             "unreachable from this script, so diag_ac_3seed_deep_nodueling.json could "
+             "not be regenerated from the repository.",
+    )
+    diag.add_argument(
+        "--save-checkpoints", type=Path, default=None, metavar="DIR",
+        help="write <arm>_seed<k>_{init,final}.zip. The initial network is saved too: "
+             "the Q-gap at initialization is not recoverable once training has started.",
+    )
+    diag.add_argument(
+        "--probe-q", type=str, default=None, metavar="URL_SUBSTRING",
+        help="record Q(--probe-actions) at a FIXED observation captured the first time "
+             "the agent reaches a page whose URL contains this, e.g. 'order-4.html'.",
+    )
+    diag.add_argument(
+        "--probe-actions", nargs=2, default=["Place order", "Back"], metavar=("A", "B"),
+        help="the two controls whose Q-values the probe compares, by visible label.",
+    )
+    diag.add_argument("--probe-every", type=int, default=250, metavar="STEPS")
+    diag.add_argument(
+        "--tag-transitions", type=str, default=None, metavar="URL_SUBSTRING",
+        help="count how many stored n-step windows touch this page and how often PER "
+             "draws them, e.g. 'receipt.html'. Bookkeeping only — the draws themselves "
+             "come from the unmodified buffer.",
+    )
     return parser.parse_args()
 
 
@@ -244,6 +294,44 @@ ANSWER_KEY_MARKERS: dict[str, dict[str, str]] = {
 }
 
 
+def build_bandit_agent(venv, seed: int, train_steps: int, args):
+    """The myopic baseline, on byte-identical hyperparameters to `build_ac_agent`.
+
+    Every argument below is copied from the AC-DQN arm deliberately, including the ones a
+    bandit does not conceptually need (`gamma`, `target_update_interval`): leaving them at
+    the same values keeps the two constructors diffable, and `ContextualBandit` ignores
+    both — `gamma` never enters its target and it never updates a target network. The
+    differences that matter are `dueling=False` (a plain scalar head instead of a value
+    plus centred advantage) and `n_step=1`.
+    """
+    return ContextualBandit(
+        "ACDQNPolicy",
+        venv,
+        learning_rate=1e-4,
+        buffer_size=10_000,
+        batch_size=32,
+        gamma=0.99,
+        exploration_fraction=args.exploration_fraction,
+        exploration_initial_eps=1.0,
+        exploration_final_eps=args.final_eps,
+        target_update_interval=max(100, train_steps // 20),
+        learning_starts=min(500, train_steps // 8),
+        train_freq=4,
+        gradient_steps=2,
+        n_step=1,
+        policy_kwargs={
+            "features_extractor_class": ACStateExtractor,
+            "features_extractor_kwargs": {"features_dim": FUSED_DIM + EPISODE_CONTEXT_DIM},
+            "net_arch": [],
+            # No value stream and no advantage centring: the head emits one scalar per
+            # action, which is the predicted immediate reward.
+            "dueling": False,
+        },
+        seed=seed,
+        verbose=0,
+    )
+
+
 def build_ac_agent(venv, seed: int, train_steps: int, args):
     """Action-conditioned Double DQN with PER and n-step returns.
 
@@ -257,7 +345,17 @@ def build_ac_agent(venv, seed: int, train_steps: int, args):
       enough to learn anything; this doubles it at no wall-clock cost worth measuring.
     * `buffer_size` 50,000 -> 10,000. Nothing is ever evicted at a 4,000-step budget, and
       the action-feature block makes each observation ~4x wider.
+
+    `--no-dueling` and `--tag-transitions` reach the agent from here. With neither set,
+    every argument below is what it was before the diagnostics existed.
     """
+    extra: dict = {}
+    if args.tag_transitions:
+        # A subclass of the production buffer that records which stored windows touch a
+        # page and how often they are drawn. It delegates every decision to the base
+        # class; see `agents/diagnostics.py`.
+        extra["replay_buffer_class"] = TaggedPrioritizedNStepReplayBuffer
+        extra["replay_buffer_kwargs"] = {"tag_match": args.tag_transitions}
     return ActionConditionedDQN(
         "ACDQNPolicy",
         venv,
@@ -277,9 +375,11 @@ def build_ac_agent(venv, seed: int, train_steps: int, args):
             "features_extractor_class": ACStateExtractor,
             "features_extractor_kwargs": {"features_dim": FUSED_DIM + EPISODE_CONTEXT_DIM},
             "net_arch": [],
+            "dueling": args.dueling,
         },
         seed=seed,
         verbose=0,
+        **extra,
     )
 
 
@@ -330,6 +430,21 @@ def attribute_findings(report, site: str) -> dict:
         "findings_attributed": matched_findings,
         "findings_unattributed": report.distinct_findings - matched_findings,
     }
+
+
+def _save_checkpoint(model, directory: Path, label: str, seed: int, phase: str) -> Path:
+    """`<label>_seed<k>_<phase>.zip`, and say where it went.
+
+    Checkpointing lives here rather than in a callback because the two moments that
+    matter are before the first gradient step and after the last one. README told a
+    reader to regenerate `models/checkpoints/` with this script; until now the script
+    saved nothing at all, so that instruction could not have worked.
+    """
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / f"{label}_seed{seed}_{phase}.zip"
+    model.save(path)
+    logger.info("saved {} checkpoint -> {}", phase, path)
+    return path
 
 
 def evaluate(base_url: str, label: str, policy_factory, args, seed: int) -> tuple:
@@ -422,12 +537,21 @@ def persist(out: Path, args, per_seed: dict, complete: bool) -> None:
     """
     summaries = {label: aggregate(runs) for label, runs in per_seed.items() if runs}
     completed = sorted({run["seed"] for runs in per_seed.values() for run in runs})
+    # (seed, replicate) per arm. `seeds_completed` alone cannot describe a run-to-run
+    # variance study, where the same seed is deliberately run more than once.
+    runs_completed = {
+        label: [[run["seed"], run.get("replicate")] for run in runs]
+        for label, runs in per_seed.items()
+    }
     payload = {
         "site": args.site,
         "encoders": args.encoders,
         "complete": complete,
         "seeds_requested": list(args.seeds),
         "seeds_completed": completed,
+        "seed_sequence": list(args.seeds),
+        "runs_completed": runs_completed,
+        "repeated_seeds": len(args.seeds) != len(set(args.seeds)),
         "arms_completed": {label: len(runs) for label, runs in per_seed.items()},
         "args": vars(args) | {"out": str(out)},
         "summary": summaries,
@@ -475,8 +599,13 @@ def main() -> None:
         base_url = f"{origin}/index.html"
         logger.info("{} fixture at {}", args.site, base_url)
 
-        for seed in args.seeds:
-            logger.info("################ seed {} ################", seed)
+        # `--seeds` may legitimately repeat a value: the sampling unit of a
+        # run-to-run variance study is the **run**, not the distinct seed, and this
+        # harness is now known to diverge between two runs at one seed. `replicate` is
+        # what keeps those runs distinguishable in the report — without it three
+        # records all say `"seed": 0` and `seeds_completed` dedupes them to `[0]`.
+        for replicate, seed in enumerate(args.seeds):
+            logger.info("############ seed {} (replicate {}) ############", seed, replicate)
 
             # -- flat-head DQN arms (unchanged; the baselines the new agent is measured
             #    against, built by the same `build_agent` that produced every published
@@ -512,7 +641,8 @@ def main() -> None:
                 per_seed.setdefault(name, []).append(
                     {**report.to_dict(), "flow": flow,
                      "attribution": attribute_findings(report, args.site),
-                     "seed": seed, "train_seconds": round(train_s, 1)}
+                     "seed": seed, "replicate": replicate,
+                     "train_seconds": round(train_s, 1)}
                 )
                 logger.info("{} seed {}: {}", name, seed, flow)
                 persist(out, args, per_seed, complete=False)
@@ -544,11 +674,33 @@ def main() -> None:
                 )
                 started = time.monotonic()
                 model = build_ac_agent(venv, seed, args.train_steps, args)
+                # Saved before `learn`, because the initial weights are the one thing
+                # that cannot be recovered afterwards — and the Q-gap they produce at
+                # `order-4` is what the deadlock diagnosis turns on.
+                if args.save_checkpoints:
+                    _save_checkpoint(model, args.save_checkpoints, "ac_dqn", seed, "init")
+                probe = (
+                    QGapProbe(args.probe_q, *args.probe_actions, probe_every=args.probe_every)
+                    if args.probe_q else None
+                )
                 try:
-                    model.learn(total_timesteps=args.train_steps, progress_bar=False)
+                    # `callback=None` is what SB3 receives when no probe is configured,
+                    # which is exactly the pre-instrumentation call.
+                    model.learn(total_timesteps=args.train_steps, progress_bar=False,
+                                callback=probe)
                 finally:
                     venv.close()
                 train_s = time.monotonic() - started
+                if args.save_checkpoints:
+                    _save_checkpoint(model, args.save_checkpoints, "ac_dqn", seed, "final")
+                diagnostics = {}
+                if probe is not None:
+                    diagnostics["q_probe"] = probe.to_dict()
+                if isinstance(model.replay_buffer, TaggedPrioritizedNStepReplayBuffer):
+                    diagnostics["tagged_transitions"] = {
+                        "tag_match": args.tag_transitions,
+                        **model.replay_buffer.stats(),
+                    }
 
                 # Evaluation starts at the landing page with no archive and no route
                 # replay, exactly like every other arm. Handing this agent its archive at
@@ -565,14 +717,79 @@ def main() -> None:
                 per_seed.setdefault("ac_dqn", []).append(
                     {**report.to_dict(), "flow": flow,
                      "attribution": attribute_findings(report, args.site),
-                     "seed": seed, "train_seconds": round(train_s, 1),
+                     "seed": seed, "replicate": replicate,
+                     "train_seconds": round(train_s, 1),
                      # Route replay is outside the step budget and inside the cost. A
                      # comparison matched on env steps alone hands this arm free browser
                      # actions, so the count is reported rather than absorbed.
                      "archive": {**stats, "cells": len(archive.cells)},
-                     "training_browser_actions": args.train_steps + stats["replayed_actions"]}
+                     "training_browser_actions": args.train_steps + stats["replayed_actions"],
+                     **({"diagnostics": diagnostics} if diagnostics else {})}
                 )
                 logger.info("ac_dqn seed {}: {} archive={}", seed, flow, stats)
+                persist(out, args, per_seed, complete=False)
+
+            # -- the myopic baseline -------------------------------------------------
+            # Deliberately a copy of the ac_dqn block rather than a refactor of it. The
+            # two arms must differ only in the learning rule, and the safest way to
+            # guarantee that is to leave the arm this experiment is measured against
+            # completely untouched.
+            if "contextual_bandit" in args.arms:
+                logger.info("=== training contextual_bandit (seed {}) for {} steps ===",
+                            seed, args.train_steps)
+                archive = Archive()
+                action_features = ActionFeatureExtractor()
+                wrappers = {}
+
+                def _make_bandit_env(a=archive, s=seed, holder=wrappers):
+                    inner = WebFunctionalEnv(
+                        base_url=base_url, max_steps=args.episode_steps, headless=True
+                    )
+                    wrapped = ArchiveStartWrapper(inner, a, p_return=args.p_return, seed=s)
+                    holder["archive_wrapper"] = wrapped
+                    return Monitor(wrapped)
+
+                venv = DummyVecEnv([_make_bandit_env])
+                venv = SemanticPerceptionWrapper(
+                    venv, encoders=encoders, action_features=action_features
+                )
+                started = time.monotonic()
+                model = build_bandit_agent(venv, seed, args.train_steps, args)
+                if args.save_checkpoints:
+                    _save_checkpoint(model, args.save_checkpoints,
+                                     "contextual_bandit", seed, "init")
+                try:
+                    model.learn(total_timesteps=args.train_steps, progress_bar=False)
+                finally:
+                    venv.close()
+                train_s = time.monotonic() - started
+                if args.save_checkpoints:
+                    _save_checkpoint(model, args.save_checkpoints,
+                                     "contextual_bandit", seed, "final")
+
+                # Same evaluation call as every other arm: landing page, no archive, no
+                # route replay, `--eval-epsilon` residual exploration.
+                report, flow = evaluate(
+                    base_url, "contextual_bandit",
+                    lambda env, m=model, s=seed, af=action_features: TrainedPolicy(
+                        m, encoders, epsilon=args.eval_epsilon, masked=True, seed=s,
+                        action_features=af,
+                    ),
+                    args, seed,
+                )
+                stats = wrappers["archive_wrapper"].stats.to_dict()
+                per_seed.setdefault("contextual_bandit", []).append(
+                    {**report.to_dict(), "flow": flow,
+                     "attribution": attribute_findings(report, args.site),
+                     "seed": seed, "replicate": replicate,
+                     "train_seconds": round(train_s, 1),
+                     "archive": {**stats, "cells": len(archive.cells)},
+                     "training_browser_actions": args.train_steps + stats["replayed_actions"],
+                     "algorithm": model.algorithm,
+                     "bootstrapping": False,
+                     "n_step_effective": model.n_step}
+                )
+                logger.info("contextual_bandit seed {}: {} archive={}", seed, flow, stats)
                 persist(out, args, per_seed, complete=False)
 
             # -- random baselines ----------------------------------------------------
@@ -586,7 +803,8 @@ def main() -> None:
                 )
                 per_seed.setdefault(label, []).append(
                     {**report.to_dict(), "flow": flow,
-                     "attribution": attribute_findings(report, args.site), "seed": seed}
+                     "attribution": attribute_findings(report, args.site),
+                     "seed": seed, "replicate": replicate}
                 )
                 logger.info("{} seed {}: {}", label, seed, flow)
                 persist(out, args, per_seed, complete=False)

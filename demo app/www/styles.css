@@ -1,0 +1,45 @@
+:root {
+  color-scheme: light;
+  --ink: #17212b;
+  --muted: #61707d;
+  --paper: #f5f1e8;
+  --panel: #fffdf8;
+  --line: #d9d2c5;
+  --teal: #0f766e;
+  --coral: #d95d39;
+  --gold: #e3a624;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--paper);
+  font: 16px/1.55 Georgia, "Times New Roman", serif;
+}
+a { color: var(--teal); }
+.shell { max-width: 1050px; margin: 0 auto; padding: 28px 22px 64px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 56px; }
+.brand { color: var(--ink); font-size: 1.2rem; font-weight: bold; letter-spacing: .04em; text-decoration: none; }
+nav { display: flex; flex-wrap: wrap; gap: 18px; }
+nav a { font-family: "Segoe UI", sans-serif; font-size: .9rem; text-decoration: none; }
+.hero { max-width: 710px; margin-bottom: 42px; }
+.kicker { color: var(--coral); font: 700 .75rem/1.2 "Segoe UI", sans-serif; letter-spacing: .14em; text-transform: uppercase; }
+h1 { max-width: 700px; margin: 10px 0 16px; font-size: clamp(2.8rem, 7vw, 5.5rem); line-height: .98; letter-spacing: -.04em; }
+h2 { margin-top: 0; font-size: 1.7rem; }
+.lede { color: var(--muted); font-size: 1.18rem; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.panel { min-height: 180px; padding: 22px; border: 1px solid var(--line); background: var(--panel); }
+.panel h2 { margin-bottom: 8px; }
+.panel p { color: var(--muted); }
+.button, button { display: inline-block; border: 0; padding: 11px 16px; color: white; background: var(--teal); font: 700 .9rem "Segoe UI", sans-serif; cursor: pointer; }
+.button.secondary { color: var(--ink); background: #e8dfcf; }
+form { max-width: 680px; padding: 28px; border: 1px solid var(--line); background: var(--panel); }
+label { display: block; margin: 0 0 7px; font: 700 .85rem "Segoe UI", sans-serif; }
+.field { margin-bottom: 20px; }
+input, textarea, select { width: 100%; border: 1px solid #bdb4a5; padding: 11px; color: var(--ink); background: #fff; font: inherit; }
+textarea { min-height: 145px; resize: vertical; }
+.hint, .status { color: var(--muted); font: .86rem "Segoe UI", sans-serif; }
+.status { min-height: 26px; margin-top: 14px; }
+.warning { border-left: 4px solid var(--gold); padding: 10px 14px; background: #fff8df; }
+@media (max-width: 720px) { .topbar { align-items: flex-start; flex-direction: column; margin-bottom: 36px; } .grid { grid-template-columns: 1fr; } h1 { font-size: 3.2rem; } }

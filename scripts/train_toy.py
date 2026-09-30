@@ -72,10 +72,25 @@ ANSWER_KEY = TOY_SITE / "answer_key.json"
 class KeepBestByTrainingReturn(BaseCallback):
     """Snapshot the best policy seen during training, by rolling episode return.
 
-    DQN on this task is not monotonic: the measured curve peaked at +10.10 around step
-    2200 (3.4x the random baseline) and then declined for the next 5000 steps to -32.50.
-    Evaluating whatever policy happens to exist at `total_timesteps` therefore measures
-    the end of the collapse rather than what the algorithm achieved.
+    **RETIRED 2026-09-02, and off unless `--keep-best-checkpoint` is passed.** The
+    selector is confounded by the epsilon schedule and it selects noise. Measured on both
+    the 2026-08-27 and 2026-08-28 runs, on all three seeds of each: the masked arm's
+    "best" checkpoint is taken at step **481-521 of 4,000**, immediately after
+    `learning_starts=500`, while epsilon is still ~0.87. Its high rolling training return
+    (+4.7 to +10.4) is what *masked random* earns on this reward, credited to a policy
+    that was barely acting — and evaluated greedily at epsilon=0.05 that checkpoint scores
+    *worse* than the final policy (3 unique states against 9). The unmasked arm never
+    shows it only because its training return is bad throughout, so its best checkpoint
+    lands late.
+
+    So the "(best)" rows were never a policy the algorithm achieved; they were a snapshot
+    of the exploration schedule. PROJECT_CONTEXT has said "cite the final-policy rows"
+    since 2026-08-28 while this script still produced the other ones by default.
+
+    Kept rather than deleted, because the published `toy_dqn_comparison_v*` reports
+    contain those rows and a reader has to be able to regenerate what they are looking
+    at. Fixing it properly means comparing at matched epsilon or running a held-out
+    greedy evaluation, and that is an experiment, not a cleanup.
 
     Uses SB3's `ep_info_buffer` (populated by the `Monitor` wrapper) rather than a second
     eval env, because an eval env here means a second Chromium and a large share of the
@@ -116,6 +131,14 @@ def parse_args() -> argparse.Namespace:
              "static fixture is an identical replay of one trajectory and --eval-episodes "
              "reports one sample N times, while the random baselines it is compared "
              "against remain genuinely stochastic.",
+    )
+    parser.add_argument(
+        "--keep-best-checkpoint", action="store_true",
+        help="also evaluate the best-by-rolling-training-return checkpoint, the '(best)' "
+             "rows in `toy_dqn_comparison_v*.json`. OFF by default: the selector is "
+             "confounded by the epsilon schedule and picks a barely-trained network at "
+             "step ~500 of 4,000 (see KeepBestByTrainingReturn). Pass it only to "
+             "regenerate a historical report, never to produce a new figure.",
     )
     parser.add_argument("--skip-train", action="store_true", help="load --model instead of training")
     parser.add_argument("--model", type=Path, default=REPO_ROOT / "models" / "checkpoints" / "dqn_toy.zip")
@@ -208,11 +231,16 @@ def _answer_key_hits(report: RolloutReport) -> dict:
 
 
 def train_arm(base_url: str, args, masked: bool) -> tuple:
-    """Train one DQN arm and return (best_model, final_model_or_None, meta).
+    """Train one DQN arm and return (model_to_report, extra_model_or_None, meta).
 
     Both arms are built by the same `build_dqn`, trained for the same number of steps,
     on the same seed, against the same fixture, and are scored below through the same
     `run_rollout`. The masking is the only difference between them.
+
+    By default the model returned first is the **final** policy and the second is None.
+    With `--keep-best-checkpoint` the historical arrangement is restored: first the
+    best-by-training-return checkpoint, second the final policy. See
+    `KeepBestByTrainingReturn` for why that ordering was retired.
     """
     name = "dqn_masked" if masked else "dqn_unmasked"
     suffix = "masked" if masked else "unmasked"
@@ -234,9 +262,11 @@ def train_arm(base_url: str, args, masked: bool) -> tuple:
     model = build_dqn(venv, args.seed, args.episode_steps, args.train_steps, masked=masked)
     logger.info("Training {} for {} steps...", name, args.train_steps)
     best_path = model_path.with_name(model_path.stem + "_best.zip")
-    keeper = KeepBestByTrainingReturn(best_path)
+    keeper = KeepBestByTrainingReturn(best_path) if args.keep_best_checkpoint else None
     started = time.monotonic()
     with contextlib.closing(venv):
+        # `callback=None` is what SB3 receives by default now, which is also what it
+        # received before this callback was written.
         model.learn(total_timesteps=args.train_steps, callback=keeper, progress_bar=False)
     train_seconds = time.monotonic() - started
     model_path.parent.mkdir(parents=True, exist_ok=True)
@@ -244,12 +274,14 @@ def train_arm(base_url: str, args, masked: bool) -> tuple:
     logger.info("{} trained in {:.1f}s ({:.2f} steps/s); final -> {}",
                 name, train_seconds, args.train_steps / train_seconds, model_path)
 
-    meta = {"train_seconds": round(train_seconds, 1)}
+    meta = {"train_seconds": round(train_seconds, 1),
+            "best_checkpoint_selection": bool(args.keep_best_checkpoint)}
     final_model = None
-    if keeper.best_step:
+    if keeper is not None and keeper.best_step:
         # Report both the final policy and the best one seen. If they differ a lot,
         # training was unstable and that instability is itself the result.
-        logger.info("{}: best training return {:+.2f} at step {}",
+        logger.info("{}: best training return {:+.2f} at step {} (epsilon at that step "
+                    "is what makes this row uncitable — see KeepBestByTrainingReturn)",
                     name, keeper.best_mean, keeper.best_step)
         final_model, model = model, cls.load(best_path, device="auto")
         meta.update({"best_mean_training_return": round(keeper.best_mean, 2),
@@ -271,23 +303,28 @@ def main() -> None:
         eval_encoders = default_encoders()
 
         # --- both DQN arms: unmasked (the historical row) and masked (the fair one) --
+        # By default the primary row IS the final policy and there is no second row.
+        # With --keep-best-checkpoint the historical arrangement returns: primary is the
+        # best-by-training-return checkpoint, secondary is the final policy.
+        primary_label = "best" if args.keep_best_checkpoint else "final"
         for masked in (False, True):
             name = "dqn_masked" if masked else "dqn_unmasked"
-            best_model, final_model, meta = train_arm(base_url, args, masked)
+            primary_model, secondary_model, meta = train_arm(base_url, args, masked)
             arm_meta[name] = meta
             reports[name] = evaluate(
-                base_url, f"{name}-best",
-                # Bound at definition time: `best_model` is rebound each iteration, and a
-                # late-binding closure would score both arms against the last one trained.
-                lambda env, m=best_model: TrainedPolicy(
+                base_url, f"{name}-{primary_label}",
+                # Bound at definition time: `primary_model` is rebound each iteration,
+                # and a late-binding closure would score both arms against the last one
+                # trained.
+                lambda env, m=primary_model: TrainedPolicy(
                     m, eval_encoders, deterministic=True,
                     epsilon=args.eval_epsilon, seed=args.seed,
                 ), args,
             )
-            if final_model is not None:
+            if secondary_model is not None:
                 reports[f"{name}_final"] = evaluate(
                     base_url, f"{name}-final",
-                    lambda env, m=final_model: TrainedPolicy(
+                    lambda env, m=secondary_model: TrainedPolicy(
                         m, eval_encoders, deterministic=True,
                         epsilon=args.eval_epsilon, seed=args.seed,
                     ), args,
@@ -317,9 +354,9 @@ def main() -> None:
         ("steps/s", lambda r: f"{r.steps_per_second:.2f}"),
     ]
     order = [
-        ("DQN unmasked (best)", "dqn_unmasked"),
+        (f"DQN unmasked ({primary_label})", "dqn_unmasked"),
         ("DQN unmasked (final)", "dqn_unmasked_final"),
-        ("DQN masked (best)", "dqn_masked"),
+        (f"DQN masked ({primary_label})", "dqn_masked"),
         ("DQN masked (final)", "dqn_masked_final"),
         ("Random (full)", "random_full"),
         ("Random (masked)", "random_masked"),
@@ -354,6 +391,11 @@ def main() -> None:
             "reward_model": "NullRewardModel (deterministic triggers only)",
             "encoders": "HashEmbeddingEncoder stand-ins (no semantics)",
             "self_link_trigger_fix": True,
+            # Which policy the primary DQN rows are. Recorded because every
+            # `toy_dqn_comparison_v*.json` written before 2026-09-02 has them as the
+            # best-by-training-return checkpoint, and that selector is retired.
+            "primary_dqn_row": primary_label,
+            "keep_best_checkpoint": bool(args.keep_best_checkpoint),
             "arms": arm_meta,
         },
         "results": {

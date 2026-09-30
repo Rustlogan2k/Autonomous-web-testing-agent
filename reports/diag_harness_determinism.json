@@ -1,0 +1,86 @@
+{
+  "_purpose": "How often do identical runs agree bit-for-bit, with and without the diagnostics? A single A-vs-B pair cannot separate an intermittent harness from an instrumentation effect.",
+  "steps": 200,
+  "seed": 0,
+  "replicates": 4,
+  "p_return": 0.5,
+  "groups": {
+    "uninstrumented": {
+      "pairs": 6,
+      "identical": 6,
+      "agreement_rate": 1.0,
+      "divergences": [],
+      "detail": [
+        {
+          "a": 0,
+          "b": 1,
+          "identical": true
+        },
+        {
+          "a": 0,
+          "b": 2,
+          "identical": true
+        },
+        {
+          "a": 0,
+          "b": 3,
+          "identical": true
+        },
+        {
+          "a": 1,
+          "b": 2,
+          "identical": true
+        },
+        {
+          "a": 1,
+          "b": 3,
+          "identical": true
+        },
+        {
+          "a": 2,
+          "b": 3,
+          "identical": true
+        }
+      ]
+    },
+    "instrumented": {
+      "pairs": 6,
+      "identical": 6,
+      "agreement_rate": 1.0,
+      "divergences": [],
+      "detail": [
+        {
+          "a": 0,
+          "b": 1,
+          "identical": true
+        },
+        {
+          "a": 0,
+          "b": 2,
+          "identical": true
+        },
+        {
+          "a": 0,
+          "b": 3,
+          "identical": true
+        },
+        {
+          "a": 1,
+          "b": 2,
+          "identical": true
+        },
+        {
+          "a": 1,
+          "b": 3,
+          "identical": true
+        },
+        {
+          "a": 2,
+          "b": 3,
+          "identical": true
+        }
+      ]
+    }
+  },
+  "wall_clock_s": 613.1
+}

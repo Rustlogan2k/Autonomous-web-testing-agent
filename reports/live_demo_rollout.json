@@ -1,0 +1,1161 @@
+{
+  "target": "http://127.0.0.1:8001/index.html",
+  "episodes": 2,
+  "steps_per_episode": 25,
+  "seed": 0,
+  "wall_clock_s": 20.2,
+  "rollout": {
+    "label": "judged-random",
+    "target_url": "http://127.0.0.1:8001/index.html",
+    "episodes": 2,
+    "steps": 50,
+    "wall_clock_s": 20.05,
+    "steps_per_second": 2.494,
+    "total_reward": 12.407,
+    "mean_episode_reward": 6.204,
+    "episode_rewards": [
+      12.2,
+      0.207
+    ],
+    "unique_states": 7,
+    "valid_action_rate": 1.0,
+    "exec_success_rate": 0.86,
+    "noop_steps": 9,
+    "distinct_findings": 5,
+    "trigger_counts": {
+      "broken_navigation": 1,
+      "console_error": 3,
+      "document_http_error": 1,
+      "http_error": 1
+    },
+    "findings": [
+      {
+        "trigger": "console_error",
+        "url": "http://127.0.0.1:8001/catalog.html",
+        "action": "CLICK",
+        "element": "Export catalog",
+        "detail": "Cannot read properties of undefined (reading 'run')",
+        "first_seen_step": 12,
+        "times_seen": 2
+      },
+      {
+        "trigger": "console_error",
+        "url": "http://127.0.0.1:8001/pricing.html",
+        "action": "CLICK",
+        "element": "Pricing",
+        "detail": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "first_seen_step": 20,
+        "times_seen": 1
+      },
+      {
+        "trigger": "http_error",
+        "url": "http://127.0.0.1:8001/pricing.html",
+        "action": "CLICK",
+        "element": "Pricing",
+        "detail": "404 http://127.0.0.1:8001/pricing.html",
+        "first_seen_step": 20,
+        "times_seen": 1
+      },
+      {
+        "trigger": "document_http_error",
+        "url": "http://127.0.0.1:8001/pricing.html",
+        "action": "CLICK",
+        "element": "Pricing",
+        "detail": "",
+        "first_seen_step": 20,
+        "times_seen": 1
+      },
+      {
+        "trigger": "broken_navigation",
+        "url": "http://127.0.0.1:8001/pricing.html",
+        "action": "CLICK",
+        "element": "Pricing",
+        "detail": "http://127.0.0.1:8001/pricing.html",
+        "first_seen_step": 20,
+        "times_seen": 1
+      }
+    ]
+  },
+  "judge": {
+    "judge": "stub",
+    "grounded": false,
+    "profile": null,
+    "calls": 17,
+    "failed_calls": 0,
+    "min_confidence": 0.0,
+    "judge_seconds": 0.0,
+    "seconds_per_call": 0.0,
+    "gate": {
+      "steps": 50,
+      "judged": 17,
+      "skipped": 33,
+      "judged_fraction": 0.34,
+      "reasons": {
+        "the page changed": 15,
+        "idle no-op": 9,
+        "RESIZE_VIEWPORT promises no effect and changed nothing": 7,
+        "action did not execute and changed nothing": 7,
+        "SCROLL promises no effect and changed nothing": 5,
+        "TYPE promises no effect and changed nothing": 3,
+        "activated a control that promises an effect": 2,
+        "REFRESH promises no effect and changed nothing": 2
+      }
+    },
+    "positives": 0
+  },
+  "verdicts": [
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 1,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 1,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-contact\"]",
+          "element": "Contact",
+          "description": "click 'Contact'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "contact.html"
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Widget Co \u2014 Home\n  headings   : Widget Co\n  links      : Catalog -> catalog.html; Contact -> contact.html; Pricing -> pricing.html\n  text       : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 1\n  action     : CLICK on 'Contact'\n  selector   : [id=\"nav-contact\"]\n  url        : /index.html -> /contact.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Contact'\n  form state : message: absent -> empty; name: absent -> empty\n  constraints: message declares [type=text maxlength=20]; name declares [type=text required]\n  page text  : Widget Co \u2014 Contact | Contact us | Home | Send\n\nJudge STEP 1."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 2,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 1,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-contact\"]",
+          "element": "Contact",
+          "description": "click 'Contact'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "contact.html"
+          }
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"name\"]",
+          "element": "name",
+          "description": "type boundary_min into 'name'",
+          "params": {
+            "value": "a",
+            "category": "boundary_min",
+            "in_viewport": true
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Widget Co \u2014 Home\n  headings   : Widget Co\n  links      : Catalog -> catalog.html; Contact -> contact.html; Pricing -> pricing.html\n  text       : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 1\n  action     : CLICK on 'Contact'\n  selector   : [id=\"nav-contact\"]\n  url        : /index.html -> /contact.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Contact'\n  form state : message: absent -> empty; name: absent -> empty\n  constraints: message declares [type=text maxlength=20]; name declares [type=text required]\n  page text  : Widget Co \u2014 Contact | Contact us | Home | Send\n\nSTEP 2\n  action     : TYPE on 'name' with value 'a'\n  selector   : [id=\"name\"]\n  url        : /contact.html (unchanged)\n  form state : name: empty -> filled\n  constraints: name declares [type=text required]\n  field value: name: '' -> 'a'\n\nJudge STEP 2."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 3,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 1,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-contact\"]",
+          "element": "Contact",
+          "description": "click 'Contact'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "contact.html"
+          }
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"name\"]",
+          "element": "name",
+          "description": "type boundary_min into 'name'",
+          "params": {
+            "value": "a",
+            "category": "boundary_min",
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"name\"]",
+          "element": "name",
+          "description": "type valid_typical into 'name'",
+          "params": {
+            "value": "Test User Input",
+            "category": "valid_typical",
+            "in_viewport": true
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Widget Co \u2014 Home\n  headings   : Widget Co\n  links      : Catalog -> catalog.html; Contact -> contact.html; Pricing -> pricing.html\n  text       : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 1\n  action     : CLICK on 'Contact'\n  selector   : [id=\"nav-contact\"]\n  url        : /index.html -> /contact.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Contact'\n  form state : message: absent -> empty; name: absent -> empty\n  constraints: message declares [type=text maxlength=20]; name declares [type=text required]\n  page text  : Widget Co \u2014 Contact | Contact us | Home | Send\n\nSTEP 2\n  action     : TYPE on 'name' with value 'a'\n  selector   : [id=\"name\"]\n  url        : /contact.html (unchanged)\n  form state : name: empty -> filled\n  constraints: name declares [type=text required]\n  field value: name: '' -> 'a'\n\nSTEP 3\n  action     : TYPE on 'name' with value 'Test User Input'\n  selector   : [id=\"name\"]\n  url        : /contact.html (unchanged)\n  field value: name: 'a' -> 'Test User Input'\n\nJudge STEP 3."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 5,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 1,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-contact\"]",
+          "element": "Contact",
+          "description": "click 'Contact'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "contact.html"
+          }
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"name\"]",
+          "element": "name",
+          "description": "type boundary_min into 'name'",
+          "params": {
+            "value": "a",
+            "category": "boundary_min",
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"name\"]",
+          "element": "name",
+          "description": "type valid_typical into 'name'",
+          "params": {
+            "value": "Test User Input",
+            "category": "valid_typical",
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "RESIZE_VIEWPORT",
+          "selector": null,
+          "element": "",
+          "description": "resize viewport to desktop",
+          "params": {
+            "preset": "desktop"
+          }
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Widget Co \u2014 Home\n  headings   : Widget Co\n  links      : Catalog -> catalog.html; Contact -> contact.html; Pricing -> pricing.html\n  text       : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 1\n  action     : CLICK on 'Contact'\n  selector   : [id=\"nav-contact\"]\n  url        : /index.html -> /contact.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Contact'\n  form state : message: absent -> empty; name: absent -> empty\n  constraints: message declares [type=text maxlength=20]; name declares [type=text required]\n  page text  : Widget Co \u2014 Contact | Contact us | Home | Send\n\nSTEP 2\n  action     : TYPE on 'name' with value 'a'\n  selector   : [id=\"name\"]\n  url        : /contact.html (unchanged)\n  form state : name: empty -> filled\n  constraints: name declares [type=text required]\n  field value: name: '' -> 'a'\n\nSTEP 3\n  action     : TYPE on 'name' with value 'Test User Input'\n  selector   : [id=\"name\"]\n  url        : /contact.html (unchanged)\n  field value: name: 'a' -> 'Test User Input'\n\nSTEP 4\n  action     : RESIZE_VIEWPORT with value 'desktop'\n  url        : /contact.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : BROWSER_BACK\n  url        : /contact.html -> /index.html\n  title      : 'Widget Co \u2014 Contact' -> 'Widget Co \u2014 Home'\n  page text  : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nJudge STEP 5."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 10,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 1,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll down",
+          "params": {
+            "direction": "down",
+            "amount": 600
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-catalog\"]",
+          "element": "Catalog",
+          "description": "click 'Catalog'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "catalog.html"
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /contact.html\n  title      : Widget Co \u2014 Contact\n  headings   : Contact us\n  form state : name=filled, message=empty\n  declared   : name [type=text required]; message [type=text maxlength=20]\n  links      : Home -> index.html\n  text       : Widget Co \u2014 Contact | Contact us | Home | Send\n\nSTEP 1\n  action     : BROWSER_BACK\n  url        : /contact.html -> /index.html\n  title      : 'Widget Co \u2014 Contact' -> 'Widget Co \u2014 Home'\n  page text  : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 2\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : SCROLL\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : CLICK on 'Catalog'\n  selector   : [id=\"nav-catalog\"]\n  url        : /index.html -> /catalog.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Catalog'\n  page text  : Widget Co \u2014 Catalog | Catalog | Home | Blue widget | Red widget | Export catalog\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 12,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 1,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll down",
+          "params": {
+            "direction": "down",
+            "amount": 600
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-catalog\"]",
+          "element": "Catalog",
+          "description": "click 'Catalog'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "catalog.html"
+          }
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"btn-export\"]",
+          "element": "Export catalog",
+          "description": "click 'Export catalog'",
+          "params": {
+            "navigational": false,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": ""
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Widget Co \u2014 Home\n  headings   : Widget Co\n  links      : Catalog -> catalog.html; Contact -> contact.html; Pricing -> pricing.html\n  text       : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 1\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : SCROLL\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : CLICK on 'Catalog'\n  selector   : [id=\"nav-catalog\"]\n  url        : /index.html -> /catalog.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Catalog'\n  page text  : Widget Co \u2014 Catalog | Catalog | Home | Blue widget | Red widget | Export catalog\n\nSTEP 5\n  action     : BROWSER_FORWARD\n  FAILED     : no in-app history to go forward\n  url        : /catalog.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : CLICK on 'Export catalog'\n  selector   : [id=\"btn-export\"]\n  url        : /catalog.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'run')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 13,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 1,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll down",
+          "params": {
+            "direction": "down",
+            "amount": 600
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-catalog\"]",
+          "element": "Catalog",
+          "description": "click 'Catalog'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "catalog.html"
+          }
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"btn-export\"]",
+          "element": "Export catalog",
+          "description": "click 'Export catalog'",
+          "params": {
+            "navigational": false,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": ""
+          }
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Widget Co \u2014 Home\n  headings   : Widget Co\n  links      : Catalog -> catalog.html; Contact -> contact.html; Pricing -> pricing.html\n  text       : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 1\n  action     : NO_OP\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : SCROLL\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : CLICK on 'Catalog'\n  selector   : [id=\"nav-catalog\"]\n  url        : /index.html -> /catalog.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Catalog'\n  page text  : Widget Co \u2014 Catalog | Catalog | Home | Blue widget | Red widget | Export catalog\n\nSTEP 4\n  action     : BROWSER_FORWARD\n  FAILED     : no in-app history to go forward\n  url        : /catalog.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : CLICK on 'Export catalog'\n  selector   : [id=\"btn-export\"]\n  url        : /catalog.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'run')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : BROWSER_BACK\n  url        : /catalog.html -> /index.html\n  title      : 'Widget Co \u2014 Catalog' -> 'Widget Co \u2014 Home'\n  page text  : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 14,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 1,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll down",
+          "params": {
+            "direction": "down",
+            "amount": 600
+          }
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-catalog\"]",
+          "element": "Catalog",
+          "description": "click 'Catalog'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "catalog.html"
+          }
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"btn-export\"]",
+          "element": "Export catalog",
+          "description": "click 'Export catalog'",
+          "params": {
+            "navigational": false,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": ""
+          }
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Widget Co \u2014 Home\n  headings   : Widget Co\n  links      : Catalog -> catalog.html; Contact -> contact.html; Pricing -> pricing.html\n  text       : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 1\n  action     : SCROLL\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : CLICK on 'Catalog'\n  selector   : [id=\"nav-catalog\"]\n  url        : /index.html -> /catalog.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Catalog'\n  page text  : Widget Co \u2014 Catalog | Catalog | Home | Blue widget | Red widget | Export catalog\n\nSTEP 3\n  action     : BROWSER_FORWARD\n  FAILED     : no in-app history to go forward\n  url        : /catalog.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : CLICK on 'Export catalog'\n  selector   : [id=\"btn-export\"]\n  url        : /catalog.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'run')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : BROWSER_BACK\n  url        : /catalog.html -> /index.html\n  title      : 'Widget Co \u2014 Catalog' -> 'Widget Co \u2014 Home'\n  page text  : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 6\n  action     : BROWSER_FORWARD\n  url        : /index.html -> /catalog.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Catalog'\n  page text  : Widget Co \u2014 Catalog | Catalog | Home | Blue widget | Red widget | Export catalog\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 15,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 1,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-catalog\"]",
+          "element": "Catalog",
+          "description": "click 'Catalog'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "catalog.html"
+          }
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"btn-export\"]",
+          "element": "Export catalog",
+          "description": "click 'Export catalog'",
+          "params": {
+            "navigational": false,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": ""
+          }
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        },
+        {
+          "type": "RAPID_CLICK",
+          "selector": "[id=\"btn-export\"]",
+          "element": "Export catalog",
+          "description": "rapid-click 'Export catalog' x5",
+          "params": {
+            "n": 5,
+            "in_viewport": true
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Widget Co \u2014 Home\n  headings   : Widget Co\n  links      : Catalog -> catalog.html; Contact -> contact.html; Pricing -> pricing.html\n  text       : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 1\n  action     : CLICK on 'Catalog'\n  selector   : [id=\"nav-catalog\"]\n  url        : /index.html -> /catalog.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Catalog'\n  page text  : Widget Co \u2014 Catalog | Catalog | Home | Blue widget | Red widget | Export catalog\n\nSTEP 2\n  action     : BROWSER_FORWARD\n  FAILED     : no in-app history to go forward\n  url        : /catalog.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : CLICK on 'Export catalog'\n  selector   : [id=\"btn-export\"]\n  url        : /catalog.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'run')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : BROWSER_BACK\n  url        : /catalog.html -> /index.html\n  title      : 'Widget Co \u2014 Catalog' -> 'Widget Co \u2014 Home'\n  page text  : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 5\n  action     : BROWSER_FORWARD\n  url        : /index.html -> /catalog.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Catalog'\n  page text  : Widget Co \u2014 Catalog | Catalog | Home | Blue widget | Red widget | Export catalog\n\nSTEP 6\n  action     : RAPID_CLICK on 'Export catalog'\n  selector   : [id=\"btn-export\"]\n  url        : /catalog.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 18,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 1,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        },
+        {
+          "type": "RAPID_CLICK",
+          "selector": "[id=\"btn-export\"]",
+          "element": "Export catalog",
+          "description": "rapid-click 'Export catalog' x5",
+          "params": {
+            "n": 5,
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "REFRESH",
+          "selector": null,
+          "element": "",
+          "description": "REFRESH",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        }
+      ],
+      "window_text": "STARTING PAGE: /catalog.html\n  title      : Widget Co \u2014 Catalog\n  headings   : Catalog\n  links      : Home -> index.html\n  text       : Widget Co \u2014 Catalog | Catalog | Home | Blue widget | Red widget | Export catalog\n\nSTEP 1\n  action     : BROWSER_BACK\n  url        : /catalog.html -> /index.html\n  title      : 'Widget Co \u2014 Catalog' -> 'Widget Co \u2014 Home'\n  page text  : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 2\n  action     : BROWSER_FORWARD\n  url        : /index.html -> /catalog.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Catalog'\n  page text  : Widget Co \u2014 Catalog | Catalog | Home | Blue widget | Red widget | Export catalog\n\nSTEP 3\n  action     : RAPID_CLICK on 'Export catalog'\n  selector   : [id=\"btn-export\"]\n  url        : /catalog.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : REFRESH\n  url        : /catalog.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : BROWSER_FORWARD\n  FAILED     : no in-app history to go forward\n  url        : /catalog.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : BROWSER_BACK\n  url        : /catalog.html -> /index.html\n  title      : 'Widget Co \u2014 Catalog' -> 'Widget Co \u2014 Home'\n  page text  : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 20,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 1,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "RAPID_CLICK",
+          "selector": "[id=\"btn-export\"]",
+          "element": "Export catalog",
+          "description": "rapid-click 'Export catalog' x5",
+          "params": {
+            "n": 5,
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "REFRESH",
+          "selector": null,
+          "element": "",
+          "description": "REFRESH",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-pricing\"]",
+          "element": "Pricing",
+          "description": "click 'Pricing'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "pricing.html"
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /catalog.html\n  title      : Widget Co \u2014 Catalog\n  headings   : Catalog\n  links      : Home -> index.html\n  text       : Widget Co \u2014 Catalog | Catalog | Home | Blue widget | Red widget | Export catalog\n\nSTEP 1\n  action     : RAPID_CLICK on 'Export catalog'\n  selector   : [id=\"btn-export\"]\n  url        : /catalog.html (unchanged)\n  console    : Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run') | Cannot read properties of undefined (reading 'run')\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : REFRESH\n  url        : /catalog.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : BROWSER_FORWARD\n  FAILED     : no in-app history to go forward\n  url        : /catalog.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : BROWSER_BACK\n  url        : /catalog.html -> /index.html\n  title      : 'Widget Co \u2014 Catalog' -> 'Widget Co \u2014 Home'\n  page text  : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 5\n  action     : BROWSER_BACK\n  FAILED     : no in-app history to go back\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : CLICK on 'Pricing'\n  selector   : [id=\"nav-pricing\"]\n  url        : /index.html -> /pricing.html\n  title      : 'Widget Co \u2014 Home' -> 'Error response'\n  page text  : Error response | Error response | Error code: 404 | Message: File not found. | Error code explanation: 404 - Nothing matches the given URI.\n  console    : Failed to load resource: the server responded with a status of 404 (File not found)\n  http errors: 404 /pricing.html\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 23,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 1,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        },
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-pricing\"]",
+          "element": "Pricing",
+          "description": "click 'Pricing'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "pricing.html"
+          }
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll down",
+          "params": {
+            "direction": "down",
+            "amount": 600
+          }
+        },
+        {
+          "type": "BROWSER_FORWARD",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_FORWARD",
+          "params": {}
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        }
+      ],
+      "window_text": "STARTING PAGE: /catalog.html\n  title      : Widget Co \u2014 Catalog\n  headings   : Catalog\n  links      : Home -> index.html\n  text       : Widget Co \u2014 Catalog | Catalog | Home | Blue widget | Red widget | Export catalog\n\nSTEP 1\n  action     : BROWSER_BACK\n  url        : /catalog.html -> /index.html\n  title      : 'Widget Co \u2014 Catalog' -> 'Widget Co \u2014 Home'\n  page text  : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 2\n  action     : BROWSER_BACK\n  FAILED     : no in-app history to go back\n  url        : /index.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : CLICK on 'Pricing'\n  selector   : [id=\"nav-pricing\"]\n  url        : /index.html -> /pricing.html\n  title      : 'Widget Co \u2014 Home' -> 'Error response'\n  page text  : Error response | Error response | Error code: 404 | Message: File not found. | Error code explanation: 404 - Nothing matches the given URI.\n  console    : Failed to load resource: the server responded with a status of 404 (File not found)\n  http errors: 404 /pricing.html\n\nSTEP 4\n  action     : SCROLL\n  url        : /pricing.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : BROWSER_FORWARD\n  FAILED     : no in-app history to go forward\n  url        : /pricing.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : BROWSER_BACK\n  url        : /pricing.html -> /index.html\n  title      : 'Error response' -> 'Widget Co \u2014 Home'\n  page text  : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 1,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 2,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-contact\"]",
+          "element": "Contact",
+          "description": "click 'Contact'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "contact.html"
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Widget Co \u2014 Home\n  headings   : Widget Co\n  links      : Catalog -> catalog.html; Contact -> contact.html; Pricing -> pricing.html\n  text       : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 1\n  action     : CLICK on 'Contact'\n  selector   : [id=\"nav-contact\"]\n  url        : /index.html -> /contact.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Contact'\n  form state : message: absent -> empty; name: absent -> empty\n  constraints: message declares [type=text maxlength=20]; name declares [type=text required]\n  page text  : Widget Co \u2014 Contact | Contact us | Home | Send\n\nJudge STEP 1."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 2,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 2,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-contact\"]",
+          "element": "Contact",
+          "description": "click 'Contact'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "contact.html"
+          }
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"message\"]",
+          "element": "message",
+          "description": "type valid_typical into 'message'",
+          "params": {
+            "value": "Test User Input",
+            "category": "valid_typical",
+            "in_viewport": true
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Widget Co \u2014 Home\n  headings   : Widget Co\n  links      : Catalog -> catalog.html; Contact -> contact.html; Pricing -> pricing.html\n  text       : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 1\n  action     : CLICK on 'Contact'\n  selector   : [id=\"nav-contact\"]\n  url        : /index.html -> /contact.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Contact'\n  form state : message: absent -> empty; name: absent -> empty\n  constraints: message declares [type=text maxlength=20]; name declares [type=text required]\n  page text  : Widget Co \u2014 Contact | Contact us | Home | Send\n\nSTEP 2\n  action     : TYPE on 'message' with value 'Test User Input'\n  selector   : [id=\"message\"]\n  url        : /contact.html (unchanged)\n  form state : message: empty -> filled\n  constraints: message declares [type=text maxlength=20]\n  field value: message: '' -> 'Test User Input'\n\nJudge STEP 2."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 6,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 2,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "CLICK",
+          "selector": "[id=\"nav-contact\"]",
+          "element": "Contact",
+          "description": "click 'Contact'",
+          "params": {
+            "navigational": true,
+            "in_viewport": true,
+            "opens_new_tab": false,
+            "href": "contact.html"
+          }
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"message\"]",
+          "element": "message",
+          "description": "type valid_typical into 'message'",
+          "params": {
+            "value": "Test User Input",
+            "category": "valid_typical",
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"name\"]",
+          "element": "name",
+          "description": "type empty_string into 'name'",
+          "params": {
+            "value": "",
+            "category": "empty_string",
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"name\"]",
+          "element": "name",
+          "description": "type empty_string into 'name'",
+          "params": {
+            "value": "",
+            "category": "empty_string",
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"message\"]",
+          "element": "message",
+          "description": "type boundary_min into 'message'",
+          "params": {
+            "value": "a",
+            "category": "boundary_min",
+            "in_viewport": true
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /index.html\n  title      : Widget Co \u2014 Home\n  headings   : Widget Co\n  links      : Catalog -> catalog.html; Contact -> contact.html; Pricing -> pricing.html\n  text       : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nSTEP 1\n  action     : CLICK on 'Contact'\n  selector   : [id=\"nav-contact\"]\n  url        : /index.html -> /contact.html\n  title      : 'Widget Co \u2014 Home' -> 'Widget Co \u2014 Contact'\n  form state : message: absent -> empty; name: absent -> empty\n  constraints: message declares [type=text maxlength=20]; name declares [type=text required]\n  page text  : Widget Co \u2014 Contact | Contact us | Home | Send\n\nSTEP 2\n  action     : TYPE on 'message' with value 'Test User Input'\n  selector   : [id=\"message\"]\n  url        : /contact.html (unchanged)\n  form state : message: empty -> filled\n  constraints: message declares [type=text maxlength=20]\n  field value: message: '' -> 'Test User Input'\n\nSTEP 3\n  action     : NO_OP\n  url        : /contact.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : TYPE on 'name'\n  selector   : [id=\"name\"]\n  url        : /contact.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : TYPE on 'name'\n  selector   : [id=\"name\"]\n  url        : /contact.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : TYPE on 'message' with value 'a'\n  selector   : [id=\"message\"]\n  url        : /contact.html (unchanged)\n  field value: message: 'Test User Input' -> 'a'\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 11,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 2,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "TYPE",
+          "selector": "[id=\"message\"]",
+          "element": "message",
+          "description": "type boundary_min into 'message'",
+          "params": {
+            "value": "a",
+            "category": "boundary_min",
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "RESIZE_VIEWPORT",
+          "selector": null,
+          "element": "",
+          "description": "resize viewport to mobile",
+          "params": {
+            "preset": "mobile"
+          }
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll up",
+          "params": {
+            "direction": "up",
+            "amount": 600
+          }
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"message\"]",
+          "element": "message",
+          "description": "type boundary_min into 'message'",
+          "params": {
+            "value": "a",
+            "category": "boundary_min",
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"name\"]",
+          "element": "name",
+          "description": "type valid_typical into 'name'",
+          "params": {
+            "value": "Test User Input",
+            "category": "valid_typical",
+            "in_viewport": true
+          }
+        }
+      ],
+      "window_text": "STARTING PAGE: /contact.html\n  title      : Widget Co \u2014 Contact\n  headings   : Contact us\n  form state : name=empty, message=filled\n  declared   : name [type=text required]; message [type=text maxlength=20]\n  links      : Home -> index.html\n  text       : Widget Co \u2014 Contact | Contact us | Home | Send\n\nSTEP 1\n  action     : TYPE on 'message' with value 'a'\n  selector   : [id=\"message\"]\n  url        : /contact.html (unchanged)\n  field value: message: 'Test User Input' -> 'a'\n\nSTEP 2\n  action     : RESIZE_VIEWPORT with value 'mobile'\n  url        : /contact.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : SCROLL\n  url        : /contact.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : TYPE on 'message' with value 'a'\n  selector   : [id=\"message\"]\n  url        : /contact.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 5\n  action     : NO_OP\n  url        : /contact.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : TYPE on 'name' with value 'Test User Input'\n  selector   : [id=\"name\"]\n  url        : /contact.html (unchanged)\n  form state : name: empty -> filled\n  constraints: name declares [type=text required]\n  field value: name: '' -> 'Test User Input'\n\nJudge STEP 6."
+    },
+    {
+      "is_bug": false,
+      "bug_type": "other",
+      "severity": 0.0,
+      "confidence": 1.0,
+      "step": 13,
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "evidence": "stub judge: never reports",
+      "error": null,
+      "episode": 2,
+      "window_step": 0,
+      "seconds": 0.0,
+      "repro": [
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll up",
+          "params": {
+            "direction": "up",
+            "amount": 600
+          }
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"message\"]",
+          "element": "message",
+          "description": "type boundary_min into 'message'",
+          "params": {
+            "value": "a",
+            "category": "boundary_min",
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "NO_OP",
+          "selector": null,
+          "element": "",
+          "description": "no-op",
+          "params": {}
+        },
+        {
+          "type": "TYPE",
+          "selector": "[id=\"name\"]",
+          "element": "name",
+          "description": "type valid_typical into 'name'",
+          "params": {
+            "value": "Test User Input",
+            "category": "valid_typical",
+            "in_viewport": true
+          }
+        },
+        {
+          "type": "SCROLL",
+          "selector": null,
+          "element": "",
+          "description": "scroll up",
+          "params": {
+            "direction": "up",
+            "amount": 600
+          }
+        },
+        {
+          "type": "BROWSER_BACK",
+          "selector": null,
+          "element": "",
+          "description": "BROWSER_BACK",
+          "params": {}
+        }
+      ],
+      "window_text": "STARTING PAGE: /contact.html\n  title      : Widget Co \u2014 Contact\n  headings   : Contact us\n  form state : name=empty, message=filled\n  declared   : name [type=text required]; message [type=text maxlength=20]\n  links      : Home -> index.html\n  text       : Widget Co \u2014 Contact | Contact us | Home | Send\n\nSTEP 1\n  action     : SCROLL\n  url        : /contact.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 2\n  action     : TYPE on 'message' with value 'a'\n  selector   : [id=\"message\"]\n  url        : /contact.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 3\n  action     : NO_OP\n  url        : /contact.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 4\n  action     : TYPE on 'name' with value 'Test User Input'\n  selector   : [id=\"name\"]\n  url        : /contact.html (unchanged)\n  form state : name: empty -> filled\n  constraints: name declares [type=text required]\n  field value: name: '' -> 'Test User Input'\n\nSTEP 5\n  action     : SCROLL\n  url        : /contact.html (unchanged)\n  effect     : NO OBSERVABLE CHANGE \u2014 the page is byte-identical after this action\n\nSTEP 6\n  action     : BROWSER_BACK\n  url        : /contact.html -> /index.html\n  title      : 'Widget Co \u2014 Contact' -> 'Widget Co \u2014 Home'\n  page text  : Widget Co \u2014 Home | Widget Co | Catalog | Contact | Pricing | Everything you need, in one place.\n\nJudge STEP 6."
+    }
+  ]
+}

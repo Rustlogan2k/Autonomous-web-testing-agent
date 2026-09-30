@@ -1,0 +1,195 @@
+{
+  "target": "http://127.0.0.1:8002/index.html",
+  "generated_at": "2026-09-18T16:06:56+00:00",
+  "counts": {
+    "total": 9,
+    "deterministic": 9,
+    "judge": 0,
+    "high": 2,
+    "medium": 7,
+    "low": 0,
+    "ungrounded_excluded": 0
+  },
+  "run": {
+    "episodes": 3,
+    "steps_per_episode": 40,
+    "seed": 0,
+    "wall_clock_s": 44.0,
+    "judge": "stub",
+    "judge_calls": 71
+  },
+  "bugs": [
+    {
+      "title": "Page itself failed to load",
+      "source": "deterministic",
+      "severity": 7.0,
+      "bug_type": "document_http_error",
+      "url": "http://127.0.0.1:8002/dashboard.html",
+      "repro": [
+        "Click Back to dashboard"
+      ],
+      "evidence": "",
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 76,
+      "times_seen": 1
+    },
+    {
+      "title": "Page itself failed to load",
+      "source": "deterministic",
+      "severity": 7.0,
+      "bug_type": "document_http_error",
+      "url": "http://127.0.0.1:8002/dashboard.html",
+      "repro": [
+        "REFRESH on REFRESH"
+      ],
+      "evidence": "",
+      "observed": "",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 78,
+      "times_seen": 1
+    },
+    {
+      "title": "Link or submit did not navigate",
+      "source": "deterministic",
+      "severity": 6.0,
+      "bug_type": "broken_navigation",
+      "url": "http://127.0.0.1:8002/dashboard.html",
+      "repro": [
+        "Click Back to dashboard"
+      ],
+      "evidence": "http://127.0.0.1:8002/dashboard.html",
+      "observed": "http://127.0.0.1:8002/dashboard.html",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 76,
+      "times_seen": 1
+    },
+    {
+      "title": "Link or submit did not navigate",
+      "source": "deterministic",
+      "severity": 6.0,
+      "bug_type": "broken_navigation",
+      "url": "http://127.0.0.1:8002/contact.html",
+      "repro": [
+        "Click Send message"
+      ],
+      "evidence": "http://127.0.0.1:8002/contact.html",
+      "observed": "http://127.0.0.1:8002/contact.html",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 114,
+      "times_seen": 1
+    },
+    {
+      "title": "Unexpected HTTP error response",
+      "source": "deterministic",
+      "severity": 5.0,
+      "bug_type": "http_error",
+      "url": "http://127.0.0.1:8002/dashboard.html",
+      "repro": [
+        "Click Back to dashboard"
+      ],
+      "evidence": "404 http://127.0.0.1:8002/dashboard.html",
+      "observed": "404 http://127.0.0.1:8002/dashboard.html",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 76,
+      "times_seen": 1
+    },
+    {
+      "title": "Unexpected HTTP error response",
+      "source": "deterministic",
+      "severity": 5.0,
+      "bug_type": "http_error",
+      "url": "http://127.0.0.1:8002/dashboard.html",
+      "repro": [
+        "REFRESH on REFRESH"
+      ],
+      "evidence": "404 http://127.0.0.1:8002/dashboard.html",
+      "observed": "404 http://127.0.0.1:8002/dashboard.html",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 78,
+      "times_seen": 1
+    },
+    {
+      "title": "JavaScript error logged to the console",
+      "source": "deterministic",
+      "severity": 4.0,
+      "bug_type": "console_error",
+      "url": "http://127.0.0.1:8002/dashboard.html",
+      "repro": [
+        "Click Back to dashboard"
+      ],
+      "evidence": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "observed": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 76,
+      "times_seen": 1
+    },
+    {
+      "title": "JavaScript error logged to the console",
+      "source": "deterministic",
+      "severity": 4.0,
+      "bug_type": "console_error",
+      "url": "http://127.0.0.1:8002/dashboard.html",
+      "repro": [
+        "REFRESH on REFRESH"
+      ],
+      "evidence": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "observed": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 78,
+      "times_seen": 1
+    },
+    {
+      "title": "JavaScript error logged to the console",
+      "source": "deterministic",
+      "severity": 4.0,
+      "bug_type": "console_error",
+      "url": "http://127.0.0.1:8002/catalog.html",
+      "repro": [
+        "Click Export catalog"
+      ],
+      "evidence": "Cannot read properties of undefined (reading 'download')",
+      "observed": "Cannot read properties of undefined (reading 'download')",
+      "expected": "",
+      "discrepancy": "",
+      "confidence": 0.0,
+      "grounded": true,
+      "episode": 0,
+      "step": 92,
+      "times_seen": 1
+    }
+  ],
+  "ungrounded_excluded": []
+}

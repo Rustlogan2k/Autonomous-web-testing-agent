@@ -1,0 +1,953 @@
+{
+  "_purpose": "Locate AC-DQN on a ladder whose floor is a non-learning search with a hand-designed action priority.",
+  "_complete": true,
+  "_smoke": true,
+  "_inferential_unit": "the checkpoint / search replicate (n=8 per arm). The 25 episodes inside one of them are correlated samples of one policy, never independent training replicates.",
+  "git": {
+    "head": "f1605b5ae9e4eae3778af6054b86e68a3b2bcb32",
+    "branch": "review/measurement-and-gate-fixes"
+  },
+  "context": {
+    "fixture": "tests/fixtures/deep_flow_site (DEEP-01: the receipt reports quantity 1 whatever was ordered; llm_required, cross_step, deep_flow; deterministic ceiling 0)",
+    "flow_depth_map": {
+      "index.html": 0,
+      "order-1.html": 1,
+      "order-2.html": 2,
+      "order-3.html": 3,
+      "order-4.html": 4,
+      "receipt.html": 5
+    },
+    "observation": "6973-dim = 1664 perception + 9 episode context + 100x52 action features + 100 mask",
+    "action_space": "Discrete(100), page-rebuilt each step, valid-only masking",
+    "reward": "reward/functional_triggers.compose_reward with exploration shaping (novelty 1.0/sqrt(1+run visits), reveal 1.5/unpaid identity, repetition -0.05/repeat floored at -0.25, failed action -0.1, step -0.05); judge disabled (NullRewardModel)",
+    "encoders": "hash (default_encoders), as in every figure these checkpoints back",
+    "trained_arm_checkpoints": "loaded read-only; NOT retrained for this experiment",
+    "trained_arm_training_stats": "see reports/postmarkov_baseline_pr050.json and reports/contextual_bandit_pr050.json",
+    "prior_canonical_result": "reports/offline_eval_25ep.md \u2014 ac_dqn [24,0,25,23,1,2,24,17] mean 0.580; contextual_bandit [17,8,0,0,25,14,24,20] mean 0.540"
+  },
+  "hand_priority": {
+    "scoring_rule": "score(a) = w . phi(a), phi = ActionFeatureExtractor's 52-dim per-action vector, w fixed",
+    "label_block_weight_l1": 0.0,
+    "scalar_weights": {
+      "is_newly_revealed": 4.0,
+      "is_form_control": 1.5,
+      "value_ordinal": 1.0,
+      "navigational": 0.6,
+      "in_viewport": 0.3,
+      "has_href": 0.1,
+      "opens_new_tab": -1.0,
+      "is_fixed_action": -2.0,
+      "taken_this_episode": -6.0,
+      "taken_here": -3.0
+    },
+    "type_weights": {
+      "CLICK": 0.3,
+      "SELECT": 0.3,
+      "TYPE": 0.3,
+      "RAPID_CLICK": -0.5,
+      "NO_OP": -1.0,
+      "SCROLL": 0.0,
+      "RESIZE_VIEWPORT": -0.5,
+      "BROWSER_BACK": 0.0,
+      "BROWSER_FORWARD": -0.5,
+      "REFRESH": -0.5
+    },
+    "tie_break": "lowest action index, which is action_registry.build_action_specs' own generic priority (viewport-first, then CLICK, TYPE(valid), SELECT, RAPID_CLICK, TYPE(edge cases), DOM order)",
+    "scalar_meanings": {
+      "is_newly_revealed": "a control that appeared in response to the previous action - the repository's own domain-general gated-flow progress signal",
+      "is_form_control": "TYPE/SELECT: fill a form before trying to leave the page",
+      "value_ordinal": "among generated values prefer a plausible one over a boundary or malformed one",
+      "navigational": "expected to change the URL, i.e. forward progress",
+      "in_viewport": "on screen; mirrors the registry's viewport-first priority",
+      "has_href": "carries a link target at all (weak tie-breaker)",
+      "opens_new_tab": "a popup leaves the flow",
+      "is_fixed_action": "NO_OP/scroll/resize/back/forward/refresh cannot advance an application flow",
+      "taken_this_episode": "already tried here this episode - what makes a deterministic argmax a search rather than a loop",
+      "taken_here": "already tried here across the run"
+    },
+    "contains_no_fixture_knowledge_because": "the 32 hashed-label dimensions are weighted exactly zero, so the policy cannot respond to any control's name; asserted by test_hand_priority.py both directly and by relabelling"
+  },
+  "search_budget": {
+    "unit": "environment steps - the unit run_go_explore --budget and compare_agents --train-steps both already use",
+    "arm_A_env_steps": 80,
+    "arm_B_C_train_steps": 4000,
+    "matched": false,
+    "episodes_per_search": 2,
+    "archive": "ArchiveStartWrapper, p_return=0.5, same as the trained arms",
+    "route_replay": "outside the step budget (as in archive_start.py) and reported separately as replayed_actions / browser_actions_total",
+    "epsilon_schedule": "1.0 -> 0.1 over 60% of the budget, identical to the trained arms",
+    "why_fair": "both arms are given the same number of environment interactions, the same archive at the same p_return, and the same exploration schedule; browser actions spent on route replay are reported rather than absorbed, so neither side gets free actions",
+    "what_arm_A_cannot_carry_forward": "nothing. A non-learning policy has no parameters to update, and the archive is disabled at evaluation for every arm. The search phase therefore measures coverage at a matched budget, not a trainable asset."
+  },
+  "training_protocol": {
+    "_applies_to": "arms B and C, as run when their checkpoints were produced",
+    "train_steps": 4000,
+    "episode_steps": 40,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "p_return": 0.5,
+    "exploration": "epsilon 1.0 -> 0.1 over 60% of training",
+    "n_step": "3 for ac_dqn; forced to 1 for contextual_bandit (nothing to bootstrap)",
+    "encoders": "hash",
+    "judge": "disabled",
+    "source": "reports/postmarkov_baseline_pr050.json, reports/contextual_bandit_pr050.json",
+    "retrained_here": false
+  },
+  "evaluation_protocol": {
+    "episodes_per_checkpoint": 3,
+    "eval_epsilon": 0.05,
+    "episode_steps": 40,
+    "start": "landing page (index.html), no setup_actions",
+    "archive": "disabled at evaluation for every arm",
+    "encoders": "hash (default_encoders)",
+    "judge": "disabled (NullRewardModel)",
+    "checkpoint_selection": "FINAL",
+    "seed_scheme": "run_rollout's: env.reset(seed=seed + episode_index); each policy's epsilon RNG seeded once with the seed. Identical for all four rows.",
+    "action_feature_extractor": "fresh per row; verified bit-identical to a trained one because record_taken() is never called on the RL path",
+    "training_during_evaluation": "none - no optimiser is constructed, no buffer is written, and checkpoint SHA-256 is compared before and after"
+  },
+  "search_phase": [
+    {
+      "seed": 0,
+      "env_steps": 80,
+      "episodes": 2,
+      "episode_steps": 40,
+      "replayed_actions": 0,
+      "browser_actions_total": 80,
+      "archive": {
+        "episodes": 2,
+        "returns_attempted": 0,
+        "returns_failed": 0,
+        "cells_discovered": 12,
+        "replayed_actions": 0,
+        "reanchored": 6,
+        "return_failure_rate": 0.0,
+        "cells": 13
+      },
+      "unique_states": 0,
+      "max_depth": 3,
+      "mean_depth": 0.175,
+      "flow": {
+        "max_depth": 3,
+        "mean_depth": 0.17,
+        "reached_receipt": 0,
+        "reached_review": 0,
+        "flow_completions": 0,
+        "episodes_reaching_review": 0,
+        "episodes_leaving_stage_1": 1
+      },
+      "mean_episode_reward": 5.0575,
+      "valid_action_rate": 1.0,
+      "distinct_findings": 0,
+      "wall_clock_s": 42.0,
+      "steps_per_second": 1.957,
+      "policy": {
+        "algorithm": "hand_priority_search",
+        "learns": false,
+        "epsilon": 0.09999999999999998,
+        "carry_counts_across_episodes": true,
+        "scalar_weights": {
+          "is_newly_revealed": 4.0,
+          "is_form_control": 1.5,
+          "value_ordinal": 1.0,
+          "navigational": 0.6,
+          "in_viewport": 0.3,
+          "has_href": 0.1,
+          "opens_new_tab": -1.0,
+          "is_fixed_action": -2.0,
+          "taken_this_episode": -6.0,
+          "taken_here": -3.0
+        },
+        "type_weights": {
+          "CLICK": 0.3,
+          "SELECT": 0.3,
+          "TYPE": 0.3,
+          "RAPID_CLICK": -0.5,
+          "NO_OP": -1.0,
+          "SCROLL": 0.0,
+          "RESIZE_VIEWPORT": -0.5,
+          "BROWSER_BACK": 0.0,
+          "BROWSER_FORWARD": -0.5,
+          "REFRESH": -0.5
+        },
+        "label_block_weight_l1": 0.0,
+        "tie_break": "lowest action index (action_registry's own priority order)",
+        "steps": 80,
+        "exploratory_steps": 30,
+        "ties_broken": 39
+      },
+      "epsilon_trace_every_200_steps": [
+        1.0
+      ]
+    }
+  ],
+  "per_checkpoint": {
+    "hand_priority": [
+      {
+        "arm": "hand_priority",
+        "seed": 0,
+        "n_episodes": 3,
+        "completion_count": 0,
+        "completion_rate": 0.0,
+        "review_count": 1,
+        "review_rate": 0.3333,
+        "s1_count": 3,
+        "s1_rate": 1.0,
+        "mean_reward": 7.1066,
+        "median_reward": 8.615,
+        "std_reward": 2.9973,
+        "min_reward": 3.6547,
+        "max_reward": 9.05,
+        "mean_depth": 0.3917,
+        "max_depth": 4,
+        "unique_states_mean": 12,
+        "unique_states_run_total": 14,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 1,
+        "wall_clock_s": 55.9,
+        "flow_metrics": {
+          "max_depth": 4,
+          "mean_depth": 0.39,
+          "reached_receipt": 0,
+          "reached_review": 1,
+          "flow_completions": 0,
+          "episodes_reaching_review": 1,
+          "episodes_leaving_stage_1": 3
+        },
+        "policy": {
+          "algorithm": "hand_priority_search",
+          "learns": false,
+          "epsilon": 0.05,
+          "carry_counts_across_episodes": false,
+          "scalar_weights": {
+            "is_newly_revealed": 4.0,
+            "is_form_control": 1.5,
+            "value_ordinal": 1.0,
+            "navigational": 0.6,
+            "in_viewport": 0.3,
+            "has_href": 0.1,
+            "opens_new_tab": -1.0,
+            "is_fixed_action": -2.0,
+            "taken_this_episode": -6.0,
+            "taken_here": -3.0
+          },
+          "type_weights": {
+            "CLICK": 0.3,
+            "SELECT": 0.3,
+            "TYPE": 0.3,
+            "RAPID_CLICK": -0.5,
+            "NO_OP": -1.0,
+            "SCROLL": 0.0,
+            "RESIZE_VIEWPORT": -0.5,
+            "BROWSER_BACK": 0.0,
+            "BROWSER_FORWARD": -0.5,
+            "REFRESH": -0.5
+          },
+          "label_block_weight_l1": 0.0,
+          "tie_break": "lowest action index (action_registry's own priority order)",
+          "steps": 120,
+          "exploratory_steps": 8,
+          "ties_broken": 90
+        },
+        "errors": null
+      }
+    ],
+    "hand_priority_search": [
+      {
+        "arm": "hand_priority_search",
+        "seed": 0,
+        "n_episodes": 3,
+        "completion_count": 0,
+        "completion_rate": 0.0,
+        "review_count": 1,
+        "review_rate": 0.3333,
+        "s1_count": 2,
+        "s1_rate": 0.6667,
+        "mean_reward": 5.3458,
+        "median_reward": 8.6914,
+        "std_reward": 6.1079,
+        "min_reward": -1.7039,
+        "max_reward": 9.05,
+        "mean_depth": 0.2667,
+        "max_depth": 4,
+        "unique_states_mean": 10.667,
+        "unique_states_run_total": 14,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 1,
+        "wall_clock_s": 55.2,
+        "flow_metrics": {
+          "max_depth": 4,
+          "mean_depth": 0.27,
+          "reached_receipt": 0,
+          "reached_review": 2,
+          "flow_completions": 0,
+          "episodes_reaching_review": 1,
+          "episodes_leaving_stage_1": 2
+        },
+        "policy": {
+          "algorithm": "hand_priority_search",
+          "learns": false,
+          "epsilon": 0.05,
+          "carry_counts_across_episodes": true,
+          "scalar_weights": {
+            "is_newly_revealed": 4.0,
+            "is_form_control": 1.5,
+            "value_ordinal": 1.0,
+            "navigational": 0.6,
+            "in_viewport": 0.3,
+            "has_href": 0.1,
+            "opens_new_tab": -1.0,
+            "is_fixed_action": -2.0,
+            "taken_this_episode": -6.0,
+            "taken_here": -3.0
+          },
+          "type_weights": {
+            "CLICK": 0.3,
+            "SELECT": 0.3,
+            "TYPE": 0.3,
+            "RAPID_CLICK": -0.5,
+            "NO_OP": -1.0,
+            "SCROLL": 0.0,
+            "RESIZE_VIEWPORT": -0.5,
+            "BROWSER_BACK": 0.0,
+            "BROWSER_FORWARD": -0.5,
+            "REFRESH": -0.5
+          },
+          "label_block_weight_l1": 0.0,
+          "tie_break": "lowest action index (action_registry's own priority order)",
+          "steps": 120,
+          "exploratory_steps": 8,
+          "ties_broken": 91
+        },
+        "errors": null
+      }
+    ],
+    "contextual_bandit": [
+      {
+        "arm": "contextual_bandit",
+        "seed": 0,
+        "n_episodes": 3,
+        "completion_count": 3,
+        "completion_rate": 1.0,
+        "review_count": 3,
+        "review_rate": 1.0,
+        "s1_count": 3,
+        "s1_rate": 1.0,
+        "mean_reward": 8.903,
+        "median_reward": 7.8863,
+        "std_reward": 1.9489,
+        "min_reward": 7.6727,
+        "max_reward": 11.15,
+        "mean_depth": 0.725,
+        "max_depth": 5,
+        "unique_states_mean": 13,
+        "unique_states_run_total": 14,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 1,
+        "wall_clock_s": 53.2,
+        "flow_metrics": {
+          "max_depth": 5,
+          "mean_depth": 0.72,
+          "reached_receipt": 3,
+          "reached_review": 6,
+          "flow_completions": 3,
+          "episodes_reaching_review": 3,
+          "episodes_leaving_stage_1": 3
+        },
+        "errors": null,
+        "checkpoint": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\models\\checkpoints\\contextual_bandit\\contextual_bandit_seed0_final.zip"
+      }
+    ],
+    "ac_dqn": [
+      {
+        "arm": "ac_dqn",
+        "seed": 0,
+        "n_episodes": 3,
+        "completion_count": 3,
+        "completion_rate": 1.0,
+        "review_count": 3,
+        "review_rate": 1.0,
+        "s1_count": 3,
+        "s1_rate": 1.0,
+        "mean_reward": 13.2099,
+        "median_reward": 11.7606,
+        "std_reward": 5.2672,
+        "min_reward": 8.8191,
+        "max_reward": 19.05,
+        "mean_depth": 1.7833,
+        "max_depth": 5,
+        "unique_states_mean": 19.333,
+        "unique_states_run_total": 24,
+        "valid_actions": 120,
+        "total_actions": 120,
+        "valid_action_rate": 1.0,
+        "invalid_actions": 0,
+        "noop_steps": 3,
+        "wall_clock_s": 53.6,
+        "flow_metrics": {
+          "max_depth": 5,
+          "mean_depth": 1.78,
+          "reached_receipt": 4,
+          "reached_review": 15,
+          "flow_completions": 3,
+          "episodes_reaching_review": 3,
+          "episodes_leaving_stage_1": 3
+        },
+        "errors": null,
+        "checkpoint": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\models\\checkpoints\\postmarkov_baseline\\ac_dqn_seed0_final.zip"
+      }
+    ]
+  },
+  "per_episode": [
+    {
+      "arm": "hand_priority",
+      "seed": 0,
+      "episode": 0,
+      "eval_seed": 0,
+      "completed": false,
+      "reached_review": false,
+      "reached_s1": true,
+      "reward": 9.05,
+      "max_depth": 2,
+      "mean_depth": 0.225,
+      "steps": 40,
+      "unique_states": 11
+    },
+    {
+      "arm": "hand_priority",
+      "seed": 0,
+      "episode": 1,
+      "eval_seed": 1,
+      "completed": false,
+      "reached_review": true,
+      "reached_s1": true,
+      "reward": 8.615,
+      "max_depth": 4,
+      "mean_depth": 0.425,
+      "steps": 40,
+      "unique_states": 14
+    },
+    {
+      "arm": "hand_priority",
+      "seed": 0,
+      "episode": 2,
+      "eval_seed": 2,
+      "completed": false,
+      "reached_review": false,
+      "reached_s1": true,
+      "reward": 3.6547,
+      "max_depth": 2,
+      "mean_depth": 0.525,
+      "steps": 40,
+      "unique_states": 11
+    },
+    {
+      "arm": "hand_priority_search",
+      "seed": 0,
+      "episode": 0,
+      "eval_seed": 0,
+      "completed": false,
+      "reached_review": false,
+      "reached_s1": true,
+      "reward": 9.05,
+      "max_depth": 2,
+      "mean_depth": 0.225,
+      "steps": 40,
+      "unique_states": 11
+    },
+    {
+      "arm": "hand_priority_search",
+      "seed": 0,
+      "episode": 1,
+      "eval_seed": 1,
+      "completed": false,
+      "reached_review": false,
+      "reached_s1": false,
+      "reward": -1.7039,
+      "max_depth": 0,
+      "mean_depth": 0,
+      "steps": 40,
+      "unique_states": 7
+    },
+    {
+      "arm": "hand_priority_search",
+      "seed": 0,
+      "episode": 2,
+      "eval_seed": 2,
+      "completed": false,
+      "reached_review": true,
+      "reached_s1": true,
+      "reward": 8.6914,
+      "max_depth": 4,
+      "mean_depth": 0.575,
+      "steps": 40,
+      "unique_states": 14
+    },
+    {
+      "arm": "contextual_bandit",
+      "seed": 0,
+      "episode": 0,
+      "eval_seed": 0,
+      "completed": true,
+      "reached_review": true,
+      "reached_s1": true,
+      "reward": 11.15,
+      "max_depth": 5,
+      "mean_depth": 0.75,
+      "steps": 40,
+      "unique_states": 12
+    },
+    {
+      "arm": "contextual_bandit",
+      "seed": 0,
+      "episode": 1,
+      "eval_seed": 1,
+      "completed": true,
+      "reached_review": true,
+      "reached_s1": true,
+      "reward": 7.6727,
+      "max_depth": 5,
+      "mean_depth": 0.725,
+      "steps": 40,
+      "unique_states": 13
+    },
+    {
+      "arm": "contextual_bandit",
+      "seed": 0,
+      "episode": 2,
+      "eval_seed": 2,
+      "completed": true,
+      "reached_review": true,
+      "reached_s1": true,
+      "reward": 7.8863,
+      "max_depth": 5,
+      "mean_depth": 0.7,
+      "steps": 40,
+      "unique_states": 14
+    },
+    {
+      "arm": "ac_dqn",
+      "seed": 0,
+      "episode": 0,
+      "eval_seed": 0,
+      "completed": true,
+      "reached_review": true,
+      "reached_s1": true,
+      "reward": 19.05,
+      "max_depth": 5,
+      "mean_depth": 1.95,
+      "steps": 40,
+      "unique_states": 20
+    },
+    {
+      "arm": "ac_dqn",
+      "seed": 0,
+      "episode": 1,
+      "eval_seed": 1,
+      "completed": true,
+      "reached_review": true,
+      "reached_s1": true,
+      "reward": 8.8191,
+      "max_depth": 5,
+      "mean_depth": 1.725,
+      "steps": 40,
+      "unique_states": 16
+    },
+    {
+      "arm": "ac_dqn",
+      "seed": 0,
+      "episode": 2,
+      "eval_seed": 2,
+      "completed": true,
+      "reached_review": true,
+      "reached_s1": true,
+      "reward": 11.7606,
+      "max_depth": 5,
+      "mean_depth": 1.675,
+      "steps": 40,
+      "unique_states": 22
+    }
+  ],
+  "within_checkpoint_wilson_intervals": {
+    "hand_priority": {
+      "0": [
+        0.0,
+        0.5615
+      ]
+    },
+    "hand_priority_search": {
+      "0": [
+        0.0,
+        0.5615
+      ]
+    },
+    "contextual_bandit": {
+      "0": [
+        0.4385,
+        1.0
+      ]
+    },
+    "ac_dqn": {
+      "0": [
+        0.4385,
+        1.0
+      ]
+    }
+  },
+  "arm_summaries": {
+    "hand_priority": {
+      "n_checkpoints": 1,
+      "completion_counts_per_seed": [
+        0
+      ],
+      "completion_rates_per_seed": [
+        0.0
+      ],
+      "mean_checkpoint_completion_rate": 0.0,
+      "median_checkpoint_completion_rate": 0.0,
+      "sd_across_checkpoints": 0.0,
+      "min_checkpoint_rate": 0.0,
+      "max_checkpoint_rate": 0.0,
+      "bootstrap_95ci_mean_rate_over_checkpoints": [
+        0.0,
+        0.0
+      ],
+      "checkpoints_with_at_least_one_completion": 0,
+      "checkpoints_with_all_episodes": 0,
+      "checkpoints_with_zero": 1,
+      "review_rates_per_seed": [
+        0.3333
+      ],
+      "s1_rates_per_seed": [
+        1.0
+      ],
+      "mean_review_rate": 0.3333,
+      "mean_s1_rate": 1.0,
+      "mean_reward_over_checkpoints": 7.1066,
+      "mean_depth_over_checkpoints": 0.3917,
+      "max_depth_observed": 4,
+      "mean_unique_states": 12,
+      "mean_valid_action_rate": 1.0,
+      "total_invalid_actions": 0,
+      "_descriptive_total": {
+        "completions": 0,
+        "episodes": 3,
+        "_warning": "DESCRIPTIVE ONLY. These episodes are not independent training runs; the inferential unit is the checkpoint."
+      }
+    },
+    "hand_priority_search": {
+      "n_checkpoints": 1,
+      "completion_counts_per_seed": [
+        0
+      ],
+      "completion_rates_per_seed": [
+        0.0
+      ],
+      "mean_checkpoint_completion_rate": 0.0,
+      "median_checkpoint_completion_rate": 0.0,
+      "sd_across_checkpoints": 0.0,
+      "min_checkpoint_rate": 0.0,
+      "max_checkpoint_rate": 0.0,
+      "bootstrap_95ci_mean_rate_over_checkpoints": [
+        0.0,
+        0.0
+      ],
+      "checkpoints_with_at_least_one_completion": 0,
+      "checkpoints_with_all_episodes": 0,
+      "checkpoints_with_zero": 1,
+      "review_rates_per_seed": [
+        0.3333
+      ],
+      "s1_rates_per_seed": [
+        0.6667
+      ],
+      "mean_review_rate": 0.3333,
+      "mean_s1_rate": 0.6667,
+      "mean_reward_over_checkpoints": 5.3458,
+      "mean_depth_over_checkpoints": 0.2667,
+      "max_depth_observed": 4,
+      "mean_unique_states": 10.667,
+      "mean_valid_action_rate": 1.0,
+      "total_invalid_actions": 0,
+      "_descriptive_total": {
+        "completions": 0,
+        "episodes": 3,
+        "_warning": "DESCRIPTIVE ONLY. These episodes are not independent training runs; the inferential unit is the checkpoint."
+      }
+    },
+    "contextual_bandit": {
+      "n_checkpoints": 1,
+      "completion_counts_per_seed": [
+        3
+      ],
+      "completion_rates_per_seed": [
+        1.0
+      ],
+      "mean_checkpoint_completion_rate": 1.0,
+      "median_checkpoint_completion_rate": 1.0,
+      "sd_across_checkpoints": 0.0,
+      "min_checkpoint_rate": 1.0,
+      "max_checkpoint_rate": 1.0,
+      "bootstrap_95ci_mean_rate_over_checkpoints": [
+        1.0,
+        1.0
+      ],
+      "checkpoints_with_at_least_one_completion": 1,
+      "checkpoints_with_all_episodes": 1,
+      "checkpoints_with_zero": 0,
+      "review_rates_per_seed": [
+        1.0
+      ],
+      "s1_rates_per_seed": [
+        1.0
+      ],
+      "mean_review_rate": 1.0,
+      "mean_s1_rate": 1.0,
+      "mean_reward_over_checkpoints": 8.903,
+      "mean_depth_over_checkpoints": 0.725,
+      "max_depth_observed": 5,
+      "mean_unique_states": 13,
+      "mean_valid_action_rate": 1.0,
+      "total_invalid_actions": 0,
+      "_descriptive_total": {
+        "completions": 3,
+        "episodes": 3,
+        "_warning": "DESCRIPTIVE ONLY. These episodes are not independent training runs; the inferential unit is the checkpoint."
+      }
+    },
+    "ac_dqn": {
+      "n_checkpoints": 1,
+      "completion_counts_per_seed": [
+        3
+      ],
+      "completion_rates_per_seed": [
+        1.0
+      ],
+      "mean_checkpoint_completion_rate": 1.0,
+      "median_checkpoint_completion_rate": 1.0,
+      "sd_across_checkpoints": 0.0,
+      "min_checkpoint_rate": 1.0,
+      "max_checkpoint_rate": 1.0,
+      "bootstrap_95ci_mean_rate_over_checkpoints": [
+        1.0,
+        1.0
+      ],
+      "checkpoints_with_at_least_one_completion": 1,
+      "checkpoints_with_all_episodes": 1,
+      "checkpoints_with_zero": 0,
+      "review_rates_per_seed": [
+        1.0
+      ],
+      "s1_rates_per_seed": [
+        1.0
+      ],
+      "mean_review_rate": 1.0,
+      "mean_s1_rate": 1.0,
+      "mean_reward_over_checkpoints": 13.2099,
+      "mean_depth_over_checkpoints": 1.7833,
+      "max_depth_observed": 5,
+      "mean_unique_states": 19.333,
+      "mean_valid_action_rate": 1.0,
+      "total_invalid_actions": 0,
+      "_descriptive_total": {
+        "completions": 3,
+        "episodes": 3,
+        "_warning": "DESCRIPTIVE ONLY. These episodes are not independent training runs; the inferential unit is the checkpoint."
+      }
+    }
+  },
+  "comparisons": {
+    "A_vs_B": {
+      "left": "hand_priority",
+      "right": "contextual_bandit",
+      "left_rates": [
+        0.0
+      ],
+      "right_rates": [
+        1.0
+      ],
+      "left_mean": 0.0,
+      "right_mean": 1.0,
+      "difference_right_minus_left": 1.0,
+      "bootstrap_95ci_of_difference": [
+        1.0,
+        1.0
+      ],
+      "ci_excludes_zero": true,
+      "paired_by_seed": null,
+      "_unit": "the checkpoint / search replicate (n=8 per arm), never the episode",
+      "verdict": "`contextual_bandit` is ahead of `hand_priority` by 1.000 on mean completion rate, 95% interval [+1.000, +1.000], which excludes zero. Eight replicates per arm on one fixture at one budget: a difference this experiment can see, not a general property of either algorithm.",
+      "secondary": "`contextual_bandit` is ahead of `hand_priority_search` by 1.000 on mean completion rate, 95% interval [+1.000, +1.000], which excludes zero. Eight replicates per arm on one fixture at one budget: a difference this experiment can see, not a general property of either algorithm."
+    },
+    "B_vs_C": {
+      "left": "contextual_bandit",
+      "right": "ac_dqn",
+      "left_rates": [
+        1.0
+      ],
+      "right_rates": [
+        1.0
+      ],
+      "left_mean": 1.0,
+      "right_mean": 1.0,
+      "difference_right_minus_left": 0.0,
+      "bootstrap_95ci_of_difference": [
+        0.0,
+        0.0
+      ],
+      "ci_excludes_zero": false,
+      "paired_by_seed": {
+        "_valid_because": "both arms trained one run per seed under the same protocol",
+        "per_seed_difference": [
+          0.0
+        ],
+        "mean_difference": 0.0,
+        "seeds_favouring_right": 0,
+        "seeds_favouring_left": 0,
+        "seeds_tied": 1
+      },
+      "_unit": "the checkpoint / search replicate (n=8 per arm), never the episode",
+      "verdict": "INCONCLUSIVE. `ac_dqn` is +0.000 on mean completion rate, but the 95% interval [+0.000, +0.000] contains zero. At 8 replicates per arm this experiment cannot separate them."
+    },
+    "A_vs_C": {
+      "left": "hand_priority",
+      "right": "ac_dqn",
+      "left_rates": [
+        0.0
+      ],
+      "right_rates": [
+        1.0
+      ],
+      "left_mean": 0.0,
+      "right_mean": 1.0,
+      "difference_right_minus_left": 1.0,
+      "bootstrap_95ci_of_difference": [
+        1.0,
+        1.0
+      ],
+      "ci_excludes_zero": true,
+      "paired_by_seed": null,
+      "_unit": "the checkpoint / search replicate (n=8 per arm), never the episode",
+      "verdict": "`ac_dqn` is ahead of `hand_priority` by 1.000 on mean completion rate, 95% interval [+1.000, +1.000], which excludes zero. Eight replicates per arm on one fixture at one budget: a difference this experiment can see, not a general property of either algorithm.",
+      "secondary": "`ac_dqn` is ahead of `hand_priority_search` by 1.000 on mean completion rate, 95% interval [+1.000, +1.000], which excludes zero. Eight replicates per arm on one fixture at one budget: a difference this experiment can see, not a general property of either algorithm."
+    },
+    "Asearch_vs_C": {
+      "left": "hand_priority_search",
+      "right": "ac_dqn",
+      "left_rates": [
+        0.0
+      ],
+      "right_rates": [
+        1.0
+      ],
+      "left_mean": 0.0,
+      "right_mean": 1.0,
+      "difference_right_minus_left": 1.0,
+      "bootstrap_95ci_of_difference": [
+        1.0,
+        1.0
+      ],
+      "ci_excludes_zero": true,
+      "paired_by_seed": null,
+      "_unit": "the checkpoint / search replicate (n=8 per arm), never the episode",
+      "verdict": "`ac_dqn` is ahead of `hand_priority_search` by 1.000 on mean completion rate, 95% interval [+1.000, +1.000], which excludes zero. Eight replicates per arm on one fixture at one budget: a difference this experiment can see, not a general property of either algorithm."
+    },
+    "Asearch_vs_B": {
+      "left": "hand_priority_search",
+      "right": "contextual_bandit",
+      "left_rates": [
+        0.0
+      ],
+      "right_rates": [
+        1.0
+      ],
+      "left_mean": 0.0,
+      "right_mean": 1.0,
+      "difference_right_minus_left": 1.0,
+      "bootstrap_95ci_of_difference": [
+        1.0,
+        1.0
+      ],
+      "ci_excludes_zero": true,
+      "paired_by_seed": null,
+      "_unit": "the checkpoint / search replicate (n=8 per arm), never the episode",
+      "verdict": "`contextual_bandit` is ahead of `hand_priority_search` by 1.000 on mean completion rate, 95% interval [+1.000, +1.000], which excludes zero. Eight replicates per arm on one fixture at one budget: a difference this experiment can see, not a general property of either algorithm."
+    }
+  },
+  "checkpoints": [
+    {
+      "arm": "ac_dqn",
+      "seed": 0,
+      "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\models\\checkpoints\\postmarkov_baseline\\ac_dqn_seed0_final.zip",
+      "sha256_before": "e3766204d879bb79c354206a1d319e61face6629a1a8f7f3c8dfd128976c129c",
+      "bytes": 17224308,
+      "sha256_after": "e3766204d879bb79c354206a1d319e61face6629a1a8f7f3c8dfd128976c129c",
+      "unmodified": true
+    },
+    {
+      "arm": "contextual_bandit",
+      "seed": 0,
+      "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\models\\checkpoints\\contextual_bandit\\contextual_bandit_seed0_final.zip",
+      "sha256_before": "0267e470b0771db2a144437cce21b757a26d08cb230b76d6c7443d8133b85094",
+      "bytes": 16671383,
+      "sha256_after": "0267e470b0771db2a144437cce21b757a26d08cb230b76d6c7443d8133b85094",
+      "unmodified": true
+    }
+  ],
+  "all_checkpoints_unmodified": true,
+  "total_eval_episodes": 12,
+  "anomalies": {
+    "entries": [],
+    "runs_requested": 4,
+    "runs_completed": 4,
+    "runs_excluded": 0,
+    "total_invalid_actions": 0,
+    "search_returns_attempted": 0,
+    "search_returns_failed": 0,
+    "_policy": "Nothing was excluded, rerun, or tuned against. A run that failed would appear above with its raw result retained."
+  },
+  "tests": {
+    "test_hand_priority": 22
+  },
+  "limitations": [
+    "**Arm A's eight rows are not eight training runs.** A non-learning policy has nothing to vary across seeds except its epsilon stream, so Arm A's spread understates what a spread means for Arms B and C, whose rows carry genuine training variance. Its bootstrap interval is correspondingly narrow for a reason that is not a property of the algorithm.",
+    "**Arm A reads two features that are structurally dead for Arms B and C.** `taken_here` and `taken_this_episode` are written only by `ActionFeatureExtractor.record_taken()`, which nothing on the RL path calls, so they are identically 0.0 in every observation the two networks have ever seen. Arm A calls it and reads them. This is an information advantage for Arm A; removing it would not level the comparison, it would delete the search, since a memoryless deterministic argmax repeats one action until truncation.",
+    "**Arms B and C were not retrained.** Their finalized checkpoints were re-evaluated contemporaneously with Arm A. That keeps the checkpoints every published figure refers to intact and puts all rows in one harness state, but it means their training phase could not be re-instrumented for the search-metrics table.",
+    "**The browser harness is intermittently non-deterministic on this configuration** (`reports/diag_harness_determinism.json`): two identical runs at one seed usually agree bit-for-bit and occasionally do not. Every row here is a single run.",
+    "**n=8 per arm on one fixture at one budget.** Eight is a small sample. Nothing here generalises to another application, another step budget, or another reward.",
+    "**Per-episode seeds overlap across rows** (row k uses env seeds k..k+24). This is the original experiment's scheme, reused unchanged and identical across all four rows.",
+    "**One statistic per comparison, fixed in advance.** Difference in mean checkpoint completion rate with a bootstrap interval over replicates. No post-hoc test was run and none was selected after seeing the data.",
+    "**Completion is a proxy for the research objective.** Reaching receipt.html is what makes DEEP-01 findable; it is not itself finding it. The deterministic ceiling on this fixture is 0, so no arm's `distinct_findings` is a bug-discovery figure."
+  ],
+  "interpretation": [
+    "**Ranking by mean checkpoint completion rate:** `contextual_bandit` 1.000, `ac_dqn` 1.000, `hand_priority` 0.000, `hand_priority_search` 0.000.",
+    "**1 of the three primary comparisons are inconclusive at this sample size** (B_vs_C). An inconclusive result is not evidence that the two arms are equal; it is evidence that eight replicates per arm cannot separate them.",
+    "**On the rung that matters most \u2014 B vs C \u2014 this experiment does not detect a contribution from bootstrapping.** Under matched infrastructure (same observation, action space, mask, reward, archive, PER buffer, network shape, epsilon schedule and budget), replacing the bootstrapped target with the immediate reward does not produce a difference this design can see. That is consistent with the four preceding null results and with the 25-episode re-evaluation, and it is a statement about *this* AC-DQN on *this* benchmark at *this* budget, not about temporal-difference learning.",
+    "**AC-DQN is ahead of the hand-priority floor.** Check whether that lead is carried by the eight checkpoints or by two of them before calling it a property of the algorithm: section 9's per-seed counts, not the mean, are what settle that.",
+    "**What this cannot establish.** It does not isolate PER, dueling, Double DQN, n-step replay, the archive or the target network \u2014 all shared, all cancelling. It does not measure bug discovery, since the fixture's deterministic ceiling is 0. And it does not measure transfer, which is the property the action-conditioned representation exists for and which a single-fixture benchmark cannot see."
+  ],
+  "commands": [
+    "python -m pytest tests/unit/test_hand_priority.py tests/unit/test_contextual_bandit.py tests/unit/test_dueling.py tests/unit/test_action_features.py tests/unit/test_go_explore.py tests/unit/test_archive_start.py -q",
+    "python scripts/search_vs_bandit_vs_ac_dqn.py --seeds 0"
+  ],
+  "search_wall_clock_s": 42.0,
+  "eval_wall_clock_s": 223.5,
+  "wall_clock_s": 274.1
+}

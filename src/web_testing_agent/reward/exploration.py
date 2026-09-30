@@ -182,6 +182,22 @@ class ExplorationTracker:
         """Times this state has been reached across the whole run."""
         return self._state_visits.get(state_key, 0)
 
+    def paid_reveals_at(self, url: str) -> int:
+        """How many reveal identities this episode has already been paid for on this page.
+
+        Read-only view of `_paid_reveals`, which is the hidden state the reveal bonus
+        consults: a gate whose identity is already in the ledger pays 0.0 where its first
+        opening paid `reveal_bonus`. Without this the observation cannot distinguish the
+        two, and the agent is charged for a difference it cannot see.
+
+        Scoped by URL **path**, matching `observe_step` exactly — the ledger is keyed that
+        way so `order-3.html` and `order-3.html?product=a` are one page with one gate, and
+        a second definition of the scope here would be free to drift from the one the
+        reward uses.
+        """
+        scope = _path_of(url) if url else ""
+        return sum(1 for paid_scope, _identity in self._paid_reveals if paid_scope == scope)
+
     def observe_step(
         self,
         spec: ActionSpec,

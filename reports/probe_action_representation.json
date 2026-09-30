@@ -1,0 +1,1962 @@
+{
+  "_purpose": "Does the 32-dim trigram hash of an action label encode semantic similarity, or only shared characters?",
+  "_scope": "Label embedding geometry ONLY. Says nothing about whether a trained policy exploits it.",
+  "seed": 0,
+  "encoder": {
+    "class": "LabelEncoder",
+    "label_dim": 32,
+    "algorithm": "signed blake2b character-trigram hashing, L2-normalised"
+  },
+  "experiment_1_pairs": [
+    {
+      "a": "Place order",
+      "b": "Submit order",
+      "kind": "semantic",
+      "cosine": 0.488094,
+      "trigram_jaccard": 0.285714,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Place order",
+      "b": "Confirm order",
+      "kind": "semantic",
+      "cosine": 0.27501,
+      "trigram_jaccard": 0.272727,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Submit order",
+      "b": "Confirm order",
+      "kind": "semantic",
+      "cosine": 0.338062,
+      "trigram_jaccard": 0.26087,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Back",
+      "b": "Go back",
+      "kind": "semantic",
+      "cosine": 0.566947,
+      "trigram_jaccard": 0.5,
+      "token_jaccard": 0.5,
+      "shares_token": true
+    },
+    {
+      "a": "Back",
+      "b": "Return",
+      "kind": "semantic",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Go back",
+      "b": "Return",
+      "kind": "semantic",
+      "cosine": -0.133631,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Cancel",
+      "b": "Cancel order",
+      "kind": "semantic",
+      "cosine": 0.632456,
+      "trigram_jaccard": 0.466667,
+      "token_jaccard": 0.5,
+      "shares_token": true
+    },
+    {
+      "a": "Cancel",
+      "b": "Abort",
+      "kind": "semantic",
+      "cosine": -0.210819,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Cancel order",
+      "b": "Abort",
+      "kind": "semantic",
+      "cosine": -0.25,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Search",
+      "b": "Find",
+      "kind": "semantic",
+      "cosine": 0.144338,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Search",
+      "b": "Search products",
+      "kind": "semantic",
+      "cosine": 0.495074,
+      "trigram_jaccard": 0.388889,
+      "token_jaccard": 0.5,
+      "shares_token": true
+    },
+    {
+      "a": "Find",
+      "b": "Search products",
+      "kind": "semantic",
+      "cosine": 0.171499,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Login",
+      "b": "Sign in",
+      "kind": "semantic",
+      "cosine": 0.142857,
+      "trigram_jaccard": 0.142857,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Login",
+      "b": "Log in",
+      "kind": "semantic",
+      "cosine": 0.771517,
+      "trigram_jaccard": 0.5,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Sign in",
+      "b": "Log in",
+      "kind": "semantic",
+      "cosine": 0.154303,
+      "trigram_jaccard": 0.214286,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Logout",
+      "b": "Sign out",
+      "kind": "semantic",
+      "cosine": 0.395285,
+      "trigram_jaccard": 0.2,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Logout",
+      "b": "Log out",
+      "kind": "semantic",
+      "cosine": 0.76277,
+      "trigram_jaccard": 0.545455,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Sign out",
+      "b": "Log out",
+      "kind": "semantic",
+      "cosine": 0.527645,
+      "trigram_jaccard": 0.266667,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Add to cart",
+      "b": "Add item to cart",
+      "kind": "semantic",
+      "cosine": 0.82734,
+      "trigram_jaccard": 0.631579,
+      "token_jaccard": 0.75,
+      "shares_token": true
+    },
+    {
+      "a": "Remove from cart",
+      "b": "Remove item",
+      "kind": "semantic",
+      "cosine": 0.396297,
+      "trigram_jaccard": 0.291667,
+      "token_jaccard": 0.25,
+      "shares_token": true
+    },
+    {
+      "a": "Checkout",
+      "b": "Proceed to checkout",
+      "kind": "semantic",
+      "cosine": 0.613572,
+      "trigram_jaccard": 0.409091,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Next",
+      "b": "Continue",
+      "kind": "semantic",
+      "cosine": -0.144338,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Previous",
+      "b": "Back",
+      "kind": "semantic",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Delete",
+      "b": "Remove",
+      "kind": "semantic",
+      "cosine": 0.283473,
+      "trigram_jaccard": 0.066667,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Edit",
+      "b": "Modify",
+      "kind": "semantic",
+      "cosine": -0.144338,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Save",
+      "b": "Apply changes",
+      "kind": "semantic",
+      "cosine": -0.298142,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Home",
+      "b": "Go home",
+      "kind": "semantic",
+      "cosine": 0.707107,
+      "trigram_jaccard": 0.5,
+      "token_jaccard": 0.5,
+      "shares_token": true
+    },
+    {
+      "a": "Register",
+      "b": "Sign up",
+      "kind": "semantic",
+      "cosine": -0.19245,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Register",
+      "b": "Create account",
+      "kind": "semantic",
+      "cosine": 0.25,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Sign up",
+      "b": "Create account",
+      "kind": "semantic",
+      "cosine": -0.096225,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Place order",
+      "b": "Cancel order",
+      "kind": "lexical_trap",
+      "cosine": 0.424437,
+      "trigram_jaccard": 0.285714,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Add to cart",
+      "b": "Remove from cart",
+      "kind": "lexical_trap",
+      "cosine": 0.19803,
+      "trigram_jaccard": 0.192308,
+      "token_jaccard": 0.2,
+      "shares_token": true
+    },
+    {
+      "a": "Sign in",
+      "b": "Sign out",
+      "kind": "lexical_trap",
+      "cosine": 0.566947,
+      "trigram_jaccard": 0.357143,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Log in",
+      "b": "Log out",
+      "kind": "lexical_trap",
+      "cosine": 0.492366,
+      "trigram_jaccard": 0.307692,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Increase quantity",
+      "b": "Decrease quantity",
+      "kind": "lexical_trap",
+      "cosine": 0.80829,
+      "trigram_jaccard": 0.652174,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Select option A",
+      "b": "Select option B",
+      "kind": "lexical_trap",
+      "cosine": 0.885271,
+      "trigram_jaccard": 0.7,
+      "token_jaccard": 0.5,
+      "shares_token": true
+    },
+    {
+      "a": "Search products",
+      "b": "Search orders",
+      "kind": "lexical_trap",
+      "cosine": 0.219382,
+      "trigram_jaccard": 0.333333,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Go back",
+      "b": "Go home",
+      "kind": "lexical_trap",
+      "cosine": 0.125988,
+      "trigram_jaccard": 0.2,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Delete account",
+      "b": "Create account",
+      "kind": "lexical_trap",
+      "cosine": 0.5,
+      "trigram_jaccard": 0.454545,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Order history",
+      "b": "Place order",
+      "kind": "lexical_trap",
+      "cosine": 0.336336,
+      "trigram_jaccard": 0.217391,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Save",
+      "b": "Previous",
+      "kind": "random",
+      "cosine": -0.166667,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Delete",
+      "b": "Continue",
+      "kind": "random",
+      "cosine": 0.125,
+      "trigram_jaccard": 0.058824,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Abort",
+      "b": "Add to cart",
+      "kind": "random",
+      "cosine": 0.404226,
+      "trigram_jaccard": 0.176471,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Return",
+      "b": "Previous",
+      "kind": "random",
+      "cosine": -0.204124,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Log out",
+      "b": "Place order",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Register",
+      "b": "Previous",
+      "kind": "random",
+      "cosine": 0.083333,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Proceed to checkout",
+      "b": "Return",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Go back",
+      "b": "Search",
+      "kind": "random",
+      "cosine": -0.308607,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Add item to cart",
+      "b": "Remove item",
+      "kind": "random",
+      "cosine": 0.236525,
+      "trigram_jaccard": 0.148148,
+      "token_jaccard": 0.2,
+      "shares_token": true
+    },
+    {
+      "a": "Cancel order",
+      "b": "Save",
+      "kind": "random",
+      "cosine": 0.144338,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Save",
+      "b": "Abort",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Delete",
+      "b": "Add to cart",
+      "kind": "random",
+      "cosine": 0.257248,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Submit order",
+      "b": "Go home",
+      "kind": "random",
+      "cosine": 0.149071,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Back",
+      "b": "Abort",
+      "kind": "random",
+      "cosine": 0.5,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Previous",
+      "b": "Login",
+      "kind": "random",
+      "cosine": 0.109109,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Continue",
+      "b": "Place order",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Go back",
+      "b": "Log in",
+      "kind": "random",
+      "cosine": -0.154303,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Submit order",
+      "b": "Remove item",
+      "kind": "random",
+      "cosine": -0.186052,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Proceed to checkout",
+      "b": "Sign up",
+      "kind": "random",
+      "cosine": -0.323381,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Save",
+      "b": "Register",
+      "kind": "random",
+      "cosine": 0.166667,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Search products",
+      "b": "Go back",
+      "kind": "random",
+      "cosine": -0.09167,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Modify",
+      "b": "Remove",
+      "kind": "random",
+      "cosine": 0.283473,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Go back",
+      "b": "Login",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Go home",
+      "b": "Log out",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Search",
+      "b": "Add to cart",
+      "kind": "random",
+      "cosine": -0.099015,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Login",
+      "b": "Find",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Continue",
+      "b": "Modify",
+      "kind": "random",
+      "cosine": 0.125,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Register",
+      "b": "Next",
+      "kind": "random",
+      "cosine": -0.117851,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Remove from cart",
+      "b": "Edit",
+      "kind": "random",
+      "cosine": -0.166667,
+      "trigram_jaccard": 0.043478,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Search products",
+      "b": "Edit",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Confirm order",
+      "b": "Remove",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Apply changes",
+      "b": "Add item to cart",
+      "kind": "random",
+      "cosine": 0.330289,
+      "trigram_jaccard": 0.03125,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Return",
+      "b": "Go home",
+      "kind": "random",
+      "cosine": -0.353553,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Apply changes",
+      "b": "Search",
+      "kind": "random",
+      "cosine": -0.105409,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Previous",
+      "b": "Edit",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Search",
+      "b": "Cancel",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Search products",
+      "b": "Return",
+      "kind": "random",
+      "cosine": -0.085749,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Remove item",
+      "b": "Confirm order",
+      "kind": "random",
+      "cosine": -0.104828,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Modify",
+      "b": "Go home",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Sign out",
+      "b": "Checkout",
+      "kind": "random",
+      "cosine": 0.237171,
+      "trigram_jaccard": 0.176471,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Place order",
+      "b": "Next",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Delete",
+      "b": "Sign in",
+      "kind": "random",
+      "cosine": 0.133631,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Search",
+      "b": "Checkout",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Add item to cart",
+      "b": "Sign in",
+      "kind": "random",
+      "cosine": -0.080582,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Place order",
+      "b": "Back",
+      "kind": "random",
+      "cosine": -0.242536,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Place order",
+      "b": "Remove item",
+      "kind": "random",
+      "cosine": -0.336336,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Add item to cart",
+      "b": "Home",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Next",
+      "b": "Find",
+      "kind": "random",
+      "cosine": 0.433013,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Sign up",
+      "b": "Next",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Log in",
+      "b": "Save",
+      "kind": "random",
+      "cosine": -0.471405,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Login",
+      "b": "Confirm order",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Go home",
+      "b": "Add to cart",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Remove",
+      "b": "Remove from cart",
+      "kind": "random",
+      "cosine": 0.654654,
+      "trigram_jaccard": 0.368421,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Back",
+      "b": "Cancel",
+      "kind": "random",
+      "cosine": -0.316228,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Sign out",
+      "b": "Submit order",
+      "kind": "random",
+      "cosine": 0.111803,
+      "trigram_jaccard": 0.043478,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Search products",
+      "b": "Sign out",
+      "kind": "random",
+      "cosine": -0.060634,
+      "trigram_jaccard": 0.038462,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Search",
+      "b": "Back",
+      "kind": "random",
+      "cosine": -0.204124,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Sign up",
+      "b": "Save",
+      "kind": "random",
+      "cosine": 0.288675,
+      "trigram_jaccard": 0.071429,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Find",
+      "b": "Cancel",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Sign out",
+      "b": "Find",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Save",
+      "b": "Go back",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Edit",
+      "b": "Log in",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Sign up",
+      "b": "Sign in",
+      "kind": "random",
+      "cosine": 0.377964,
+      "trigram_jaccard": 0.384615,
+      "token_jaccard": 0.333333,
+      "shares_token": true
+    },
+    {
+      "a": "Go home",
+      "b": "Logout",
+      "kind": "random",
+      "cosine": -0.105409,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Home",
+      "b": "Cancel",
+      "kind": "random",
+      "cosine": -0.111803,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Proceed to checkout",
+      "b": "Add item to cart",
+      "kind": "random",
+      "cosine": 0.41367,
+      "trigram_jaccard": 0.114286,
+      "token_jaccard": 0.166667,
+      "shares_token": true
+    },
+    {
+      "a": "Remove",
+      "b": "Cancel order",
+      "kind": "random",
+      "cosine": -0.133631,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Log out",
+      "b": "Add item to cart",
+      "kind": "random",
+      "cosine": 0.25713,
+      "trigram_jaccard": 0.038462,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Delete",
+      "b": "Register",
+      "kind": "random",
+      "cosine": -0.102062,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Remove from cart",
+      "b": "Apply changes",
+      "kind": "random",
+      "cosine": -0.158114,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Log out",
+      "b": "Sign in",
+      "kind": "random",
+      "cosine": 0.227921,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Add to cart",
+      "b": "Continue",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Place order",
+      "b": "Save",
+      "kind": "random",
+      "cosine": 0.070014,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Find",
+      "b": "Previous",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Go home",
+      "b": "Search products",
+      "kind": "random",
+      "cosine": 0.16169,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Cancel",
+      "b": "Modify",
+      "kind": "random",
+      "cosine": 0.111803,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Create account",
+      "b": "Continue",
+      "kind": "random",
+      "cosine": -0.102062,
+      "trigram_jaccard": 0.04,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Search products",
+      "b": "Checkout",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Back",
+      "b": "Confirm order",
+      "kind": "random",
+      "cosine": -0.188982,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Remove from cart",
+      "b": "Create account",
+      "kind": "random",
+      "cosine": 0.058926,
+      "trigram_jaccard": 0.030303,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Modify",
+      "b": "Search",
+      "kind": "random",
+      "cosine": 0.144338,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Return",
+      "b": "Remove from cart",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.083333,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Log in",
+      "b": "Logout",
+      "kind": "random",
+      "cosine": 0.387298,
+      "trigram_jaccard": 0.230769,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Return",
+      "b": "Save",
+      "kind": "random",
+      "cosine": -0.306186,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Find",
+      "b": "Apply changes",
+      "kind": "random",
+      "cosine": -0.091287,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Next",
+      "b": "Confirm order",
+      "kind": "random",
+      "cosine": -0.154303,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Sign out",
+      "b": "Save",
+      "kind": "random",
+      "cosine": 0.216506,
+      "trigram_jaccard": 0.066667,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Modify",
+      "b": "Save",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Go home",
+      "b": "Search",
+      "kind": "random",
+      "cosine": 0.408248,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Back",
+      "b": "Find",
+      "kind": "random",
+      "cosine": -0.176777,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Continue",
+      "b": "Previous",
+      "kind": "random",
+      "cosine": 0.102062,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Place order",
+      "b": "Sign out",
+      "kind": "random",
+      "cosine": 0.181902,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Back",
+      "b": "Add item to cart",
+      "kind": "random",
+      "cosine": 0.1066,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Home",
+      "b": "Go back",
+      "kind": "random",
+      "cosine": -0.133631,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Log out",
+      "b": "Delete",
+      "kind": "random",
+      "cosine": 0.213201,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Abort",
+      "b": "Delete",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Continue",
+      "b": "Login",
+      "kind": "random",
+      "cosine": -0.400892,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Search products",
+      "b": "Place order",
+      "kind": "random",
+      "cosine": -0.235294,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Previous",
+      "b": "Log out",
+      "kind": "random",
+      "cosine": 0.174078,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Modify",
+      "b": "Submit order",
+      "kind": "random",
+      "cosine": -0.079057,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Search products",
+      "b": "Create account",
+      "kind": "random",
+      "cosine": -0.140028,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Return",
+      "b": "Create account",
+      "kind": "random",
+      "cosine": -0.102062,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Login",
+      "b": "Sign up",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Place order",
+      "b": "Search",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Proceed to checkout",
+      "b": "Apply changes",
+      "kind": "random",
+      "cosine": 0.062622,
+      "trigram_jaccard": 0.028571,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Proceed to checkout",
+      "b": "Go home",
+      "kind": "random",
+      "cosine": 0.080845,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Search products",
+      "b": "Modify",
+      "kind": "random",
+      "cosine": 0.171499,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Register",
+      "b": "Modify",
+      "kind": "random",
+      "cosine": -0.102062,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Checkout",
+      "b": "Remove item",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Login",
+      "b": "Remove",
+      "kind": "random",
+      "cosine": -0.404061,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Apply changes",
+      "b": "Login",
+      "kind": "random",
+      "cosine": 0.09759,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Modify",
+      "b": "Add item to cart",
+      "kind": "random",
+      "cosine": -0.075378,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Abort",
+      "b": "Logout",
+      "kind": "random",
+      "cosine": 0.421637,
+      "trigram_jaccard": 0.071429,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Remove",
+      "b": "Submit order",
+      "kind": "random",
+      "cosine": 0.119523,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Sign up",
+      "b": "Modify",
+      "kind": "random",
+      "cosine": -0.117851,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Next",
+      "b": "Previous",
+      "kind": "random",
+      "cosine": 0.0,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Previous",
+      "b": "Modify",
+      "kind": "random",
+      "cosine": 0.102062,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Next",
+      "b": "Search products",
+      "kind": "random",
+      "cosine": 0.099015,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Apply changes",
+      "b": "Add to cart",
+      "kind": "random",
+      "cosine": 0.375735,
+      "trigram_jaccard": 0.037037,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    },
+    {
+      "a": "Log out",
+      "b": "Modify",
+      "kind": "random",
+      "cosine": -0.1066,
+      "trigram_jaccard": 0.0,
+      "token_jaccard": 0.0,
+      "shares_token": false
+    }
+  ],
+  "experiment_2_statistics": {
+    "semantic": {
+      "n": 30,
+      "mean": 0.249123,
+      "median": 0.262505,
+      "sd": 0.342481,
+      "min": -0.298142,
+      "max": 0.82734,
+      "p25": -0.072169,
+      "p75": 0.519502
+    },
+    "random": {
+      "n": 120,
+      "mean": 0.018415,
+      "median": 0.0,
+      "sd": 0.201489,
+      "min": -0.471405,
+      "max": 0.654654,
+      "p25": -0.104973,
+      "p75": 0.125
+    },
+    "mean_difference": 0.230708,
+    "median_difference": 0.262505,
+    "bootstrap_95ci_mean_difference": [
+      0.10608,
+      0.356122
+    ],
+    "mann_whitney_u": 2486.0,
+    "mann_whitney_p": 0.001196,
+    "rank_biserial_effect_size": 0.381111,
+    "prob_semantic_exceeds_random": 0.690556
+  },
+  "experiment_3_permutation": {
+    "n_permutations": 5000,
+    "observed_separation": 0.230708,
+    "permutation_mean": 0.01341,
+    "permutation_sd": 0.039401,
+    "permutation_p95": 0.081631,
+    "percentile_of_observed": 100.0,
+    "two_sided_p": 0.0002
+  },
+  "experiment_4_fixture_audit": {
+    "unique_labels": 26,
+    "unique_action_identities": 32,
+    "labels": [
+      "A4 paper, 5 reams",
+      "About",
+      "Back",
+      "Back to home",
+      "Ballpoint pens, box of 50",
+      "Cancel order",
+      "Catalog",
+      "Contact us",
+      "Delivery times",
+      "Filing",
+      "Home",
+      "Invoices",
+      "Paper",
+      "Pens and markers",
+      "Place order",
+      "Privacy",
+      "Returns",
+      "Start an order",
+      "Start order",
+      "Status",
+      "Support",
+      "Suspension folders",
+      "Terms",
+      "email",
+      "product",
+      "quantity"
+    ],
+    "pair_count": 325,
+    "cosine_distribution": {
+      "n": 325,
+      "mean": 0.013395,
+      "median": 0.0,
+      "sd": 0.199347,
+      "min": -0.408248,
+      "max": 0.891133,
+      "p25": -0.133631,
+      "p75": 0.142857
+    },
+    "most_similar": [
+      {
+        "a": "Start an order",
+        "b": "Start order",
+        "cosine": 0.891133,
+        "trigram_jaccard": 0.705882,
+        "shares_token": true
+      },
+      {
+        "a": "Place order",
+        "b": "Start order",
+        "cosine": 0.647059,
+        "trigram_jaccard": 0.3,
+        "shares_token": true
+      },
+      {
+        "a": "Back to home",
+        "b": "Home",
+        "cosine": 0.559017,
+        "trigram_jaccard": 0.333333,
+        "shares_token": true
+      },
+      {
+        "a": "Back",
+        "b": "Ballpoint pens, box of 50",
+        "cosine": 0.557086,
+        "trigram_jaccard": 0.064516,
+        "shares_token": false
+      },
+      {
+        "a": "Place order",
+        "b": "Start an order",
+        "cosine": 0.544581,
+        "trigram_jaccard": 0.26087,
+        "shares_token": true
+      },
+      {
+        "a": "Contact us",
+        "b": "Status",
+        "cosine": 0.51031,
+        "trigram_jaccard": 0.111111,
+        "shares_token": false
+      },
+      {
+        "a": "Cancel order",
+        "b": "Start order",
+        "cosine": 0.485071,
+        "trigram_jaccard": 0.285714,
+        "shares_token": true
+      },
+      {
+        "a": "Status",
+        "b": "Suspension folders",
+        "cosine": 0.456436,
+        "trigram_jaccard": 0.076923,
+        "shares_token": false
+      },
+      {
+        "a": "Contact us",
+        "b": "Suspension folders",
+        "cosine": 0.447214,
+        "trigram_jaccard": 0.032258,
+        "shares_token": false
+      },
+      {
+        "a": "Privacy",
+        "b": "Suspension folders",
+        "cosine": 0.447214,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Cancel order",
+        "b": "Place order",
+        "cosine": 0.424437,
+        "trigram_jaccard": 0.285714,
+        "shares_token": true
+      },
+      {
+        "a": "Support",
+        "b": "Suspension folders",
+        "cosine": 0.422577,
+        "trigram_jaccard": 0.074074,
+        "shares_token": false
+      },
+      {
+        "a": "Pens and markers",
+        "b": "Suspension folders",
+        "cosine": 0.421637,
+        "trigram_jaccard": 0.151515,
+        "shares_token": false
+      },
+      {
+        "a": "Cancel order",
+        "b": "Start an order",
+        "cosine": 0.408248,
+        "trigram_jaccard": 0.25,
+        "shares_token": true
+      },
+      {
+        "a": "Back to home",
+        "b": "Status",
+        "cosine": 0.387298,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Invoices",
+        "b": "Terms",
+        "cosine": 0.358569,
+        "trigram_jaccard": 0.0625,
+        "shares_token": false
+      },
+      {
+        "a": "Contact us",
+        "b": "Pens and markers",
+        "cosine": 0.353553,
+        "trigram_jaccard": 0.034483,
+        "shares_token": false
+      },
+      {
+        "a": "Cancel order",
+        "b": "Paper",
+        "cosine": 0.33541,
+        "trigram_jaccard": 0.105263,
+        "shares_token": false
+      },
+      {
+        "a": "Paper",
+        "b": "Start order",
+        "cosine": 0.325396,
+        "trigram_jaccard": 0.111111,
+        "shares_token": false
+      },
+      {
+        "a": "A4 paper, 5 reams",
+        "b": "Paper",
+        "cosine": 0.307794,
+        "trigram_jaccard": 0.181818,
+        "shares_token": false
+      }
+    ],
+    "least_similar": [
+      {
+        "a": "Back",
+        "b": "Status",
+        "cosine": -0.408248,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Ballpoint pens, box of 50",
+        "b": "Place order",
+        "cosine": -0.40534,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Catalog",
+        "b": "product",
+        "cosine": -0.39036,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Start an order",
+        "b": "Terms",
+        "cosine": -0.385758,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "A4 paper, 5 reams",
+        "b": "email",
+        "cosine": -0.38236,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Pens and markers",
+        "b": "Place order",
+        "cosine": -0.342997,
+        "trigram_jaccard": 0.033333,
+        "shares_token": false
+      },
+      {
+        "a": "Returns",
+        "b": "email",
+        "cosine": -0.333333,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Privacy",
+        "b": "email",
+        "cosine": -0.333333,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Delivery times",
+        "b": "Start an order",
+        "cosine": -0.327327,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Returns",
+        "b": "Start order",
+        "cosine": -0.323381,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Back to home",
+        "b": "Privacy",
+        "cosine": -0.316228,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Back to home",
+        "b": "Cancel order",
+        "cosine": -0.316228,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Back",
+        "b": "Invoices",
+        "cosine": -0.316228,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Ballpoint pens, box of 50",
+        "b": "Returns",
+        "cosine": -0.309492,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "A4 paper, 5 reams",
+        "b": "Delivery times",
+        "cosine": -0.30657,
+        "trigram_jaccard": 0.029412,
+        "shares_token": false
+      },
+      {
+        "a": "Contact us",
+        "b": "Place order",
+        "cosine": -0.30317,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Ballpoint pens, box of 50",
+        "b": "Terms",
+        "cosine": -0.280745,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Returns",
+        "b": "Start an order",
+        "cosine": -0.272166,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Cancel order",
+        "b": "Delivery times",
+        "cosine": -0.267261,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Delivery times",
+        "b": "Start order",
+        "cosine": -0.259282,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      }
+    ],
+    "unrelated_pairs_above_0_3": [
+      {
+        "a": "Back",
+        "b": "Ballpoint pens, box of 50",
+        "cosine": 0.557086,
+        "trigram_jaccard": 0.064516,
+        "shares_token": false
+      },
+      {
+        "a": "Contact us",
+        "b": "Status",
+        "cosine": 0.51031,
+        "trigram_jaccard": 0.111111,
+        "shares_token": false
+      },
+      {
+        "a": "Status",
+        "b": "Suspension folders",
+        "cosine": 0.456436,
+        "trigram_jaccard": 0.076923,
+        "shares_token": false
+      },
+      {
+        "a": "Contact us",
+        "b": "Suspension folders",
+        "cosine": 0.447214,
+        "trigram_jaccard": 0.032258,
+        "shares_token": false
+      },
+      {
+        "a": "Privacy",
+        "b": "Suspension folders",
+        "cosine": 0.447214,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Support",
+        "b": "Suspension folders",
+        "cosine": 0.422577,
+        "trigram_jaccard": 0.074074,
+        "shares_token": false
+      },
+      {
+        "a": "Pens and markers",
+        "b": "Suspension folders",
+        "cosine": 0.421637,
+        "trigram_jaccard": 0.151515,
+        "shares_token": false
+      },
+      {
+        "a": "Back to home",
+        "b": "Status",
+        "cosine": 0.387298,
+        "trigram_jaccard": 0.0,
+        "shares_token": false
+      },
+      {
+        "a": "Invoices",
+        "b": "Terms",
+        "cosine": 0.358569,
+        "trigram_jaccard": 0.0625,
+        "shares_token": false
+      },
+      {
+        "a": "Contact us",
+        "b": "Pens and markers",
+        "cosine": 0.353553,
+        "trigram_jaccard": 0.034483,
+        "shares_token": false
+      },
+      {
+        "a": "Cancel order",
+        "b": "Paper",
+        "cosine": 0.33541,
+        "trigram_jaccard": 0.105263,
+        "shares_token": false
+      },
+      {
+        "a": "Paper",
+        "b": "Start order",
+        "cosine": 0.325396,
+        "trigram_jaccard": 0.111111,
+        "shares_token": false
+      },
+      {
+        "a": "A4 paper, 5 reams",
+        "b": "Paper",
+        "cosine": 0.307794,
+        "trigram_jaccard": 0.181818,
+        "shares_token": false
+      },
+      {
+        "a": "Ballpoint pens, box of 50",
+        "b": "Pens and markers",
+        "cosine": 0.306382,
+        "trigram_jaccard": 0.071429,
+        "shares_token": false
+      }
+    ]
+  },
+  "lexical_stratification": {
+    "semantic_sharing_a_token": {
+      "n": 12,
+      "mean": 0.501826,
+      "median": 0.511359,
+      "sd": 0.189008,
+      "min": 0.154303,
+      "max": 0.82734,
+      "p25": 0.381738,
+      "p75": 0.618293
+    },
+    "semantic_with_no_shared_token": {
+      "n": 18,
+      "mean": 0.080655,
+      "median": 0.0,
+      "sd": 0.319133,
+      "min": -0.298142,
+      "max": 0.771517,
+      "p25": -0.144338,
+      "p75": 0.230375
+    },
+    "lexical_traps_unrelated_but_share_a_token": {
+      "n": 10,
+      "mean": 0.455705,
+      "median": 0.458402,
+      "sd": 0.251818,
+      "min": 0.125988,
+      "max": 0.885271,
+      "p25": 0.24862,
+      "p75": 0.55021
+    },
+    "spearman_trigram_overlap_vs_cosine": 0.683967,
+    "spearman_p": 0.0
+  },
+  "secondary_q_diagnostic": {
+    "_caveat": "UNTRAINED network. Says nothing about the trained policy.",
+    "checkpoint": "models\\checkpoints\\postmarkov_baseline\\ac_dqn_seed0_init.zip",
+    "labels_scored": 38,
+    "q_spread": 0.027648,
+    "spearman_cosine_vs_absolute_q_gap": -0.164129,
+    "spearman_p": 1.2e-05
+  }
+}

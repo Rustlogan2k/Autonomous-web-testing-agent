@@ -164,7 +164,13 @@ def test_split_mask_returns_the_trailing_action_slots():
     from web_testing_agent.agents.masked_dqn import split_mask
     from web_testing_agent.envs.types import MAX_ACTIONS
 
-    obs = np.arange(1670 + MAX_ACTIONS, dtype=np.float32)[None, :]
+    from web_testing_agent.envs.types import EPISODE_CONTEXT_DIM
+    from web_testing_agent.perception.fusion import NETWORK_DIM, STRUCTURAL_DIM, VISUAL_DIM
+
+    # Derived, not the literal 1670 this asserted before EPISODE_CONTEXT_DIM widened:
+    # a hardcoded width turns a deliberate observation change into a puzzling failure.
+    width = VISUAL_DIM + STRUCTURAL_DIM + NETWORK_DIM + EPISODE_CONTEXT_DIM
+    obs = np.arange(width + MAX_ACTIONS, dtype=np.float32)[None, :]
     features, mask = split_mask(obs)
-    assert features.shape == (1, 1670)
+    assert features.shape == (1, width)
     assert mask.shape == (1, MAX_ACTIONS)
