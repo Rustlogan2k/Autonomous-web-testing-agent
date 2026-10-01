@@ -40,9 +40,28 @@ def main() -> int:
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--apps", nargs="*", default=None)
     parser.add_argument("--steps", type=int, default=1500, help="per policy per build")
+    parser.add_argument("--from-misses", type=Path, default=None,
+                        help="score the snapshots offline runs logged as missing (misses.*.jsonl "
+                             "under this directory, searched recursively), then exit")
     args = parser.parse_args()
     scorer = ProgressScorer()
     scorer.preflight()
+    if args.from_misses is not None:
+        import json
+
+        rows = {}
+        for path in sorted(args.from_misses.rglob("misses.*.jsonl")):
+            for line in path.read_text(encoding="utf-8").splitlines():
+                if line.strip():
+                    row = json.loads(line)
+                    rows[row["key"]] = row
+        for number, row in enumerate(rows.values(), 1):
+            scorer.judge_digest(row["digest"], row["context"])
+            if number % 50 == 0:
+                print(f"{number}/{len(rows)} {scorer.stats.to_dict()}", flush=True)
+        target = scorer.cache.compact()
+        print(f"scored {len(rows)} logged misses; {len(scorer.cache)} judgments -> {target}")
+        return 0
     labels = StoredLabelEncoder()
     settings = EnvSettings(max_steps=40, settle_quiet_ms=80)
     apps = [a for a in discover() if not args.apps or a.app_id in args.apps]

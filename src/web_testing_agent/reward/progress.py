@@ -341,6 +341,25 @@ class JudgmentCache:
         with shard.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
 
+    def record_miss(self, key: str, digest: str, context: str) -> None:
+        """Log a snapshot an offline run needed and the cache lacked, once per process.
+
+        An offline worker cannot ask the model, but it can say what it would have asked:
+        `scripts/warm_caches.py --from-misses` scores these on a machine with the model, so
+        the next run finds them cached. Without this, a cold region of the state space
+        would stay cold however many times the experiment is repeated.
+        """
+        seen = getattr(self, "_missed", None)
+        if seen is None:
+            seen = self._missed = set()
+        if key in seen:
+            return
+        seen.add(key)
+        self.directory.mkdir(parents=True, exist_ok=True)
+        with (self.directory / f"misses.{os.getpid()}.jsonl").open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps({"key": key, "digest": digest, "context": context},
+                                    ensure_ascii=False) + "\n")
+
     def compact(self, name: str = "progress.jsonl") -> Path:
         """Merge every shard into one key-sorted file and remove the shards."""
         self.reload()
@@ -408,6 +427,10 @@ class ProgressScorer:
         payload = "\x00".join((PROMPT_VERSION, self.model, str(self.votes), context, digest))
         return hashlib.sha256(payload.encode("utf-8", "replace")).hexdigest()[:40]
 
+    def judge_digest(self, digest: str, context: str = "") -> Judgment | None:
+        """Score a snapshot that is already a digest (a logged offline miss)."""
+        return self._judge(digest, context)
+
     def potential(self, url: str, html: str, *, context: str = "",
                   visible_text: str | None = None) -> Judgment | None:
         """The judgment for this page, from the cache or the model. None when unavailable.
@@ -416,7 +439,9 @@ class ProgressScorer:
         the model reads a snapshot knowing what the product is. It is part of the cache
         key: the same snapshot under a different stated purpose is a different question.
         """
-        digest = page_digest(url, html, visible_text)
+        return self._judge(page_digest(url, html, visible_text), context)
+
+    def _judge(self, digest: str, context: str) -> Judgment | None:
         key = self.key_for(digest, context)
         self.stats.lookups += 1
         cached = self.cache.get(key)
@@ -425,6 +450,7 @@ class ProgressScorer:
             return cached
         if self.offline:
             self.stats.offline_misses += 1
+            self.cache.record_miss(key, digest, context)
             return None
 
         started = time.monotonic()
