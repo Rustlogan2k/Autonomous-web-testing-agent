@@ -216,7 +216,7 @@ def test_potential_shaping_telescopes_around_a_cycle():
 
 def test_the_progress_record_pays_only_new_episode_maxima_and_resets_each_episode():
     scorer = FixedScorer({"home": 0.0, "form": 0.6, "info": 0.0, "done": 1.0})
-    composer = RewardComposer(RewardConfig(llm_weight=2.0), scorer)
+    composer = RewardComposer(RewardConfig(llm_weight=2.0, outcome_bonus=0.0), scorer)
     composer.start_episode()
     paid = [composer.compute(page(a, []), page(b, []), 0.0)[1]["llm_shaping"]
             for a, b in (("home", "form"), ("form", "info"), ("info", "form"),
@@ -225,6 +225,18 @@ def test_the_progress_record_pays_only_new_episode_maxima_and_resets_each_episod
     assert sum(paid) <= 2.0  # bounded by lambda * max Phi per episode
     composer.start_episode()
     assert composer.compute(page("home", []), page("form", []), 0.0)[1]["llm_shaping"] ==         pytest.approx(1.2)
+
+
+def test_the_outcome_bonus_pays_once_per_outcome_state_per_episode():
+    scorer = FixedScorer({"home": 0.0, "form": 0.6, "done": 1.0, "receipt": 0.9})
+    composer = RewardComposer(RewardConfig(llm_weight=0.0001, outcome_bonus=3.0), scorer)
+    composer.start_episode()
+    paid = [composer.compute(page(a, []), page(b, []), 0.0)[1]["llm_shaping"]
+            for a, b in (("home", "form"), ("form", "done"), ("done", "form"),
+                         ("form", "done"), ("done", "receipt"))]
+    assert [round(x) for x in paid] == [0, 3, 0, 0, 3]
+    composer.start_episode()
+    assert round(composer.compute(page("form", []), page("done", []), 0.0)[1]["llm_shaping"]) == 3
 
 
 def test_a_missing_potential_means_no_shaping_not_a_guess():

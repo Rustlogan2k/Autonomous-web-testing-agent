@@ -1,0 +1,101 @@
+/* Tidepool account hub. Sidebar layout, settings cards, native controls restyled in place
+   (a switch is still an <input type="checkbox">, never a div). No transitions, no timers. */
+*, *::before, *::after { box-sizing: border-box; }
+html { font-size: 15px; }
+body { margin: 0; font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+       line-height: 1.5; color: #1c2733; background: #eef2f5; }
+.shell { display: flex; align-items: flex-start; min-height: 100vh; }
+.rail { flex: 0 0 15.5rem; background: #12303b; color: #d7e4e8; padding: 1.2rem 1rem 1.6rem;
+        align-self: stretch; }
+.rail .brand { font-size: 1.25rem; font-weight: 700; letter-spacing: .02em; color: #fff; margin: 0; }
+.rail .brand small { display: block; font-size: .72rem; font-weight: 400; letter-spacing: .06em;
+                     text-transform: uppercase; color: #8fb3bd; }
+.identity { margin: 1.1rem 0; padding: .7rem .75rem; border-radius: 8px; background: #1b4350;
+            font-size: .85rem; overflow-wrap: anywhere; }
+.identity strong { display: block; color: #fff; font-size: .95rem; }
+.identity span { display: block; color: #a9c6ce; }
+.rail nav ul { list-style: none; margin: 0; padding: 0; }
+.rail nav li { margin: 2px 0; }
+.rail nav a { display: block; padding: .45rem .7rem; border-radius: 6px; color: #d7e4e8;
+              text-decoration: none; }
+.rail nav a[aria-current="page"] { background: #0f766e; color: #fff; font-weight: 600; }
+.stage { flex: 1 1 auto; min-width: 0; padding: 1.4rem 1.8rem 3rem; max-width: 60rem; }
+.stage > header h1 { margin: 0; font-size: 1.55rem; }
+.stage > header p { margin: .2rem 0 1rem; color: #566573; }
+
+.banner { border: 1px solid #d9a441; background: #fff6df; border-radius: 8px; padding: .7rem .9rem;
+          margin-bottom: 1rem; display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; }
+.banner p { margin: 0; flex: 1 1 16rem; }
+
+.panel { background: #fff; border: 1px solid #d5dde3; border-radius: 10px; padding: 1rem 1.15rem 1.1rem;
+         margin: 0 0 1rem; }
+.panel > h2 { margin: 0; font-size: 1.08rem; }
+.panel > .about { margin: .15rem 0 .7rem; color: #5b6b79; font-size: .9rem; }
+.panel h3 { margin: .9rem 0 .3rem; font-size: .95rem; }
+.panel.danger { border-color: #e2b4ad; }
+.panel.danger > h2 { color: #9f2d20; }
+
+.facts { margin: .3rem 0 .6rem; display: grid; grid-template-columns: minmax(9rem, 15rem) 1fr;
+         gap: .25rem .9rem; }
+.facts dt { color: #5b6b79; }
+.facts dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.facts .grand { border-top: 1px solid #d5dde3; padding-top: .3rem; }
+
+.field { margin: .55rem 0; }
+.field label { display: block; font-size: .85rem; color: #41505d; margin-bottom: .15rem; }
+.field .hint { display: block; font-size: .8rem; color: #6c7b88; }
+input[type="text"], input[type="email"], input[type="number"], input[type="password"],
+input[type="tel"], select { font: inherit; padding: .38rem .55rem; border: 1px solid #b4c0ca;
+       border-radius: 6px; background: #fff; color: inherit; width: 100%; max-width: 22rem; }
+input[type="number"] { max-width: 9rem; }
+
+.choice { display: flex; align-items: center; gap: .55rem; margin: .4rem 0; }
+.choice label { flex: 1 1 auto; }
+.choice input[type="checkbox"], .choice input[type="radio"] { flex: none; width: 18px; height: 18px;
+       margin: 0; accent-color: #0f766e; }
+.choice input.switch { -webkit-appearance: none; appearance: none; width: 40px; height: 22px;
+       border-radius: 11px; background: #b3bfc9; position: relative; cursor: pointer; }
+.choice input.switch::before { content: ""; position: absolute; top: 3px; left: 3px; width: 16px;
+       height: 16px; border-radius: 50%; background: #fff; }
+.choice input.switch:checked { background: #0f766e; }
+.choice input.switch:checked::before { left: 21px; }
+.dependents { margin: .3rem 0 .5rem 1.2rem; padding-left: .9rem; border-left: 3px solid #cfe3e0; }
+fieldset { border: 0; margin: .5rem 0; padding: 0; }
+legend { padding: 0; font-size: .85rem; color: #41505d; font-weight: 600; }
+
+.actions { display: flex; gap: .55rem; flex-wrap: wrap; margin-top: .7rem; }
+button { font: inherit; padding: .42rem .95rem; border-radius: 6px; border: 1px solid #0f766e;
+         background: #0f766e; color: #fff; cursor: pointer; }
+button.ghost { background: #fff; color: #0f5e58; border-color: #9fc4bf; }
+button.risky { background: #b3382a; border-color: #b3382a; }
+.guard { border: 1px dashed #c98b82; background: #fdf3f1; border-radius: 8px; padding: .7rem .85rem;
+         margin-top: .7rem; }
+.guard.calm { border-color: #9fc4bf; background: #f2f9f8; }
+.guard > p { margin: 0 0 .4rem; }
+
+.note { margin: .55rem 0 0; padding: .4rem .65rem; border-radius: 6px; font-size: .9rem;
+        overflow-wrap: anywhere; }
+.note.good { background: #e4f4ee; color: #12543f; }
+.note.bad { background: #fbe6e2; color: #8a2a1e; }
+.note.plain { background: #eef2f5; color: #41505d; }
+
+.roster { list-style: none; margin: .4rem 0; padding: 0; }
+.roster li { display: flex; flex-wrap: wrap; gap: .5rem .9rem; align-items: center;
+             padding: .5rem 0; border-top: 1px solid #e3e9ee; }
+.roster li:first-child { border-top: 0; }
+.roster .who { flex: 1 1 13rem; overflow-wrap: anywhere; }
+.roster .who span { display: block; color: #5b6b79; font-size: .85rem; }
+.roster .field { margin: 0; }
+.roster select { width: auto; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 1rem; }
+.cards .panel { margin: 0; }
+.cards .panel p { margin: .3rem 0; overflow-wrap: anywhere; }
+.cards a { color: #0f5e58; font-weight: 600; }
+
+@media (max-width: 800px) {
+  .shell { flex-direction: column; }
+  .rail { flex: none; width: 100%; }
+  .stage { padding: 1rem; }
+  .facts { grid-template-columns: 1fr; }
+}

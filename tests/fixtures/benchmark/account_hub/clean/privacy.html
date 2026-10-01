@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data &amp; privacy · Tidepool account</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/hub.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="rail">
+    <p class="brand">Tidepool <small>Account hub</small></p>
+    <div class="identity" id="hub-identity"></div>
+    <nav aria-label="Account sections">
+      <ul>
+        <li><a id="nav-overview" href="index.html">Overview</a></li>
+        <li><a id="nav-profile" href="profile.html">Profile</a></li>
+        <li><a id="nav-notifications" href="notifications.html">Notifications</a></li>
+        <li><a id="nav-billing" href="billing.html">Plan &amp; billing</a></li>
+        <li><a id="nav-team" href="team.html">Team &amp; seats</a></li>
+        <li><a id="nav-security" href="security.html">Security</a></li>
+        <li><a id="nav-privacy" href="privacy.html" aria-current="page">Data &amp; privacy</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <main class="stage">
+    <div id="hub-banner"></div>
+    <header>
+      <h1>Data &amp; privacy</h1>
+      <p>What we keep, what you can take with you, and closing the workspace.</p>
+    </header>
+    <section class="panel">
+      <h2>Sharing</h2>
+      <p class="about">What Tidepool may learn from how you use it.</p>
+      <div id="sharing-body"></div>
+    </section>
+    <section class="panel">
+      <h2>Trash</h2>
+      <p class="about">How long deleted files can be recovered.</p>
+      <div id="retention-body"></div>
+    </section>
+    <section class="panel">
+      <h2>Export your data</h2>
+      <p class="about">Request an archive of the workspace.</p>
+      <div id="export-body"></div>
+    </section>
+    <section class="panel danger">
+      <h2>Close this workspace</h2>
+      <p class="about">Closing is permanent once the 30-day grace period ends.</p>
+      <div id="closure-body"></div>
+    </section>
+  </main>
+</div>
+<script src="assets/core.js"></script>
+<script src="assets/privacy.js"></script>
+</body>
+</html>

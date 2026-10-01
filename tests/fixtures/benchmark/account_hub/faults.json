@@ -1,0 +1,103 @@
+{
+  "app_id": "account_hub",
+  "name": "Tidepool account hub",
+  "entry": "index.html",
+  "regions": {
+    "receipt_support_charge": "#receipt-support-charge",
+    "email_switch_result": "#email-switch-result"
+  },
+  "faults": [
+    {
+      "fault_id": "ACCT-01",
+      "fault_class": "calculation_error",
+      "description": "The plan calculator prices the per-seat Priority support add-on for one month regardless of the billing period, so a quarterly or yearly plan that includes it shows a support charge (and a recurring charge) that is too low.",
+      "trigger_condition": "On Plan & billing, open the calculator, enter a seat count, choose a quarterly or yearly billing period, tick Priority support, review the change, tick the charge authorisation and apply it. The receipt shows the support line.",
+      "expected_behaviour": "The receipt's Priority support line equals seats x $2.00 x the number of months in the billing period.",
+      "observable_violation": "The receipt's Priority support line equals seats x $2.00, i.e. one month's worth, for a 3- or 12-month period. Nothing errors; the monthly case is correct.",
+      "assertions": [
+        {
+          "kind": "numeric_equals",
+          "where": "billing\\.html",
+          "region": "receipt_support_charge",
+          "expression": "seats * 2 * billing_period",
+          "describes": "the applied plan's Priority support charge must be seats x $2 x months in the billing period"
+        }
+      ],
+      "reproduction": { "replays": 2, "must_all_reproduce": true },
+      "minimization_keep": [],
+      "observation_horizon": 4,
+      "_horizon_note": "The triggering choice (the billing period) is four transitions before the receipt: tick add-on -> review -> authorise -> apply.",
+      "shortest_path": 8,
+      "trigger_trace": [
+        { "type": "CLICK", "id": "nav-billing" },
+        { "type": "CLICK", "id": "open-plan-editor" },
+        { "type": "TYPE", "id": "plan-seats", "params": { "category": "valid_typical" } },
+        { "type": "SELECT", "id": "billing-period", "params": { "option": "12" } },
+        { "type": "CLICK", "id": "addon-support" },
+        { "type": "CLICK", "id": "plan-review" },
+        { "type": "CLICK", "id": "authorise-charge" },
+        { "type": "CLICK", "id": "plan-apply" }
+      ]
+    },
+    {
+      "fault_id": "ACCT-02",
+      "fault_class": "constraint_bypass",
+      "description": "The contact-email change declares that the new address must be repeated exactly, but only checks that the repeat field is filled in. Two different addresses are accepted and the first one is applied.",
+      "trigger_condition": "On Profile, open Change contact email, enter a valid new address, enter a different non-empty address in the repeat field, review the change, tick the access acknowledgement and switch.",
+      "expected_behaviour": "Review is refused with 'The two addresses do not match', so no switch happens and no success note is shown.",
+      "observable_violation": "The success note reports a switch to an address that differs from the repeated address the user typed.",
+      "assertions": [
+        {
+          "kind": "echoes_input",
+          "where": "profile\\.html",
+          "region": "email_switch_result",
+          "input_field": "repeat_email",
+          "describes": "a switched contact email must be the address the user repeated, because the panel only accepts matching addresses"
+        }
+      ],
+      "reproduction": { "replays": 2, "must_all_reproduce": true },
+      "minimization_keep": [],
+      "observation_horizon": 3,
+      "shortest_path": 7,
+      "trigger_trace": [
+        { "type": "CLICK", "id": "nav-profile" },
+        { "type": "CLICK", "id": "email-edit" },
+        { "type": "TYPE", "id": "new-email", "params": { "category": "valid_typical" } },
+        { "type": "TYPE", "id": "repeat-email", "params": { "category": "boundary_min" } },
+        { "type": "CLICK", "id": "email-review" },
+        { "type": "CLICK", "id": "ack-email-access" },
+        { "type": "CLICK", "id": "email-switch" }
+      ]
+    }
+  ],
+  "benign_traces": [
+    [
+      { "type": "CLICK", "id": "nav-billing" },
+      { "type": "CLICK", "id": "open-plan-editor" },
+      { "type": "CLICK", "id": "plan-scale" },
+      { "type": "TYPE", "id": "plan-seats", "params": { "category": "valid_typical" } },
+      { "type": "SELECT", "id": "billing-period", "params": { "option": "1" } },
+      { "type": "CLICK", "id": "addon-support" },
+      { "type": "CLICK", "id": "addon-history" },
+      { "type": "CLICK", "id": "plan-review" },
+      { "type": "CLICK", "id": "authorise-charge" },
+      { "type": "CLICK", "id": "plan-apply" }
+    ],
+    [
+      { "type": "CLICK", "id": "nav-profile" },
+      { "type": "CLICK", "id": "email-edit" },
+      { "type": "TYPE", "id": "new-email", "params": { "category": "valid_typical" } },
+      { "type": "TYPE", "id": "repeat-email", "params": { "category": "valid_typical" } },
+      { "type": "CLICK", "id": "email-review" },
+      { "type": "CLICK", "id": "ack-email-access" },
+      { "type": "CLICK", "id": "email-switch" }
+    ]
+  ],
+  "_benign_note": "Trace 0 is a correct plan change billed monthly: the support line is seats x $2 x 1 on both builds. Trace 1 is a correct contact-email change with matching addresses: the note echoes the repeated address on both builds.",
+  "characterization": {
+    "pages_or_views": 7,
+    "workflow_state_representation": "sessionStorage for committed settings and the plan-calculator draft; in-page editor stages held in memory and rebuilt into the DOM on each change",
+    "structure": "multi-page settings hub; each page is a set of independent panels with switches that reveal dependent options, inline edit/apply/discard, and destructive actions behind an in-page acknowledgement step",
+    "shortest_fault_path_d_star": 7
+  }
+}

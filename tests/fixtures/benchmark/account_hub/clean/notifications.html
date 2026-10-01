@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notifications · Tidepool account</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/hub.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="rail">
+    <p class="brand">Tidepool <small>Account hub</small></p>
+    <div class="identity" id="hub-identity"></div>
+    <nav aria-label="Account sections">
+      <ul>
+        <li><a id="nav-overview" href="index.html">Overview</a></li>
+        <li><a id="nav-profile" href="profile.html">Profile</a></li>
+        <li><a id="nav-notifications" href="notifications.html" aria-current="page">Notifications</a></li>
+        <li><a id="nav-billing" href="billing.html">Plan &amp; billing</a></li>
+        <li><a id="nav-team" href="team.html">Team &amp; seats</a></li>
+        <li><a id="nav-security" href="security.html">Security</a></li>
+        <li><a id="nav-privacy" href="privacy.html">Data &amp; privacy</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <main class="stage">
+    <div id="hub-banner"></div>
+    <header>
+      <h1>Notifications</h1>
+      <p>Decide what reaches you, and when.</p>
+    </header>
+    <section class="panel">
+      <h2>Email</h2>
+      <p class="about">Turn email on to choose which events send one.</p>
+      <div id="email-alerts-body"></div>
+    </section>
+    <section class="panel">
+      <h2>Phone</h2>
+      <p class="about">Push notifications from the Tidepool mobile app.</p>
+      <div id="push-body"></div>
+    </section>
+    <section class="panel">
+      <h2>Product news</h2>
+      <p class="about">Occasional messages from the Tidepool team.</p>
+      <div id="news-body"></div>
+    </section>
+    <section class="panel">
+      <h2>Pause</h2>
+      <p class="about">Silence every notification for a while.</p>
+      <div id="pause-body"></div>
+    </section>
+    <section class="panel danger">
+      <h2>Restore defaults</h2>
+      <p class="about">Undo every change on this page.</p>
+      <div id="restore-body"></div>
+    </section>
+  </main>
+</div>
+<script src="assets/core.js"></script>
+<script src="assets/notifications.js"></script>
+</body>
+</html>

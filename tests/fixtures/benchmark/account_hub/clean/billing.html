@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plan &amp; billing · Tidepool account</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/hub.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="rail">
+    <p class="brand">Tidepool <small>Account hub</small></p>
+    <div class="identity" id="hub-identity"></div>
+    <nav aria-label="Account sections">
+      <ul>
+        <li><a id="nav-overview" href="index.html">Overview</a></li>
+        <li><a id="nav-profile" href="profile.html">Profile</a></li>
+        <li><a id="nav-notifications" href="notifications.html">Notifications</a></li>
+        <li><a id="nav-billing" href="billing.html" aria-current="page">Plan &amp; billing</a></li>
+        <li><a id="nav-team" href="team.html">Team &amp; seats</a></li>
+        <li><a id="nav-security" href="security.html">Security</a></li>
+        <li><a id="nav-privacy" href="privacy.html">Data &amp; privacy</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <main class="stage">
+    <div id="hub-banner"></div>
+    <header>
+      <h1>Plan &amp; billing</h1>
+      <p>Your plan, seats, add-ons and invoices.</p>
+    </header>
+    <section class="panel">
+      <h2>Current plan</h2>
+      <p class="about">What Brightwater Studio pays today.</p>
+      <div id="current-plan-body"></div>
+    </section>
+    <section class="panel">
+      <h2>Plan calculator</h2>
+      <p class="about">Pick a plan, seats, a billing period and add-ons, check the estimate, then apply it.</p>
+      <div id="calculator-body"></div>
+    </section>
+    <section class="panel">
+      <h2>Invoices</h2>
+      <p class="about">Who receives a copy of each invoice.</p>
+      <div id="invoice-body"></div>
+    </section>
+    <section class="panel">
+      <h2>Billing details</h2>
+      <p class="about">The name and country printed on invoices.</p>
+      <div id="details-body"></div>
+    </section>
+  </main>
+</div>
+<script src="assets/core.js"></script>
+<script src="assets/billing.js"></script>
+</body>
+</html>

@@ -69,6 +69,16 @@ What it gives up is policy invariance: it changes what is optimal, deliberately,
 completing tasks. That makes the quality of the model's judgments matter, which is why they
 are validated against the benchmark's ground truth (`scripts/evaluate_llm_reward.py`). The
 potential form remains available as `llm_mode="potential"`.
+
+**The outcome bonus (added after the record alone was measured to fail, 2026-10-01).** The
+model rates a product page whose quantity field holds its default as 8 of 10, so the
+record bonus was collected almost entirely on reaching *any* form; completing the task
+added 0.2. Traced on the pretrained agent: its highest Q-values were links to information
+pages, because five of them are five novel states per episode, and nothing paid for
+finishing. So a sparse term pays `outcome_bonus` the first time in an episode that each
+distinct state the model judges a *committed outcome* (Phi >= `outcome_threshold`) is
+reached. Bounded per episode by the number of outcome states, unfarmable for the same reason
+as the record, and aimed exactly where functional faults become observable.
 """
 
 from __future__ import annotations
@@ -86,6 +96,9 @@ class RewardConfig:
     llm_weight: float = 0.0
     #: "record" (episodic progress record, the default) or "potential" (shaping).
     llm_mode: str = "record"
+    #: Sparse term: paid once per episode per distinct state judged a committed outcome.
+    outcome_bonus: float = 3.0
+    outcome_threshold: float = 0.9
     #: Discount inside the shaping term. Set to the agent's gamma for the bootstrapped
     #: learner and to 1.0 for the myopic one.
     shaping_gamma: float = 0.95
@@ -141,10 +154,13 @@ class RewardComposer:
         self._last_potential: tuple[str, float | None] = ("", None)
         #: Highest potential reached this episode; None until the episode's first step.
         self._episode_best: float | None = None
+        self._episode_outcomes: set[str] = set()
+        self.outcome_payments = 0
 
     def start_episode(self) -> None:
         """A new episode starts from the landing page; the progress record starts over."""
         self._episode_best = None
+        self._episode_outcomes = set()
 
     def set_application(self, context: str) -> None:
         """What the application is, in a phrase; given to the model with every snapshot."""
@@ -190,6 +206,12 @@ class RewardComposer:
                 else:
                     shaping = config.llm_weight * max(0.0, phi_after - self._episode_best)
                     self._episode_best = max(self._episode_best, phi_after)
+                    state_key = after.get("state_key", "")
+                    if (config.outcome_bonus and phi_after >= config.outcome_threshold
+                            and state_key not in self._episode_outcomes):
+                        self._episode_outcomes.add(state_key)
+                        shaping += config.outcome_bonus
+                        self.outcome_payments += 1
                     self.shaped_steps += 1
                     self.total_shaping += shaping
             elif phi_before is None or phi_after is None:
@@ -234,6 +256,7 @@ class RewardComposer:
             "shaped_steps": self.shaped_steps,
             "missing_potential": self.missing_potential,
             "total_shaping": round(self.total_shaping, 4),
+            "outcome_payments": self.outcome_payments,
             "scorer": self.scorer.stats.to_dict() if self.scorer is not None else None,
             "scorer_config": self.scorer.config() if self.scorer is not None else None,
         }

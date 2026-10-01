@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile · Tidepool account</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/hub.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="rail">
+    <p class="brand">Tidepool <small>Account hub</small></p>
+    <div class="identity" id="hub-identity"></div>
+    <nav aria-label="Account sections">
+      <ul>
+        <li><a id="nav-overview" href="index.html">Overview</a></li>
+        <li><a id="nav-profile" href="profile.html" aria-current="page">Profile</a></li>
+        <li><a id="nav-notifications" href="notifications.html">Notifications</a></li>
+        <li><a id="nav-billing" href="billing.html">Plan &amp; billing</a></li>
+        <li><a id="nav-team" href="team.html">Team &amp; seats</a></li>
+        <li><a id="nav-security" href="security.html">Security</a></li>
+        <li><a id="nav-privacy" href="privacy.html">Data &amp; privacy</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <main class="stage">
+    <div id="hub-banner"></div>
+    <header>
+      <h1>Profile</h1>
+      <p>How you appear to teammates and how we reach you.</p>
+    </header>
+    <section class="panel">
+      <h2>Display name</h2>
+      <p class="about">The name teammates see on shared files and comments.</p>
+      <div id="name-body"></div>
+    </section>
+    <section class="panel">
+      <h2>Contact email</h2>
+      <p class="about">Where sign-in notices and invoices are sent. Changing it takes a review step.</p>
+      <div id="email-body"></div>
+    </section>
+    <section class="panel">
+      <h2>Language and region</h2>
+      <p class="about">Choose your settings, then apply them together.</p>
+      <div id="region-body"></div>
+    </section>
+    <section class="panel">
+      <h2>Workspace directory</h2>
+      <p class="about">Whether teammates can find you in the directory.</p>
+      <div id="directory-body"></div>
+    </section>
+  </main>
+</div>
+<script src="assets/core.js"></script>
+<script src="assets/profile.js"></script>
+</body>
+</html>
