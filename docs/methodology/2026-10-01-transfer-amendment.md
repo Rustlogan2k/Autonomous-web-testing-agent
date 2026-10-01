@@ -23,7 +23,8 @@ and saying so, is not.
 | 2 | Pre-registered comparison | C − B | **kept, unchanged in definition**, reported alongside | nothing pre-registered is dropped |
 | 3 | Representation | `semantic_action_features` v2 (80-d) | `rl.features` v3 (95-d actions, 23-d state): v2's blocks unchanged + value category, control state, outcome memory, the A1/A2 label scalars | v2 had no consumer; v3's additions are what equal information access requires (§4) |
 | 4 | Arms | A, B, C, D | A0, S, random, B, C, `dqn_scratch`, `dqn_pretrained`, `dqn_zeroshot`, `dqn_pretrained_nollm` | §3 |
-| 5 | Reward | env reward | env reward (gate bonus capped at one control per step) + λ·(γΦ(s′) − Φ(s)), Φ = LLM functional-progress potential | owner requirement; §5 |
+| 5 | Reward | env reward | env reward (gate bonus capped at one control per step) + LLM terms: episodic progress record λ·max(0, Φ(s′) − best Φ this episode) and a sparse outcome bonus, Φ = LLM functional-progress rating | owner requirement; §5 |
+| 5b | Exploration | ε-greedy | ε-greedy whose exploratory action is, with probability 0.75, the search priority's choice over the agent's features | measured necessity, §8 |
 | 6 | Oracle | as built | + clean-build control, replayable history actions, `nth` disambiguation, no input recorded for a refused fill, iteration-bounded replay | infrastructure soundness fixes, §6 |
 | 7 | Action registry | original | benchmark and product use `EXTENDED_OPTIONS` (4 select options, visible field labels, shared-name disambiguation) | infrastructure, §6 |
 | 8 | Settle window | 250 ms | 80 ms on the static benchmark apps (identical oracle results measured on `shop_catalog`, 2× faster) | infrastructure, §6 |
@@ -97,21 +98,26 @@ arm is also reported.
 `reward/progress.py` and `rl/reward.py`. For each state the agent reaches, a local model
 (`qwen2.5:7b-instruct`, digest `845dbda0ea48`, temperature 0, seed 7, structured output)
 rates *functional progress* on an anchored 0–10 scale from a text snapshot of the rendered
-page. It is never asked about bugs. Φ(s) = rating / 10. The shaping term is
-λ·(γ·Φ(s′) − Φ(s)) with γ equal to the agent's discount (1.0 for the bandit), bounded in
-[−λ, λ]. Judgments are cached by content, so Φ is a fixed function of the state, which the
-shaping guarantee requires. A missing judgment yields no shaping for that transition.
+page. It is never asked about bugs. Φ(s) = rating / 10. Two terms enter the reward:
 
-λ was chosen on the development application only; the value and the evidence for it are
-in §8.
+- **progress record**: λ·max(0, Φ(s′) − max Φ so far this episode), λ = 1. Bounded by λ per
+  episode, pays only for a new episode maximum, renewed every episode;
+- **outcome bonus**: 3.0, paid once per episode per distinct state with Φ ≥ 0.9 (the model
+  judges a task committed and its outcome displayed).
+
+Judgments are cached by content and the cache is shipped with the experiment; the cloud
+workers replay it with no model (`--llm-offline`), and a snapshot missing from the cache
+yields no LLM term for that transition. The miss rate is reported. Potential-based shaping
+is kept in the code as `llm_mode="potential"` and is used by no arm: it failed the
+development check (§8).
 
 The LLM never touches the oracle, never receives a seeded-fault label, and its output never
 enters a verified-finding count. The pre-registration's "The RL reward never receives seeded
 fault labels. The oracle never uses an LLM" holds unchanged.
 
-LLM judgments for held-out applications may be computed before the frozen run to warm the
-cache. This is not a leak: the model sees only page snapshots the agent itself will reach,
-receives no labels, and the cache only removes latency.
+LLM judgments for held-out applications are computed before the run to warm the cache.
+This is not a leak: the model sees only page snapshots, receives no labels, and the cache
+only moves a judgment the agent would request online to an earlier time.
 
 ## 6. Infrastructure changes (no metric, arm, budget, fold or statistical decision moved)
 
@@ -150,5 +156,15 @@ optimal policy, not a finite budget.
 
 ## 8. Development-set evidence behind the choices above
 
-Filled in from runs on `shop_catalog` and `booking_desk` only, before this file was
-committed; the runs are in `reports/dev_tuning.md`.
+From `shop_catalog` only (`reports/dev_tuning.md`). The decisive test was in-distribution:
+pretrain on the application, then hunt it. Under uniform ε-greedy it failed on 5 of 6
+seed-runs across three reward designs, and two checkpoints trained under different rewards
+came out bit-identical — the rewarded states were never visited. With search-guided
+exploration both seeds verified a seeded fault at 147 and 195 interactions (both faults
+each), against 662–1,305 or censored for scratch learners on the same budget. λ = 1 was the
+only weight that verified on both seeds in the scratch sweep. These are two-seed results on
+one application and are stated as such; they decided the method, they are not evidence for
+the transfer claim.
+
+No development run was made on `booking_desk`: at the project owner's direction no further
+experiments run on the development laptop, and the frozen protocol runs in the cloud.
