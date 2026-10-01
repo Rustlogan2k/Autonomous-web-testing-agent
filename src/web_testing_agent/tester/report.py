@@ -40,7 +40,7 @@ def _steps(trace: list[dict]) -> list[str]:
     return [describe_action(step) for step in trace if step]
 
 
-def _verified(result: SessionResult) -> list[dict]:
+def verified_findings(result: SessionResult) -> list[dict]:
     """Verified findings, with signals that share one root cause reported once.
 
     A link to a missing page fires three triggers at once -- the failed document request,
@@ -102,7 +102,7 @@ def _verified(result: SessionResult) -> list[dict]:
 
 def render_markdown(result: SessionResult) -> str:
     hunt = result.hunt
-    verified = _verified(result)
+    verified = verified_findings(result)
     candidates = [f for f in result.triggers.get("findings", []) if not f.get("verified")]
     concerns = [r for r in result.reviews if r.get("concern")]
     lines = [
@@ -177,7 +177,7 @@ def render_html(result: SessionResult, out_dir: Path) -> str:
     """A standalone page: styles inline, screenshots embedded, opens from disk anywhere."""
     body = []
     esc = html.escape
-    verified = _verified(result)
+    verified = verified_findings(result)
     hunt = result.hunt
     candidates = [f for f in result.triggers.get("findings", []) if not f.get("verified")]
     body.append(f"<h1>Test report: {esc(result.app_name)}</h1>")

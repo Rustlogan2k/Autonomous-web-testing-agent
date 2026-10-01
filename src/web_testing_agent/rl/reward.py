@@ -40,6 +40,35 @@ potential invented for an unknown state would silently break the telescoping pro
 
 For the myopic (bandit) learner, which has no discounting, the term is the plain
 difference `Phi(s') - Phi(s)`: the progress this one action made.
+
+**Why the default is not the potential form (measured, 2026-10-01).** Potential shaping is
+designed to leave the optimal policy unchanged, and that is exactly what made it useless
+here. The only depth-seeking term in `r_env` is count-decayed novelty, which is exhausted
+once an application is covered; after that the optimal policy has no reason to reach an
+outcome page, and shaping, by construction, cannot give it one. The in-distribution check
+showed it: an agent pretrained for 3,000 steps on `shop_catalog` and then set loose on the
+same application never reached its confirmation page in 1,500 steps, on either seed --
+worse than an agent from scratch.
+
+So the default mode is the **episodic progress record**:
+
+    r_llm = lambda * max(0, Phi(s') - max_{k <= t} Phi(s_k))      within the episode
+
+It pays when the agent reaches a page further into a task than anything earlier in the
+same episode, and only then. Its properties are the ones the potential form was chosen for,
+minus the one that hurt:
+
+* **bounded** -- the total over an episode is at most `lambda * max Phi <= lambda`;
+* **not farmable** -- it pays for a new *maximum*, so revisiting, oscillating or looping
+  earns nothing; the only way to collect it again is a new episode, from the start page;
+* **renewed every episode** -- unlike novelty it does not decay over the run, so reaching
+  outcome pages stays worth doing for the whole budget, which is what finding faults that
+  sit behind a workflow requires.
+
+What it gives up is policy invariance: it changes what is optimal, deliberately, towards
+completing tasks. That makes the quality of the model's judgments matter, which is why they
+are validated against the benchmark's ground truth (`scripts/evaluate_llm_reward.py`). The
+potential form remains available as `llm_mode="potential"`.
 """
 
 from __future__ import annotations
@@ -53,8 +82,10 @@ from ..reward.progress import ProgressScorer
 
 @dataclass(frozen=True)
 class RewardConfig:
-    #: Weight on the LLM shaping term. 0 disables it (and no model is consulted).
+    #: Weight on the LLM term. 0 disables it (and no model is consulted).
     llm_weight: float = 0.0
+    #: "record" (episodic progress record, the default) or "potential" (shaping).
+    llm_mode: str = "record"
     #: Discount inside the shaping term. Set to the agent's gamma for the bootstrapped
     #: learner and to 1.0 for the myopic one.
     shaping_gamma: float = 0.95
@@ -108,6 +139,12 @@ class RewardComposer:
         self.missing_potential = 0
         self.total_shaping = 0.0
         self._last_potential: tuple[str, float | None] = ("", None)
+        #: Highest potential reached this episode; None until the episode's first step.
+        self._episode_best: float | None = None
+
+    def start_episode(self) -> None:
+        """A new episode starts from the landing page; the progress record starts over."""
+        self._episode_best = None
 
     def set_application(self, context: str) -> None:
         """What the application is, in a phrase; given to the model with every snapshot."""
@@ -145,7 +182,17 @@ class RewardComposer:
         if self.scorer is not None:
             phi_before = self._potential(before)
             phi_after = self._potential(after)
-            if phi_before is None or phi_after is None:
+            if config.llm_mode == "record":
+                if self._episode_best is None:
+                    self._episode_best = phi_before if phi_before is not None else 0.0
+                if phi_after is None:
+                    self.missing_potential += 1
+                else:
+                    shaping = config.llm_weight * max(0.0, phi_after - self._episode_best)
+                    self._episode_best = max(self._episode_best, phi_after)
+                    self.shaped_steps += 1
+                    self.total_shaping += shaping
+            elif phi_before is None or phi_after is None:
                 self.missing_potential += 1
             else:
                 shaping = config.llm_weight * (config.shaping_gamma * phi_after - phi_before)

@@ -76,7 +76,9 @@ def main() -> int:
                              seeded_app=app.seeded_app, clean_url=app.clean_url,
                              on_event=on_event)
     paths = write_report(result, out)
-    verified = result.triggers.get("verified", 0) + ((result.seeded or {}).get("verified") or 0)
+    from web_testing_agent.tester.report import verified_findings
+
+    verified = len(verified_findings(result))
     print(f"\n{verified} verified finding(s); report: {paths['html']}")
     return 0
 

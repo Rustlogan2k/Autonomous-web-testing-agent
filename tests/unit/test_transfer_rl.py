@@ -205,7 +205,8 @@ class FixedScorer:
 
 def test_potential_shaping_telescopes_around_a_cycle():
     scorer = FixedScorer({"a": 0.0, "b": 0.8, "c": 0.3})
-    composer = RewardComposer(RewardConfig(llm_weight=2.0, shaping_gamma=1.0), scorer)
+    composer = RewardComposer(RewardConfig(llm_weight=2.0, shaping_gamma=1.0,
+                                           llm_mode="potential"), scorer)
     total = 0.0
     for start, end in (("a", "b"), ("b", "c"), ("c", "a")):
         _reward, parts = composer.compute(page(start, []), page(end, []), 0.0)
@@ -213,8 +214,22 @@ def test_potential_shaping_telescopes_around_a_cycle():
     assert total == pytest.approx(0.0)
 
 
+def test_the_progress_record_pays_only_new_episode_maxima_and_resets_each_episode():
+    scorer = FixedScorer({"home": 0.0, "form": 0.6, "info": 0.0, "done": 1.0})
+    composer = RewardComposer(RewardConfig(llm_weight=2.0), scorer)
+    composer.start_episode()
+    paid = [composer.compute(page(a, []), page(b, []), 0.0)[1]["llm_shaping"]
+            for a, b in (("home", "form"), ("form", "info"), ("info", "form"),
+                         ("form", "done"), ("done", "form"), ("form", "done"))]
+    assert paid == pytest.approx([1.2, 0.0, 0.0, 0.8, 0.0, 0.0])
+    assert sum(paid) <= 2.0  # bounded by lambda * max Phi per episode
+    composer.start_episode()
+    assert composer.compute(page("home", []), page("form", []), 0.0)[1]["llm_shaping"] ==         pytest.approx(1.2)
+
+
 def test_a_missing_potential_means_no_shaping_not_a_guess():
-    composer = RewardComposer(RewardConfig(llm_weight=1.0), FixedScorer({"a": 0.2, "b": None}))
+    composer = RewardComposer(RewardConfig(llm_weight=1.0, llm_mode="potential"),
+                              FixedScorer({"a": 0.2, "b": None}))
     reward, parts = composer.compute(page("a", []), page("b", []), 0.5)
     assert parts["llm_shaping"] == 0.0 and reward == pytest.approx(0.5)
     assert composer.missing_potential == 1

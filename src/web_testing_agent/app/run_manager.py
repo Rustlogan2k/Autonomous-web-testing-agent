@@ -275,9 +275,11 @@ class RunManager:
             emit("stage", "Exploration finished; writing the report")
             write_report(result, out_dir)
             self.registry.write_artifact(run.run_id, REPORT_MD, render_markdown(result))
+            from ..tester.report import verified_findings
+
             triggers = result.triggers or {}
-            seeded = result.seeded or {}
-            verified = int(triggers.get("verified", 0)) + int(seeded.get("verified") or 0)
+            # Counted exactly as the report counts them: signals sharing a root cause once.
+            verified = len(verified_findings(result))
             run.counts = {"total": verified, "verified": verified,
                           "candidates": int(triggers.get("candidates", 0)),
                           "llm_observations": sum(1 for r in result.reviews if r.get("concern"))}

@@ -206,6 +206,7 @@ class QAgent:
     def begin_episode(self, info: dict) -> None:  # noqa: ARG002 - protocol signature
         self._flush_pending(terminal=False)
         self.features.begin_episode()
+        self.rewarder.start_episode()
         self._current = None
 
     @property
