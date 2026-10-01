@@ -31,6 +31,7 @@ def main() -> int:
                         help="directory of per-application validator JSON files")
     parser.add_argument("--out", type=Path, default=REPO_ROOT / "reports" / "benchmark_suite")
     args = parser.parse_args()
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
     apps = discover()
     validations, admitted, rejected = [], [], []

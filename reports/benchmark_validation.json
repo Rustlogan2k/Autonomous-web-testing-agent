@@ -1,0 +1,1747 @@
+{
+  "generated_at": "2026-10-01T11:10:49+0530",
+  "admitted": [
+    "account_hub",
+    "admin_records",
+    "booking_desk",
+    "media_library",
+    "shop_catalog",
+    "support_portal"
+  ],
+  "rejected": [],
+  "applications": [
+    {
+      "app_id": "account_hub",
+      "passed": true,
+      "checks": [
+        {
+          "name": "metadata_well_formed",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "faulty_build_is_clean_plus_patches",
+          "passed": true,
+          "detail": "faulty build in sync (16 files, 2 patches)"
+        },
+        {
+          "name": "has_benign_trace",
+          "passed": true,
+          "detail": "an application must declare at least one correct walk through its workflow"
+        },
+        {
+          "name": "ACCT-01:has_reachability_witness",
+          "passed": true,
+          "detail": "faults.json declares no trigger_trace for this fault"
+        },
+        {
+          "name": "ACCT-01:witness_replays_on_faulty_build",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'billing.html', 'billing.html', 'billing.html', 'billing.html', 'billing.html', 'billing.html', 'billing.html', 'billing.html']"
+        },
+        {
+          "name": "ACCT-01:witness_fires_on_faulty_build",
+          "passed": true,
+          "detail": "numeric_equals: violated=True inconclusive=False region 'receipt_support_charge': expected 'seats * 2 * billing_period' observed='84.0'"
+        },
+        {
+          "name": "ACCT-01:witness_silent_on_clean_build",
+          "passed": true,
+          "detail": "the assertion fires on the build with no seeded fault"
+        },
+        {
+          "name": "ACCT-01:oracle_confirms",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "ACCT-01:minimized_trace_still_fires",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "ACCT-01:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "ACCT-02:has_reachability_witness",
+          "passed": true,
+          "detail": "faults.json declares no trigger_trace for this fault"
+        },
+        {
+          "name": "ACCT-02:witness_replays_on_faulty_build",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'profile.html', 'profile.html', 'profile.html', 'profile.html', 'profile.html', 'profile.html', 'profile.html']"
+        },
+        {
+          "name": "ACCT-02:witness_fires_on_faulty_build",
+          "passed": true,
+          "detail": "echoes_input: violated=True inconclusive=False region 'email_switch_result': must echo the value entered for 'repeat_email' ('a@b.co') observed='tester@example.com'"
+        },
+        {
+          "name": "ACCT-02:witness_silent_on_clean_build",
+          "passed": true,
+          "detail": "the assertion fires on the build with no seeded fault"
+        },
+        {
+          "name": "ACCT-02:oracle_confirms",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "ACCT-02:minimized_trace_still_fires",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "ACCT-02:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "benign_0:replays_on_buggy",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_0:silent_on_buggy",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_0:replays_on_clean",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_0:silent_on_clean",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_1:replays_on_buggy",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_1:silent_on_buggy",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_1:replays_on_clean",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_1:silent_on_clean",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "clean_build_silent_to_deterministic_triggers",
+          "passed": true,
+          "detail": ""
+        }
+      ],
+      "faults": [
+        {
+          "fault_id": "ACCT-01",
+          "fault_class": "calculation_error",
+          "witness_length": 8,
+          "confirmed": true,
+          "minimized_length": 8,
+          "minimization_trials": 14,
+          "minimization_exhausted": false,
+          "minimized_trace": [
+            {
+              "type": "CLICK",
+              "id": "nav-billing"
+            },
+            {
+              "type": "CLICK",
+              "id": "open-plan-editor"
+            },
+            {
+              "type": "TYPE",
+              "id": "plan-seats",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "SELECT",
+              "id": "billing-period",
+              "params": {
+                "option": "12"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "addon-support"
+            },
+            {
+              "type": "CLICK",
+              "id": "plan-review"
+            },
+            {
+              "type": "CLICK",
+              "id": "authorise-charge"
+            },
+            {
+              "type": "CLICK",
+              "id": "plan-apply"
+            }
+          ],
+          "declared_shortest_path": 8,
+          "verification_steps": 85,
+          "verification_seconds": 46.44
+        },
+        {
+          "fault_id": "ACCT-02",
+          "fault_class": "constraint_bypass",
+          "witness_length": 7,
+          "confirmed": true,
+          "minimized_length": 7,
+          "minimization_trials": 17,
+          "minimization_exhausted": false,
+          "minimized_trace": [
+            {
+              "type": "CLICK",
+              "id": "nav-profile"
+            },
+            {
+              "type": "CLICK",
+              "id": "email-edit"
+            },
+            {
+              "type": "TYPE",
+              "id": "new-email",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "TYPE",
+              "id": "repeat-email",
+              "params": {
+                "category": "boundary_min"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "email-review"
+            },
+            {
+              "type": "CLICK",
+              "id": "ack-email-access"
+            },
+            {
+              "type": "CLICK",
+              "id": "email-switch"
+            }
+          ],
+          "declared_shortest_path": 7,
+          "verification_steps": 78,
+          "verification_seconds": 55.69
+        }
+      ],
+      "random_walk": {
+        "steps": 600,
+        "seed": 0,
+        "clean": {
+          "raw_candidates": 0,
+          "raw_candidates_per_1000_steps": 0.0,
+          "by_fault": {
+            "ACCT-01": 0,
+            "ACCT-02": 0
+          },
+          "deterministic_triggers": [],
+          "timing_triggers": 0
+        },
+        "buggy": {
+          "time_to_first_verified": 600,
+          "censored": true,
+          "verified": 0,
+          "reached": 0,
+          "rejections": {},
+          "unique_states": 114,
+          "steps_per_second": 1.573,
+          "verify_seconds": 0.0
+        }
+      },
+      "wall_clock_s": 904.5,
+      "git": {
+        "commit": "7e353a73c276177d7a64c2df984dc2c0b1a074db",
+        "dirty": true
+      },
+      "env_settings": {
+        "max_steps": 40,
+        "settle_quiet_ms": 80,
+        "headless": true,
+        "registry": {
+          "max_select_options": 4,
+          "capture_field_labels": true,
+          "disambiguate_shared_names": true
+        }
+      }
+    },
+    {
+      "app_id": "admin_records",
+      "passed": true,
+      "checks": [
+        {
+          "name": "metadata_well_formed",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "faulty_build_is_clean_plus_patches",
+          "passed": true,
+          "detail": "faulty build in sync (11 files, 2 patches)"
+        },
+        {
+          "name": "has_benign_trace",
+          "passed": true,
+          "detail": "an application must declare at least one correct walk through its workflow"
+        },
+        {
+          "name": "ADMIN-01:has_reachability_witness",
+          "passed": true,
+          "detail": "faults.json declares no trigger_trace for this fault"
+        },
+        {
+          "name": "ADMIN-01:witness_replays_on_faulty_build",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'equipment.html', 'amend.html?id=3', 'amend.html?id=3', 'amend.html?id=3', 'record.html?id=3', 'amend.html?id=3', 'amend.html?id=3', 'amend.html?id=3', 'record.html?id=3']"
+        },
+        {
+          "name": "ADMIN-01:witness_fires_on_faulty_build",
+          "passed": true,
+          "detail": "echoes_input: violated=True inconclusive=False region 'applied_custodian': must echo the value entered for 'custodian' ('12345') observed='Test User Input'"
+        },
+        {
+          "name": "ADMIN-01:witness_silent_on_clean_build",
+          "passed": true,
+          "detail": "the assertion fires on the build with no seeded fault"
+        },
+        {
+          "name": "ADMIN-01:oracle_confirms",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "ADMIN-01:minimized_trace_still_fires",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "ADMIN-01:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "ADMIN-02:has_reachability_witness",
+          "passed": true,
+          "detail": "faults.json declares no trigger_trace for this fault"
+        },
+        {
+          "name": "ADMIN-02:witness_replays_on_faulty_build",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'equipment.html', 'equipment.html', 'equipment.html', 'amend.html?id=4', 'amend.html?id=4', 'amend.html?id=4', 'record.html?id=4']"
+        },
+        {
+          "name": "ADMIN-02:witness_fires_on_faulty_build",
+          "passed": true,
+          "detail": "echoes_input: violated=True inconclusive=False region 'applied_asset_name': must echo the value entered for 'asset_name' ('Test User Input') observed='Thermal camera'"
+        },
+        {
+          "name": "ADMIN-02:witness_silent_on_clean_build",
+          "passed": true,
+          "detail": "the assertion fires on the build with no seeded fault"
+        },
+        {
+          "name": "ADMIN-02:oracle_confirms",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "ADMIN-02:minimized_trace_still_fires",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "ADMIN-02:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "benign_0:replays_on_buggy",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_0:silent_on_buggy",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_0:replays_on_clean",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_0:silent_on_clean",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_1:replays_on_buggy",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_1:silent_on_buggy",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_1:replays_on_clean",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_1:silent_on_clean",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_2:replays_on_buggy",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_2:silent_on_buggy",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_2:replays_on_clean",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_2:silent_on_clean",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_3:replays_on_buggy",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_3:silent_on_buggy",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_3:replays_on_clean",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_3:silent_on_clean",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "clean_build_silent_to_deterministic_triggers",
+          "passed": true,
+          "detail": ""
+        }
+      ],
+      "faults": [
+        {
+          "fault_id": "ADMIN-01",
+          "fault_class": "persistence_failure",
+          "witness_length": 9,
+          "confirmed": true,
+          "minimized_length": 9,
+          "minimization_trials": 26,
+          "minimization_exhausted": false,
+          "minimized_trace": [
+            {
+              "type": "CLICK",
+              "id": "nav-equipment"
+            },
+            {
+              "type": "CLICK",
+              "id": "edit-3"
+            },
+            {
+              "type": "TYPE",
+              "id": "f-custodian",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "TYPE",
+              "id": "f-change-reason",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-changes"
+            },
+            {
+              "type": "CLICK",
+              "id": "edit-record"
+            },
+            {
+              "type": "TYPE",
+              "id": "f-custodian",
+              "params": {
+                "category": "type_mismatch"
+              }
+            },
+            {
+              "type": "TYPE",
+              "id": "f-change-reason",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-changes"
+            }
+          ],
+          "declared_shortest_path": 9,
+          "verification_steps": 170,
+          "verification_seconds": 88.88
+        },
+        {
+          "fault_id": "ADMIN-02",
+          "fault_class": "state_corruption",
+          "witness_length": 7,
+          "confirmed": true,
+          "minimized_length": 7,
+          "minimization_trials": 17,
+          "minimization_exhausted": false,
+          "minimized_trace": [
+            {
+              "type": "CLICK",
+              "id": "nav-equipment"
+            },
+            {
+              "type": "CLICK",
+              "id": "remove-2"
+            },
+            {
+              "type": "CLICK",
+              "id": "confirm-remove"
+            },
+            {
+              "type": "CLICK",
+              "id": "edit-4"
+            },
+            {
+              "type": "TYPE",
+              "id": "f-asset-name",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "TYPE",
+              "id": "f-change-reason",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-changes"
+            }
+          ],
+          "declared_shortest_path": 7,
+          "verification_steps": 94,
+          "verification_seconds": 48.2
+        }
+      ],
+      "random_walk": {
+        "steps": 600,
+        "seed": 0,
+        "clean": {
+          "raw_candidates": 0,
+          "raw_candidates_per_1000_steps": 0.0,
+          "by_fault": {
+            "ADMIN-01": 0,
+            "ADMIN-02": 0
+          },
+          "deterministic_triggers": [],
+          "timing_triggers": 0
+        },
+        "buggy": {
+          "time_to_first_verified": 600,
+          "censored": true,
+          "verified": 0,
+          "reached": 1,
+          "rejections": {},
+          "unique_states": 51,
+          "steps_per_second": 5.111,
+          "verify_seconds": 0.0
+        }
+      },
+      "wall_clock_s": 414.92,
+      "git": {
+        "commit": "7e353a73c276177d7a64c2df984dc2c0b1a074db",
+        "dirty": true
+      },
+      "env_settings": {
+        "max_steps": 40,
+        "settle_quiet_ms": 80,
+        "headless": true,
+        "registry": {
+          "max_select_options": 4,
+          "capture_field_labels": true,
+          "disambiguate_shared_names": true
+        }
+      }
+    },
+    {
+      "app_id": "booking_desk",
+      "passed": true,
+      "checks": [
+        {
+          "name": "metadata_well_formed",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "faulty_build_is_clean_plus_patches",
+          "passed": true,
+          "detail": "faulty build in sync (3 files, 2 patches)"
+        },
+        {
+          "name": "has_benign_trace",
+          "passed": true,
+          "detail": "an application must declare at least one correct walk through its workflow"
+        },
+        {
+          "name": "BOOK-01:has_reachability_witness",
+          "passed": true,
+          "detail": "faults.json declares no trigger_trace for this fault"
+        },
+        {
+          "name": "BOOK-01:witness_replays_on_faulty_build",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html']"
+        },
+        {
+          "name": "BOOK-01:witness_fires_on_faulty_build",
+          "passed": true,
+          "detail": "numeric_equals: violated=True inconclusive=False region 'review_catering': expected 'guests * catering' observed='302.4'"
+        },
+        {
+          "name": "BOOK-01:witness_silent_on_clean_build",
+          "passed": true,
+          "detail": "the assertion fires on the build with no seeded fault"
+        },
+        {
+          "name": "BOOK-01:oracle_confirms",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "BOOK-01:minimized_trace_still_fires",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "BOOK-01:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "BOOK-02:has_reachability_witness",
+          "passed": true,
+          "detail": "faults.json declares no trigger_trace for this fault"
+        },
+        {
+          "name": "BOOK-02:witness_replays_on_faulty_build",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html']"
+        },
+        {
+          "name": "BOOK-02:witness_fires_on_faulty_build",
+          "passed": true,
+          "detail": "text_equals: violated=True inconclusive=False region 'reserved_status': expected exactly 'Reserved' observed='Provisional'"
+        },
+        {
+          "name": "BOOK-02:witness_silent_on_clean_build",
+          "passed": true,
+          "detail": "the assertion fires on the build with no seeded fault"
+        },
+        {
+          "name": "BOOK-02:oracle_confirms",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "BOOK-02:minimized_trace_still_fires",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "BOOK-02:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "benign_0:replays_on_buggy",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_0:silent_on_buggy",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_0:replays_on_clean",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_0:silent_on_clean",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_1:replays_on_buggy",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_1:silent_on_buggy",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_1:replays_on_clean",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_1:silent_on_clean",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "clean_build_silent_to_deterministic_triggers",
+          "passed": true,
+          "detail": ""
+        }
+      ],
+      "faults": [
+        {
+          "fault_id": "BOOK-01",
+          "fault_class": "calculation_error",
+          "witness_length": 10,
+          "confirmed": true,
+          "minimized_length": 10,
+          "minimization_trials": 27,
+          "minimization_exhausted": false,
+          "minimized_trace": [
+            {
+              "type": "CLICK",
+              "id": "choose-weaving-shed"
+            },
+            {
+              "type": "TYPE",
+              "id": "session-date",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "TYPE",
+              "id": "guests",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "to-extras"
+            },
+            {
+              "type": "SELECT",
+              "id": "catering",
+              "params": {
+                "option": "9"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "to-details"
+            },
+            {
+              "type": "TYPE",
+              "id": "contact-name",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "TYPE",
+              "id": "contact-email",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "community-rate"
+            },
+            {
+              "type": "CLICK",
+              "id": "to-review"
+            }
+          ],
+          "declared_shortest_path": 10,
+          "verification_steps": 175,
+          "verification_seconds": 104.72
+        },
+        {
+          "fault_id": "BOOK-02",
+          "fault_class": "broken_transition",
+          "witness_length": 10,
+          "confirmed": true,
+          "minimized_length": 10,
+          "minimization_trials": 27,
+          "minimization_exhausted": false,
+          "minimized_trace": [
+            {
+              "type": "CLICK",
+              "id": "choose-long-gallery"
+            },
+            {
+              "type": "TYPE",
+              "id": "session-date",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "TYPE",
+              "id": "guests",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "to-extras"
+            },
+            {
+              "type": "CLICK",
+              "id": "to-details"
+            },
+            {
+              "type": "TYPE",
+              "id": "contact-name",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "TYPE",
+              "id": "contact-email",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "settle-invoice"
+            },
+            {
+              "type": "CLICK",
+              "id": "to-review"
+            },
+            {
+              "type": "CLICK",
+              "id": "finalise"
+            }
+          ],
+          "declared_shortest_path": 10,
+          "verification_steps": 166,
+          "verification_seconds": 98.22
+        }
+      ],
+      "random_walk": {
+        "steps": 600,
+        "seed": 0,
+        "clean": {
+          "raw_candidates": 0,
+          "raw_candidates_per_1000_steps": 0.0,
+          "by_fault": {
+            "BOOK-01": 0,
+            "BOOK-02": 0
+          },
+          "deterministic_triggers": [],
+          "timing_triggers": 0
+        },
+        "buggy": {
+          "time_to_first_verified": 600,
+          "censored": true,
+          "verified": 0,
+          "reached": 0,
+          "rejections": {},
+          "unique_states": 19,
+          "steps_per_second": 2.974,
+          "verify_seconds": 0.0
+        }
+      },
+      "wall_clock_s": 647.0,
+      "git": {
+        "commit": "7e353a73c276177d7a64c2df984dc2c0b1a074db",
+        "dirty": true
+      },
+      "env_settings": {
+        "max_steps": 40,
+        "settle_quiet_ms": 80,
+        "headless": true,
+        "registry": {
+          "max_select_options": 4,
+          "capture_field_labels": true,
+          "disambiguate_shared_names": true
+        }
+      }
+    },
+    {
+      "app_id": "media_library",
+      "passed": true,
+      "checks": [
+        {
+          "name": "metadata_well_formed",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "faulty_build_is_clean_plus_patches",
+          "passed": true,
+          "detail": "faulty build in sync (8 files, 2 patches)"
+        },
+        {
+          "name": "has_benign_trace",
+          "passed": true,
+          "detail": "an application must declare at least one correct walk through its workflow"
+        },
+        {
+          "name": "MEDIA-01:has_reachability_witness",
+          "passed": true,
+          "detail": "faults.json declares no trigger_trace for this fault"
+        },
+        {
+          "name": "MEDIA-01:witness_replays_on_faulty_build",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html']"
+        },
+        {
+          "name": "MEDIA-01:witness_fires_on_faulty_build",
+          "passed": true,
+          "detail": "echoes_input: violated=True inconclusive=False region 'receipt_title': must echo the value entered for 'item_title' ('Test User Input') observed='Harbour pilots at dawn'"
+        },
+        {
+          "name": "MEDIA-01:witness_silent_on_clean_build",
+          "passed": true,
+          "detail": "the assertion fires on the build with no seeded fault"
+        },
+        {
+          "name": "MEDIA-01:oracle_confirms",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "MEDIA-01:minimized_trace_still_fires",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "MEDIA-01:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "MEDIA-02:has_reachability_witness",
+          "passed": true,
+          "detail": "faults.json declares no trigger_trace for this fault"
+        },
+        {
+          "name": "MEDIA-02:witness_replays_on_faulty_build",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html', 'index.html']"
+        },
+        {
+          "name": "MEDIA-02:witness_fires_on_faulty_build",
+          "passed": true,
+          "detail": "echoes_input: violated=True inconclusive=False region 'receipt_clearance': must echo the value entered for 'clearance' ('restricted') observed='Station use only'"
+        },
+        {
+          "name": "MEDIA-02:witness_silent_on_clean_build",
+          "passed": true,
+          "detail": "the assertion fires on the build with no seeded fault"
+        },
+        {
+          "name": "MEDIA-02:oracle_confirms",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "MEDIA-02:minimized_trace_still_fires",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "MEDIA-02:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "benign_0:replays_on_buggy",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_0:silent_on_buggy",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_0:replays_on_clean",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_0:silent_on_clean",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_1:replays_on_buggy",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_1:silent_on_buggy",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_1:replays_on_clean",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_1:silent_on_clean",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_2:replays_on_buggy",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_2:silent_on_buggy",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_2:replays_on_clean",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_2:silent_on_clean",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "clean_build_silent_to_deterministic_triggers",
+          "passed": true,
+          "detail": ""
+        }
+      ],
+      "faults": [
+        {
+          "fault_id": "MEDIA-01",
+          "fault_class": "state_corruption",
+          "witness_length": 6,
+          "confirmed": true,
+          "minimized_length": 6,
+          "minimization_trials": 14,
+          "minimization_exhausted": false,
+          "minimized_trace": [
+            {
+              "type": "SELECT",
+              "id": "arrange-by",
+              "params": {
+                "option": "title"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "open-item-1"
+            },
+            {
+              "type": "CLICK",
+              "id": "detail-edit"
+            },
+            {
+              "type": "TYPE",
+              "id": "item-title",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "edit-review"
+            },
+            {
+              "type": "CLICK",
+              "id": "review-apply"
+            }
+          ],
+          "declared_shortest_path": 6,
+          "verification_steps": 63,
+          "verification_seconds": 42.2
+        },
+        {
+          "fault_id": "MEDIA-02",
+          "fault_class": "persistence_failure",
+          "witness_length": 6,
+          "confirmed": true,
+          "minimized_length": 6,
+          "minimization_trials": 14,
+          "minimization_exhausted": false,
+          "minimized_trace": [
+            {
+              "type": "CLICK",
+              "id": "open-item-2"
+            },
+            {
+              "type": "CLICK",
+              "id": "detail-edit"
+            },
+            {
+              "type": "SELECT",
+              "id": "item-clearance",
+              "params": {
+                "option": "restricted"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "edit-review"
+            },
+            {
+              "type": "CLICK",
+              "id": "review-apply"
+            },
+            {
+              "type": "REFRESH"
+            }
+          ],
+          "declared_shortest_path": 6,
+          "verification_steps": 64,
+          "verification_seconds": 42.31
+        }
+      ],
+      "random_walk": {
+        "steps": 600,
+        "seed": 0,
+        "clean": {
+          "raw_candidates": 0,
+          "raw_candidates_per_1000_steps": 0.0,
+          "by_fault": {
+            "MEDIA-01": 0,
+            "MEDIA-02": 0
+          },
+          "deterministic_triggers": [],
+          "timing_triggers": 0
+        },
+        "buggy": {
+          "time_to_first_verified": 600,
+          "censored": true,
+          "verified": 0,
+          "reached": 1,
+          "rejections": {},
+          "unique_states": 74,
+          "steps_per_second": 1.781,
+          "verify_seconds": 0.0
+        }
+      },
+      "wall_clock_s": 802.56,
+      "git": {
+        "commit": "7e353a73c276177d7a64c2df984dc2c0b1a074db",
+        "dirty": true
+      },
+      "env_settings": {
+        "max_steps": 40,
+        "settle_quiet_ms": 80,
+        "headless": true,
+        "registry": {
+          "max_select_options": 4,
+          "capture_field_labels": true,
+          "disambiguate_shared_names": true
+        }
+      }
+    },
+    {
+      "app_id": "shop_catalog",
+      "passed": true,
+      "checks": [
+        {
+          "name": "metadata_well_formed",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "faulty_build_is_clean_plus_patches",
+          "passed": true,
+          "detail": "buggy build in sync (19 files, 2 patches)"
+        },
+        {
+          "name": "has_benign_trace",
+          "passed": true,
+          "detail": "an application must declare at least one correct walk through its workflow"
+        },
+        {
+          "name": "SHOP-01:has_reachability_witness",
+          "passed": true,
+          "detail": "faults.json declares no trigger_trace for this fault"
+        },
+        {
+          "name": "SHOP-01:witness_replays_on_faulty_build",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'collection-shelter.html', 'product-ridgeline-2.html', 'product-ridgeline-2.html', 'basket.html', 'checkout.html', 'checkout.html', 'checkout.html', 'confirmation.html']"
+        },
+        {
+          "name": "SHOP-01:witness_fires_on_faulty_build",
+          "passed": true,
+          "detail": "echoes_input: violated=True inconclusive=False region 'confirm_quantity': must echo the value entered for 'quantity' ('42') observed='1'"
+        },
+        {
+          "name": "SHOP-01:witness_silent_on_clean_build",
+          "passed": true,
+          "detail": "the assertion fires on the build with no seeded fault"
+        },
+        {
+          "name": "SHOP-01:oracle_confirms",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "SHOP-01:minimized_trace_still_fires",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "SHOP-01:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "SHOP-02:has_reachability_witness",
+          "passed": true,
+          "detail": "faults.json declares no trigger_trace for this fault"
+        },
+        {
+          "name": "SHOP-02:witness_replays_on_faulty_build",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'collection-shelter.html', 'product-ridgeline-2.html', 'product-ridgeline-2.html', 'basket.html', 'checkout.html', 'checkout.html', 'confirmation.html']"
+        },
+        {
+          "name": "SHOP-02:witness_fires_on_faulty_build",
+          "passed": true,
+          "detail": "url_matches: violated=True inconclusive=False URL must match 'checkout\\\\.html' observed='http://127.0.0.1:53484/confirmation.html'; region_empty: violated=True inconclusive=False region 'confirm_postcode': the application's contract requires a value here observed=''"
+        },
+        {
+          "name": "SHOP-02:witness_silent_on_clean_build",
+          "passed": true,
+          "detail": "the assertion fires on the build with no seeded fault"
+        },
+        {
+          "name": "SHOP-02:oracle_confirms",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "SHOP-02:minimized_trace_still_fires",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "SHOP-02:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "benign_0:replays_on_buggy",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_0:silent_on_buggy",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_0:replays_on_clean",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_0:silent_on_clean",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "clean_build_silent_to_deterministic_triggers",
+          "passed": true,
+          "detail": ""
+        }
+      ],
+      "faults": [
+        {
+          "fault_id": "SHOP-01",
+          "fault_class": "state_corruption",
+          "witness_length": 8,
+          "confirmed": true,
+          "minimized_length": 7,
+          "minimization_trials": 20,
+          "minimization_exhausted": false,
+          "minimized_trace": [
+            {
+              "type": "CLICK",
+              "text": "Shelter"
+            },
+            {
+              "type": "CLICK",
+              "text": "Ridgeline 2 tent"
+            },
+            {
+              "type": "TYPE",
+              "id": "qty",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "add-to-basket"
+            },
+            {
+              "type": "CLICK",
+              "id": "go-to-checkout"
+            },
+            {
+              "type": "TYPE",
+              "id": "contact",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "confirm-order"
+            }
+          ],
+          "declared_shortest_path": 8,
+          "verification_steps": 102,
+          "verification_seconds": 68.66
+        },
+        {
+          "fault_id": "SHOP-02",
+          "fault_class": "constraint_bypass",
+          "witness_length": 7,
+          "confirmed": true,
+          "minimized_length": 6,
+          "minimization_trials": 15,
+          "minimization_exhausted": false,
+          "minimized_trace": [
+            {
+              "type": "CLICK",
+              "text": "Shelter"
+            },
+            {
+              "type": "CLICK",
+              "text": "Ridgeline 2 tent"
+            },
+            {
+              "type": "CLICK",
+              "id": "add-to-basket"
+            },
+            {
+              "type": "CLICK",
+              "id": "go-to-checkout"
+            },
+            {
+              "type": "TYPE",
+              "id": "contact",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "confirm-order"
+            }
+          ],
+          "declared_shortest_path": 7,
+          "verification_steps": 65,
+          "verification_seconds": 48.38
+        }
+      ],
+      "random_walk": {
+        "steps": 600,
+        "seed": 0,
+        "clean": {
+          "raw_candidates": 0,
+          "raw_candidates_per_1000_steps": 0.0,
+          "by_fault": {
+            "SHOP-01": 0,
+            "SHOP-02": 0
+          },
+          "deterministic_triggers": [],
+          "timing_triggers": 0
+        },
+        "buggy": {
+          "time_to_first_verified": 600,
+          "censored": true,
+          "verified": 0,
+          "reached": 0,
+          "rejections": {},
+          "unique_states": 17,
+          "steps_per_second": 5.496,
+          "verify_seconds": 0.0
+        }
+      },
+      "wall_clock_s": 363.73,
+      "git": {
+        "commit": "7e353a73c276177d7a64c2df984dc2c0b1a074db",
+        "dirty": true
+      },
+      "env_settings": {
+        "max_steps": 40,
+        "settle_quiet_ms": 80,
+        "headless": true,
+        "registry": {
+          "max_select_options": 4,
+          "capture_field_labels": true,
+          "disambiguate_shared_names": true
+        }
+      }
+    },
+    {
+      "app_id": "support_portal",
+      "passed": true,
+      "checks": [
+        {
+          "name": "metadata_well_formed",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "faulty_build_is_clean_plus_patches",
+          "passed": true,
+          "detail": "faulty build in sync (19 files, 2 patches)"
+        },
+        {
+          "name": "has_benign_trace",
+          "passed": true,
+          "detail": "an application must declare at least one correct walk through its workflow"
+        },
+        {
+          "name": "SUPP-01:has_reachability_witness",
+          "passed": true,
+          "detail": "faults.json declares no trigger_trace for this fault"
+        },
+        {
+          "name": "SUPP-01:witness_replays_on_faulty_build",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'request-topic.html', 'request-topic.html', 'request-details.html', 'request-details.html', 'request-details.html', 'request-details.html', 'request-bill.html', 'request-bill.html', 'request-contact.html']"
+        },
+        {
+          "name": "SUPP-01:witness_fires_on_faulty_build",
+          "passed": true,
+          "detail": "reached_with_invalid_input: violated=True inconclusive=False guarded page reached with 'disputed_amount'='0', which the rule declares invalid observed='0'; text_absent: violated=True inconclusive=False region 'sofar_amount': must not contain '\u00a30.00' observed='\u00a30.00'"
+        },
+        {
+          "name": "SUPP-01:witness_silent_on_clean_build",
+          "passed": true,
+          "detail": "the assertion fires on the build with no seeded fault"
+        },
+        {
+          "name": "SUPP-01:oracle_confirms",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "SUPP-01:minimized_trace_still_fires",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "SUPP-01:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "SUPP-02:has_reachability_witness",
+          "passed": true,
+          "detail": "faults.json declares no trigger_trace for this fault"
+        },
+        {
+          "name": "SUPP-02:witness_replays_on_faulty_build",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'request-topic.html', 'request-topic.html', 'request-details.html', 'request-details.html', 'request-details.html', 'request-details.html', 'request-visit.html']"
+        },
+        {
+          "name": "SUPP-02:witness_fires_on_faulty_build",
+          "passed": true,
+          "detail": "text_contains: violated=True inconclusive=False region 'sofar_topic': expected to contain 'Connection' observed='A bill or payment'"
+        },
+        {
+          "name": "SUPP-02:witness_silent_on_clean_build",
+          "passed": true,
+          "detail": "the assertion fires on the build with no seeded fault"
+        },
+        {
+          "name": "SUPP-02:oracle_confirms",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "SUPP-02:minimized_trace_still_fires",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "SUPP-02:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "benign_0:replays_on_buggy",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_0:silent_on_buggy",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_0:replays_on_clean",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_0:silent_on_clean",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_1:replays_on_buggy",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_1:silent_on_buggy",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "benign_1:replays_on_clean",
+          "passed": true,
+          "detail": "0 scripted step(s) did not resolve"
+        },
+        {
+          "name": "benign_1:silent_on_clean",
+          "passed": true,
+          "detail": "a correct walk tripped []"
+        },
+        {
+          "name": "clean_build_silent_to_deterministic_triggers",
+          "passed": true,
+          "detail": ""
+        }
+      ],
+      "faults": [
+        {
+          "fault_id": "SUPP-01",
+          "fault_class": "constraint_bypass",
+          "witness_length": 9,
+          "confirmed": true,
+          "minimized_length": 9,
+          "minimization_trials": 26,
+          "minimization_exhausted": false,
+          "minimized_trace": [
+            {
+              "type": "CLICK",
+              "id": "start-request"
+            },
+            {
+              "type": "CLICK",
+              "id": "topic-billing"
+            },
+            {
+              "type": "CLICK",
+              "id": "use-topic"
+            },
+            {
+              "type": "TYPE",
+              "id": "summary",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "TYPE",
+              "id": "description",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "SELECT",
+              "id": "urgency",
+              "params": {
+                "option": "normal"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-details"
+            },
+            {
+              "type": "TYPE",
+              "id": "disputed_amount",
+              "params": {
+                "category": "boundary_min"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-bill"
+            }
+          ],
+          "declared_shortest_path": 9,
+          "verification_steps": 148,
+          "verification_seconds": 95.64
+        },
+        {
+          "fault_id": "SUPP-02",
+          "fault_class": "broken_transition",
+          "witness_length": 7,
+          "confirmed": true,
+          "minimized_length": 7,
+          "minimization_trials": 17,
+          "minimization_exhausted": false,
+          "minimized_trace": [
+            {
+              "type": "CLICK",
+              "id": "start-request"
+            },
+            {
+              "type": "CLICK",
+              "id": "topic-billing"
+            },
+            {
+              "type": "CLICK",
+              "id": "use-topic"
+            },
+            {
+              "type": "TYPE",
+              "id": "summary",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "TYPE",
+              "id": "description",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "SELECT",
+              "id": "urgency",
+              "params": {
+                "option": "outage"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-details"
+            }
+          ],
+          "declared_shortest_path": 7,
+          "verification_steps": 87,
+          "verification_seconds": 49.34
+        }
+      ],
+      "random_walk": {
+        "steps": 600,
+        "seed": 0,
+        "clean": {
+          "raw_candidates": 0,
+          "raw_candidates_per_1000_steps": 0.0,
+          "by_fault": {
+            "SUPP-01": 0,
+            "SUPP-02": 0
+          },
+          "deterministic_triggers": [],
+          "timing_triggers": 0
+        },
+        "buggy": {
+          "time_to_first_verified": 600,
+          "censored": true,
+          "verified": 0,
+          "reached": 0,
+          "rejections": {},
+          "unique_states": 14,
+          "steps_per_second": 5.269,
+          "verify_seconds": 0.0
+        }
+      },
+      "wall_clock_s": 416.55,
+      "git": {
+        "commit": "7e353a73c276177d7a64c2df984dc2c0b1a074db",
+        "dirty": true
+      },
+      "env_settings": {
+        "max_steps": 40,
+        "settle_quiet_ms": 80,
+        "headless": true,
+        "registry": {
+          "max_select_options": 4,
+          "capture_field_labels": true,
+          "disambiguate_shared_names": true
+        }
+      }
+    }
+  ]
+}

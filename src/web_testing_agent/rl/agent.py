@@ -10,9 +10,10 @@
     LEARNING     Double DQN with n-step returns, prioritized replay and a target network
                  -- or, with `algorithm="bandit"`, myopic regression onto the immediate
                  reward, which is the controlled "no bootstrapping" arm.
-    EXPLORATION  epsilon, plus the count-decayed novelty inside the reward, plus the
-                 tried/untried features that let the value function itself prefer what
-                 has not been attempted.
+    EXPLORATION  epsilon-greedy where the exploratory action is, with probability
+                 `guide_prob`, the hand-written search priority's choice over the same
+                 features rather than a uniform draw (see below); plus count-decayed
+                 novelty in the reward and tried/untried features in the input.
     TRANSFER     pretrain on several applications; on a new one, freeze what was learned
                  and train a zero-initialised residual head (`network.TransferQNetwork`).
 
@@ -30,6 +31,21 @@ of the experiment cannot drift apart in anything but the thing being varied:
 * pretrained and adapting -- weights loaded, residual head attached, `learn=True`;
 * zero-shot -- weights loaded, `learn=False`. It still updates its visit counts, because
   those are observations about the run, not learned parameters.
+
+**Why exploration is guided (measured, 2026-10-01).** With uniform-random exploration an
+agent pretrained for 3,000 steps on `shop_catalog` never once reached the order
+confirmation: the checkout is a 7-9 action chain that needs valid values typed into two
+fields, and random clicking does not complete it (nor did 600 steps of it in the benchmark
+validator). Two checkpoints trained under different reward designs came out bit-identical,
+because the rewarded states were never visited and the designs never differed. A value
+function cannot learn the worth of a state it has never seen.
+
+So the exploratory action is usually taken from the non-learning search priority
+(`rl.search`), computed on the agent's own feature vector, which does reach deep states.
+Q-learning is off-policy: transitions produced by the guide are learned from like any
+other, and the greedy policy is the agent's own. Scratch and pretrained arms explore with
+the identical mechanism, so it cancels out of the transfer comparison; what it changes is
+which transitions the learner gets to see.
 """
 
 from __future__ import annotations
@@ -78,6 +94,9 @@ class AgentConfig:
     epsilon_end: float = 0.10
     #: Interactions over which epsilon falls linearly from start to end.
     epsilon_decay_steps: int = 1200
+    #: Probability that an exploratory action is the search priority's choice rather than
+    #: a uniform draw. 0 restores plain epsilon-greedy.
+    guide_prob: float = 0.75
     #: Interactions the run is expected to last; anneals the PER importance exponent.
     total_steps: int = 2000
     learn: bool = True
@@ -110,6 +129,7 @@ class AgentStats:
     losses: list[float] = field(default_factory=list)
     mean_q: list[float] = field(default_factory=list)
     learn_seconds: float = 0.0
+    guided_actions: int = 0
 
     def to_dict(self) -> dict:
         def tail_mean(values: list[float]) -> float | None:
@@ -117,6 +137,7 @@ class AgentStats:
         return {
             "steps": self.steps,
             "random_actions": self.random_actions,
+            "guided_actions": self.guided_actions,
             "gradient_steps": self.gradient_steps,
             "target_updates": self.target_updates,
             "recent_loss": tail_mean(self.losses),
@@ -234,6 +255,9 @@ class QAgent:
             return 0
         if self._rng.random() < self.epsilon:
             self.stats.random_actions += 1
+            if self.config.guide_prob and self._rng.random() < self.config.guide_prob:
+                self.stats.guided_actions += 1
+                return int(np.argmax(self._guide_scores(encoded.actions)))
             return int(self._rng.integers(0, encoded.count))
         values = self.q_values(encoded)
         self.stats.mean_q.append(float(values.mean()))
@@ -273,6 +297,19 @@ class QAgent:
             for _ in range(self.config.gradient_steps):
                 self._gradient_step()
             self.stats.learn_seconds += time.monotonic() - started
+
+    def _guide_scores(self, block: np.ndarray) -> np.ndarray:
+        """The search priority's scores for these actions, from the agent's own features."""
+        if not hasattr(self, "_guide_weights"):
+            from .features import numeric_index
+            from .search import W_OBSERVED_NO_EFFECT, build_weights
+
+            self._guide_weights = build_weights("anchor")
+            self._guide_columns = (numeric_index("tried_here"), numeric_index("changed_state_rate"))
+            self._guide_no_effect = W_OBSERVED_NO_EFFECT
+        tried, rate = self._guide_columns
+        no_effect = block[:, tried] * (1.0 - block[:, rate])
+        return block @ self._guide_weights + self._guide_no_effect * no_effect
 
     # -- replay assembly --------------------------------------------------------------------
 
