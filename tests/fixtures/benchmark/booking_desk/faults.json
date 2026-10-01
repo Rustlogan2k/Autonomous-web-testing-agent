@@ -1,0 +1,130 @@
+{
+  "app_id": "booking_desk",
+  "name": "Millrace Rooms",
+  "entry": "index.html",
+  "_note": "Room-hire desk built as a client-rendered single-page application: one index.html, every screen a view built into <main id=\"view\"> when shown and removed when left, no URL change of any kind. State is one JSON object in sessionStorage. Form fields write through to the draft on every input event, and a stage can only be entered once every earlier stage's gate passes on the draft, so a rendered review always reflects the last values entered. Regions are rendered only on the view that carries them.",
+  "regions": {
+    "review_catering": "#review-catering",
+    "review_total": "#review-total",
+    "reserved_status": "#reserved-status"
+  },
+  "faults": [
+    {
+      "fault_id": "BOOK-01",
+      "fault_class": "calculation_error",
+      "description": "The community rate, declared as 20% off room hire only, is also applied to the catering charge. A community-rate reservation with catering shows a catering line (and therefore a total due) 20% below what guests times the per-guest price comes to.",
+      "trigger_condition": "Choose a room that seats 42, enter a bookable date and 42 guests, pick any catering option other than none, give a name and email, tick the community-rate box, and open the review.",
+      "expected_behaviour": "The review's catering line equals the number of guests times the per-guest catering price, whether or not the community rate applies.",
+      "observable_violation": "The catering line on the review shows 80% of guests times the per-guest price (for 42 guests at 9.00, 302.40 instead of 378.00). No error, no console output; the line's own description still says 42 guests at 9.00 each.",
+      "assertions": [
+        {
+          "kind": "numeric_equals",
+          "where": ".*",
+          "region": "review_catering",
+          "expression": "guests * catering",
+          "describes": "the review's catering charge must equal the guest count entered times the per-guest price of the catering option chosen"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "minimization_keep": [],
+      "observation_horizon": 1,
+      "_horizon_note": "The last triggering action (ticking the community rate on Your details) is one transition before the review where the line is read; the catering choice is two before it.",
+      "shortest_path": 10,
+      "trigger_trace": [
+        { "type": "CLICK", "id": "choose-weaving-shed" },
+        { "type": "TYPE", "id": "session-date", "params": { "category": "valid_typical" } },
+        { "type": "TYPE", "id": "guests", "params": { "category": "valid_typical" } },
+        { "type": "CLICK", "id": "to-extras" },
+        { "type": "SELECT", "id": "catering", "params": { "option": "9" } },
+        { "type": "CLICK", "id": "to-details" },
+        { "type": "TYPE", "id": "contact-name", "params": { "category": "valid_typical" } },
+        { "type": "TYPE", "id": "contact-email", "params": { "category": "valid_typical" } },
+        { "type": "CLICK", "id": "community-rate" },
+        { "type": "CLICK", "id": "to-review" }
+      ]
+    },
+    {
+      "fault_id": "BOOK-02",
+      "fault_class": "broken_transition",
+      "description": "Finalising a reservation that will be settled by invoice does not move it out of Provisional. The page thanks the customer and issues a reference as usual, but the reservation is never reserved.",
+      "trigger_condition": "Take any reservation through to the review with Invoice my organisation chosen under Settling up, then finalise it.",
+      "expected_behaviour": "Finalising moves the reservation to Reserved whichever way the customer settles up, as the hire terms state.",
+      "observable_violation": "The status shown after finalising reads Provisional instead of Reserved (and My reservations lists it as Provisional).",
+      "assertions": [
+        {
+          "kind": "text_equals",
+          "where": ".*",
+          "region": "reserved_status",
+          "expected": "Reserved",
+          "describes": "the status shown immediately after finalising must be Reserved"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "minimization_keep": [],
+      "observation_horizon": 2,
+      "_horizon_note": "The condition is set on Your details; the review follows, and the violation is visible on the view Finalise reservation renders.",
+      "shortest_path": 10,
+      "trigger_trace": [
+        { "type": "CLICK", "id": "choose-long-gallery" },
+        { "type": "TYPE", "id": "session-date", "params": { "category": "valid_typical" } },
+        { "type": "TYPE", "id": "guests", "params": { "category": "valid_typical" } },
+        { "type": "CLICK", "id": "to-extras" },
+        { "type": "CLICK", "id": "to-details" },
+        { "type": "TYPE", "id": "contact-name", "params": { "category": "valid_typical" } },
+        { "type": "TYPE", "id": "contact-email", "params": { "category": "valid_typical" } },
+        { "type": "CLICK", "id": "settle-invoice" },
+        { "type": "CLICK", "id": "to-review" },
+        { "type": "CLICK", "id": "finalise" }
+      ]
+    }
+  ],
+  "benign_traces": [
+    [
+      { "type": "CLICK", "id": "choose-long-gallery" },
+      { "type": "TYPE", "id": "session-date", "params": { "category": "valid_typical" } },
+      { "type": "SELECT", "id": "hours", "params": { "option": "3" } },
+      { "type": "TYPE", "id": "guests", "params": { "category": "valid_typical" } },
+      { "type": "CLICK", "id": "to-extras" },
+      { "type": "SELECT", "id": "catering", "params": { "option": "4" } },
+      { "type": "CLICK", "id": "extra-projector" },
+      { "type": "CLICK", "id": "to-details" },
+      { "type": "TYPE", "id": "contact-name", "params": { "category": "valid_typical" } },
+      { "type": "TYPE", "id": "contact-email", "params": { "category": "valid_typical" } },
+      { "type": "TYPE", "id": "contact-phone", "params": { "category": "valid_typical" } },
+      { "type": "CLICK", "id": "to-review" },
+      { "type": "CLICK", "id": "finalise" }
+    ],
+    [
+      { "type": "CLICK", "id": "choose-weaving-shed" },
+      { "type": "TYPE", "id": "session-date", "params": { "category": "valid_typical" } },
+      { "type": "TYPE", "id": "guests", "params": { "category": "valid_typical" } },
+      { "type": "CLICK", "id": "to-extras" },
+      { "type": "CLICK", "id": "to-details" },
+      { "type": "TYPE", "id": "contact-name", "params": { "category": "valid_typical" } },
+      { "type": "TYPE", "id": "contact-email", "params": { "category": "valid_typical" } },
+      { "type": "CLICK", "id": "community-rate" },
+      { "type": "CLICK", "id": "to-review" },
+      { "type": "CLICK", "id": "amend-session" },
+      { "type": "SELECT", "id": "hours", "params": { "option": "4" } },
+      { "type": "CLICK", "id": "back-to-review" },
+      { "type": "CLICK", "id": "save-later" },
+      { "type": "CLICK", "id": "resume-draft" },
+      { "type": "CLICK", "id": "finalise" },
+      { "type": "CLICK", "id": "see-reservations" }
+    ]
+  ],
+  "_benign_note": "Trace 0 is the plain walk with a catering choice and desk settlement: the catering line is correct on both builds and the status is Reserved. Trace 1 exercises amend, save-for-later and resume with the community rate but no catering, so the catering line is never rendered and settlement stays at the desk.",
+  "characterization": {
+    "pages_or_views": 11,
+    "views": ["rooms", "session", "extras", "details", "review", "reserved", "reservations", "terms", "location", "access", "help"],
+    "distractor_views": 4,
+    "workflow_state_representation": "one JSON object in sessionStorage; the URL never changes and each view's DOM is built on entry and removed on exit",
+    "shortest_fault_path_d_star": 10
+  }
+}

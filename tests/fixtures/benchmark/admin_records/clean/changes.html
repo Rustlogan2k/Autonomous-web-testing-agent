@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Change log &mdash; Brasswick Asset Register</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/console.css">
+</head>
+<body data-page="changes">
+<div class="shell">
+  <aside class="rail">
+    <p class="product">Brasswick <span>Asset Register</span></p>
+    <nav aria-label="Console sections">
+      <a id="nav-overview" href="index.html">Overview</a>
+      <a id="nav-equipment" href="equipment.html">Equipment register</a>
+      <a id="nav-locations" href="locations.html">Locations</a>
+      <a id="nav-register" href="register.html">Register equipment</a>
+      <a id="nav-changes" href="changes.html" aria-current="page">Change log</a>
+      <a id="nav-preferences" href="preferences.html">Preferences</a>
+      <a id="nav-guide" href="guide.html">Operator guide</a>
+    </nav>
+    <p class="rail-foot">Signed in as duty registrar</p>
+  </aside>
+  <main class="stage" id="stage">
+    <div id="notice-slot"></div>
+    <h1>Change log</h1>
+    <p class="lede">Every registration, edit and removal made in this session.</p>
+
+    <div class="toolbar">
+      <button type="button" class="ghost" id="clear-log">Clear the change log</button>
+      <span class="count" id="journal-count"></span>
+    </div>
+
+    <section class="panel">
+      <table class="grid">
+        <thead>
+          <tr><th class="col-seq">No.</th><th class="col-tag">Tag</th><th>Action</th><th>Fields</th><th>Reason given</th></tr>
+        </thead>
+        <tbody id="journal-rows"></tbody>
+      </table>
+    </section>
+  </main>
+</div>
+<script src="assets/console.js"></script>
+</body>
+</html>

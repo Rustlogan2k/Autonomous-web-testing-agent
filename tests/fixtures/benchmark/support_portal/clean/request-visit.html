@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book an engineer visit - Larkfield Broadband care desk</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/portal.css">
+</head>
+<body data-stage="visit">
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html" id="nav-home">Larkfield Broadband <small>Care desk</small></a>
+    <nav class="topnav" aria-label="Care desk">
+      <a href="request-topic.html" id="nav-raise">Raise a request</a>
+      <a href="track.html" id="nav-track">Track a request</a>
+      <a href="help.html" id="nav-help">Help articles</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1>Book an engineer visit</h1>
+  <p class="intro">With no service at all we send an engineer. Choose when someone can let them in.</p>
+  <ol id="step-list" class="steps" hidden></ol>
+  <section id="stage-locked" class="card" hidden>
+    <h2>This step is not open yet</h2>
+    <p id="locked-reason">Earlier steps of this request need finishing first.</p>
+    <a id="locked-go" class="btn" href="request-topic.html">Go to the first step</a>
+  </section>
+  <div class="request-layout">
+    <form id="stage-form" class="card" autocomplete="off" novalidate hidden>
+      <p id="amend-note" class="note" hidden>You are changing an answer. When this step is saved you go straight back to the summary, unless the change means another step needs filling in.</p>
+      <div id="stage-warning" class="warning" role="alert" hidden>
+        <p>Check these before moving on:</p>
+        <ul id="warning-list"></ul>
+      </div>
+      <p id="stage-note" class="note" role="status" hidden></p>
+      <fieldset>
+        <legend>Time of day</legend>
+        <div class="choice">
+          <input type="radio" id="slot-am" name="visit_slot" value="am">
+          <label for="slot-am">Morning, 8am to 12pm</label>
+        </div>
+        <div class="choice">
+          <input type="radio" id="slot-pm" name="visit_slot" value="pm">
+          <label for="slot-pm">Afternoon, 12pm to 5pm</label>
+        </div>
+        <div class="choice">
+          <input type="radio" id="slot-eve" name="visit_slot" value="eve">
+          <label for="slot-eve">Evening, 5pm to 8pm</label>
+        </div>
+      </fieldset>
+      <div class="field">
+        <label for="access_notes">Access notes (optional)</label>
+        <span class="hint" id="access_notes-hint">Door codes, parking, pets. Up to 120 characters.</span>
+        <input type="text" id="access_notes" name="access_notes">
+      </div>
+      <div class="choice">
+        <input type="checkbox" id="adult_present" name="adult_present" value="yes">
+        <label for="adult_present">Someone aged 18 or over will be at home for the visit</label>
+      </div>
+      <div class="actions">
+        <button type="button" id="save-visit" class="btn">Save visit slot and move on</button>
+        <button type="button" id="save-draft" class="btn secondary">Save draft</button>
+        <button type="button" id="clear-step" class="btn secondary">Clear this step</button>
+      </div>
+      <div class="link-row">
+        <a id="back-step" href="request-line.html">Back a step</a>
+        <button type="button" id="discard-request" class="btn danger">Discard request</button>
+      </div>
+      <div id="discard-panel" class="confirm-box" hidden>
+        <p>Discard this request? Everything you have entered will be removed.</p>
+        <div class="actions">
+          <button type="button" id="discard-yes" class="btn danger">Yes, discard it</button>
+          <button type="button" id="discard-no" class="btn secondary">No, keep it</button>
+        </div>
+      </div>
+    </form>
+    <aside id="sofar" class="card sofar" hidden>
+      <h2>Your answers so far</h2>
+      <dl id="sofar-list" class="answers"></dl>
+    </aside>
+  </div>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <span>Larkfield Broadband Ltd. Care desk open 8am to 8pm, seven days.</span>
+    <a href="help-router-lights.html" id="foot-lights">Router lights explained</a>
+    <a href="help-reading-your-bill.html" id="foot-bill">Reading your bill</a>
+  </div>
+</footer>
+<script src="assets/portal.js"></script>
+</body>
+</html>

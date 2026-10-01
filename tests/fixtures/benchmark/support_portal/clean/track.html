@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Track a request - Larkfield Broadband care desk</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/portal.css">
+</head>
+<body data-page="track">
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html" id="nav-home">Larkfield Broadband <small>Care desk</small></a>
+    <nav class="topnav" aria-label="Care desk">
+      <a href="request-topic.html" id="nav-raise">Raise a request</a>
+      <a href="track.html" id="nav-track">Track a request</a>
+      <a href="help.html" id="nav-help">Help articles</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1>Track a request</h1>
+  <p class="intro">Enter the reference from your confirmation email to see how your request is progressing.</p>
+  <form id="track-form" class="card" autocomplete="off" novalidate>
+    <div class="field">
+      <label for="reference">Request reference</label>
+      <span class="hint" id="reference-hint">For example LB-FLT-4101</span>
+      <input type="text" id="reference" name="reference">
+    </div>
+    <p id="track-warning" class="warning" role="alert" hidden></p>
+    <div class="actions">
+      <button type="button" id="find-request" class="btn">Find request</button>
+    </div>
+  </form>
+  <section id="track-result" class="card" hidden>
+    <h2>Request details</h2>
+    <dl id="track-facts" class="answers"></dl>
+    <div class="actions">
+      <button type="button" id="withdraw-request" class="btn danger" hidden>Withdraw this request</button>
+    </div>
+  </section>
+  <section id="track-mine-panel" class="card" hidden>
+    <h2>Requests raised in this browser tab</h2>
+    <ul id="track-mine"></ul>
+  </section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <span>Larkfield Broadband Ltd. Care desk open 8am to 8pm, seven days.</span>
+    <a href="help-router-lights.html" id="foot-lights">Router lights explained</a>
+    <a href="help-reading-your-bill.html" id="foot-bill">Reading your bill</a>
+  </div>
+</footer>
+<script src="assets/portal.js"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edit record &mdash; Brasswick Asset Register</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/console.css">
+</head>
+<body data-page="amend">
+<div class="shell">
+  <aside class="rail">
+    <p class="product">Brasswick <span>Asset Register</span></p>
+    <nav aria-label="Console sections">
+      <a id="nav-overview" href="index.html">Overview</a>
+      <a id="nav-equipment" href="equipment.html" aria-current="page">Equipment register</a>
+      <a id="nav-locations" href="locations.html">Locations</a>
+      <a id="nav-register" href="register.html">Register equipment</a>
+      <a id="nav-changes" href="changes.html">Change log</a>
+      <a id="nav-preferences" href="preferences.html">Preferences</a>
+      <a id="nav-guide" href="guide.html">Operator guide</a>
+    </nav>
+    <p class="rail-foot">Signed in as duty registrar</p>
+  </aside>
+  <main class="stage" id="stage">
+    <div id="notice-slot"></div>
+    <h1 id="amend-heading">Edit record</h1>
+    <form id="amend-form" class="panel" autocomplete="off" novalidate>
+      <p class="lede">Change any field, give a reason, then save. Only changed fields are written.</p>
+      <div class="field">
+        <label for="f-asset-name">Equipment name</label>
+        <input type="text" id="f-asset-name" name="asset_name">
+      </div>
+      <div class="field">
+        <label for="f-category">Category</label>
+        <select id="f-category" name="category"></select>
+      </div>
+      <div class="field">
+        <label for="f-location">Location</label>
+        <select id="f-location" name="location"></select>
+      </div>
+      <div class="field">
+        <label for="f-custodian">Custodian</label>
+        <input type="text" id="f-custodian" name="custodian">
+      </div>
+      <div class="field">
+        <label for="f-units">Units held</label>
+        <input type="number" id="f-units" name="units" min="0" step="1">
+      </div>
+      <div class="field">
+        <label for="f-status">Status</label>
+        <select id="f-status" name="status"></select>
+      </div>
+      <div class="field">
+        <label for="f-notes">Notes</label>
+        <textarea id="f-notes" name="notes" rows="3"></textarea>
+      </div>
+      <div class="field">
+        <label for="f-change-reason">Reason for the change</label>
+        <input type="text" id="f-change-reason" name="change_reason">
+      </div>
+      <p class="warning" id="amend-warning" role="alert"></p>
+      <p class="actions">
+        <button type="button" id="save-changes">Save changes</button>
+        <a id="discard-edits" href="equipment.html">Discard edits</a>
+      </p>
+    </form>
+  </main>
+</div>
+<script src="assets/console.js"></script>
+</body>
+</html>

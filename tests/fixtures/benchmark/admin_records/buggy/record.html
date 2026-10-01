@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Record &mdash; Brasswick Asset Register</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/console.css">
+</head>
+<body data-page="record">
+<div class="shell">
+  <aside class="rail">
+    <p class="product">Brasswick <span>Asset Register</span></p>
+    <nav aria-label="Console sections">
+      <a id="nav-overview" href="index.html">Overview</a>
+      <a id="nav-equipment" href="equipment.html" aria-current="page">Equipment register</a>
+      <a id="nav-locations" href="locations.html">Locations</a>
+      <a id="nav-register" href="register.html">Register equipment</a>
+      <a id="nav-changes" href="changes.html">Change log</a>
+      <a id="nav-preferences" href="preferences.html">Preferences</a>
+      <a id="nav-guide" href="guide.html">Operator guide</a>
+    </nav>
+    <p class="rail-foot">Signed in as duty registrar</p>
+  </aside>
+  <main class="stage" id="stage">
+    <div id="notice-slot"></div>
+    <h1 id="record-heading">Record</h1>
+    <div id="record-body">
+      <p class="lede">Read-only view of what the register holds for this record.</p>
+
+      <div id="receipt-slot"></div>
+      <div id="confirm-slot"></div>
+
+      <section class="panel">
+        <h2>Record details</h2>
+        <dl class="sheet" id="record-sheet"></dl>
+        <p class="actions">
+          <a class="btn" id="edit-record" href="equipment.html">Edit record</a>
+          <button type="button" class="danger" id="remove-record">Remove record</button>
+          <a id="back-to-register" href="equipment.html">Back to the equipment register</a>
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Changes to this record</h2>
+        <table class="grid">
+          <thead>
+            <tr><th class="col-seq">No.</th><th>Action</th><th>Fields</th><th>Reason given</th></tr>
+          </thead>
+          <tbody id="history-rows"></tbody>
+        </table>
+      </section>
+    </div>
+  </main>
+</div>
+<script src="assets/console.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Line checks - Larkfield Broadband care desk</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/portal.css">
+</head>
+<body data-stage="line">
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html" id="nav-home">Larkfield Broadband <small>Care desk</small></a>
+    <nav class="topnav" aria-label="Care desk">
+      <a href="request-topic.html" id="nav-raise">Raise a request</a>
+      <a href="track.html" id="nav-track">Track a request</a>
+      <a href="help.html" id="nav-help">Help articles</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1>Line checks</h1>
+  <p class="intro">These checks clear up most connection problems. We need them before an adviser can test your line.</p>
+  <ol id="step-list" class="steps" hidden></ol>
+  <section id="stage-locked" class="card" hidden>
+    <h2>This step is not open yet</h2>
+    <p id="locked-reason">Earlier steps of this request need finishing first.</p>
+    <a id="locked-go" class="btn" href="request-topic.html">Go to the first step</a>
+  </section>
+  <div class="request-layout">
+    <form id="stage-form" class="card" autocomplete="off" novalidate hidden>
+      <p id="amend-note" class="note" hidden>You are changing an answer. When this step is saved you go straight back to the summary, unless the change means another step needs filling in.</p>
+      <div id="stage-warning" class="warning" role="alert" hidden>
+        <p>Check these before moving on:</p>
+        <ul id="warning-list"></ul>
+      </div>
+      <p id="stage-note" class="note" role="status" hidden></p>
+      <div class="field">
+        <label for="router_lights">What are the lights on the router doing?</label>
+        <select id="router_lights" name="router_lights">
+          <option value="">Choose one</option>
+          <option value="green">All lights green</option>
+          <option value="red">Internet light is red</option>
+          <option value="amber">Lights flashing amber</option>
+          <option value="dark">No lights at all</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="devices_affected">Which devices are affected?</label>
+        <select id="devices_affected" name="devices_affected">
+          <option value="all">Every device</option>
+          <option value="some">Some devices</option>
+          <option value="one">One device only</option>
+        </select>
+      </div>
+      <div class="choice">
+        <input type="checkbox" id="restarted" name="restarted" value="yes">
+        <label for="restarted">I have switched the router off for 30 seconds and back on again</label>
+      </div>
+      <div class="choice">
+        <input type="checkbox" id="wired_test" name="wired_test" value="yes">
+        <label for="wired_test">I have tried a device plugged into the router with a cable</label>
+      </div>
+      <div class="actions">
+        <button type="button" id="save-line" class="btn">Save line checks and move on</button>
+        <button type="button" id="save-draft" class="btn secondary">Save draft</button>
+        <button type="button" id="clear-step" class="btn secondary">Clear this step</button>
+      </div>
+      <div class="link-row">
+        <a id="back-step" href="request-details.html">Back a step</a>
+        <button type="button" id="discard-request" class="btn danger">Discard request</button>
+      </div>
+      <div id="discard-panel" class="confirm-box" hidden>
+        <p>Discard this request? Everything you have entered will be removed.</p>
+        <div class="actions">
+          <button type="button" id="discard-yes" class="btn danger">Yes, discard it</button>
+          <button type="button" id="discard-no" class="btn secondary">No, keep it</button>
+        </div>
+      </div>
+    </form>
+    <aside id="sofar" class="card sofar" hidden>
+      <h2>Your answers so far</h2>
+      <dl id="sofar-list" class="answers"></dl>
+    </aside>
+  </div>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <span>Larkfield Broadband Ltd. Care desk open 8am to 8pm, seven days.</span>
+    <a href="help-router-lights.html" id="foot-lights">Router lights explained</a>
+    <a href="help-reading-your-bill.html" id="foot-bill">Reading your bill</a>
+  </div>
+</footer>
+<script src="assets/portal.js"></script>
+</body>
+</html>

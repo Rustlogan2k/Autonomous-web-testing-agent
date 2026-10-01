@@ -1,0 +1,316 @@
+/* Reelhouse, the Kestrel FM recordings library. A dark studio-desk look: slate panels,
+   amber meter accents, a sans-serif face. Every colour is a token on :root. */
+:root {
+  --ink: #e7ebf0;
+  --ink-soft: #a9b3c1;
+  --ink-faint: #7b8696;
+  --ground: #11161d;
+  --panel: #1a212b;
+  --panel-raised: #232c38;
+  --rule: #313c4b;
+  --amber: #f2b441;
+  --amber-deep: #c98a17;
+  --teal: #4fc1b3;
+  --alert: #ff8a7a;
+  --veil: rgba(6, 9, 13, 0.72);
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font: 15px/1.5 "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+h1, h2 { font-weight: 600; letter-spacing: -0.01em; }
+
+/* ---- the deck (header) ---------------------------------------------------------------- */
+
+.deck {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  padding: 12px 24px;
+  background: var(--panel);
+  border-bottom: 3px solid var(--amber);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--amber);
+  font-weight: 700;
+  font-size: 19px;
+  text-decoration: none;
+}
+
+.brand-mark { color: var(--amber); }
+
+.station {
+  color: var(--ink-faint);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.deck-nav { margin-left: auto; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+
+.deck-nav a { color: var(--ink-soft); text-decoration: none; padding: 4px 0; }
+.deck-nav a.is-here { color: var(--ink); border-bottom: 2px solid var(--teal); }
+.deck-nav a:not([href]) { color: var(--ink-faint); }
+
+/* ---- the bench (main area) ------------------------------------------------------------- */
+
+.bench { max-width: 70rem; margin: 0 auto; padding: 20px 24px 32px; }
+
+.bench-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bench-head h1 { margin: 0; font-size: 26px; }
+
+.bench-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.rack {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 16px;
+  margin: 18px 0 8px;
+  padding: 14px 16px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+}
+
+.rack-slot { display: flex; flex-direction: column; gap: 4px; }
+.rack-slot-wide { flex: 1 1 14rem; }
+.rack-slot-end { margin-left: auto; }
+.rack-slot label { font-size: 12px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.06em; }
+
+.readout { color: var(--ink-soft); font-size: 14px; margin: 10px 0 14px; }
+
+input[type="text"], input[type="search"], select, textarea {
+  width: 100%;
+  min-width: 11rem;
+  padding: 7px 9px;
+  color: var(--ink);
+  background: var(--ground);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  font: inherit;
+}
+
+textarea { resize: vertical; }
+
+input:disabled, select:disabled { opacity: 0.55; }
+
+.key {
+  display: inline-block;
+  padding: 7px 14px;
+  color: var(--ink);
+  background: var(--panel-raised);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.key:hover:not(:disabled) { border-color: var(--teal); }
+.key:disabled { opacity: 0.45; cursor: default; }
+
+.key-strong {
+  color: #1b1405;
+  background: var(--amber);
+  border-color: var(--amber-deep);
+  font-weight: 600;
+}
+
+/* ---- the grid of recordings ----------------------------------------------------------- */
+
+.reels {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 16px;
+}
+
+.reel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-top: 4px solid var(--teal);
+  border-radius: 10px;
+}
+
+.reel-news { border-top-color: #6ea8ff; }
+.reel-features { border-top-color: var(--teal); }
+.reel-music { border-top-color: #d88cff; }
+.reel-sport { border-top-color: #8fd46b; }
+
+.reel-wave { width: 100%; height: 34px; fill: var(--amber); opacity: 0.85; }
+
+.reel-ref { margin: 4px 0 0; color: var(--ink-faint); font-size: 12px; font-family: Consolas, "Courier New", monospace; }
+.reel-title { margin: 0; font-size: 17px; overflow-wrap: anywhere; }
+.reel-meta, .reel-place { margin: 0; color: var(--ink-soft); font-size: 13px; }
+.reel-open { margin-top: 8px; align-self: flex-start; }
+
+.reels-empty {
+  grid-column: 1 / -1;
+  padding: 28px;
+  text-align: center;
+  color: var(--ink-soft);
+  border: 1px dashed var(--rule);
+  border-radius: 10px;
+}
+
+/* ---- dialogs ------------------------------------------------------------------------------ */
+
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+  overflow-y: auto;
+  background: var(--veil);
+}
+
+.sheet {
+  width: 100%;
+  max-width: 38rem;
+  padding: 20px 22px;
+  background: var(--panel-raised);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+}
+
+.sheet-kicker {
+  margin: 0;
+  color: var(--amber);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sheet h2 { margin: 4px 0 12px; font-size: 21px; overflow-wrap: anywhere; }
+
+.sheet-lead { color: var(--ink-soft); margin: 0 0 12px; overflow-wrap: anywhere; }
+
+.sheet-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+
+.facts { margin: 0; }
+.fact {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.fact dt { color: var(--ink-faint); font-size: 13px; }
+.fact dd { margin: 0; overflow-wrap: anywhere; }
+
+.was { color: var(--ink-faint); text-decoration: line-through; }
+.becomes { color: var(--ink-faint); }
+.now { color: var(--teal); }
+
+.fields { display: flex; flex-direction: column; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 13px; color: var(--ink-soft); }
+.field-tick { flex-direction: row; align-items: center; gap: 8px; }
+.field-tick input { width: 18px; height: 18px; margin: 0; }
+.field-tick label { font-size: 14px; color: var(--ink); }
+
+.problems {
+  margin: 0 0 14px;
+  padding: 10px 14px 10px 30px;
+  color: var(--alert);
+  background: rgba(255, 138, 122, 0.08);
+  border: 1px solid rgba(255, 138, 122, 0.4);
+  border-radius: 8px;
+}
+
+.prose p { margin: 0 0 10px; color: var(--ink-soft); }
+
+/* ---- collections page ------------------------------------------------------------------- */
+
+.crates {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 16px;
+}
+
+.crate {
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--amber);
+  border-radius: 10px;
+}
+
+.crate h2 { margin: 0 0 4px; font-size: 18px; }
+.crate-note, .crate-count, .crate-empty { margin: 0 0 8px; color: var(--ink-soft); font-size: 14px; }
+.crate-list { margin: 12px 0 0; padding-left: 20px; }
+.crate-list li { margin-bottom: 4px; overflow-wrap: anywhere; }
+.crate-ref, .crate-time { color: var(--ink-faint); font-family: Consolas, "Courier New", monospace; font-size: 12px; }
+
+/* ---- help page ------------------------------------------------------------------------------ */
+
+.guide-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0; }
+.guide-tabs .key[aria-pressed="true"] { border-color: var(--teal); color: var(--teal); }
+
+.guide {
+  padding: 18px 20px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+}
+
+.guide h2 { margin-top: 0; }
+.guide p { color: var(--ink-soft); }
+.guide-list dt { font-weight: 600; margin-top: 10px; }
+.guide-list dd { margin: 2px 0 0; color: var(--ink-soft); }
+
+/* ---- footer ------------------------------------------------------------------------------------ */
+
+.foot {
+  padding: 14px 24px;
+  color: var(--ink-faint);
+  font-size: 13px;
+  border-top: 1px solid var(--rule);
+}
+
+@media (max-width: 600px) {
+  .deck { padding: 10px 16px; }
+  .deck-nav { margin-left: 0; }
+  .bench { padding: 16px; }
+  .rack-slot { flex: 1 1 100%; }
+  .rack-slot-end { margin-left: 0; }
+  .fact { grid-template-columns: 1fr; gap: 2px; }
+  .veil { padding: 16px; }
+}

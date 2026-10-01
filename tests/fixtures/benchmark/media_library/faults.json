@@ -1,0 +1,122 @@
+{
+  "app_id": "media_library",
+  "name": "Reelhouse (Kestrel FM recordings library)",
+  "entry": "index.html",
+  "_note": "Benchmark application: a grid of recordings with modal dialogs. Almost every interaction happens in a dialog over the grid, so the URL does not change; assertions therefore use where='.*' and are judged on the last observed step. Each receipt region exists only while the 'Changes applied' dialog is on screen, and only for the fields that the save actually changed, so the region is always the direct read-back of the value just entered in that same dialog.",
+  "regions": {
+    "receipt_title": "#receipt-title",
+    "receipt_clearance": "#receipt-clearance"
+  },
+  "faults": [
+    {
+      "fault_id": "MEDIA-01",
+      "fault_class": "state_corruption",
+      "description": "Applying an edit resolves the recording by its position in the grid as currently arranged, but against the shelf's own order. When the grid is arranged, filtered or searched so that the two orders differ, the new title is written to a different recording and the one the user edited keeps its old title.",
+      "trigger_condition": "Arrange the grid by title (or filter or search it), open a recording whose position differs from its shelf position, choose Edit details, type a new title, review the changes and apply them.",
+      "expected_behaviour": "The 'Changes applied' receipt re-reads the edited recording and shows the title that was typed.",
+      "observable_violation": "The receipt's Title line shows the recording's old title; the typed title has been put on another recording in the grid.",
+      "assertions": [
+        {
+          "kind": "echoes_input",
+          "where": ".*",
+          "region": "receipt_title",
+          "input_field": "item_title",
+          "describes": "the receipt of an applied edit must show the title the user typed for that recording"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "minimization_keep": [],
+      "observation_horizon": 1,
+      "shortest_path": 6,
+      "trigger_trace": [
+        { "type": "SELECT", "id": "arrange-by", "params": { "option": "title" } },
+        { "type": "CLICK", "id": "open-item-1" },
+        { "type": "CLICK", "id": "detail-edit" },
+        { "type": "TYPE", "id": "item-title", "params": { "category": "valid_typical" } },
+        { "type": "CLICK", "id": "edit-review" },
+        { "type": "CLICK", "id": "review-apply" }
+      ]
+    },
+    {
+      "fault_id": "MEDIA-02",
+      "fault_class": "persistence_failure",
+      "description": "An edit that changes only fields outside the search index (clearance, front shelf, partner stations) is applied in memory but never written to sessionStorage. The receipt shows the new clearance, and after a reload the receipt, now read from storage, shows the old one.",
+      "trigger_condition": "Open a recording, choose Edit details, change only the clearance, review and apply, then reload the page while the 'Changes applied' receipt is open.",
+      "expected_behaviour": "After the reload the receipt still shows the clearance that was chosen, because the change was saved.",
+      "observable_violation": "After the reload the receipt's Clearance line shows the recording's previous clearance.",
+      "assertions": [
+        {
+          "kind": "echoes_input",
+          "where": ".*",
+          "region": "receipt_clearance",
+          "input_field": "clearance",
+          "describes": "the receipt, re-read from storage after a reload, must still show the clearance the user chose"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "minimization_keep": [],
+      "observation_horizon": 1,
+      "shortest_path": 6,
+      "trigger_trace": [
+        { "type": "CLICK", "id": "open-item-2" },
+        { "type": "CLICK", "id": "detail-edit" },
+        { "type": "SELECT", "id": "item-clearance", "params": { "option": "restricted" } },
+        { "type": "CLICK", "id": "edit-review" },
+        { "type": "CLICK", "id": "review-apply" },
+        { "type": "REFRESH" }
+      ]
+    }
+  ],
+  "benign_traces": [
+    [
+      { "type": "CLICK", "id": "open-item-3" },
+      { "type": "CLICK", "id": "detail-edit" },
+      { "type": "TYPE", "id": "item-title", "params": { "category": "valid_typical" } },
+      { "type": "SELECT", "id": "item-clearance", "params": { "option": "cleared" } },
+      { "type": "CLICK", "id": "item-pinned" },
+      { "type": "CLICK", "id": "edit-review" },
+      { "type": "CLICK", "id": "review-apply" },
+      { "type": "REFRESH" },
+      { "type": "CLICK", "id": "receipt-finish" }
+    ],
+    [
+      { "type": "CLICK", "id": "add-recording" },
+      { "type": "TYPE", "id": "new-title", "params": { "category": "valid_typical" } },
+      { "type": "CLICK", "id": "add-to-options" },
+      { "type": "SELECT", "id": "new-clearance", "params": { "option": "station" } },
+      { "type": "SELECT", "id": "new-collection", "params": { "option": "sessions" } },
+      { "type": "CLICK", "id": "add-to-check" },
+      { "type": "CLICK", "id": "add-file" },
+      { "type": "CLICK", "id": "added-finish" },
+      { "type": "CLICK", "id": "open-item-7" },
+      { "type": "CLICK", "id": "detail-close" }
+    ],
+    [
+      { "type": "SELECT", "id": "arrange-by", "params": { "option": "title" } },
+      { "type": "CLICK", "id": "open-item-4" },
+      { "type": "CLICK", "id": "detail-move" },
+      { "type": "SELECT", "id": "move-to", "params": { "option": "harbour" } },
+      { "type": "CLICK", "id": "move-apply" },
+      { "type": "CLICK", "id": "moved-finish" },
+      { "type": "CLICK", "id": "nav-collections" },
+      { "type": "CLICK", "id": "list-harbour" }
+    ]
+  ],
+  "_benign_note": "Trace 0 is the main edit workflow in shelf order: the title and clearance both change, so the save is written (MEDIA-02 needs a clearance-only change) and the grid position equals the shelf position (MEDIA-01 needs a re-arranged grid); the reload shows the saved values. Trace 1 files a new recording through the three-step dialog and opens it. Trace 2 re-arranges the grid and moves a recording, which uses neither faulty path.",
+  "characterization": {
+    "_status": "reachability and minimized path lengths are measured by scripts/validate_benchmark.py",
+    "pages": 3,
+    "dialogs": 11,
+    "shortest_fault_path_d_star": 6,
+    "delayed_observation_horizon_H": 1,
+    "distractor_pages": 4,
+    "workflow_state_representation": "sessionStorage: the shelf under one key, and the open dialog with its draft under a second key, so a reload restores the dialog; the URL never changes inside the library",
+    "_contrast": "A single-URL grid with modal dialogs whose DOM is created on open and removed on close; the page behind a dialog is disabled while it is open. Commits go through an explicit review step (Review changes -> Apply changes) rather than a form post, and the faults are observed on a read-back receipt rather than on a confirmation page."
+  }
+}

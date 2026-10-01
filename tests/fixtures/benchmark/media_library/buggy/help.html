@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reelhouse · Help and clearance guide</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/reelhouse.css">
+</head>
+<body>
+<div id="chrome">
+  <header class="deck">
+    <a class="brand" id="nav-brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true">
+        <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2.5"></circle>
+        <circle cx="16" cy="16" r="4.5" fill="currentColor"></circle>
+        <path d="M16 2v6M16 24v6M2 16h6M24 16h6" stroke="currentColor" stroke-width="2"></path>
+      </svg>
+      Reelhouse
+    </a>
+    <span class="station">Kestrel FM recordings library</span>
+    <nav class="deck-nav" aria-label="Sections">
+      <a id="nav-library" href="index.html">Library</a>
+      <a id="nav-collections" href="collections.html">Collections</a>
+      <a id="nav-help" class="is-here" href="help.html">Help and clearance guide</a>
+    </nav>
+  </header>
+
+  <main class="bench">
+    <div class="bench-head">
+      <h1>Help and clearance guide</h1>
+    </div>
+    <div class="guide-tabs" role="group" aria-label="Guide topics">
+      <button type="button" class="key" id="guide-clearance">Clearance levels</button>
+      <button type="button" class="key" id="guide-formats">Audio formats</button>
+      <button type="button" class="key" id="guide-contacts">Desk contacts</button>
+      <button type="button" class="key" id="guide-retention">Keeping and removing</button>
+    </div>
+    <article class="guide" id="guide-panel"></article>
+  </main>
+
+  <footer class="foot">
+    <p>Reelhouse keeps the station's finished audio. Raw studio takes stay on the studio machines.</p>
+  </footer>
+</div>
+
+<script src="assets/store.js"></script>
+<script src="assets/help.js"></script>
+</body>
+</html>

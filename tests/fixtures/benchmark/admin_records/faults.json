@@ -1,0 +1,133 @@
+{
+  "app_id": "admin_records",
+  "name": "Brasswick Asset Register",
+  "entry": "index.html",
+  "_note": "Benchmark application: a back-office CRUD console for a workshop's equipment register. Wide and shallow: many records, many row-level controls (View / Edit / Remove per row, each with its own id), short paths. Both assertions read a receipt panel that exists only on the record page reached by a save, and only for the fields that save wrote, so an unsaved edit or a later edit elsewhere can never be compared against it.",
+  "regions": {
+    "applied_custodian": "#applied-custodian",
+    "applied_asset_name": "#applied-asset-name"
+  },
+  "faults": [
+    {
+      "fault_id": "ADMIN-01",
+      "fault_class": "persistence_failure",
+      "description": "The custody ledger is insert-only. The first time a record's custodian is reassigned the change is stored; any later reassignment of the same record is silently discarded, although the save succeeds, the change log records it and the receipt lists the custodian as written.",
+      "trigger_condition": "Edit one record and change its custodian (with a reason) and save; then, from that record's page, edit it again, change the custodian to a different value, give a reason, and save.",
+      "expected_behaviour": "After the second save the record page's receipt shows the custodian just entered, read back from storage.",
+      "observable_violation": "The receipt's custodian value is the one from the first reassignment, not the one just saved. The page loads normally, logs nothing, and the change log shows both edits.",
+      "assertions": [
+        {
+          "kind": "echoes_input",
+          "where": "record\\.html",
+          "region": "applied_custodian",
+          "input_field": "custodian",
+          "describes": "the custodian the register holds after a save must be the custodian just entered"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "minimization_keep": [],
+      "observation_horizon": 1,
+      "_horizon_note": "The dropped write happens in the second Save; the record page one transition later is where the stale value is read back. The first reassignment (four actions earlier) is the precondition, not the trigger.",
+      "shortest_path": 9,
+      "trigger_trace": [
+        { "type": "CLICK", "id": "nav-equipment" },
+        { "type": "CLICK", "id": "edit-3" },
+        { "type": "TYPE", "id": "f-custodian", "params": { "category": "valid_typical" } },
+        { "type": "TYPE", "id": "f-change-reason", "params": { "category": "valid_typical" } },
+        { "type": "CLICK", "id": "save-changes" },
+        { "type": "CLICK", "id": "edit-record" },
+        { "type": "TYPE", "id": "f-custodian", "params": { "category": "type_mismatch" } },
+        { "type": "TYPE", "id": "f-change-reason", "params": { "category": "valid_typical" } },
+        { "type": "CLICK", "id": "save-changes" }
+      ]
+    },
+    {
+      "fault_id": "ADMIN-02",
+      "fault_class": "state_corruption",
+      "description": "The save path locates the record to write by treating its id as its position in the register. Once a record with a lower id has been removed, an edit's fields are written into the next record down; the record that was edited keeps its old values. Custody is kept in a separate ledger keyed by id and is unaffected.",
+      "trigger_condition": "Remove a record (confirming in the in-page panel), then edit a record with a higher id that is not the last one, change its equipment name, give a reason, and save.",
+      "expected_behaviour": "The record page's receipt shows the equipment name just entered, read back from the edited record.",
+      "observable_violation": "The receipt shows the edited record's old equipment name; the new name has been written onto a different record, which the equipment list now shows under the neighbouring tag.",
+      "assertions": [
+        {
+          "kind": "echoes_input",
+          "where": "record\\.html",
+          "region": "applied_asset_name",
+          "input_field": "asset_name",
+          "describes": "the equipment name the register holds for the edited record must be the name just entered"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "minimization_keep": [],
+      "observation_horizon": 1,
+      "_horizon_note": "The misdirected write happens in Save; the record page one transition later reads the edited record back. The removal three actions earlier is the precondition that makes the position differ from the id.",
+      "shortest_path": 7,
+      "trigger_trace": [
+        { "type": "CLICK", "id": "nav-equipment" },
+        { "type": "CLICK", "id": "remove-2" },
+        { "type": "CLICK", "id": "confirm-remove" },
+        { "type": "CLICK", "id": "edit-4" },
+        { "type": "TYPE", "id": "f-asset-name", "params": { "category": "valid_typical" } },
+        { "type": "TYPE", "id": "f-change-reason", "params": { "category": "valid_typical" } },
+        { "type": "CLICK", "id": "save-changes" }
+      ]
+    }
+  ],
+  "benign_traces": [
+    [
+      { "type": "CLICK", "id": "nav-equipment" },
+      { "type": "CLICK", "id": "edit-3" },
+      { "type": "TYPE", "id": "f-asset-name", "params": { "category": "valid_typical" } },
+      { "type": "TYPE", "id": "f-custodian", "params": { "category": "valid_typical" } },
+      { "type": "SELECT", "id": "f-status", "params": { "option": "active" } },
+      { "type": "TYPE", "id": "f-units", "params": { "category": "valid_typical" } },
+      { "type": "TYPE", "id": "f-change-reason", "params": { "category": "valid_typical" } },
+      { "type": "CLICK", "id": "save-changes" }
+    ],
+    [
+      { "type": "CLICK", "id": "nav-register" },
+      { "type": "TYPE", "id": "f-asset-name", "params": { "category": "valid_typical" } },
+      { "type": "TYPE", "id": "f-custodian", "params": { "category": "valid_typical" } },
+      { "type": "CLICK", "id": "create-record" },
+      { "type": "CLICK", "id": "edit-record" },
+      { "type": "TYPE", "id": "f-custodian", "params": { "category": "type_mismatch" } },
+      { "type": "TYPE", "id": "f-change-reason", "params": { "category": "valid_typical" } },
+      { "type": "CLICK", "id": "save-changes" }
+    ],
+    [
+      { "type": "CLICK", "id": "nav-equipment" },
+      { "type": "CLICK", "id": "remove-5" },
+      { "type": "CLICK", "id": "confirm-remove" },
+      { "type": "CLICK", "id": "edit-2" },
+      { "type": "TYPE", "id": "f-asset-name", "params": { "category": "boundary_min" } },
+      { "type": "TYPE", "id": "f-change-reason", "params": { "category": "valid_typical" } },
+      { "type": "CLICK", "id": "save-changes" }
+    ],
+    [
+      { "type": "CLICK", "id": "nav-equipment" },
+      { "type": "CLICK", "id": "remove-2" },
+      { "type": "CLICK", "id": "cancel-remove" },
+      { "type": "CLICK", "id": "edit-4" },
+      { "type": "TYPE", "id": "f-asset-name", "params": { "category": "valid_typical" } },
+      { "type": "TYPE", "id": "f-change-reason", "params": { "category": "valid_typical" } },
+      { "type": "CLICK", "id": "save-changes" }
+    ]
+  ],
+  "_benign_note": "0: the main edit workflow -- rename, first reassignment, status and units, reason, save. 1: register a record, then reassign its custodian once (its registration custodian lives on the record, not in the ledger). 2: remove a record and then edit one ABOVE it, where position and id still agree. 3: open the removal panel for EQ-102 and keep the record, then make the ADMIN-02 edit. Each sits one choice away from a fault and must be silent on both builds.",
+  "characterization": {
+    "pages": 9,
+    "parameterised_pages": "record.html?id=N and amend.html?id=N, one per record",
+    "seeded_records": 6,
+    "distractor_pages": 4,
+    "shortest_fault_path_d_star": 7,
+    "delayed_observation_horizon_H": 1,
+    "workflow_state_representation": "sessionStorage (register, custody ledger, change log, one-shot save receipt); record identity in the query string",
+    "structure": "table-driven, multi-page, wide and shallow: every list row carries its own View / Edit / Remove controls; edits pass a mandatory-reason gate; removals pass an in-page confirmation panel"
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "app_id": "support_portal",
+  "name": "Larkfield Broadband care desk",
+  "entry": "index.html",
+  "_note": "A customer-support request portal for a broadband provider. The main workflow is a multi-page guided request form whose route branches on the chosen topic (and, for a connection fault, on the reported impact). Draft state lives in sessionStorage; every stage page re-checks all earlier stages with the same functions its predecessors' buttons use, and builds its answer regions with the DOM only when it is open, so a region is present only in a state the clean build considers valid.",
+  "regions": {
+    "sofar_topic": "#sofar-topic",
+    "sofar_amount": "#sofar-amount"
+  },
+  "faults": [
+    {
+      "fault_id": "SUPP-01",
+      "fault_class": "constraint_bypass",
+      "description": "On the billing branch, the charge stage declares that the amount being queried must be more than zero, but the lower bound is checked with the wrong comparison, so an amount of 0 is accepted and the request moves on to the contact stage.",
+      "trigger_condition": "Start a request, choose the billing topic, pass the details stage (title, description, impact), enter 0 as the amount being queried, and save the charge details.",
+      "expected_behaviour": "An amount of 0 is refused with the inline warning 'The amount you are querying must be more than 0' and the contact stage stays locked.",
+      "observable_violation": "The contact stage opens, and its 'answers so far' panel shows the amount queried as 0.00. The page returns 200 and logs nothing.",
+      "assertions": [
+        {
+          "kind": "reached_with_invalid_input",
+          "where": "request-contact\\.html",
+          "input_field": "disputed_amount",
+          "expected": "^0+(\\.0+)?$",
+          "describes": "the contact stage is guarded by the charge stage, which declares an amount of zero invalid; it must not be reached with a zero amount entered"
+        },
+        {
+          "kind": "text_absent",
+          "where": "request-contact\\.html",
+          "region": "sofar_amount",
+          "expected": "£0.00",
+          "describes": "the amount carried into the contact stage must never be zero, because the charge stage declares a zero amount invalid"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "minimization_keep": [],
+      "observation_horizon": 1,
+      "shortest_path": 9,
+      "trigger_trace": [
+        { "type": "CLICK", "id": "start-request" },
+        { "type": "CLICK", "id": "topic-billing" },
+        { "type": "CLICK", "id": "use-topic" },
+        { "type": "TYPE", "id": "summary", "params": { "category": "valid_typical" } },
+        { "type": "TYPE", "id": "description", "params": { "category": "valid_typical" } },
+        { "type": "SELECT", "id": "urgency", "params": { "option": "normal" } },
+        { "type": "CLICK", "id": "save-details" },
+        { "type": "TYPE", "id": "disputed_amount", "params": { "category": "boundary_min" } },
+        { "type": "CLICK", "id": "save-bill" }
+      ],
+      "_assertion_note": "Conjunct 1 needs the zero to have been typed, conjunct 2 needs the application to have carried it forward. On the clean build a zero can be typed after the contact stage was reached legitimately and the contact page revisited through history, which satisfies conjunct 1 alone; the region there still shows the stored, valid amount, so conjunct 2 keeps the clean build silent."
+    },
+    {
+      "fault_id": "SUPP-02",
+      "fault_class": "broken_transition",
+      "description": "The engineer-visit stage is meant only for a connection fault reported as 'No service at all'. The routing condition has lost its topic test, so any other topic reported with that impact is sent from the details stage into the engineer-visit booking.",
+      "trigger_condition": "Start a request with any topic other than a connection fault, fill in the details stage with the impact 'No service at all', and save the details.",
+      "expected_behaviour": "Saving the details moves the request to the stage that belongs to its topic (the charge stage for billing, the move stage for moving home, the contact stage for anything else). The engineer-visit page stays closed to it.",
+      "observable_violation": "The engineer-visit booking page opens for a billing, moving or general request; its 'answers so far' panel shows that topic. The page returns 200 and logs nothing.",
+      "assertions": [
+        {
+          "kind": "text_contains",
+          "where": "request-visit\\.html",
+          "region": "sofar_topic",
+          "expected": "Connection",
+          "describes": "the engineer-visit stage is only part of a connection-fault request, so the topic it shows must be the connection topic"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "minimization_keep": [],
+      "observation_horizon": 1,
+      "shortest_path": 7,
+      "trigger_trace": [
+        { "type": "CLICK", "id": "start-request" },
+        { "type": "CLICK", "id": "topic-billing" },
+        { "type": "CLICK", "id": "use-topic" },
+        { "type": "TYPE", "id": "summary", "params": { "category": "valid_typical" } },
+        { "type": "TYPE", "id": "description", "params": { "category": "valid_typical" } },
+        { "type": "SELECT", "id": "urgency", "params": { "option": "outage" } },
+        { "type": "CLICK", "id": "save-details" }
+      ]
+    }
+  ],
+  "benign_traces": [
+    [
+      { "type": "CLICK", "id": "start-request" },
+      { "type": "CLICK", "id": "topic-billing" },
+      { "type": "CLICK", "id": "use-topic" },
+      { "type": "TYPE", "id": "summary", "params": { "category": "valid_typical" } },
+      { "type": "TYPE", "id": "description", "params": { "category": "valid_typical" } },
+      { "type": "SELECT", "id": "urgency", "params": { "option": "high" } },
+      { "type": "CLICK", "id": "save-details" },
+      { "type": "TYPE", "id": "invoice_ref", "params": { "category": "type_mismatch" } },
+      { "type": "TYPE", "id": "disputed_amount", "params": { "category": "valid_typical" } },
+      { "type": "CLICK", "id": "save-bill" },
+      { "type": "TYPE", "id": "full_name", "params": { "category": "valid_typical" } },
+      { "type": "TYPE", "id": "email", "params": { "category": "valid_typical" } },
+      { "type": "CLICK", "id": "save-contact" },
+      { "type": "CLICK", "id": "confirm_accurate" },
+      { "type": "CLICK", "id": "agree_contact" },
+      { "type": "CLICK", "id": "check-answers" },
+      { "type": "CLICK", "id": "send-request" }
+    ],
+    [
+      { "type": "CLICK", "id": "start-request" },
+      { "type": "CLICK", "id": "topic-fault" },
+      { "type": "CLICK", "id": "use-topic" },
+      { "type": "TYPE", "id": "summary", "params": { "category": "valid_typical" } },
+      { "type": "TYPE", "id": "description", "params": { "category": "valid_typical" } },
+      { "type": "SELECT", "id": "urgency", "params": { "option": "outage" } },
+      { "type": "CLICK", "id": "save-details" },
+      { "type": "SELECT", "id": "router_lights", "params": { "option": "dark" } },
+      { "type": "CLICK", "id": "restarted" },
+      { "type": "CLICK", "id": "save-line" },
+      { "type": "CLICK", "id": "slot-pm" },
+      { "type": "CLICK", "id": "adult_present" },
+      { "type": "CLICK", "id": "save-visit" },
+      { "type": "TYPE", "id": "full_name", "params": { "category": "valid_typical" } },
+      { "type": "TYPE", "id": "email", "params": { "category": "valid_typical" } },
+      { "type": "TYPE", "id": "phone", "params": { "category": "valid_typical" } },
+      { "type": "CLICK", "id": "method-phone" },
+      { "type": "CLICK", "id": "save-contact" },
+      { "type": "CLICK", "id": "confirm_accurate" },
+      { "type": "CLICK", "id": "agree_contact" },
+      { "type": "CLICK", "id": "check-answers" },
+      { "type": "CLICK", "id": "send-request" }
+    ]
+  ],
+  "_benign_note": "Benign 0 is a correct billing query (amount 42, impact 'Stopping me working') all the way to a sent request: it passes through the page SUPP-01 is judged on with a valid amount, and never reaches the engineer-visit page. Benign 1 is the one route on which the engineer-visit page is legitimately reached (a connection fault with no service at all), so SUPP-02's region is present and shows the connection topic. Neither may trip anything on either build.",
+  "characterization": {
+    "pages_or_views": 17,
+    "request_stage_pages": 9,
+    "distractor_pages": 5,
+    "shortest_fault_path_d_star": 7,
+    "delayed_observation_horizon_H": 1,
+    "workflow_state_representation": "sessionStorage draft (larkfield.draft) plus a sent-request list (larkfield.sent); the route through the form is recomputed from the stored draft on every page",
+    "branching": "topic fault -> line checks (-> engineer visit when impact is 'No service at all'); billing -> charge; moving -> move; something else -> no branch stage; all then contact -> extras and consent -> check your answers -> sent",
+    "dom_idiom": "multi-page forms with fieldset/legend/label, radio groups and checkboxes, definition lists for echoed answers built with the DOM API, locked-step panels in place of hidden forms"
+  }
+}

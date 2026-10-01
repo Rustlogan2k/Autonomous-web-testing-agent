@@ -24,10 +24,16 @@ And for the application as a whole:
 7. **A correct walk through the workflow trips nothing**, on either build: every
    `benign_trace` replays cleanly and no assertion fires.
 
-Optionally, a random walk measures two things that are properties of the fixture rather
+Optionally, a random walk measures three things that are properties of the fixture rather
 than of any agent: how often the raw assertions fire on the *clean* build (the oracle's
-unsoundness before the control is applied), and how far uniform-random exploration gets on
-the faulty build (the difficulty floor).
+unsoundness before the control is applied), whether the clean build emits any deterministic
+trigger at all (8, below), and how far uniform-random exploration gets on the faulty build
+(the difficulty floor).
+
+8. **The clean build is silent to the deterministic triggers**: no console error, failed
+   request, dead navigation control or runaway page during the random walk. The seeded
+   faults are meant to be silent; a fixture that throws errors on its own gives every arm
+   free findings unrelated to the faults, and makes the trigger channel measure the fixture.
 """
 
 from __future__ import annotations
@@ -186,6 +192,9 @@ def validate_app(app: SuiteApp, settings: EnvSettings | None = None, *,
 
         if random_steps > 0:
             report.random_walk = _random_walks(app, urls, settings, pipeline, random_steps, seed)
+            noisy = report.random_walk["clean"]["deterministic_triggers"]
+            report.add("clean_build_silent_to_deterministic_triggers", not noisy,
+                       "; ".join(f"{t['kind']} on {t['page']}: {t['detail']}" for t in noisy[:5]))
 
     report.wall_clock_s = round(time.monotonic() - started, 2)
     return report
@@ -198,19 +207,28 @@ def _random_walks(app: SuiteApp, urls: dict[str, str], settings: EnvSettings,
 
     # Clean build, candidates counted but never verified: how often do the raw assertions
     # fire on a correct application? Every one of these is a trace artefact by definition.
+    # The deterministic triggers are watched on the same walk, also unverified.
+    from ..tester.triggers import CompositeMonitor, TriggerMonitor
+
     env = make_env(urls["clean"], settings)
     try:
         silent = FaultMonitor(VerificationPipeline(app.manifest, pipeline.control_runner),
                               verify=False)
-        clean_run = run_hunt(env, RandomPolicy(MAX_ACTIONS, seed=seed, valid_only=True),
-                             silent, budget=steps)
+        triggers = TriggerMonitor(replayer=None, verify=False)  # type: ignore[arg-type]
+        run_hunt(env, RandomPolicy(MAX_ACTIONS, seed=seed, valid_only=True),
+                 CompositeMonitor(seeded=silent, triggers=triggers), budget=steps)
+        clean_run_oracle = silent.summary()
     finally:
         env.close()
+    timing = {"slow_response"}
+    trigger_findings = [f for f in triggers.summary()["findings"] if f["kind"] not in timing]
     out["clean"] = {
-        "raw_candidates": clean_run.oracle["candidates"],
-        "raw_candidates_per_1000_steps": round(1000 * clean_run.oracle["candidates"] / steps, 2),
-        "by_fault": {f["fault_id"]: f["candidates"] for f in clean_run.oracle["faults"]},
-        "unique_states": clean_run.unique_states,
+        "raw_candidates": clean_run_oracle["candidates"],
+        "raw_candidates_per_1000_steps": round(1000 * clean_run_oracle["candidates"] / steps, 2),
+        "by_fault": {f["fault_id"]: f["candidates"] for f in clean_run_oracle["faults"]},
+        "deterministic_triggers": [{"kind": f["kind"], "page": f["page"], "detail": f["detail"]}
+                                   for f in trigger_findings],
+        "timing_triggers": sum(1 for f in triggers.summary()["findings"] if f["kind"] in timing),
     }
 
     # Faulty build, full verification: what does no policy at all achieve?

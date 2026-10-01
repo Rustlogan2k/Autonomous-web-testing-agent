@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Care desk - Larkfield Broadband care desk</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/portal.css">
+</head>
+<body data-page="home">
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html" id="nav-home">Larkfield Broadband <small>Care desk</small></a>
+    <nav class="topnav" aria-label="Care desk">
+      <a href="request-topic.html" id="nav-raise">Raise a request</a>
+      <a href="track.html" id="nav-track">Track a request</a>
+      <a href="help.html" id="nav-help">Help articles</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1>How can we help?</h1>
+  <p class="intro">Report a fault, query a bill, or tell us you are moving. Most requests are answered within one working day.</p>
+  <p id="resume-box" class="note" hidden>You have a request in progress. <a id="resume-draft" href="request-topic.html">Pick up where you left off</a></p>
+  <p id="raised-box" class="note" hidden>You have raised <span id="raised-count">0</span> request(s) in this browser tab. <a id="raised-track" href="track.html">See their progress</a></p>
+  <div class="grid">
+    <section class="card">
+      <h2>Raise a request</h2>
+      <p>Answer a few questions and we route your request to the right team.</p>
+      <a class="btn" id="start-request" href="request-topic.html">Start a new request</a>
+    </section>
+    <section class="card">
+      <h2>Track a request</h2>
+      <p>Already contacted us? Look up a request by its reference.</p>
+      <a class="btn secondary" id="start-track" href="track.html">Look up a reference</a>
+    </section>
+    <section class="card">
+      <h2>Help articles</h2>
+      <p>Quick answers to the questions we are asked most.</p>
+      <a class="btn secondary" id="start-help" href="help.html">Browse help articles</a>
+    </section>
+  </div>
+  <section class="card">
+    <h2>Service status</h2>
+    <ul class="status-list">
+      <li>Fibre network: working normally.</li>
+      <li>Phone lines: working normally.</li>
+      <li>Planned maintenance on the northern exchange, overnight, with short interruptions.</li>
+    </ul>
+  </section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <span>Larkfield Broadband Ltd. Care desk open 8am to 8pm, seven days.</span>
+    <a href="help-router-lights.html" id="foot-lights">Router lights explained</a>
+    <a href="help-reading-your-bill.html" id="foot-bill">Reading your bill</a>
+  </div>
+</footer>
+<script src="assets/portal.js"></script>
+</body>
+</html>

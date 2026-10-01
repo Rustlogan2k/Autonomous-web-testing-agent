@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Preferences &mdash; Brasswick Asset Register</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/console.css">
+</head>
+<body data-page="preferences">
+<div class="shell">
+  <aside class="rail">
+    <p class="product">Brasswick <span>Asset Register</span></p>
+    <nav aria-label="Console sections">
+      <a id="nav-overview" href="index.html">Overview</a>
+      <a id="nav-equipment" href="equipment.html">Equipment register</a>
+      <a id="nav-locations" href="locations.html">Locations</a>
+      <a id="nav-register" href="register.html">Register equipment</a>
+      <a id="nav-changes" href="changes.html">Change log</a>
+      <a id="nav-preferences" href="preferences.html" aria-current="page">Preferences</a>
+      <a id="nav-guide" href="guide.html">Operator guide</a>
+    </nav>
+    <p class="rail-foot">Signed in as duty registrar</p>
+  </aside>
+  <main class="stage" id="stage">
+    <div id="notice-slot"></div>
+    <h1>Preferences</h1>
+    <p class="lede">How the console is displayed. These do not alter any record.</p>
+
+    <section class="panel">
+      <div class="field inline">
+        <input type="checkbox" id="pref-compact" name="compact_rows">
+        <label for="pref-compact">Compact table rows</label>
+      </div>
+      <div class="field inline">
+        <input type="checkbox" id="pref-highlight" name="highlight_repairs">
+        <label for="pref-highlight">Tint rows that are under repair</label>
+      </div>
+      <div class="field">
+        <label for="pref-accent">Accent colour</label>
+        <select id="pref-accent" name="accent">
+          <option value="brass">Brass</option>
+          <option value="moss">Moss</option>
+          <option value="plum">Plum</option>
+          <option value="slate">Slate</option>
+        </select>
+      </div>
+      <p class="actions">
+        <button type="button" id="apply-preferences">Apply preferences</button>
+        <button type="button" class="ghost" id="restore-defaults">Restore defaults</button>
+      </p>
+    </section>
+  </main>
+</div>
+<script src="assets/console.js"></script>
+</body>
+</html>

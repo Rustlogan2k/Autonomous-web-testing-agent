@@ -1,0 +1,97 @@
+/* Brasswick Asset Register -- back-office console.
+   Dense, table-first layout: a fixed section rail on the left and a working stage on the
+   right. Every hook the scripts use is an id; classes are presentation only. */
+:root { --accent: #9a6a1c; --accent-ink: #ffffff; --rail: #1d2730; --rail-ink: #c9d3da;
+        --paper: #eef1f3; --card: #ffffff; --rule: #d3dae0; --ink: #1b2329; --muted: #5d6b76;
+        --danger: #a3302a; }
+body.accent-moss { --accent: #3f6b3a; }
+body.accent-plum { --accent: #6d3a73; }
+body.accent-slate { --accent: #3b5673; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font: 14px/1.45 "Segoe UI", Tahoma, Verdana, sans-serif; color: var(--ink);
+       background: var(--paper); }
+a { color: var(--accent); }
+
+.shell { display: flex; min-height: 100vh; align-items: stretch; }
+.rail { flex: 0 0 214px; background: var(--rail); color: var(--rail-ink); padding: 18px 0; }
+.product { margin: 0 18px 16px; font-size: 16px; font-weight: 700; color: #fff;
+           letter-spacing: .02em; }
+.product span { display: block; font-size: 11px; font-weight: 400; text-transform: uppercase;
+                letter-spacing: .14em; color: var(--rail-ink); }
+.rail nav a { display: block; padding: 8px 18px; color: var(--rail-ink); text-decoration: none;
+              border-left: 3px solid transparent; }
+.rail nav a[aria-current="page"] { color: #fff; background: #27343f;
+                                   border-left-color: var(--accent); }
+.rail-foot { margin: 22px 18px 0; font-size: 12px; color: #8696a2; }
+
+.stage { flex: 1 1 auto; min-width: 0; padding: 20px 26px 40px; }
+.stage h1 { margin: 0 0 4px; font-size: 21px; overflow-wrap: anywhere; }
+.stage h2 { margin: 0 0 10px; font-size: 15px; overflow-wrap: anywhere; }
+.lede { margin: 0 0 16px; color: var(--muted); }
+
+.panel { background: var(--card); border: 1px solid var(--rule); border-top: 3px solid var(--rule);
+         padding: 14px 16px; margin: 0 0 16px; }
+.panel.receipt { border-top-color: var(--accent); }
+.panel.confirm { border-top-color: var(--danger); overflow-wrap: anywhere; }
+.notice { margin: 0 0 14px; padding: 8px 12px; background: #e3ecdf; border-left: 4px solid #4b7a43;
+          overflow-wrap: anywhere; }
+.warning { margin: 10px 0 0; color: var(--danger); font-weight: 600; min-height: 1.45em; }
+
+.tiles { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
+.tile { flex: 1 1 130px; background: var(--card); border: 1px solid var(--rule); padding: 10px 12px; }
+.tile-label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+              color: var(--muted); }
+.tile strong { font-size: 22px; font-family: Consolas, "Courier New", monospace; overflow-wrap: anywhere; }
+
+table.grid { width: 100%; border-collapse: collapse; table-layout: fixed; }
+table.grid th, table.grid td { text-align: left; vertical-align: top; padding: 7px 8px;
+                               border-bottom: 1px solid var(--rule); overflow-wrap: anywhere; }
+table.grid th { font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+                color: var(--muted); background: #f6f8f9; }
+body.density-compact table.grid th, body.density-compact table.grid td { padding: 3px 8px; }
+body.mark-repairs tr.needs-repair td { background: #fbf1e2; }
+td.tag, .tag { font-family: Consolas, "Courier New", monospace; white-space: nowrap; }
+td.row-actions a, td.row-actions button { display: inline-block; margin: 0 8px 2px 0; }
+th.col-tag { width: 76px; } th.col-units { width: 64px; } th.col-actions { width: 300px; }
+th.col-seq { width: 48px; }
+
+.toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; margin: 0 0 12px; }
+.toolbar .count { margin-left: auto; color: var(--muted); }
+
+.sheet { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 6px 14px; margin: 0; }
+.sheet dt { color: var(--muted); }
+.sheet dd { margin: 0; overflow-wrap: anywhere; }
+
+.field { margin: 0 0 12px; max-width: 520px; }
+.field label { display: block; margin: 0 0 3px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.field.inline label { display: inline; font-size: 14px; font-weight: 400; color: var(--ink); }
+input[type="text"], input[type="number"], select, textarea {
+  width: 100%; padding: 6px 8px; font: inherit; color: inherit; background: #fff;
+  border: 1px solid #aab5be; border-radius: 2px; }
+textarea { min-height: 70px; resize: vertical; }
+.toolbar select { width: 190px; }
+
+button, a.btn { display: inline-block; padding: 6px 14px; font: inherit; cursor: pointer;
+                color: var(--accent-ink); background: var(--accent); border: 1px solid var(--accent);
+                border-radius: 2px; text-decoration: none; }
+button.ghost, a.btn.ghost { color: var(--ink); background: #fff; border-color: #aab5be; }
+button.danger { color: #fff; background: var(--danger); border-color: var(--danger); }
+td.row-actions button { padding: 1px 8px; color: var(--danger); background: #fff;
+                        border-color: #d9b3b0; }
+.actions { margin: 14px 0 0; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+ol.feed { margin: 0; padding-left: 20px; }
+ol.feed li { margin: 0 0 4px; overflow-wrap: anywhere; }
+.guide h2 { margin-top: 18px; }
+.guide p, .guide li { max-width: 640px; }
+
+@media (max-width: 820px) {
+  .shell { display: block; }
+  .rail { padding: 10px 0; }
+  .rail nav a { display: inline-block; padding: 6px 12px; border-left: 0; }
+  .stage { padding: 14px; }
+  th.col-actions { width: 150px; }
+  .sheet { grid-template-columns: 110px minmax(0, 1fr); }
+}

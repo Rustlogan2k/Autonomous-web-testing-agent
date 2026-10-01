@@ -1,0 +1,161 @@
+/* Millrace Rooms hire desk. One stylesheet, no external resources. */
+
+:root {
+  --ink: #1d2a2f;
+  --ink-soft: #4d5f66;
+  --paper: #f3efe6;
+  --card: #fffdf8;
+  --rule: #d8cfbd;
+  --accent: #0f6b62;
+  --accent-ink: #ffffff;
+  --warn: #8a3b12;
+  --warn-bg: #fbe9dc;
+  --good: #1f5f33;
+  --good-bg: #e2f1e4;
+  --quiet: #ece5d6;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.5;
+}
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+/* ---- masthead and navigation ---- */
+
+.mast { background: var(--ink); color: #f6f1e7; padding: 0.9rem 1.25rem 0; }
+.mast-brand { display: flex; align-items: center; gap: 0.75rem; }
+.mast-mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.4rem; height: 2.4rem; border: 2px solid #f6f1e7; border-radius: 50%;
+  font-size: 1.3rem; font-weight: bold;
+}
+.mast-name { margin: 0; font-size: 1.35rem; letter-spacing: 0.04em; }
+.mast-tag { margin: 0; font-size: 0.85rem; color: #c9d3d1; }
+
+.desk-nav { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.8rem; }
+.desk-nav button {
+  background: transparent; color: #f6f1e7; border: 0;
+  border-bottom: 3px solid transparent; padding: 0.45rem 0.8rem; cursor: pointer;
+}
+.desk-nav button:hover { border-bottom-color: #8fb8b2; }
+.desk-nav button[aria-current="page"] { border-bottom-color: #f6f1e7; font-weight: bold; }
+
+/* ---- view container ---- */
+
+.view { max-width: 62rem; margin: 0 auto; padding: 1.25rem; }
+.view h1 { font-size: 1.6rem; margin: 0 0 0.4rem; }
+.view h2 { font-size: 1.15rem; margin: 1.2rem 0 0.4rem; }
+.lede { color: var(--ink-soft); margin: 0 0 1rem; }
+
+.panel {
+  background: var(--card); border: 1px solid var(--rule); border-radius: 6px;
+  padding: 1rem 1.1rem; margin: 0 0 1rem;
+}
+.panel > :first-child { margin-top: 0; }
+.panel > :last-child { margin-bottom: 0; }
+
+.note {
+  border-left: 5px solid var(--accent); background: var(--good-bg); color: var(--good);
+  padding: 0.6rem 0.9rem; margin: 0 0 1rem;
+}
+.problems {
+  border-left: 5px solid var(--warn); background: var(--warn-bg); color: var(--warn);
+  padding: 0.6rem 0.9rem; margin: 0 0 1rem;
+}
+.problems p { margin: 0 0 0.3rem; font-weight: bold; }
+.problems ul { margin: 0; padding-left: 1.2rem; }
+
+/* ---- buttons ---- */
+
+.btn {
+  background: var(--quiet); border: 1px solid var(--rule); border-radius: 4px;
+  padding: 0.45rem 0.9rem; cursor: pointer;
+}
+.btn:hover { border-color: var(--ink-soft); }
+.btn-main { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: bold; }
+.btn-plain { background: transparent; border-color: transparent; text-decoration: underline; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+
+/* ---- room list ---- */
+
+.room-list {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 0.9rem; list-style: none; padding: 0; margin: 0;
+}
+.room-card {
+  background: var(--card); border: 1px solid var(--rule); border-top: 5px solid var(--accent);
+  border-radius: 6px; padding: 0.9rem 1rem; display: flex; flex-direction: column;
+}
+.room-card h2 { margin: 0 0 0.2rem; }
+.room-card p { margin: 0 0 0.5rem; }
+.room-card .btn { margin-top: auto; align-self: flex-start; }
+.room-facts { font-size: 0.9rem; color: var(--ink-soft); }
+
+/* ---- stage rail ---- */
+
+.stage-rail { display: flex; flex-wrap: wrap; gap: 0.35rem; list-style: none; padding: 0; margin: 0 0 1rem; }
+.stage-rail button {
+  background: var(--card); border: 1px solid var(--rule); border-radius: 999px;
+  padding: 0.3rem 0.85rem; cursor: pointer;
+}
+.stage-rail button[aria-current="step"] { background: var(--ink); border-color: var(--ink); color: #f6f1e7; }
+.stage-rail button[disabled] { opacity: 0.45; cursor: not-allowed; }
+.room-strip { font-size: 0.95rem; color: var(--ink-soft); margin: 0 0 1rem; }
+
+/* ---- forms ---- */
+
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 0.8rem 1.2rem; }
+.field label { display: block; font-weight: bold; margin-bottom: 0.2rem; }
+.field input[type="text"], .field input[type="email"], .field input[type="tel"],
+.field input[type="number"], .field input[type="date"], .field select, .field textarea {
+  width: 100%; padding: 0.4rem 0.5rem; border: 1px solid #a99f8a; border-radius: 4px; background: #fff;
+}
+.field textarea { min-height: 5rem; }
+.hint { display: block; font-size: 0.85rem; color: var(--ink-soft); }
+.field-wide { grid-column: 1 / -1; }
+
+.ticks { list-style: none; padding: 0; margin: 0.4rem 0 0; }
+.ticks li { padding: 0.3rem 0; border-bottom: 1px dotted var(--rule); }
+.ticks label { margin-left: 0.4rem; }
+
+fieldset { border: 1px solid var(--rule); border-radius: 4px; margin: 0.9rem 0 0; padding: 0.6rem 0.9rem; }
+legend { font-weight: bold; padding: 0 0.3rem; }
+
+/* ---- summaries ---- */
+
+.facts { display: grid; grid-template-columns: minmax(9rem, 14rem) 1fr; gap: 0.25rem 1rem; margin: 0; }
+.facts dt { color: var(--ink-soft); }
+.facts dd { margin: 0; overflow-wrap: anywhere; }
+
+table.charges { width: 100%; border-collapse: collapse; }
+table.charges th, table.charges td {
+  text-align: left; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--rule); vertical-align: top;
+}
+table.charges .amount { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+table.charges tr.total-row th, table.charges tr.total-row td {
+  border-top: 2px solid var(--ink); border-bottom: 0; font-weight: bold; font-size: 1.1rem;
+}
+
+.badge { display: inline-block; border: 1px solid var(--ink-soft); border-radius: 999px; padding: 0 0.6rem; font-size: 0.9rem; }
+
+.res-list, .topic-list { list-style: none; padding: 0; margin: 0; }
+.res-list li { margin-bottom: 0.9rem; }
+.topic-list li { border-bottom: 1px solid var(--rule); padding: 0.35rem 0; }
+.topic-list p { margin: 0.3rem 0 0.4rem; }
+
+/* ---- footer ---- */
+
+.foot { max-width: 62rem; margin: 0 auto; padding: 0.5rem 1.25rem 2rem; font-size: 0.85rem; color: var(--ink-soft); }
+.foot p { margin: 0.15rem 0; }
+
+@media (max-width: 40rem) {
+  .facts { grid-template-columns: 1fr; }
+  .facts dd { margin-bottom: 0.4rem; }
+}

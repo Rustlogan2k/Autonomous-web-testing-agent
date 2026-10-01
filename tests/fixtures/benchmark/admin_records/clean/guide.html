@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Operator guide &mdash; Brasswick Asset Register</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/console.css">
+</head>
+<body data-page="guide">
+<div class="shell">
+  <aside class="rail">
+    <p class="product">Brasswick <span>Asset Register</span></p>
+    <nav aria-label="Console sections">
+      <a id="nav-overview" href="index.html">Overview</a>
+      <a id="nav-equipment" href="equipment.html">Equipment register</a>
+      <a id="nav-locations" href="locations.html">Locations</a>
+      <a id="nav-register" href="register.html">Register equipment</a>
+      <a id="nav-changes" href="changes.html">Change log</a>
+      <a id="nav-preferences" href="preferences.html">Preferences</a>
+      <a id="nav-guide" href="guide.html" aria-current="page">Operator guide</a>
+    </nav>
+    <p class="rail-foot">Signed in as duty registrar</p>
+  </aside>
+  <main class="stage" id="stage">
+    <div id="notice-slot"></div>
+    <h1>Operator guide</h1>
+    <section class="panel guide">
+      <h2>Finding a record</h2>
+      <p>The <a id="guide-to-equipment" href="equipment.html">equipment register</a> lists every record.
+         Each row has its own View, Edit and Remove controls, labelled with the record's tag.
+         The <a id="guide-to-locations" href="locations.html">locations</a> page narrows the list to one place.</p>
+
+      <h2>Editing a record</h2>
+      <p>Open Edit for the row, change the fields you need, and give a reason for the change. The reason
+         is mandatory: a save without one is refused. After a save the record page shows which fields were
+         written and the values the register now holds for them.</p>
+
+      <h2>Custody</h2>
+      <p>The custodian recorded at registration stays on the record. Later reassignments are kept in a
+         separate custody ledger, and the register always shows the most recent custodian.</p>
+
+      <h2>Registering and removing</h2>
+      <p>Use <a id="guide-to-register" href="register.html">Register equipment</a> to add a record; it is
+         given the next free tag. Removing a record asks for confirmation first and cannot be undone.
+         Tags are never reused.</p>
+
+      <h2>Audit</h2>
+      <p>Everything done in a session is listed in the <a id="guide-to-changes" href="changes.html">change log</a>.
+         Display options are under <a id="guide-to-preferences" href="preferences.html">Preferences</a>.</p>
+    </section>
+  </main>
+</div>
+<script src="assets/console.js"></script>
+</body>
+</html>
