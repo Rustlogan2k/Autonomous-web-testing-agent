@@ -72,13 +72,14 @@ aws s3 cp s3://$BUCKET/code/$SHORT/code.tar.gz - | tar -xz
 aws s3 cp s3://$BUCKET/code/$SHORT/caches.tar.gz - | tar -xz
 docker build -t wta .
 aws s3 sync s3://$BUCKET/runs/$RUN_NAME /srv/runs/$RUN_NAME || true
-( while true; do sleep 300; aws s3 sync /srv/runs/$RUN_NAME s3://$BUCKET/runs/$RUN_NAME --exclude '*.tmp'; done ) &
+( while true; do sleep 300; aws s3 sync /srv/runs/$RUN_NAME s3://$BUCKET/runs/$RUN_NAME --exclude '*.tmp'; aws s3 sync /srv/wta/data/llm_cache s3://$BUCKET/runs/$RUN_NAME/llm_misses --exclude '*' --include 'misses.*'; done ) &
 docker run --rm --shm-size=2g -v /srv/runs:/app/runs \
   -v /srv/wta/data/llm_cache:/app/data/llm_cache -v /srv/wta/models/semantic:/app/models/semantic wta \
   python scripts/run_transfer.py --out-dir runs/$RUN_NAME --workers $WORKERS --llm-offline $EXTRA_ARGS \
   > /srv/runs/$RUN_NAME/runner.log 2>&1
 cp /var/log/wta-bootstrap.log /srv/runs/$RUN_NAME/bootstrap.log
 aws s3 sync /srv/runs/$RUN_NAME s3://$BUCKET/runs/$RUN_NAME --exclude '*.tmp'
+aws s3 sync /srv/wta/data/llm_cache s3://$BUCKET/runs/$RUN_NAME/llm_misses --exclude '*' --include 'misses.*'
 shutdown -h now
 EOF
 )"
