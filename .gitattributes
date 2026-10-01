@@ -1,0 +1,3 @@
+# Benchmark fixtures are compared byte for byte (the faulty build must equal the clean
+# build plus declared patches), so their line endings must not depend on the checkout.
+tests/fixtures/benchmark/** text eol=lf
