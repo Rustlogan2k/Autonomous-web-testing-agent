@@ -21,6 +21,9 @@ FROM mcr.microsoft.com/playwright/python:v1.61.0-noble
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
+    # Ubuntu noble marks its Python as externally managed (PEP 668); this image is the
+    # environment, so installing into it is the intent.
+    PIP_BREAK_SYSTEM_PACKAGES=1 \
     # The container talks to a model on the host by default; override for another host.
     OLLAMA_HOST=http://host.docker.internal:11434 \
     HF_HOME=/app/.cache/huggingface
