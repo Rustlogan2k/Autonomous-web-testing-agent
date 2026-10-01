@@ -31,22 +31,13 @@ COPY docker/requirements-runtime.txt docker/requirements-runtime.txt
 RUN pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu \
  && pip install -r docker/requirements-runtime.txt
 
-COPY pyproject.toml README.md ./
-COPY src ./src
+# Everything else in the tree; `.dockerignore` keeps out virtualenvs, run outputs and
+# downloaded papers. The frozen label projection, the label-vector store and the LLM
+# judgment cache travel with it, so a worker needs neither the sentence model nor a
+# language model to reproduce a run whose inputs were already judged; anything missing is
+# computed on demand.
+COPY . .
 RUN pip install --no-deps -e .
-
-# The frozen label projection, the label-vector store and the LLM judgment cache travel
-# with the image, so a worker needs neither the sentence model nor a language model to
-# reproduce a run whose inputs were already judged. Missing entries are computed on demand
-# (the sentence model is downloaded on first use).
-COPY models/semantic ./models/semantic
-COPY data ./data
-COPY models/tester ./models/tester
-COPY scripts ./scripts
-COPY tests ./tests
-COPY docs ./docs
-COPY ["demo app", "./demo app"]
-COPY reports/benchmark_validation.json ./reports/benchmark_validation.json
 
 EXPOSE 8000
 CMD ["python", "-m", "web_testing_agent.app", "--host", "0.0.0.0", "--port", "8000"]
