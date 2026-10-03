@@ -269,7 +269,7 @@ class RunManager:
                 run.components["agent"] = ComponentState.ACTIVE.value
                 result = run_session(
                     target.url, settings, app_name=target.name, out_dir=out_dir,
-                    seeded_app=target.seeded_app, clean_url=target.clean_url,
+                    seeded_app=target.seeded_app, clean_url=target.clean_url, control_urls=target.control_urls,
                     on_event=on_event, should_stop=should_stop)
             persist(RunStatus.REPORTING)
             emit("stage", "Exploration finished; writing the report")

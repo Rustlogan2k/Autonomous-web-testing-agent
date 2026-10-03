@@ -91,7 +91,10 @@ def verified_findings(result: SessionResult) -> list[dict]:
                 "where": (found.get("candidate_verdict") or {}).get("results", [{}])[0].get("step_url", ""),
                 "detail": "; ".join(r.get("detail", "") for r in
                                     (found.get("candidate_verdict") or {}).get("results", [])),
-                "source": "seeded-fault oracle (clean-build control passed)",
+                "source": ("seeded-fault oracle; control: "
+                           + (f"passed against the {(found.get('control') or {}).get('against')}"
+                              if (found.get("control") or {}).get("checked")
+                              else "none available (no clean build to compare against)")),
                 "first_seen_at": fault["verified_at"], "occurrences": fault["candidates"],
                 "reproduction": found["minimized_trace"],
                 "original_length": (found.get("minimization") or {}).get("original_length"),

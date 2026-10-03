@@ -143,6 +143,7 @@ def build_agent(settings: SessionSettings, app_name: str, degradations: list[str
 def run_session(base_url: str, settings: SessionSettings | None = None, *,
                 app_name: str = "", out_dir: Path | None = None,
                 seeded_app=None, clean_url: str | None = None,  # noqa: ANN001
+                control_urls: dict | None = None,
                 on_event: Callable[[str, dict], None] | None = None,
                 should_stop: Callable[[], bool] | None = None) -> SessionResult:
     """Test the application at `base_url`. Writes evidence under `out_dir` when given.
@@ -186,6 +187,7 @@ def run_session(base_url: str, settings: SessionSettings | None = None, *,
         seeded = FaultMonitor(VerificationPipeline(
             seeded_app, runner(base_url),
             control_runner=runner(clean_url) if clean_url else None,
+            control_runners={fid: runner(url) for fid, url in (control_urls or {}).items()},
             max_minimization_trials=settings.max_minimization_trials))
     monitor = CompositeMonitor(triggers=triggers, seeded=seeded)
 

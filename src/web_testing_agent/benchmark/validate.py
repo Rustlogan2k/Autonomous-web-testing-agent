@@ -49,7 +49,7 @@ from ..oracle import PlaywrightTrajectoryRunner, VerificationPipeline, verify_al
 from ..utils.logging import get_logger
 from .hunt import run_hunt
 from .monitor import FaultMonitor
-from .suite import EnvSettings, SuiteApp, make_env, serve_app
+from .suite import EnvSettings, SuiteApp, control_key, make_env, serve_app
 
 logger = get_logger(__name__)
 
@@ -132,9 +132,12 @@ def validate_app(app: SuiteApp, settings: EnvSettings | None = None, *,
         report.wall_clock_s = round(time.monotonic() - started, 2)
         return report
 
-    with serve_app(app) as urls:
+    with serve_app(app, controls=True) as urls:
         faulty, clean = _runner(urls["buggy"], settings), _runner(urls["clean"], settings)
+        controls = {f.fault_id: _runner(urls[control_key(f.fault_id)], settings)
+                    for f in manifest.faults}
         pipeline = VerificationPipeline(manifest, faulty, control_runner=clean,
+                                        control_runners=controls,
                                         max_minimization_trials=max_minimization_trials)
 
         for fault in manifest.faults:
@@ -161,6 +164,10 @@ def validate_app(app: SuiteApp, settings: EnvSettings | None = None, *,
             clean_verdict = verify_fault(fault, manifest, on_clean)
             report.add(f"{prefix}:witness_silent_on_clean_build", not clean_verdict.violated,
                        "the assertion fires on the build with no seeded fault")
+            without = verify_fault(fault, manifest, controls[fault.fault_id].run(witness))
+            report.add(f"{prefix}:witness_needs_its_own_patch", not without.violated,
+                       "the assertion fires on the faulty build without this fault's patch, "
+                       "so it would be credited for another fault's symptom")
 
             finding = pipeline.confirm(fault, observed, budget_at_discovery=len(witness))
             report.add(f"{prefix}:oracle_confirms", finding.confirmed, finding.rejected_because)
@@ -177,8 +184,10 @@ def validate_app(app: SuiteApp, settings: EnvSettings | None = None, *,
             if finding.confirmed:
                 again = verify_fault(fault, manifest, faulty.run(finding.minimized_trace))
                 control = verify_fault(fault, manifest, clean.run(finding.minimized_trace))
+                own = verify_fault(fault, manifest, controls[fault.fault_id].run(finding.minimized_trace))
                 report.add(f"{prefix}:minimized_trace_still_fires", again.violated)
                 report.add(f"{prefix}:minimized_trace_silent_on_clean", not control.violated)
+                report.add(f"{prefix}:minimized_trace_needs_its_own_patch", not own.violated)
             report.faults.append(entry)
 
         for number, trace in enumerate(manifest.benign_traces):

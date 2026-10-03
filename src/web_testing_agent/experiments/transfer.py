@@ -288,14 +288,22 @@ def _build_policy(job: Job, config: ExperimentConfig, out_dir: Path, app_name: s
 
 
 def run_hunt_job(job: Job, config: ExperimentConfig, out_dir: Path) -> dict:
-    from ..benchmark import EnvSettings, FaultMonitor, load_app, make_env, run_hunt, serve_app
+    from ..benchmark import (
+        EnvSettings,
+        FaultMonitor,
+        control_key,
+        load_app,
+        make_env,
+        run_hunt,
+        serve_app,
+    )
     from ..oracle import PlaywrightTrajectoryRunner, VerificationPipeline
 
     app = load_app(job.fold)
     settings = EnvSettings(max_steps=config.episode_steps, settle_quiet_ms=config.settle_quiet_ms,
                            capture_screenshots=False)
     policy, description = _build_policy(job, config, out_dir, app.manifest.name)
-    with serve_app(app) as urls:
+    with serve_app(app, controls=True) as urls:
         def runner(build: str) -> PlaywrightTrajectoryRunner:
             return PlaywrightTrajectoryRunner(
                 lambda: make_env(urls[build], settings, max_steps=120), max_steps=120)
@@ -303,9 +311,14 @@ def run_hunt_job(job: Job, config: ExperimentConfig, out_dir: Path) -> dict:
         # The oracle replays on the build under test and controls against the clean one.
         # On a clean-build control job the two coincide, and every candidate is rejected by
         # construction; what is measured there is how many candidates arise at all.
+        # Per-fault controls on the faulty build: a fault is credited only when its own
+        # patch is needed. On a clean-build control job every candidate is checked against
+        # the clean build (there is no patch to remove).
+        controls = ({f.fault_id: runner(control_key(f.fault_id)) for f in app.manifest.faults}
+                    if job.build == "buggy" else {})
         pipeline = VerificationPipeline(
             app.manifest, runner(job.build), control_runner=runner("clean"),
-            max_minimization_trials=config.max_minimization_trials)
+            control_runners=controls, max_minimization_trials=config.max_minimization_trials)
         monitor = FaultMonitor(pipeline)
         env = make_env(urls[job.build], settings)
         try:

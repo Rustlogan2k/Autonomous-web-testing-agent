@@ -126,8 +126,8 @@ def test_a_real_difference_between_builds_is_confirmed_and_minimized_soundly():
     pipeline = VerificationPipeline(APP, faulty, control_runner=clean)
     finding = pipeline.confirm(ECHO, faulty.run(TRACE), budget_at_discovery=3)
     assert finding.confirmed, finding.rejected_because
-    assert finding.control == {"checked": True, "violated_on_clean": False,
-                               "inconclusive": False, "error": ""}
+    assert finding.control["checked"] and not finding.control["violated_on_control"]
+    assert finding.control["against"] == "clean build"
     assert [a.get("text") or a.get("id") for a in finding.minimized_trace] == ["q", "Place"]
 
 
@@ -280,3 +280,25 @@ def test_the_judgment_cache_round_trips_and_compacts(tmp_path):
     assert target.name == "progress.jsonl"
     assert [json.loads(line)["key"] for line in target.read_text().splitlines()] == ["k1"]
     assert not list(tmp_path.glob("progress.shard.*.jsonl"))
+
+
+def test_a_per_fault_control_rejects_a_violation_caused_by_another_faults_patch():
+    """Both builds show the wrong value: the faulty one, and the faulty one *without this
+    fault's patch*. The violation does not depend on this fault, so it is not this fault."""
+    faulty, without_this_patch, clean = World("1"), World("1"), World("42")
+    pipeline = VerificationPipeline(APP, faulty, control_runner=clean,
+                                    control_runners={"F": without_this_patch})
+    finding = pipeline.confirm(ECHO, faulty.run(TRACE), budget_at_discovery=3)
+    assert not finding.confirmed
+    assert finding.rejection_kind == "fires_on_clean_build"
+    assert finding.control["against"] == "faulty build without this fault's patch"
+
+
+def test_a_control_replay_that_crashes_rejects_rather_than_passes():
+    class Broken:
+        def run(self, actions):  # noqa: ANN001, ARG002
+            raise RuntimeError("browser died")
+
+    pipeline = VerificationPipeline(APP, World("1"), control_runner=Broken())
+    finding = pipeline.confirm(ECHO, World("1").run(TRACE), budget_at_discovery=3)
+    assert not finding.confirmed and finding.rejection_kind == "control_error"

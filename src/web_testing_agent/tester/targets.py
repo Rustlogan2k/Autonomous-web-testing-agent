@@ -35,6 +35,8 @@ class Target:
     name: str
     clean_url: str | None = None
     seeded_app: object | None = None
+    #: `{fault_id: url of the faulty build without that fault}` -- the per-fault controls.
+    control_urls: dict = field(default_factory=dict)
     details: dict = field(default_factory=dict)
 
 
@@ -70,12 +72,14 @@ def provide(kind: str, value: str) -> Iterator[Target]:
         return
 
     if kind == "benchmark":
-        from ..benchmark.suite import load_app, serve_app
+        from ..benchmark.suite import control_key, load_app, serve_app
 
         app = load_app(value)
-        with serve_app(app) as urls:
+        with serve_app(app, controls=True) as urls:
             yield Target("benchmark", urls["buggy"], app.manifest.name, clean_url=urls["clean"],
-                         seeded_app=app.manifest, details={"app_id": app.app_id})
+                         seeded_app=app.manifest, details={"app_id": app.app_id},
+                         control_urls={f.fault_id: urls[control_key(f.fault_id)]
+                                       for f in app.manifest.faults})
         return
 
     if kind == "site":

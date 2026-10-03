@@ -66,6 +66,10 @@ logger = get_logger(__name__)
 
 #: Rejected verifications allowed per fault per run before the monitor stops retrying.
 DEFAULT_REJECTION_CAP = 200
+#: Verification attempts per distinct piece of evidence within an episode.
+MAX_ATTEMPTS = 3
+#: Rejections that are a property of the trace, not of the moment: never retried.
+FINAL_REJECTIONS = frozenset({"fires_on_clean_build", "assertion_silent"})
 
 
 def _evidence_of(verdict: FaultVerdict, trajectory) -> tuple:  # noqa: ANN001
@@ -120,7 +124,7 @@ class FaultMonitor:
         self.verification_steps = 0
         self.verification_seconds = 0.0
         self._episode: list[dict] = []
-        self._episode_evidence: dict[str, set[tuple]] = {}
+        self._episode_evidence: dict[str, dict[tuple, int]] = {}
 
     # -- episode bookkeeping ------------------------------------------------------------
 
@@ -151,16 +155,24 @@ class FaultMonitor:
             if not verdict.violated:
                 continue
 
-            record.candidates += 1
             if record.discovered_at is None:
                 record.discovered_at = budget_used
+            evidence = _evidence_of(verdict, trajectory)
+            attempts = self._episode_evidence.setdefault(fault.fault_id, {})
+            if evidence not in attempts:
+                # A candidate is a distinct piece of evidence, not a step on which an old
+                # violation is still the last thing the assertion can see.
+                record.candidates += 1
+                attempts[evidence] = 0
             if not self.verify or record.cap_hit:
                 continue
-            evidence = _evidence_of(verdict, trajectory)
-            seen = self._episode_evidence.setdefault(fault.fault_id, set())
-            if evidence in seen:
+            # A rejection that says the trace is an artefact (it violates without this
+            # fault's patch) is final for that evidence. One that may be transient -- a
+            # replay that did not reproduce, a control that crashed -- is retried, up to
+            # MAX_ATTEMPTS, so a genuine finding is not lost to one flaky replay.
+            if attempts[evidence] < 0 or attempts[evidence] >= MAX_ATTEMPTS:
                 continue
-            seen.add(evidence)
+            attempts[evidence] += 1
 
             finding = self.pipeline.confirm(fault, trajectory, budget_at_discovery=budget_used)
             self.verification_steps += finding.verification_steps
@@ -172,6 +184,8 @@ class FaultMonitor:
                 logger.info("{} verified at budget {}", fault.fault_id, budget_used)
             else:
                 record.rejections[finding.rejection_kind or "unknown"] += 1
+                if finding.rejection_kind in FINAL_REJECTIONS:
+                    attempts[evidence] = -1
                 if sum(record.rejections.values()) >= self.rejection_cap:
                     record.cap_hit = True
                     logger.warning("{}: rejection cap ({}) reached; no further verification "

@@ -27,6 +27,18 @@ confirmed only if the trace violates on the faulty build and does **not** violat
 clean one. The control is deterministic and consults no model, so the oracle's
 independence is unchanged.
 
+**The control is per fault, not merely "the clean build" (code review, 2026-10-03).** A
+faulty build carries every seeded patch of its application, so fault A's patch can open a
+page on which fault B's assertion fires for a reason that has nothing to do with B -- and
+the fully clean build, never reaching that page, is merely inconclusive and passes. Three
+of the twelve benchmark faults could be credited that way. So when per-fault controls are
+supplied, the control for fault F is the faulty build *minus F's own patch*: F is confirmed
+only if the violation needs F's patch. A fault whose own patch is what opens the page (a
+constraint bypass) is still confirmed, because on its control the page is not reached.
+
+A control replay that raises is a failed control, never a passed one: the candidate is
+rejected as `control_error` and may be verified again on a later sighting.
+
 **The replayer is the existing `ScriptedPolicy`.** It already resolves a step against the
 live action space by id or visible label, already retries a step whose target has not
 rendered yet, and already records misses. Writing a second replay path would mean two
@@ -189,6 +201,7 @@ class VerificationPipeline:
 
     def __init__(self, app: BenchmarkApp, runner: TrajectoryRunner,
                  *, control_runner: TrajectoryRunner | None = None,
+                 control_runners: dict[str, TrajectoryRunner] | None = None,
                  max_minimization_trials: int = DEFAULT_MAX_TRIALS) -> None:
         problems = app.validate()
         if problems:
@@ -201,7 +214,18 @@ class VerificationPipeline:
         #: application under test in the field has no clean twin; on the benchmark it is
         #: always supplied, and it is what keeps a trace artefact out of the metric.
         self.control_runner = control_runner
+        #: `{fault_id: runner on the faulty build minus that fault's patch}`. Takes
+        #: precedence over `control_runner` for the faults it names.
+        self.control_runners = dict(control_runners or {})
         self.max_minimization_trials = max_minimization_trials
+
+    def control_for(self, fault: FaultSpec) -> TrajectoryRunner | None:
+        return self.control_runners.get(fault.fault_id, self.control_runner)
+
+    def _control_kind(self, fault: FaultSpec) -> str:
+        if fault.fault_id in self.control_runners:
+            return "faulty build without this fault's patch"
+        return "clean build" if self.control_runner is not None else "none"
 
     # -- candidate detection ---------------------------------------------------------
 
@@ -231,36 +255,45 @@ class VerificationPipeline:
             return finding
 
         spent = 0
+        control_runner = self.control_for(fault)
 
         # The control runs first because it is one replay and the commonest reason a
         # candidate is not a finding: rejecting here saves the reproduction replays.
-        if self.control_runner is not None:
-            control = self._replay_once(fault, trajectory.actions, self.control_runner)
+        if control_runner is not None:
+            control = self._replay_once(fault, trajectory.actions, control_runner)
             spent += control.steps_observed
-            finding.control = {"checked": True, "violated_on_clean": control.reproduced,
-                               "inconclusive": control.inconclusive, "error": control.error}
-            if control.reproduced:
+            finding.control = {"checked": True, "against": self._control_kind(fault),
+                               "violated_on_control": control.reproduced,
+                               "inconclusive": control.inconclusive, "error": control.error,
+                               "misses": control.misses}
+            if control.error or control.reproduced:
                 finding.rejected_because = (
-                    "the same trace violates the assertion on the clean build, so it is "
-                    "an artefact of the trace and not the seeded fault")
-                finding.rejection_kind = "fires_on_clean_build"
+                    f"the control replay failed ({control.error})" if control.error else
+                    f"the same trace violates the assertion on the {self._control_kind(fault)}, "
+                    f"so the violation does not depend on this fault's patch")
+                finding.rejection_kind = "control_error" if control.error else "fires_on_clean_build"
                 finding.verification_steps = spent
                 finding.wall_clock_s = round(time.monotonic() - started, 2)
                 return finding
         else:
-            finding.control = {"checked": False}
+            finding.control = {"checked": False, "against": "none"}
 
-        outcomes: list[ReplayOutcome] = []
-        for attempt in range(fault.reproduction.replays):
-            outcome = self._replay_once(fault, trajectory.actions)
-            spent += outcome.steps_observed
-            outcomes.append(outcome)
-            logger.info("{} replay {}/{}: reproduced={} inconclusive={}",
-                        fault.fault_id, attempt + 1, fault.reproduction.replays,
-                        outcome.reproduced, outcome.inconclusive)
+        def reproduction(actions: list[dict]) -> tuple[bool, list[ReplayOutcome], int]:
+            outcomes, used = [], 0
+            for _attempt in range(fault.reproduction.replays):
+                outcome = self._replay_once(fault, actions)
+                used += outcome.steps_observed
+                outcomes.append(outcome)
+            return fault.reproduction.satisfied_by([o.reproduced for o in outcomes]), outcomes, used
+
+        satisfied, outcomes, used = reproduction(trajectory.actions)
+        spent += used
+        for attempt, outcome in enumerate(outcomes, 1):
+            logger.info("{} replay {}/{}: reproduced={} inconclusive={}", fault.fault_id,
+                        attempt, len(outcomes), outcome.reproduced, outcome.inconclusive)
         finding.replays = [o.to_dict() for o in outcomes]
 
-        if not fault.reproduction.satisfied_by([o.reproduced for o in outcomes]):
+        if not satisfied:
             finding.rejected_because = (
                 f"replay did not satisfy the reproduction rule "
                 f"({sum(o.reproduced for o in outcomes)}/{len(outcomes)} reproduced, "
@@ -282,22 +315,35 @@ class VerificationPipeline:
         def reproduces(candidate_actions: list[dict]) -> bool:
             outcome = self._replay_once(fault, candidate_actions)
             trial_steps[0] += outcome.steps_observed
-            if not outcome.reproduced or self.control_runner is None:
+            if not outcome.reproduced or control_runner is None:
                 return outcome.reproduced
-            # A shorter trace must still be a trace of *the fault*. Delta debugging will
+            # A shorter trace must still be a trace of *this fault*. Delta debugging will
             # happily shrink towards any sequence that trips the assertion, including one
-            # that trips it on a correct build, so every accepted reduction is held to
-            # the same definition the original candidate was.
-            control = self._replay_once(fault, candidate_actions, self.control_runner)
+            # that trips it without the fault's patch, so every accepted reduction is held
+            # to the same definition the candidate was. A failed control is not a pass.
+            control = self._replay_once(fault, candidate_actions, control_runner)
             trial_steps[0] += control.steps_observed
-            return not control.reproduced
+            return not control.reproduced and not control.error
 
         minimized = minimize_trace(
             trajectory.actions, reproduces,
             max_trials=self.max_minimization_trials, keep=keep)
+        spent += trial_steps[0]
+        # Each accepted reduction was checked with a single replay. The trace reported as
+        # the reproduction must meet the full reproduction rule, like the original did;
+        # if it does not, the original (which did) is reported instead.
+        if minimized.trace != list(trajectory.actions):
+            holds, _outcomes, used = reproduction(minimized.trace)
+            spent += used
+            if not holds:
+                logger.warning("{}: minimized trace failed the reproduction rule; keeping "
+                               "the original trace", fault.fault_id)
+                minimized = MinimizationResult(
+                    trace=list(trajectory.actions), original_length=minimized.original_length,
+                    minimized_length=minimized.original_length, trials=minimized.trials,
+                    exhausted_budget=minimized.exhausted_budget, kept_by_rule=minimized.kept_by_rule)
         finding.minimized_trace = minimized.trace
         finding.minimization = minimized.to_dict()
-        spent += trial_steps[0]
 
         finding.confirmed = True
         finding.verification_steps = spent

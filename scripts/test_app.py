@@ -73,7 +73,7 @@ def main() -> int:
         out = args.out or REPO_ROOT / "reports" / "sessions" / f"{name}-{time.strftime('%Y%m%d-%H%M%S')}"
         print(f"Testing {app.name} at {app.url} ({kind}); budget {settings.budget}; report -> {out}")
         result = run_session(app.url, settings, app_name=app.name, out_dir=out,
-                             seeded_app=app.seeded_app, clean_url=app.clean_url,
+                             seeded_app=app.seeded_app, clean_url=app.clean_url, control_urls=app.control_urls,
                              on_event=on_event)
     paths = write_report(result, out)
     from web_testing_agent.tester.report import verified_findings

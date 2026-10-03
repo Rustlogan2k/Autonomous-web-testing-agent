@@ -16,9 +16,11 @@ from .suite import (
     BUILDS,
     EnvSettings,
     SuiteApp,
+    control_key,
     discover,
     load_app,
     make_env,
+    materialize_without,
     serve_app,
     suite_root,
 )
@@ -26,6 +28,7 @@ from .validate import AppValidation, validate_app
 
 __all__ = [
     "BUILDS", "AppValidation", "EnvSettings", "FaultMonitor", "FaultRecord", "HuntResult",
-    "SuiteApp", "discover", "load_app", "make_env", "run_hunt", "serve_app", "suite_root",
+    "SuiteApp", "control_key", "discover", "load_app", "make_env", "materialize_without",
+    "run_hunt", "serve_app", "suite_root",
     "validate_app",
 ]

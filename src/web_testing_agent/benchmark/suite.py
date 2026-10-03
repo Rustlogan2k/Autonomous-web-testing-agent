@@ -21,6 +21,9 @@ from __future__ import annotations
 
 import contextlib
 import os
+import runpy
+import shutil
+import tempfile
 from collections.abc import Iterator
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -85,14 +88,58 @@ def load_app(app_id: str, root: Path | None = None) -> SuiteApp:
     raise KeyError(f"no benchmark application {app_id!r} (known: {known})")
 
 
+def seeded_patches(app: SuiteApp) -> list:
+    """The patches `build.py` declares, each with `fault_id`, `filename`, `find`, `replace`."""
+    namespace = runpy.run_path(str(app.root / "build.py"), run_name="wta_benchmark_build")
+    return list(namespace["PATCHES"])
+
+
+def materialize_without(app: SuiteApp, fault_id: str, destination: Path) -> Path:
+    """Write the faulty build minus one fault's patches into `destination`.
+
+    The oracle's per-fault control: a violation that still happens here does not depend on
+    `fault_id`'s patch, so it is not evidence of that fault. Built from `clean/` and the
+    declared patches exactly as `build.py` builds `buggy/`, so it differs from `buggy/` in
+    precisely one fault.
+    """
+    shutil.copytree(app.build_dir("clean"), destination, dirs_exist_ok=True)
+    for patch in seeded_patches(app):
+        if patch.fault_id == fault_id:
+            continue
+        target = destination / patch.filename
+        with target.open("r", encoding="utf-8", newline="") as handle:
+            text = handle.read()
+        if text.count(patch.find) != 1:
+            raise ValueError(f"{app.app_id}: patch {patch.fault_id} anchor is not unique in "
+                             f"{patch.filename}; the control build would not match buggy/")
+        with target.open("w", encoding="utf-8", newline="") as handle:
+            handle.write(text.replace(patch.find, patch.replace, 1))
+    return destination
+
+
+def control_key(fault_id: str) -> str:
+    return f"without:{fault_id}"
+
+
 @contextlib.contextmanager
-def serve_app(app: SuiteApp, builds: tuple[str, ...] = BUILDS) -> Iterator[dict[str, str]]:
-    """Serve the requested builds, each on its own origin. Yields `{build: entry_url}`."""
+def serve_app(app: SuiteApp, builds: tuple[str, ...] = BUILDS, *,
+              controls: bool = False) -> Iterator[dict[str, str]]:
+    """Serve the requested builds, each on its own origin. Yields `{build: entry_url}`.
+
+    With `controls=True` it also serves, for every seeded fault, the faulty build without
+    that fault's patch, under the key `control_key(fault_id)`.
+    """
     with contextlib.ExitStack() as stack:
         urls = {
             build: app.entry_url(stack.enter_context(serve_directory(app.build_dir(build))))
             for build in builds
         }
+        if controls:
+            workspace = Path(stack.enter_context(tempfile.TemporaryDirectory(prefix="wta-control-")))
+            for fault in app.manifest.faults:
+                built = materialize_without(app, fault.fault_id, workspace / fault.fault_id)
+                urls[control_key(fault.fault_id)] = app.entry_url(
+                    stack.enter_context(serve_directory(built)))
         yield urls
 
 

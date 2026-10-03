@@ -40,6 +40,8 @@ logger = get_logger(__name__)
 #: Kinds whose firing depends on wall-clock timing. They are reported, but a replay that
 #: fails to reproduce them says little either way.
 TIMING_KINDS = frozenset({"slow_response"})
+#: Verification attempts per trigger identity, across sightings.
+MAX_TRIGGER_ATTEMPTS = 3
 
 _VOLATILE = re.compile(r"(:\d{2,5})|(\b\d+\b)|(\?[^\s'\"]*)")
 
@@ -90,6 +92,7 @@ class TriggerFinding:
     minimization: dict = field(default_factory=dict)
     verification_seconds: float = 0.0
     evidence: dict = field(default_factory=dict)
+    attempts: int = 0
 
     @property
     def identity(self) -> tuple[str, str, str]:
@@ -173,14 +176,22 @@ class TriggerMonitor:
         self._episode.append(observed_record(info, executed, available))
         verified: list[TriggerFinding] = []
         for identity in signatures(info):
+            trace = [r["action"] for r in self._episode if r.get("action")]
             finding = self.findings.get(identity)
             if finding is not None:
                 finding.occurrences += 1
-                continue
-            finding = TriggerFinding(*identity, first_seen_at=budget_used,
-                                     original_trace=[r["action"] for r in self._episode
-                                                     if r.get("action")])
-            self.findings[identity] = finding
+                # A sighting that failed to reproduce once is retried on a later sighting,
+                # with that sighting's trace, up to MAX_TRIGGER_ATTEMPTS; one flaky replay
+                # must not make a real defect permanently "unverified".
+                if (finding.verified or finding.status == "timing"
+                        or finding.attempts >= MAX_TRIGGER_ATTEMPTS):
+                    continue
+                finding.original_trace = trace
+                finding.replays = []
+            else:
+                finding = TriggerFinding(*identity, first_seen_at=budget_used,
+                                         original_trace=trace)
+                self.findings[identity] = finding
             if not self.verify:
                 continue
             if sum(1 for f in self.findings.values() if f.replays) >= self.max_verifications:
@@ -191,6 +202,7 @@ class TriggerMonitor:
         return verified
 
     def _confirm(self, finding: TriggerFinding) -> bool:
+        finding.attempts += 1
         started = time.monotonic()
         identity = finding.identity
         trace = finding.original_trace
