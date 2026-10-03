@@ -31,8 +31,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 COPY docker/requirements-runtime.txt docker/requirements-runtime.txt
-RUN pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu \
- && pip install -r docker/requirements-runtime.txt
+# torch is pinned to the CPU build in the same resolver run as everything else, so no
+# later requirement can silently swap it for a CUDA build.
+RUN pip install --extra-index-url https://download.pytorch.org/whl/cpu \
+        "torch==2.6.0+cpu" -r docker/requirements-runtime.txt
 
 # Everything else in the tree; `.dockerignore` keeps out virtualenvs, run outputs and
 # downloaded papers. The frozen label projection, the label-vector store and the LLM
