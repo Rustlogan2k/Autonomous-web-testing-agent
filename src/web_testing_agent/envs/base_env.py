@@ -146,6 +146,8 @@ class WebTestingEnv(gym.Env, ABC):
         setup_actions: list[dict] | None = None,
         settle_quiet_ms: int | None = None,
         capture_screenshots: bool = True,
+        reveal_min_retained: float = 0.0,
+        reveal_run_decay: bool = False,
     ) -> None:
         super().__init__()
         if render_mode is not None and render_mode not in self.metadata["render_modes"]:
@@ -181,7 +183,9 @@ class WebTestingEnv(gym.Env, ABC):
         self._page_settled = True
 
         self.error_baseline = ErrorBaseline()
-        self.exploration = ExplorationTracker(repetition_window=repetition_window)
+        self.exploration = ExplorationTracker(repetition_window=repetition_window,
+                                              reveal_min_retained=reveal_min_retained,
+                                              reveal_run_decay=reveal_run_decay)
         self.finding_ledger = FindingLedger()
 
         self.action_space = spaces.Discrete(MAX_ACTIONS)

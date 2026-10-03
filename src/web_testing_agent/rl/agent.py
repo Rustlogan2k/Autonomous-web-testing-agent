@@ -328,16 +328,11 @@ class QAgent:
 
     def _guide_scores(self, block: np.ndarray) -> np.ndarray:
         """The search priority's scores for these actions, from the agent's own features."""
-        if not hasattr(self, "_guide_weights"):
-            from .features import numeric_index
-            from .search import W_OBSERVED_NO_EFFECT, build_weights
+        from .search import build_weights, search_scores
 
+        if not hasattr(self, "_guide_weights"):
             self._guide_weights = build_weights("anchor")
-            self._guide_columns = (numeric_index("tried_here"), numeric_index("changed_state_rate"))
-            self._guide_no_effect = W_OBSERVED_NO_EFFECT
-        tried, rate = self._guide_columns
-        no_effect = block[:, tried] * (1.0 - block[:, rate])
-        return block @ self._guide_weights + self._guide_no_effect * no_effect
+        return search_scores(block, self._guide_weights)
 
     # -- replay assembly --------------------------------------------------------------------
 

@@ -315,6 +315,40 @@ def test_search_avoids_a_control_already_used_elsewhere_in_the_run():
     assert policy.act({}, page("p2", nav)) != choice
 
 
+FORM_SPECS = [
+    ActionSpec(index=0, action_type=ActionType.TYPE, selector='[id="g"]', element_id="guests",
+               params={"value": "999", "category": "boundary_max", "label_text": "Guests",
+                       "in_viewport": True}),
+    ActionSpec(index=1, action_type=ActionType.SELECT, selector='[id="h"]', element_id="hours",
+               params={"option": "4", "in_viewport": True}),
+    ActionSpec(index=2, action_type=ActionType.CLICK, selector='[id="next"]', element_id="Next",
+               params={"in_viewport": True}),
+]
+
+
+@pytest.mark.parametrize("html, filled_first", [
+    # Nothing entered yet: filling the form comes before leaving it.
+    ('<input id="g" name="guests" value=""><select id="h" name="hours"><option value="">-</option>'
+     '<option value="4">4</option></select>', True),
+    # Guests typed and hours showing a real option: press on rather than rewrite them.
+    ('<input id="g" name="guests" value="42"><select id="h" name="hours">'
+     '<option value="2" selected>2</option><option value="4">4</option></select>', False),
+])
+def test_search_fills_empty_fields_first_and_does_not_rewrite_filled_ones(html, filled_first):
+    policy = FeatureSearchPolicy(epsilon=0.0, features=FeatureExtractor(labels=FakeLabels(),
+                                                                        anchor=lambda _l: 0.0))
+    choice = policy.act({}, page("form", FORM_SPECS, html))
+    assert (FORM_SPECS[choice].action_type is not ActionType.CLICK) is filled_first
+
+
+def test_the_agents_exploration_guide_is_exactly_the_search_priority():
+    labels = FakeLabels()
+    agent = QAgent(AgentConfig(algorithm="dqn", seed=0), labels=labels)
+    policy = FeatureSearchPolicy(epsilon=0.0, features=agent.features)
+    block = agent.features.encode(page("s", SPECS, HTML)).actions
+    np.testing.assert_allclose(agent._guide_scores(block), policy.scores(block))
+
+
 def test_n_step_windows_are_committed_once_with_the_right_horizon_and_terminality():
     """An episode of five steps with n=3, walked by hand.
 

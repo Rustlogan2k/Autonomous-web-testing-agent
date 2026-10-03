@@ -159,6 +159,11 @@ class EnvSettings:
     registry: RegistryOptions = field(default_factory=lambda: EXTENDED_OPTIONS)
     #: Off for experiments (the learners read the DOM, never pixels); on for the product.
     capture_screenshots: bool = True
+    #: A same-URL growth of the action set is a gate reveal only if this share of the
+    #: previous controls survived it (`ExplorationTracker.observe_action_set`).
+    reveal_min_retained: float = 0.8
+    #: Decay repeated reveals across the run as novelty is decayed across state visits.
+    reveal_run_decay: bool = True
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -180,6 +185,8 @@ def make_env(base_url: str, settings: EnvSettings | None = None, **overrides):
         "settle_quiet_ms": settings.settle_quiet_ms,
         "registry_options": settings.registry,
         "capture_screenshots": settings.capture_screenshots,
+        "reveal_min_retained": settings.reveal_min_retained,
+        "reveal_run_decay": settings.reveal_run_decay,
     }
     kwargs.update(overrides)
     return WebFunctionalEnv(**kwargs)

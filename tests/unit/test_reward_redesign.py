@@ -125,6 +125,46 @@ def test_opening_a_gate_pays_the_reveal_bonus():
     assert breakdown["reveal_bonus"] == pytest.approx(WEIGHTS.reveal_bonus)
 
 
+def test_with_retention_a_gate_still_reveals_but_a_same_url_view_switch_does_not():
+    tracker = ExplorationTracker(reveal_min_retained=0.8)
+    tracker.start_episode()
+    tracker.observe_reset("app")
+    nav = [_click("Rooms"), _click("Help")]
+    form = nav + [_select("guests"), _click("Save")]
+    tracker.observe_action_set(form, "http://h/index.html")
+    # A gate: the form stays and its continue control appears.
+    gate = tracker.observe_action_set(form + [_click("Continue")], "http://h/index.html")
+    assert gate == {("CLICK", "Continue")}
+    # A view switch on the same URL: only the navigation survives, but the new view
+    # happens to carry more controls. The original rule paid this; retention does not.
+    help_view = nav + [_click(f"Question {i}") for i in range(6)]
+    assert tracker.observe_action_set(help_view, "http://h/index.html") == frozenset()
+    legacy = ExplorationTracker()
+    legacy.start_episode()
+    legacy.observe_reset("app")
+    legacy.observe_action_set(form, "http://h/index.html")
+    assert legacy.observe_action_set(help_view, "http://h/index.html")
+
+
+def test_with_run_decay_the_same_gate_pays_less_each_episode_but_a_new_gate_pays_in_full():
+    tracker = ExplorationTracker(reveal_run_decay=True)
+    before = [_click("Home"), _select("product")]
+
+    def open_gate(control: str) -> float:
+        tracker.start_episode()
+        tracker.observe_reset("order-1")
+        tracker.observe_action_set(before, "http://h/order-1.html")
+        revealed = tracker.observe_action_set(before + [_click(control)], "http://h/order-1.html")
+        signal = tracker.observe_step(_select("product"), "order-1-open", revealed,
+                                      "http://h/order-1.html")
+        return compose_reward(EXPECTED, BugSignals(), WEIGHTS, exploration=signal)[1]["reveal_bonus"]
+
+    paid = [open_gate("Continue") for _ in range(4)]
+    assert paid[0] == pytest.approx(WEIGHTS.reveal_bonus)
+    assert paid == sorted(paid, reverse=True) and paid[3] == pytest.approx(WEIGHTS.reveal_bonus / 2)
+    assert open_gate("Next") == pytest.approx(WEIGHTS.reveal_bonus)
+
+
 def test_advancing_a_flow_stage_out_earns_reaching_a_static_page():
     """The rank inversion this term exists to correct: under the old reward these paid
     exactly the same, and the static page was far easier to reach."""

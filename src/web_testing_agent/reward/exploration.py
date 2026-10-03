@@ -30,6 +30,8 @@ sets. It is the only term here that is genuinely depth-correlated.
 
 from __future__ import annotations
 
+import math
+
 from collections import deque
 from dataclasses import dataclass, field
 
@@ -76,6 +78,10 @@ class ExplorationSignal:
     newly_revealed: frozenset[tuple[str, str]] = frozenset()
     # The subset of `newly_revealed` not already paid for this episode.
     unpaid_reveals: frozenset[tuple[str, str]] = frozenset()
+    # How many full reveal bonuses `unpaid_reveals` is worth. None means one per
+    # identity (the original rule); with run decay the step is worth one identity's
+    # 1/sqrt(1 + times it was paid earlier in the run), the least-collected one's.
+    reveal_weight: float | None = None
 
     @property
     def is_repetitive(self) -> bool:
@@ -91,6 +97,14 @@ class ExplorationTracker:
     """
 
     repetition_window: int = 20
+    #: Share of the previous action set that must still be present for growth to count as
+    #: a reveal. 0.0 is the original rule (any growth on the same URL). See
+    #: `observe_action_set`.
+    reveal_min_retained: float = 0.0
+    #: Decay each (page, control) reveal by 1/sqrt(1 + earlier payments in the run), the
+    #: way novelty is decayed by state visits. False is the original per-episode ledger.
+    reveal_run_decay: bool = False
+    _reveal_run_counts: dict = field(default_factory=dict, init=False)
     _episode_states: set[str] = field(default_factory=set, init=False)
     _all_states: set[str] = field(default_factory=set, init=False)
     _recent_actions: deque[tuple[str, str]] = field(default_factory=deque, init=False)
@@ -160,7 +174,18 @@ class ExplorationTracker:
         1. the URL is unchanged, so this is not a navigation;
         2. the action set genuinely **grew**, so a same-page swap of one control for
            another is not a reveal;
-        3. the identities are new relative to the previous set.
+        3. the identities are new relative to the previous set;
+        4. (when `reveal_min_retained` > 0) most of the previous set is **still there**.
+
+        The fourth condition is the single-page-application form of the first. Such an
+        application switches views without changing the URL, so a view that happens to
+        carry more controls than the one it replaced passed conditions 1-3 and was paid as
+        a gate. Measured on `booking_desk` (a development application): the capped reveal
+        term paid about 450 per 2,000-step run, on 300 steps -- twenty times the LLM term
+        and three times novelty -- for walking between the help page, the room list and a
+        confirmation dialog. A gate keeps the page and adds to it; a view switch replaces
+        it. The benchmark and the product tester use 0.8; the original rule stays the
+        default so every earlier experiment re-runs unchanged.
 
         On a navigation the baseline is simply re-anchored to the new page and nothing
         is paid, so the next same-page gate on that page is still detected normally.
@@ -175,6 +200,9 @@ class ExplorationTracker:
             return frozenset()
         if len(identities) <= len(previous):
             # Same page, no growth: a replacement, not a reveal.
+            return frozenset()
+        if len(identities & previous) < self.reveal_min_retained * len(previous):
+            # Same URL, but most of the page was replaced: a view switch, not a gate.
             return frozenset()
         return frozenset(identities - previous)
 
@@ -251,6 +279,24 @@ class ExplorationTracker:
             if identity[0] in _GATE_OPENING_ACTIONS
             and (scope, identity) not in self._paid_reveals
         )
+        reveal_weight = None
+        if self.reveal_run_decay:
+            # The per-episode ledger stops a gate being paid twice in one episode; this
+            # stops the same gate being paid in full again in every episode. Without it
+            # the reveal term was the one exploration reward that never decayed, and on
+            # `booking_desk` (a development application) the agent re-collected the same
+            # few dozen reveals each episode for most of its reward. A gate opened for
+            # the first time still pays in full.
+            #
+            # A step is worth ONE control's reveal, the least-collected one, not the sum:
+            # a view that brings two dozen controls with it is not two dozen gates (the
+            # RL reward capped it at one control's worth for that reason), and summing
+            # would keep such a step above that cap long after each control had decayed.
+            reveal_weight = 0.0
+            for identity in unpaid:
+                earlier = self._reveal_run_counts.get((scope, identity), 0)
+                reveal_weight = max(reveal_weight, 1.0 / math.sqrt(1.0 + earlier))
+                self._reveal_run_counts[(scope, identity)] = earlier + 1
         for identity in unpaid:
             self._paid_reveals.add((scope, identity))
 
@@ -262,6 +308,7 @@ class ExplorationTracker:
             state_run_visits=visits_before,
             newly_revealed=revealed,
             unpaid_reveals=unpaid,
+            reveal_weight=reveal_weight,
         )
 
     @staticmethod

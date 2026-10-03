@@ -291,7 +291,9 @@ def compose_reward(
                 novelty_component = weights.novelty_bonus
             exploration_bonus += novelty_component
         if exploration.unpaid_reveals:
-            reveal_component = weights.reveal_bonus * len(exploration.unpaid_reveals)
+            worth = (exploration.reveal_weight if exploration.reveal_weight is not None
+                     else len(exploration.unpaid_reveals))
+            reveal_component = weights.reveal_bonus * worth
             exploration_bonus += reveal_component
         if exploration.repeat_count:
             # Linear in the repeat count so hammering one element degrades fast, but

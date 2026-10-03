@@ -24,11 +24,20 @@ terms for information the older representation did not carry:
   so a site-wide navigation link ("Store", "Delivery") is untried again on every page it
   appears on, and without this term the search walks the navigation bar indefinitely --
   measured on the development application, where it never pressed a single in-page
-  button in 400 steps.
+  button in 400 steps;
+* a penalty on entering a value into a field that already holds one. The form-control
+  bonus says "fill the form before leaving the page"; without this term it also says
+  "then rewrite every filled field with every generated value and every option", and a
+  stage with five fields costs some twenty steps before its continue button is ever
+  pressed -- measured on `booking_desk`, the second development application, where the
+  search never left the first form stage in 1,500 steps. A select showing its default
+  option counts as filled (it cannot block a step for being empty); one on an empty
+  placeholder does not. Edge-case values and other options are still entered, after the
+  page's untried controls.
 
-All three are statements about web applications in general and use only what the learner
-is also shown. The third was added after that measurement on `shop_catalog`, a
-development application, and all three were fixed before any transfer run.
+All four are statements about web applications in general and use only what the learner
+is also shown. The third and fourth were added after those measurements on the two
+development applications, and all four were fixed before any held-out transfer run.
 """
 
 from __future__ import annotations
@@ -54,6 +63,9 @@ W_VALUE_ALREADY_SET = -3.0
 W_OBSERVED_NO_EFFECT = -2.0
 #: Penalty on the log count of this control's use anywhere in the run.
 W_TAKEN_ANYWHERE = -3.0
+#: Penalty for entering a value into a field that already holds one. Cancels the
+#: form-control bonus plus the best value ordinal, so an untried click outranks a rewrite.
+W_FIELD_ALREADY_FILLED = -2.5
 
 
 def build_weights(label_prior: str = "anchor") -> np.ndarray:
@@ -70,11 +82,23 @@ def build_weights(label_prior: str = "anchor") -> np.ndarray:
         weights[numeric_index(name)] = HAND_PRIORITY_WEIGHTS[name]
     weights[numeric_index("value_already_set")] = W_VALUE_ALREADY_SET
     weights[numeric_index("taken_anywhere")] = W_TAKEN_ANYWHERE
+    weights[numeric_index("field_is_filled")] = W_FIELD_ALREADY_FILLED
     if label_prior == "anchor":
         weights[numeric_index("anchor_commit_score")] = W_LABEL_PRIOR
     elif label_prior == "lexical":
         weights[numeric_index("lexical_commit_score")] = W_LABEL_PRIOR
     return weights
+
+
+_TRIED = numeric_index("tried_here")
+_CHANGE_RATE = numeric_index("changed_state_rate")
+
+
+def search_scores(block: np.ndarray, weights: np.ndarray) -> np.ndarray:
+    """The search priority of each action row: the linear score plus the one interaction
+    term (tried here, and seldom changed anything) that a column weight cannot express."""
+    no_effect = block[:, _TRIED] * (1.0 - block[:, _CHANGE_RATE])
+    return block @ weights + W_OBSERVED_NO_EFFECT * no_effect
 
 
 class FeatureSearchPolicy:
@@ -88,8 +112,6 @@ class FeatureSearchPolicy:
         self.weights = build_weights(label_prior)
         self.features = features or FeatureExtractor()
         self._rng = np.random.default_rng(seed)
-        self._tried = numeric_index("tried_here")
-        self._change_rate = numeric_index("changed_state_rate")
         self.steps = 0
         self.exploratory_steps = 0
 
@@ -97,8 +119,7 @@ class FeatureSearchPolicy:
         self.features.begin_episode()
 
     def scores(self, block: np.ndarray) -> np.ndarray:
-        no_effect = block[:, self._tried] * (1.0 - block[:, self._change_rate])
-        return block @ self.weights + W_OBSERVED_NO_EFFECT * no_effect
+        return search_scores(block, self.weights)
 
     def act(self, observation: dict, info: dict) -> int:  # noqa: ARG002 - reads no pixels
         encoded = self.features.encode(info)
@@ -126,5 +147,6 @@ class FeatureSearchPolicy:
             "exploratory_steps": self.exploratory_steps,
             "extra_terms": {"value_already_set": W_VALUE_ALREADY_SET,
                             "observed_no_effect": W_OBSERVED_NO_EFFECT,
-                            "taken_anywhere": W_TAKEN_ANYWHERE},
+                            "taken_anywhere": W_TAKEN_ANYWHERE,
+                            "field_already_filled": W_FIELD_ALREADY_FILLED},
         }
