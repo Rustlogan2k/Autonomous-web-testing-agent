@@ -54,7 +54,7 @@ from ..utils.logging import get_logger
 
 logger = get_logger(__name__)
 
-PROMPT_VERSION = "progress-v2"
+PROMPT_VERSION = "progress-v3"
 DEFAULT_MODEL = "qwen2.5:7b-instruct"
 # 127.0.0.1, not "localhost": on Windows `localhost` resolves to ::1 first and the
 # connection falls back to IPv4 only after a timeout. Measured: 2.04 s per request through
@@ -89,6 +89,13 @@ committed; or the application is asking the user to correct their input.
 them before the final action, or a form whose required fields are all filled.
 10 = a task has been committed and its outcome is displayed: a confirmation, receipt, \
 reference number, saved record or applied change that reflects what the user did.
+
+Many tasks take several steps: a checkout, a booking, a sign-up or a wizard, often with \
+a step indicator ("Step 2 of 4", a numbered list of stages, or a STEP line in the \
+snapshot). Judge progress through the WHOLE task, not how complete the current page is: \
+a later step is further along than any earlier step, however filled that earlier step \
+was. Spread the steps over 4-8 in order: the first step 4-5, middle steps 5-7, the last \
+step before the final action 7-8, the review of the whole task 8.
 
 Use the odd numbers when a page sits between two anchors. Judge only from the snapshot. \
 A page is not further along merely because it has many links or a lot of text.
@@ -130,6 +137,12 @@ class _DigestParser(HTMLParser):
         self._select: str | None = None
         self._select_value = ""
         self._textarea: str | None = None
+        # The element marked as the current step of a multi-step flow (WAI-ARIA
+        # `aria-current="step"`), and how deep inside it the parser is.
+        self.current_step = ""
+        self._step_tag: str | None = None
+        self._step_depth = 0
+        self._step_buffer: list[str] = []
 
     @staticmethod
     def _describe(value: str) -> str:
@@ -148,6 +161,11 @@ class _DigestParser(HTMLParser):
         if self._skip_depth:
             return
         hidden = attributes.get("data-hidden") == "true"
+        if self._step_tag is not None and tag == self._step_tag:
+            self._step_depth += 1
+        elif (attributes.get("aria-current") == "step" and not hidden
+              and self._step_tag is None and not self.current_step):
+            self._step_tag, self._step_depth, self._step_buffer = tag, 1, []
         name = attributes.get("name") or attributes.get("id") or tag
         if tag == "title":
             self._capture, self._buffer = "title", []
@@ -178,6 +196,11 @@ class _DigestParser(HTMLParser):
             return
         if self._skip_depth:
             return
+        if self._step_tag is not None and tag == self._step_tag:
+            self._step_depth -= 1
+            if self._step_depth == 0:
+                self.current_step = " ".join("".join(self._step_buffer).split())[:60]
+                self._step_tag = None
         text = " ".join("".join(self._buffer).split())
         if tag == "title" and self._capture == "title":
             self.title = text[:120]
@@ -201,6 +224,8 @@ class _DigestParser(HTMLParser):
     def handle_data(self, data: str) -> None:
         if self._skip_depth:
             return
+        if self._step_tag is not None:
+            self._step_buffer.append(data)
         if self._capture is not None:
             self._buffer.append(data)
         if self._capture != "textarea" and data.strip():
@@ -248,6 +273,8 @@ def page_digest(url: str, html: str, visible_text: str | None = None) -> str:
     lines = [f"PAGE: {location}", f"TITLE: {parser.title or '(none)'}"]
     if parser.headings:
         lines.append("HEADINGS: " + " | ".join(parser.headings[:6]))
+    if parser.current_step:
+        lines.append(f"STEP: {parser.current_step} (marked as the current step)")
     body = visible_text if visible_text is not None else " ".join(parser.text)
     lines.append("TEXT: " + _collapse_runs(body, 900))
     if parser.fields:
@@ -361,17 +388,32 @@ class JudgmentCache:
                                     ensure_ascii=False) + "\n")
 
     def compact(self, name: str = "progress.jsonl") -> Path:
-        """Merge every shard into one key-sorted file and remove the shards."""
+        """Merge every shard into one key-sorted file and remove the merged shards.
+
+        Safe while other processes are still writing: a shard that gained rows after the
+        merge read it, or that its writer holds open (Windows refuses the delete), is
+        kept, and the next compaction or any reader picks it up.
+        """
         self.reload()
         self.directory.mkdir(parents=True, exist_ok=True)
         target = self.directory / name
         temporary = target.with_suffix(".jsonl.tmp")
+        merged = set(self._rows)
         with temporary.open("w", encoding="utf-8", newline="\n") as handle:
             for key in sorted(self._rows):
                 handle.write(json.dumps(self._rows[key], ensure_ascii=False) + "\n")
         temporary.replace(target)
         for shard in self.directory.glob("progress.shard.*.jsonl"):
-            shard.unlink(missing_ok=True)
+            try:
+                keys = {json.loads(line)["key"] for line in
+                        shard.read_text(encoding="utf-8").splitlines() if line.strip()}
+            except (OSError, ValueError, KeyError):
+                continue
+            if keys <= merged:
+                try:
+                    shard.unlink(missing_ok=True)
+                except OSError:
+                    pass
         return target
 
     def __len__(self) -> int:

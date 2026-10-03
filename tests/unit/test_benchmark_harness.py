@@ -251,6 +251,24 @@ def test_the_stratified_logrank_detects_a_consistently_faster_arm():
     assert result["observed_minus_expected_a"] > 0
 
 
+def test_the_top_up_rule_is_decided_on_complete_initial_seeds_only():
+    from web_testing_agent.experiments.transfer import top_up_folds
+
+    def pair(fold, pretrained, scratch, seeds=(0, 1, 2)):
+        return ([Run(fold, "dqn_pretrained", s, t, t >= 2000) for s, t in zip(seeds, pretrained)]
+                + [Run(fold, "dqn_scratch", s, t, t >= 2000) for s, t in zip(seeds, scratch)])
+
+    runs = (pair("close", [900, 1000, 1100], [1000, 1100, 1150])      # |delta| = 83 -> top up
+            + pair("apart", [300, 400, 500], [1500, 2000, 2000])     # |delta| = 1433 -> no
+            + pair("censored", [2000] * 3, [2000] * 3)               # both censored -> top up
+            + pair("missing", [900, 1000], [950, 1000], seeds=(0, 1))  # undecided
+            # seeds 3-5 already run must not move the decision for "apart"
+            + pair("apart", [2000] * 3, [300] * 3, seeds=(3, 4, 5)))
+    decided = top_up_folds(runs, 2000)
+    assert decided["dqn_pretrained - dqn_scratch"] == ["censored", "close"]
+    assert decided["bandit_pretrained - bandit_scratch"] == []
+
+
 # -- the LLM progress snapshot and its cache ------------------------------------------------------
 
 
@@ -262,6 +280,16 @@ def test_the_snapshot_drops_the_port_and_prefers_rendered_text():
     assert one == two
     assert "empty" not in one.split("TEXT:", 1)[1].split("\n", 1)[0]
     assert "empty" in page_digest("http://h/basket.html", html)  # markup alone cannot tell
+
+
+def test_the_snapshot_names_the_current_step_of_a_multi_step_flow():
+    rail = ('<ol><li><button>1. Session</button></li>'
+            '<li><button aria-current="step"><span>2.</span> Catering</button></li>'
+            '<li><button disabled>3. Details</button></li></ol><h1>Catering</h1>')
+    assert "STEP: 2. Catering (marked as the current step)" in page_digest("http://h/i.html", rail)
+    # A navigation bar's current page is not a step of a task.
+    nav = '<nav><a aria-current="page" href="/">Rooms</a></nav><h1>Rooms</h1>'
+    assert "STEP:" not in page_digest("http://h/i.html", nav)
 
 
 def test_typed_values_are_summarised_not_copied():
@@ -280,6 +308,22 @@ def test_the_judgment_cache_round_trips_and_compacts(tmp_path):
     assert target.name == "progress.jsonl"
     assert [json.loads(line)["key"] for line in target.read_text().splitlines()] == ["k1"]
     assert not list(tmp_path.glob("progress.shard.*.jsonl"))
+
+
+def test_compaction_keeps_a_shard_written_after_the_merge_read_it(tmp_path, monkeypatch):
+    JudgmentCache(tmp_path).put(Judgment(key="k1", progress=2, stage="browsing", digest="d"))
+    late = tmp_path / "progress.shard.99999.jsonl"
+    compactor = JudgmentCache(tmp_path)
+    original = compactor.reload
+
+    def reload_then_another_process_writes():
+        original()
+        late.write_text(json.dumps(Judgment(key="k2", progress=4, digest="e").to_row()) + "\n")
+
+    monkeypatch.setattr(compactor, "reload", reload_then_another_process_writes)
+    compactor.compact()
+    assert late.is_file()  # its row was not merged, so it was not deleted
+    assert JudgmentCache(tmp_path).get("k2") is not None
 
 
 def test_a_per_fault_control_rejects_a_violation_caused_by_another_faults_patch():

@@ -19,6 +19,15 @@ far a user has progressed through a task in the application, on an anchored 0–
 | 8 | ready to commit: a review step echoing the user's entries, or a complete form | `ready_to_commit` |
 | 10 | a task has been committed and its outcome is displayed | `outcome_displayed` |
 
+**Progress is through the whole task, not the current page.** Many tasks take several steps
+(checkout, booking, sign-up, a wizard). The prompt says a later step is further along than
+any earlier step however filled that earlier step was, and spreads the steps over 4–8 in
+order (first step 4–5, middle steps 5–7, last step before the final action 7–8, review 8).
+Without this (prompt `progress-v2`), a filled first step of a four-step booking scored 7, the
+same as the next two steps, so passing the first step's validation gate earned no LLM reward
+at all; measured on `booking_desk`, a development application, where no agent passed it.
+Current prompt: `progress-v3`.
+
 The model is never asked whether a page is buggy, is never shown a seeded fault, an answer
 key, a fault id or which build it is looking at, and its output never enters a verified
 finding. Ground truth on the benchmark is the deterministic oracle; on a user's application
@@ -34,12 +43,15 @@ APPLICATION: Fernbrook Outfitters                          <- the app's own name
 PAGE: confirmation.html                                     <- path (host and port dropped)
 TITLE: Order confirmed – Fernbrook Outfitters
 HEADINGS: Order confirmed
+STEP: <label> (marked as the current step)                 <- only when the page marks one
 TEXT: … Order confirmed Thank you. A receipt is on its way. ITEM QUANTITY LINE TOTAL
       Folding windshield 1 £15.25 … Receipt sent to tester@example.com …   (≤ 900 chars)
 FORM FIELDS: name [type] = empty | "short value" | long text (N chars)   (≤ 20 fields)
 CONTROLS: Store | Shelter | Basket | Continue shopping | …                (≤ 30 labels)
 ```
 
+- `STEP` is the element the page marks with `aria-current="step"`, the WAI-ARIA marker of
+  the current step of a multi-step process. Pages without one simply have no such line.
 - The text is the browser's `document.body.innerText`, so CSS-hidden panels are excluded
   (a defect found and fixed: a hidden "Your basket is empty" made a full basket score 0).
 - Typed values appear as `empty`, a short literal, or a length: enough to tell a filled form
