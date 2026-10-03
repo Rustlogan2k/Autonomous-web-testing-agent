@@ -25,6 +25,9 @@
 #   on-demand on its own.
 
 set -euo pipefail
+# Git Bash on Windows rewrites arguments that look like POSIX paths (/aws/service/...)
+# into Windows paths; SSM parameter names and S3 keys must reach the CLI untouched.
+export MSYS_NO_PATHCONV=1
 
 DRY_RUN=0
 if [ "${1:-}" = "--dry-run" ]; then DRY_RUN=1; shift; fi
