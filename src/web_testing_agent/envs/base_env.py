@@ -145,6 +145,7 @@ class WebTestingEnv(gym.Env, ABC):
         repetition_window: int = 20,
         setup_actions: list[dict] | None = None,
         settle_quiet_ms: int | None = None,
+        capture_screenshots: bool = True,
     ) -> None:
         super().__init__()
         if render_mode is not None and render_mode not in self.metadata["render_modes"]:
@@ -156,6 +157,11 @@ class WebTestingEnv(gym.Env, ABC):
         # Replayed at the start of every episode, before the first observation. Same
         # step schema as a repro script; see `_run_setup_actions`.
         self.setup_actions = list(setup_actions or [])
+        # A screenshot costs a PNG encode in the browser and a decode here on every step.
+        # Nothing that learns from this env reads pixels (the transfer stack's state is the
+        # DOM), so an experiment turns it off; evidence screenshots are taken separately by
+        # replaying a verified finding with capture on.
+        self.capture_screenshots = capture_screenshots
         self._bootstrap_steps = 0
         self._base_domain = BrowserSession.domain_of(base_url)
 
@@ -669,11 +675,12 @@ class WebTestingEnv(gym.Env, ABC):
         assert page is not None
         assert self._network_recorder is not None
 
-        try:
-            screenshot = self._canonicalize_screenshot(page.screenshot(type="png"))
-        except Exception as exc:  # noqa: BLE001 - page may be mid-navigation
-            logger.warning("Screenshot capture failed: {}", exc)
-            screenshot = np.zeros(SCREENSHOT_SHAPE, dtype=np.uint8)
+        screenshot = np.zeros(SCREENSHOT_SHAPE, dtype=np.uint8)
+        if self.capture_screenshots:
+            try:
+                screenshot = self._canonicalize_screenshot(page.screenshot(type="png"))
+            except Exception as exc:  # noqa: BLE001 - page may be mid-navigation
+                logger.warning("Screenshot capture failed: {}", exc)
 
         html = self._capture_html(page)
         try:

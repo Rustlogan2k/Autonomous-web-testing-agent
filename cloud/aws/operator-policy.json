@@ -2,12 +2,20 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "LaunchOnlyCpuWorkerTypes",
+      "Sid": "LaunchOnlyListedWorkerTypes",
       "Effect": "Allow",
       "Action": "ec2:RunInstances",
       "Resource": "arn:aws:ec2:*:*:instance/*",
       "Condition": {
-        "StringLike": {"ec2:InstanceType": ["c7i.2xlarge", "c7i.4xlarge", "c7i.8xlarge", "c6i.4xlarge", "c6i.8xlarge", "c7a.4xlarge", "c7a.8xlarge"]}
+        "StringLike": {
+          "ec2:InstanceType": [
+            "c7i.xlarge",
+            "c7i.2xlarge",
+            "c7i.4xlarge",
+            "g4dn.2xlarge",
+            "g4dn.4xlarge"
+          ]
+        }
       }
     },
     {
@@ -29,24 +37,45 @@
       "Effect": "Allow",
       "Action": "ec2:CreateTags",
       "Resource": "*",
-      "Condition": {"StringEquals": {"ec2:CreateAction": ["RunInstances", "RequestSpotInstances"]}}
+      "Condition": {
+        "StringEquals": {
+          "ec2:CreateAction": [
+            "RunInstances",
+            "RequestSpotInstances"
+          ]
+        }
+      }
     },
     {
       "Sid": "StopOnlyThisProjectsInstances",
       "Effect": "Allow",
-      "Action": ["ec2:TerminateInstances", "ec2:StopInstances"],
+      "Action": [
+        "ec2:TerminateInstances",
+        "ec2:StopInstances"
+      ],
       "Resource": "arn:aws:ec2:*:*:instance/*",
-      "Condition": {"StringEquals": {"aws:ResourceTag/project": "wta"}}
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/project": "wta"
+        }
+      }
     },
     {
       "Sid": "ReadOnlyEc2",
       "Effect": "Allow",
       "Action": [
-        "ec2:DescribeInstances", "ec2:DescribeInstanceStatus", "ec2:DescribeImages",
-        "ec2:DescribeSubnets", "ec2:DescribeVpcs", "ec2:DescribeSecurityGroups",
-        "ec2:DescribeSpotInstanceRequests", "ec2:DescribeSpotPriceHistory",
-        "ec2:CancelSpotInstanceRequests", "ec2:GetConsoleOutput",
-        "ec2:DescribeInstanceTypes", "servicequotas:GetServiceQuota"
+        "ec2:DescribeInstances",
+        "ec2:DescribeInstanceStatus",
+        "ec2:DescribeImages",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeVpcs",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSpotInstanceRequests",
+        "ec2:DescribeSpotPriceHistory",
+        "ec2:CancelSpotInstanceRequests",
+        "ec2:GetConsoleOutput",
+        "ec2:DescribeInstanceTypes",
+        "servicequotas:GetServiceQuota"
       ],
       "Resource": "*"
     },
@@ -59,25 +88,41 @@
     {
       "Sid": "ExperimentBucketOnly",
       "Effect": "Allow",
-      "Action": ["s3:ListBucket", "s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
-      "Resource": ["arn:aws:s3:::REPLACE_WITH_BUCKET", "arn:aws:s3:::REPLACE_WITH_BUCKET/*"]
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::REPLACE_WITH_BUCKET",
+        "arn:aws:s3:::REPLACE_WITH_BUCKET/*"
+      ]
     },
     {
       "Sid": "AmiLookup",
       "Effect": "Allow",
       "Action": "ssm:GetParameters",
-      "Resource": "arn:aws:ssm:*::parameter/aws/service/canonical/ubuntu/*"
+      "Resource": [
+        "arn:aws:ssm:*::parameter/aws/service/canonical/ubuntu/*",
+        "arn:aws:ssm:*::parameter/aws/service/deeplearning/*"
+      ]
     },
     {
       "Sid": "BudgetGuard",
       "Effect": "Allow",
-      "Action": ["budgets:ViewBudget", "budgets:ModifyBudget"],
+      "Action": [
+        "budgets:ViewBudget",
+        "budgets:ModifyBudget"
+      ],
       "Resource": "*"
     },
     {
       "Sid": "CostVisibility",
       "Effect": "Allow",
-      "Action": ["ce:GetCostAndUsage"],
+      "Action": [
+        "ce:GetCostAndUsage"
+      ],
       "Resource": "*"
     }
   ]

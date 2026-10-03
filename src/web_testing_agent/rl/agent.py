@@ -284,13 +284,16 @@ class QAgent:
             action=min(int(action), previous.count - 1), reward=total,
             next_state=following.state, next_actions=following.compact_actions()))
         horizon = 1 if self.config.algorithm == "bandit" else self.config.n_step
-        while len(self._pending) >= horizon:
-            self._emit(horizon, terminal=False)
         if done or terminated:
             # Episodes are a fixed number of steps and the observation carries the step
-            # fraction, so the agent can see the end coming: the final transitions are
-            # terminal, not bootstrapped from a state it will never act in.
+            # fraction, so the agent can see the end coming: every window that reaches the
+            # final step is terminal, not bootstrapped from a state it will never act in.
+            # That includes a *full* n-step window ending on the last step -- emitting it
+            # through the ordinary path first would commit it as non-terminal.
             self._flush_pending(terminal=True)
+        else:
+            while len(self._pending) >= horizon:
+                self._emit(horizon, terminal=False)
 
         if len(self.replay) >= max(self.config.learning_starts, self.config.batch_size):
             started = time.monotonic()

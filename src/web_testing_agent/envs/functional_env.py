@@ -41,6 +41,7 @@ class WebFunctionalEnv(WebTestingEnv):
         setup_actions: list[dict] | None = None,
         settle_quiet_ms: int | None = None,
         registry_options: RegistryOptions | None = None,
+        capture_screenshots: bool = True,
     ) -> None:
         super().__init__(
             base_url=base_url,
@@ -50,6 +51,7 @@ class WebFunctionalEnv(WebTestingEnv):
             repetition_window=repetition_window,
             setup_actions=setup_actions,
             settle_quiet_ms=settle_quiet_ms,
+            capture_screenshots=capture_screenshots,
         )
         # Default is the original registry, so every pre-benchmark experiment re-runs
         # against the action space it was measured on. See `RegistryOptions`.

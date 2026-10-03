@@ -308,3 +308,33 @@ def test_search_avoids_a_control_already_used_elsewhere_in_the_run():
     policy.observe_transition(first, choice, 0.0, {**page("p2", nav), "action_spec": nav[choice]},
                               False, False)
     assert policy.act({}, page("p2", nav)) != choice
+
+
+def test_n_step_windows_are_committed_once_with_the_right_horizon_and_terminality():
+    """An episode of five steps with n=3, walked by hand.
+
+    Expected windows (start step, steps, terminal): (0,3,F), (1,3,F), (2,3,T), (3,2,T),
+    (4,1,T). The (2,3) window ends on the episode's last step, so it must be terminal; an
+    earlier version committed it through the non-terminal path before flushing.
+    """
+    config = AgentConfig(algorithm="dqn", n_step=3, gamma=0.5, learning_starts=10_000, seed=0)
+    agent = QAgent(config, labels=FakeLabels())
+    agent.set_application("app")
+    info = page("s0", SPECS, HTML)
+    agent.begin_episode(info)
+    rewards = [1.0, 2.0, 3.0, 4.0, 5.0]
+    for t, r in enumerate(rewards):
+        agent.act({}, info)
+        after = page(f"s{t + 1}", SPECS, HTML)
+        agent.observe_transition(info, 1, r, after, False, t == len(rewards) - 1)
+        info = after
+    stored = [agent.replay._items[i] for i in range(len(agent.replay))]
+    shaped = [agent.rewarder.config]  # reward composer adds only env reward here (no LLM)
+    assert len(stored) == 5
+    expected = [(1 + 0.5 * 2 + 0.25 * 3, 0.125, False), (2 + 0.5 * 3 + 0.25 * 4, 0.125, False),
+                (3 + 0.5 * 4 + 0.25 * 5, 0.125, True), (4 + 0.5 * 5, 0.25, True), (5, 0.5, True)]
+    for transition, (reward, discount, terminal) in zip(stored, expected, strict=True):
+        assert transition.reward == pytest.approx(reward)
+        assert transition.discount == pytest.approx(discount)
+        assert transition.terminal is terminal
+    assert shaped

@@ -110,6 +110,8 @@ class EnvSettings:
     settle_quiet_ms: int | None = None
     headless: bool = True
     registry: RegistryOptions = field(default_factory=lambda: EXTENDED_OPTIONS)
+    #: Off for experiments (the learners read the DOM, never pixels); on for the product.
+    capture_screenshots: bool = True
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -130,6 +132,7 @@ def make_env(base_url: str, settings: EnvSettings | None = None, **overrides):
         "headless": settings.headless,
         "settle_quiet_ms": settings.settle_quiet_ms,
         "registry_options": settings.registry,
+        "capture_screenshots": settings.capture_screenshots,
     }
     kwargs.update(overrides)
     return WebFunctionalEnv(**kwargs)

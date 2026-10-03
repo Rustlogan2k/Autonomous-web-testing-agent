@@ -71,6 +71,7 @@ ARMS: dict[str, dict] = {
     "search_A0":           {"kind": "hand_priority"},
     "search_S":            {"kind": "feature_search"},
     "dqn_scratch":         {"kind": "agent", "algorithm": "dqn", "llm": True, "pretrain": None},
+    "dqn_scratch_nollm":   {"kind": "agent", "algorithm": "dqn", "llm": False, "pretrain": None},
     "dqn_pretrained":      {"kind": "agent", "algorithm": "dqn", "llm": True, "pretrain": "dqn_llm",
                             "adapt": True},
     "dqn_zeroshot":        {"kind": "agent", "algorithm": "dqn", "llm": False, "pretrain": "dqn_llm",
@@ -227,7 +228,8 @@ def run_pretrain(job: Job, config: ExperimentConfig, out_dir: Path) -> dict:
                      shaping_gamma=1.0 if spec["algorithm"] == "bandit" else agent_config.gamma),
         _scorer(config) if spec["llm"] else None, log)
     agent = QAgent(agent_config, rewarder=rewarder)
-    settings = EnvSettings(max_steps=config.episode_steps, settle_quiet_ms=config.settle_quiet_ms)
+    settings = EnvSettings(max_steps=config.episode_steps, settle_quiet_ms=config.settle_quiet_ms,
+                           capture_screenshots=False)
     curve: list[dict] = []
 
     import contextlib
@@ -289,7 +291,8 @@ def run_hunt_job(job: Job, config: ExperimentConfig, out_dir: Path) -> dict:
     from ..oracle import PlaywrightTrajectoryRunner, VerificationPipeline
 
     app = load_app(job.fold)
-    settings = EnvSettings(max_steps=config.episode_steps, settle_quiet_ms=config.settle_quiet_ms)
+    settings = EnvSettings(max_steps=config.episode_steps, settle_quiet_ms=config.settle_quiet_ms,
+                           capture_screenshots=False)
     policy, description = _build_policy(job, config, out_dir, app.manifest.name)
     with serve_app(app) as urls:
         def runner(build: str) -> PlaywrightTrajectoryRunner:
