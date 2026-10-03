@@ -197,7 +197,8 @@ class FixedScorer:
         value = self.table.get(url.rsplit("/", 1)[-1])
         if value is None:
             return None
-        return type("J", (), {"value": value})()
+        stage = "outcome_displayed" if value >= 1.0 else "task_in_progress"
+        return type("J", (), {"value": value, "stage": stage})()
 
     def config(self) -> dict:
         return {}
@@ -228,13 +229,17 @@ def test_the_progress_record_pays_only_new_episode_maxima_and_resets_each_episod
 
 
 def test_the_outcome_bonus_pays_once_per_outcome_state_per_episode():
-    scorer = FixedScorer({"home": 0.0, "form": 0.6, "done": 1.0, "receipt": 0.9})
+    scorer = FixedScorer({"home": 0.0, "form": 0.6, "done": 1.0, "receipt": 1.0,
+                          "almost": 0.9})
     composer = RewardComposer(RewardConfig(llm_weight=0.0001, outcome_bonus=3.0), scorer)
     composer.start_episode()
     paid = [composer.compute(page(a, []), page(b, []), 0.0)[1]["llm_shaping"]
-            for a, b in (("home", "form"), ("form", "done"), ("done", "form"),
-                         ("form", "done"), ("done", "receipt"))]
-    assert [round(x) for x in paid] == [0, 3, 0, 0, 3]
+            for a, b in (("home", "form"), ("form", "almost"), ("almost", "done"),
+                         ("done", "form"), ("form", "done"), ("done", "receipt"))]
+    # "almost" scores 9 but is not a committed outcome: it earns no bonus.
+    assert [round(x) for x in paid] == [0, 0, 3, 0, 0, 3]
+    best, outcomes = composer.episode_state()
+    assert best == pytest.approx(1.0) and outcomes == pytest.approx(2 / 3)
     composer.start_episode()
     assert round(composer.compute(page("form", []), page("done", []), 0.0)[1]["llm_shaping"]) == 3
 

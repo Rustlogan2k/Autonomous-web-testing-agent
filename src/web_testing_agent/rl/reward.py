@@ -76,7 +76,7 @@ record bonus was collected almost entirely on reaching *any* form; completing th
 added 0.2. Traced on the pretrained agent: its highest Q-values were links to information
 pages, because five of them are five novel states per episode, and nothing paid for
 finishing. So a sparse term pays `outcome_bonus` the first time in an episode that each
-distinct state the model judges a *committed outcome* (Phi >= `outcome_threshold`) is
+distinct state the model places in the `outcome_displayed` stage is
 reached. Bounded per episode by the number of outcome states, unfarmable for the same reason
 as the record, and aimed exactly where functional faults become observable.
 """
@@ -96,9 +96,11 @@ class RewardConfig:
     llm_weight: float = 0.0
     #: "record" (episodic progress record, the default) or "potential" (shaping).
     llm_mode: str = "record"
-    #: Sparse term: paid once per episode per distinct state judged a committed outcome.
+    #: Sparse term: paid once per episode per distinct state the model places in the
+    #: `outcome_displayed` stage (a task committed and its outcome shown). The stage, not a
+    #: threshold on the score: a 9 means "between ready to commit and committed", and an
+    #: unsubmitted edit form was measured to receive it.
     outcome_bonus: float = 3.0
-    outcome_threshold: float = 0.9
     #: Discount inside the shaping term. Set to the agent's gamma for the bootstrapped
     #: learner and to 1.0 for the myopic one.
     shaping_gamma: float = 0.95
@@ -152,6 +154,7 @@ class RewardComposer:
         self.missing_potential = 0
         self.total_shaping = 0.0
         self._last_potential: tuple[str, float | None] = ("", None)
+        self._last_stage = ""
         #: Highest potential reached this episode; None until the episode's first step.
         self._episode_best: float | None = None
         self._episode_outcomes: set[str] = set()
@@ -174,7 +177,7 @@ class RewardComposer:
         page = info.get("page") or {}
         # `s'` of one step is `s` of the next. The digest is recomputed only when the page
         # content differs; two states with one fingerprint can still differ in their text.
-        marker = f"{state_key}:{hash(page.get('html', ''))}"
+        marker = f"{state_key}:{hash(page.get('html', ''))}:{hash(page.get('visible_text') or '')}"
         if marker == self._last_potential[0]:
             return self._last_potential[1]
         judgment = self.scorer.potential(page.get("url", ""), page.get("html", ""),
@@ -182,7 +185,19 @@ class RewardComposer:
                                          visible_text=page.get("visible_text"))
         value = judgment.value if judgment is not None else None
         self._last_potential = (marker, value)
+        self._last_stage = judgment.stage if judgment is not None else ""
         return value
+
+    def episode_state(self) -> tuple[float, float]:
+        """`(best progress this episode, outcome bonuses paid this episode)`, normalised.
+
+        Both LLM terms depend on them, so they belong in the observation: without them the
+        same state and action can pay +3 on the first arrival of an episode and 0 on the
+        next with an identical input, which is the non-Markov gap the env's own context
+        slots were added to close for its novelty and gate terms.
+        """
+        best = self._episode_best if self._episode_best is not None else 0.0
+        return float(best), min(len(self._episode_outcomes) / 3.0, 1.0)
 
     def compute(self, before: dict, after: dict, env_reward: float,
                 extra: dict | None = None) -> tuple[float, dict]:
@@ -207,7 +222,7 @@ class RewardComposer:
                     shaping = config.llm_weight * max(0.0, phi_after - self._episode_best)
                     self._episode_best = max(self._episode_best, phi_after)
                     state_key = after.get("state_key", "")
-                    if (config.outcome_bonus and phi_after >= config.outcome_threshold
+                    if (config.outcome_bonus and self._last_stage == "outcome_displayed"
                             and state_key not in self._episode_outcomes):
                         self._episode_outcomes.add(state_key)
                         shaping += config.outcome_bonus

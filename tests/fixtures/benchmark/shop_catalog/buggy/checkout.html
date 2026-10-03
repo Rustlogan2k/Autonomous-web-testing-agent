@@ -75,7 +75,7 @@
       // The guard the confirmation page depends on: an order may only be placed with a
       // syntactically valid email and a non-empty postcode.
       var emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contact);
-      var postcodeOk = true;  // seeded: postcode guard removed
+      var postcodeOk = true;
       if (!emailOk || !postcodeOk) {
         warning.classList.remove('hidden');
         return;

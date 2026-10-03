@@ -83,7 +83,10 @@ def pretrain(agent: QAgent, apps: list[SuiteApp], urls: dict[str, str], *,
                     report.steps[app_id] += 1
                     seen[app_id].add(info.get("state_key", ""))
                     episode_reward += float(reward)
-                    done = bool(terminated or truncated) or report.steps[app_id] >= steps_per_app
+                    # Only a real episode end is terminal. Running out of this application's
+                    # budget mid-episode is not: those pending windows are flushed with a
+                    # bootstrap when the agent switches application.
+                    done = bool(terminated or truncated)
                     agent.observe_transition(before, action, float(reward), info,
                                              bool(terminated), done)
                     if terminated or truncated:

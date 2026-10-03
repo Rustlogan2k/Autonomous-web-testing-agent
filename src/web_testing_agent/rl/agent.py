@@ -32,6 +32,14 @@ of the experiment cannot drift apart in anything but the thing being varied:
 * zero-shot -- weights loaded, `learn=False`. It still updates its visit counts, because
   those are observations about the run, not learned parameters.
 
+**Exploration is identical across learning arms on the target.** Every learning arm runs
+the same epsilon schedule and guide probability on the held-out application
+(`experiments.transfer.ExperimentConfig.target_epsilon`), so the expected number of
+guided actions is the same in each and the initial weights are the only difference. An
+earlier configuration gave scratch arms epsilon 1.0 -> 0.1 and pretrained arms 0.2 -> 0.05,
+which hands roughly five times as many decisions to the search guide in the scratch arm and
+would have confounded "transfer helps" with "less search was used".
+
 **Why exploration is guided (measured, 2026-10-01).** With uniform-random exploration an
 agent pretrained for 3,000 steps on `shop_catalog` never once reached the order
 confirmation: the checkout is a 7-9 action chain that needs valid values typed into two
@@ -43,9 +51,7 @@ function cannot learn the worth of a state it has never seen.
 So the exploratory action is usually taken from the non-learning search priority
 (`rl.search`), computed on the agent's own feature vector, which does reach deep states.
 Q-learning is off-policy: transitions produced by the guide are learned from like any
-other, and the greedy policy is the agent's own. Scratch and pretrained arms explore with
-the identical mechanism, so it cancels out of the transfer comparison; what it changes is
-which transitions the learner gets to see.
+other, and the greedy policy is the agent's own.
 """
 
 from __future__ import annotations
@@ -62,7 +68,17 @@ from torch.nn import functional as F  # noqa: N812
 
 from ..envs.types import ActionSpec
 from ..utils.logging import get_logger
-from .features import ACTION_DIM, FEATURE_VERSION, STATE_DIM, Encoded, FeatureExtractor
+from .features import (
+    ACTION_DIM,
+    FEATURE_VERSION,
+    STATE_DIM,
+    STATE_FIELDS,
+    Encoded,
+    FeatureExtractor,
+)
+
+_LLM_STATE_SLOTS = (STATE_FIELDS.index("llm_best_progress_this_episode"),
+                    STATE_FIELDS.index("llm_outcomes_paid_this_episode"))
 from .network import TransferQNetwork
 from .replay import PrioritizedReplay, Transition, collate
 from .reward import RewardComposer
@@ -248,7 +264,7 @@ class QAgent:
 
     def act(self, observation: dict, info: dict) -> int:  # noqa: ARG002 - reads no pixels
         if self._current is None or self._current_info_id != id(info):
-            self._current = self.features.encode(info)
+            self._current = self._encode(info)
             self._current_info_id = id(info)
         encoded = self._current
         if encoded.count == 0:
@@ -269,13 +285,15 @@ class QAgent:
         previous = self._current
         executed: ActionSpec | None = after.get("action_spec")
         self.features.record(before, executed, after)
-        following = self.features.encode(after)
-        self._current, self._current_info_id = following, id(after)
-        self.stats.steps += 1
-
         total, _components = self.rewarder.compute(
             before, after, reward, extra={"app": self._app, "action_type":
                                           executed.action_type.value if executed else ""})
+        # Encoded after the reward is composed, so the LLM-history slots describe the
+        # episode as it stands when the agent next acts.
+        following = self._encode(after)
+        self._current, self._current_info_id = following, id(after)
+        self.stats.steps += 1
+
         if previous is None or previous.count == 0 or not self.config.learn:
             return
 
@@ -300,6 +318,13 @@ class QAgent:
             for _ in range(self.config.gradient_steps):
                 self._gradient_step()
             self.stats.learn_seconds += time.monotonic() - started
+
+    def _encode(self, info: dict) -> Encoded:
+        encoded = self.features.encode(info)
+        best, outcomes = self.rewarder.episode_state()
+        encoded.state[_LLM_STATE_SLOTS[0]] = best
+        encoded.state[_LLM_STATE_SLOTS[1]] = outcomes
+        return encoded
 
     def _guide_scores(self, block: np.ndarray) -> np.ndarray:
         """The search priority's scores for these actions, from the agent's own features."""

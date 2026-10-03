@@ -56,7 +56,7 @@ PATCHES: tuple[Patch, ...] = (
         # postcode. The email guard is deliberately left intact: a fault that disables
         # every check is trivially findable and does not discriminate between policies.
         find="      var postcodeOk = postcode.length >= 3;",
-        replace="      var postcodeOk = true;  // seeded: postcode guard removed",
+        replace="      var postcodeOk = true;",
         why="constraint bypass: a declared validation rule is not enforced",
     ),
 )

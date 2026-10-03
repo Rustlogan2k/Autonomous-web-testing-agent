@@ -53,11 +53,12 @@ class ExperimentConfig:
     #: a GPU, running from a cache shipped with the experiment.
     llm_offline: bool = False
     max_minimization_trials: int = 30
-    #: Epsilon schedule of an agent learning from scratch on the target: 1.0 -> 0.1 over
-    #: 60% of the budget, the schedule every earlier learned arm in this project used.
-    scratch_epsilon: tuple[float, float, float] = (1.0, 0.10, 0.60)
-    #: A pretrained agent starts from a prior worth exploiting: 0.2 -> 0.05 over 30%.
-    pretrained_epsilon: tuple[float, float, float] = (0.20, 0.05, 0.30)
+    #: ONE epsilon schedule for every learning arm on the held-out application, scratch
+    #: and pretrained alike: (start, end, fraction of the budget to decay over). Exploratory
+    #: actions are mostly the search guide's, so unequal schedules would hand one arm
+    #: several times as many search-driven decisions as the other and confound the
+    #: transfer comparison with "how much search was used" (code review, 2026-10-03).
+    target_epsilon: tuple[float, float, float] = (0.50, 0.05, 0.50)
     pretrain_epsilon: tuple[float, float, float] = (1.0, 0.10, 0.50)
 
     def to_dict(self) -> dict:
@@ -265,7 +266,7 @@ def _build_policy(job: Job, config: ExperimentConfig, out_dir: Path, app_name: s
 
     log = RewardLog(Path(out_dir) / "reward_logs" / f"{job.job_id}.jsonl", run=job.to_dict())
     pretrained = spec.get("pretrain")
-    schedule = config.pretrained_epsilon if pretrained else config.scratch_epsilon
+    schedule = config.target_epsilon
     agent_config = AgentConfig(
         algorithm=spec["algorithm"], seed=job.seed, total_steps=config.budget, gamma=0.95,
         learn=bool(spec.get("adapt", True)) if pretrained else True,
@@ -363,6 +364,14 @@ def run_schedule(schedule: Schedule) -> dict:
 
     out_dir = Path(schedule.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    existing = out_dir / "experiment.json"
+    if existing.is_file():
+        # Resuming is only meaningful under the configuration the finished jobs ran with;
+        # otherwise old checkpoints and results would be mixed silently with new ones.
+        previous = json.loads(existing.read_text(encoding="utf-8")).get("config")
+        if previous is not None and previous != json.loads(json.dumps(schedule.config.to_dict())):
+            raise RuntimeError(f"{out_dir} was started with a different ExperimentConfig; "
+                               f"use a new --out-dir rather than mixing configurations")
     _write_json(out_dir / "experiment.json", {
         "config": schedule.config.to_dict(), "jobs": [j.to_dict() for j in schedule.jobs],
         "provenance": provenance(schedule.config)})

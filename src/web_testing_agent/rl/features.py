@@ -53,7 +53,7 @@ from ..agents.semantic_action_features import (
 from ..agents.semantic_labels import LABEL_DIM
 from ..envs.types import EPISODE_CONTEXT_DIM, MAX_ACTIONS, ActionSpec, ActionType
 
-FEATURE_VERSION = "v3.2026-09-30"
+FEATURE_VERSION = "v3.1.2026-10-03"
 
 # -- action blocks -----------------------------------------------------------------------
 
@@ -124,6 +124,9 @@ STATE_FIELDS: tuple[str, ...] = (
     "action_count", "untried_here_fraction", "untried_episode_fraction",
     "newly_revealed_count", "text_field_count", "fields_filled_fraction",
     "toggles_on_fraction", "steps_since_page_changed",
+    # Episode history the LLM reward terms depend on; written by the agent from its reward
+    # composer (zero for an agent without the LLM term). See `RewardComposer.episode_state`.
+    "llm_best_progress_this_episode", "llm_outcomes_paid_this_episode",
 )
 STATE_DIM = len(STATE_FIELDS)
 
@@ -437,6 +440,7 @@ class FeatureExtractor:
             sum(1 for c in text_fields if c.value) / len(text_fields) if text_fields else 0.0,
             sum(1 for c in toggles if c.checked) / len(toggles) if toggles else 0.0,
             min(self._since_change / 10.0, 1.0),
+            0.0, 0.0,
         ], dtype=np.float32)
         return np.concatenate([context, tail])
 
