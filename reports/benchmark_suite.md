@@ -17,4 +17,4 @@
 | support_portal | Larkfield Broadband care desk |  | sessionStorage draft (larkfiel | SUPP-01 | constraint_bypass | 9 → 9 | 1 | nothing verified | 0 |
 |  |  |  |  | SUPP-02 | broken_transition | 7 → 7 | 1 |  |  |
 
-Witness → minimized: the reachability witness's length and the length delta debugging reduced it to while it still fired on the faulty build and stayed silent on the clean one. H: steps between the triggering action and the page where the violation is visible.
+Witness → minimized: the reachability witness's length and the length delta debugging reduced it to while it still fired on the faulty build and stayed silent on the faulty build without that fault's own patch (its per-fault control). H: steps between the triggering action and the page where the violation is visible.

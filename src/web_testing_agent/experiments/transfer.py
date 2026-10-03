@@ -149,6 +149,72 @@ def build_plan(apps: list[str], seeds: list[int], arms: list[str],
     return jobs
 
 
+#: The pre-registered top-up rule (pre-registration section 8, applied by the first
+#: amendment to the primary tester's pair as well): after seeds 0-2, a fold whose paired
+#: difference in restricted mean time-to-first-verified-fault is under the threshold gets
+#: seeds 3-5, for those two arms only, under the identical protocol.
+TOP_UP_PAIRS: tuple[tuple[str, str], ...] = (("dqn_pretrained", "dqn_scratch"),
+                                              ("bandit_pretrained", "bandit_scratch"))
+TOP_UP_THRESHOLD = 200.0  # 10% of the pre-registered 2,000-step budget
+INITIAL_SEEDS = (0, 1, 2)
+TOP_UP_SEEDS = (3, 4, 5)
+
+
+def initial_hunt_runs(out_dir: Path) -> list:
+    """Every successful buggy-build hunt of seeds 0-2 in an experiment directory."""
+    from ..evaluation.survival import Run
+
+    runs = []
+    for path in sorted((Path(out_dir) / "results").glob("hunt__*.json")):
+        record = json.loads(path.read_text(encoding="utf-8"))
+        job = record.get("job") or {}
+        if (record.get("status") != "ok" or job.get("build", "buggy") != "buggy"
+                or job.get("seed") not in INITIAL_SEEDS):
+            continue
+        hunt = record["hunt"]
+        runs.append(Run(job["fold"], job["arm"], job["seed"],
+                        float(hunt["time_to_first_verified"]), bool(hunt["censored"])))
+    return runs
+
+
+def top_up_folds(runs: list, budget: float) -> dict[str, list[str]]:
+    """`{"treatment - control": [folds]}` that the top-up rule sends to seeds 3-5.
+
+    Decided on seeds 0-2 only, and only for folds where both arms have all three: a fold
+    with a missing seed is undecided (rerun the failed job first), never silently topped
+    up or skipped on partial data.
+    """
+    from ..evaluation.survival import fold_means
+
+    initial = [r for r in runs if r.seed in INITIAL_SEEDS]
+    means = fold_means(initial, budget)
+    out: dict[str, list[str]] = {}
+    for treatment, control in TOP_UP_PAIRS:
+        folds = []
+        for fold in sorted({r.fold for r in initial}):
+            seeds = {arm: {r.seed for r in initial if r.fold == fold and r.arm == arm}
+                     for arm in (treatment, control)}
+            if any(seeds[arm] != set(INITIAL_SEEDS) for arm in seeds):
+                continue
+            if abs(means[(fold, treatment)] - means[(fold, control)]) < TOP_UP_THRESHOLD:
+                folds.append(fold)
+        out[f"{treatment} - {control}"] = folds
+    return out
+
+
+def top_up_plan(out_dir: Path, apps: list[str], arms: list[str], budget: float) -> list[Job]:
+    """The extra jobs the top-up rule calls for, for the pairs whose arms are both in `arms`."""
+    decided = top_up_folds(initial_hunt_runs(out_dir), budget)
+    jobs: dict[str, Job] = {}
+    for treatment, control in TOP_UP_PAIRS:
+        if treatment not in arms or control not in arms:
+            continue
+        for fold in decided[f"{treatment} - {control}"]:
+            for job in build_plan(apps, list(TOP_UP_SEEDS), [treatment, control], folds=[fold]):
+                jobs.setdefault(job.job_id, job)
+    return list(jobs.values())
+
+
 # -- provenance ----------------------------------------------------------------------------
 
 

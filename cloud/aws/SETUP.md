@@ -5,15 +5,17 @@ create stays on your machine in the AWS CLI's credential store and is never past
 chat, a file in this repository, or a commit. The agent working in this repository runs the
 `aws` CLI with `--profile wta`, and can do only what the policy below allows:
 
-- launch the listed CPU instance types and stop/terminate only instances tagged `project=wta`;
+- launch the listed instance types (c7i.xlarge/2xlarge/4xlarge, g4dn.2xlarge/4xlarge),
+  spot only, and stop/terminate only instances tagged `project=wta`;
 - read and write one S3 bucket;
 - create and read a cost budget.
 
-It cannot create users, change IAM, touch other buckets, or launch GPU or other large
-instance types.
+It cannot create users, change IAM, touch other buckets, or launch any other instance type.
+Root credentials are never used: the launcher refuses them.
 
 All commands are PowerShell. Replace `wta-experiments-<yourname>` with a globally unique
-bucket name; region is `us-east-1` throughout (cheapest spot capacity for these types).
+bucket name. This project's bucket and region are recorded in `cloud/aws/config.env`
+(`ap-south-1`, Mumbai); the commands below use that region.
 
 ## 1. Install the AWS CLI
 
@@ -39,7 +41,7 @@ aws --version
 aws configure --profile wta
 #   AWS Access Key ID:     <paste>
 #   AWS Secret Access Key: <paste>
-#   Default region name:   us-east-1
+#   Default region name:   ap-south-1
 #   Default output format: json
 aws sts get-caller-identity --profile wta     # must print the wta-operator ARN
 ```
@@ -51,7 +53,7 @@ with your own admin profile (or in CloudShell in the console).
 
 ```powershell
 $BUCKET = "wta-experiments-<yourname>"
-aws s3 mb "s3://$BUCKET" --region us-east-1
+aws s3 mb "s3://$BUCKET" --region ap-south-1
 
 # replace REPLACE_WITH_BUCKET in cloud/aws/worker-role-policy.json first
 aws iam create-role --role-name wta-worker-role --assume-role-policy-document file://cloud/aws/worker-role-trust.json
@@ -60,38 +62,53 @@ aws iam create-instance-profile --instance-profile-name wta-worker-profile
 aws iam add-role-to-instance-profile --instance-profile-name wta-worker-profile --role-name wta-worker-role
 ```
 
-## 5. Check the spot vCPU quota
+## 5. Check the spot vCPU quotas
 
-New accounts often have a small limit. The experiment uses one 16- or 32-vCPU instance.
+New accounts often have small limits, and a new account's GPU limit is usually 0.
 
 ```powershell
-aws service-quotas get-service-quota --service-code ec2 --quota-code L-34B43A08 --region us-east-1 --profile wta --query "Quota.Value"
+aws service-quotas get-service-quota --service-code ec2 --quota-code L-34B43A08 --region ap-south-1 --profile wta --query "Quota.Value"
+aws service-quotas get-service-quota --service-code ec2 --quota-code L-3819A6DF --region ap-south-1 --profile wta --query "Quota.Value"
 ```
 
-`L-34B43A08` is "All Standard (A, C, D, H, I, M, R, T, Z) Spot Instance Requests" (vCPUs).
-If it is below 32, request an increase to 32 in the console (Service Quotas → Amazon EC2 →
-that quota). Approval is usually quick but can take a day.
+- `L-34B43A08`, "All Standard (A, C, D, H, I, M, R, T, Z) Spot Instance Requests": the CPU
+  instance needs 8 (c7i.2xlarge) or 16 (c7i.4xlarge).
+- `L-3819A6DF`, "All G and VT Spot Instance Requests": the GPU instance needs 16
+  (g4dn.4xlarge).
+
+Request increases in the console (Service Quotas → Amazon EC2 → the quota). Approval is
+often quick for CPU quotas and can take a day or two for GPU quotas.
 
 ## 6. Tell the agent
 
 Send three things: that the profile `wta` is configured, the **bucket name**, and an
-**email address** for the budget alert. Nothing else is needed — not the keys.
+**email address** for the budget alert. Nothing else is needed — not the keys. After the
+operator profile works, delete (or at least deactivate) any root access keys and enable MFA
+on the root user.
 
 ## What the agent will do with it, and what it will cost
 
-1. Upload the code at a fixed commit (as a `git archive` tarball) and the LLM judgment
-   cache to the bucket. Nothing is pushed to GitHub.
-2. Create an AWS Budget of **$40/month** with an email alert at 80%.
-3. Launch **one** spot `c7i.4xlarge` (16 vCPU, 32 GB; spot price roughly $0.25-0.35/h in
-   us-east-1, on-demand $0.71/h). It builds the Docker image, runs the experiment with 12
-   parallel browser workers, syncs results to S3 every 5 minutes, and **terminates itself**
-   when done or after a hard cap of 10 hours, whichever comes first.
-4. Download the results from S3 and analyse them locally.
+1. Create an AWS Budget of **$20** with email alerts at 50%, 80% and 100% (forecast).
+2. Upload the code at a fixed, committed revision (a `git archive` tarball; the launcher
+   refuses a dirty tree) and the LLM judgment cache to the bucket. Nothing is pushed to
+   GitHub.
+3. Launch two independent spot instances with `cloud/aws/launch_experiment.sh`:
+   - **GPU** (`g4dn.4xlarge`, 16 vCPU, one T4; about $0.40/h spot in ap-south-1): the arms
+     with the dynamic LLM reward and their pretraining. The pinned model runs in Ollama on
+     the T4, so states the cache has not seen are judged live; the launcher stops the
+     instance if the model digest differs from the pinned one.
+   - **CPU** (`c7i.2xlarge`, `NEEDS_LLM=0`): the arms without an LLM term (random, both
+     searches, both bandits, DQN without LLM). No model is installed.
+   Each builds the Docker image, runs its jobs with parallel browser workers, applies the
+   pre-registered top-up rule to its own primary pair (`--top-up`), syncs results to S3
+   every 5 minutes, and **terminates itself** when done, after 45 minutes with no log
+   output, or at a hard cap (14 h), whichever comes first. The root volume is deleted
+   with the instance. A relaunch with the same run name resumes.
+4. Download the results from S3 and analyse them locally (`scripts/analyze_transfer.py`).
 
-Estimated cost of the full leave-one-application-out experiment: **about $3-8** on spot,
-under $15 even at on-demand prices and with a second pass for extra arms. No GPU instance
-is used: the experiment is browser-bound, and the language-model judgments it needs are
-computed beforehand on the local GPU and shipped in the cache.
+Estimated cost of the full experiment: **about $5-7** in total, well under the $20 cap.
+No NAT gateway, load balancer, Elastic IP or other persistent infrastructure is created;
+the only standing resources are the S3 bucket and the IAM user and role.
 
 The agent asks before the first launch. To stop everything at any time:
 

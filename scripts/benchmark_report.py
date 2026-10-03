@@ -80,7 +80,7 @@ def main() -> int:
                 f"{(walk.get('clean') or {}).get('raw_candidates', '—') if number == 0 else ''} |")
     lines += ["", "Witness → minimized: the reachability witness's length and the length delta "
               "debugging reduced it to while it still fired on the faulty build and stayed silent "
-              "on the clean one. H: steps between the triggering action and the page where the "
+              "on the faulty build without that fault's own patch (its per-fault control). H: steps between the triggering action and the page where the "
               "violation is visible."]
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.with_suffix(".md").write_text("\n".join(lines) + "\n", encoding="utf-8")

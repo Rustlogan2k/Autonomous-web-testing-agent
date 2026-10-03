@@ -39,6 +39,7 @@ from web_testing_agent.evaluation.survival import (  # noqa: E402
     paired_fold_difference,
     stratified_logrank,
 )
+from web_testing_agent.experiments.transfer import top_up_folds  # noqa: E402
 
 #: Comparisons reported, as (treatment, control, why). The first is the owner-directed
 #: primary tester against its from-scratch twin; the pre-registered bandit comparison is
@@ -53,8 +54,6 @@ COMPARISONS: list[tuple[str, str, str]] = [
     ("dqn_pretrained", "dqn_zeroshot", "ablation: online adaptation on vs off"),
     ("dqn_scratch", "bandit_scratch", "ablation: bootstrapped vs myopic, from scratch"),
 ]
-
-TOP_UP_THRESHOLD = 200.0  # pre-registration section 8: 10% of the 2,000-step budget
 
 
 def load(directory: Path) -> tuple[list[dict], list[dict], dict]:
@@ -155,13 +154,8 @@ def analyse(directory: Path, dev_apps: list[str]) -> dict:
         return out
 
     all_comparisons = comparisons_on(folds)
-    top_up = {}
-    for comparison in all_comparisons:
-        if (comparison["treatment"], comparison["control"]) in (
-                ("bandit_pretrained", "bandit_scratch"), ("dqn_pretrained", "dqn_scratch")):
-            top_up[f"{comparison['treatment']} - {comparison['control']}"] = sorted(
-                f for f, d in comparison["per_fold_difference"].items()
-                if abs(d) < TOP_UP_THRESHOLD)
+    # Decided on seeds 0-2, exactly as the runner decided it; never re-decided on 0-5.
+    top_up = top_up_folds(runs, budget)
 
     per_fold_table = defaultdict(dict)
     for row in buggy:

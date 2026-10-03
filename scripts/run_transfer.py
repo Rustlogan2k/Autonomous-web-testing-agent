@@ -12,6 +12,11 @@ is skipped. Results land in `<out-dir>/results/*.json`, one per job, with checkp
 `<out-dir>/checkpoints/`, per-step reward logs in `<out-dir>/reward_logs/` and one log per
 job in `<out-dir>/logs/`. `scripts/analyze_transfer.py` turns the directory into the report.
 
+With `--top-up`, once every job has run, the pre-registered top-up rule is applied
+mechanically: each primary pair (dqn_pretrained/dqn_scratch, bandit_pretrained/
+bandit_scratch) whose two arms are both in `--arms` gets seeds 3-5 on every fold where its
+seeds-0-2 paired difference is under 200 steps. Nothing is chosen by hand.
+
 Refuses to start unless `reports/benchmark_validation.json` admits every application the
 plan uses, at the commit being run: a fold whose fault is unreachable measures the fixture.
 """
@@ -33,6 +38,7 @@ from web_testing_agent.experiments.transfer import (  # noqa: E402
     Schedule,
     build_plan,
     run_schedule,
+    top_up_plan,
 )
 
 VALIDATION = REPO_ROOT / "reports" / "benchmark_validation.json"
@@ -64,6 +70,8 @@ def main() -> int:
                         help="replay cached LLM judgments only; never call the model")
     parser.add_argument("--skip-validation-gate", action="store_true",
                         help="development only: run on applications not yet admitted")
+    parser.add_argument("--top-up", action="store_true",
+                        help="then apply the pre-registered 3 -> 6 seed top-up rule")
     parser.add_argument("--dry-run", action="store_true", help="print the plan and exit")
     args = parser.parse_args()
 
@@ -89,6 +97,14 @@ def main() -> int:
     summary = run_schedule(Schedule(jobs=jobs, out_dir=args.out_dir, config=config,
                                     workers=args.workers))
     print(json.dumps(summary, indent=2))
+    if args.top_up:
+        extra = top_up_plan(args.out_dir, apps, args.arms, float(args.budget))
+        print(f"top-up rule: {len(extra)} jobs "
+              f"({sorted({(j.arm or j.pretrain, j.fold) for j in extra})})")
+        if extra:
+            summary = run_schedule(Schedule(jobs=jobs + extra, out_dir=args.out_dir,
+                                            config=config, workers=args.workers))
+            print(json.dumps(summary, indent=2))
     return 0 if not summary["failed"] else 1
 
 

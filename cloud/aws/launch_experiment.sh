@@ -43,6 +43,9 @@ PROFILE="${AWS_PROFILE:-wta}"
 INSTANCE_TYPE="${INSTANCE_TYPE:-g4dn.4xlarge}"
 WORKERS="${WORKERS:-12}"
 MAX_HOURS="${MAX_HOURS:-14}"
+# NEEDS_LLM=0 for an instance that runs only arms without the LLM reward (random, search,
+# bandit, DQN without LLM): it then skips the model entirely and can be a CPU instance.
+NEEDS_LLM="${NEEDS_LLM:-1}"
 IDLE_MINUTES="${IDLE_MINUTES:-45}"
 VOLUME_GB="${VOLUME_GB:-100}"
 MODEL="qwen2.5:7b-instruct"
@@ -58,7 +61,7 @@ if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
   exit 2
 fi
 COMMIT="$(git rev-parse HEAD)"; SHORT="${COMMIT:0:10}"
-echo "caller=$CALLER run=$RUN_NAME commit=$SHORT type=$INSTANCE_TYPE workers=$WORKERS max_hours=$MAX_HOURS"
+echo "caller=$CALLER run=$RUN_NAME commit=$SHORT type=$INSTANCE_TYPE workers=$WORKERS max_hours=$MAX_HOURS needs_llm=$NEEDS_LLM"
 
 AMI="$("$AWS" ssm get-parameters "${A[@]}" \
   --names /aws/service/deeplearning/ami/x86_64/base-oss-nvidia-driver-gpu-ubuntu-22.04/latest/ami-id \
@@ -81,12 +84,14 @@ sync_out() {
 aws s3 cp s3://$BUCKET/code/$SHORT/code.tar.gz - | tar -xz
 aws s3 cp s3://$BUCKET/code/$SHORT/caches.tar.gz - | tar -xz
 aws s3 sync s3://$BUCKET/runs/$RUN_NAME \$RUN --exclude 'llm_cache/*' --only-show-errors || true
-# The dynamic LLM reward: Ollama on the T4, the same pinned model as development.
-curl -fsSL https://ollama.com/install.sh | sh
-systemctl enable --now ollama || (nohup ollama serve >/var/log/ollama.log 2>&1 &)
-for i in \$(seq 1 60); do curl -s http://127.0.0.1:11434/api/tags && break; sleep 2; done
-ollama pull $MODEL
-curl -s http://127.0.0.1:11434/api/tags | grep -q '"digest":"$MODEL_DIGEST' || { echo "MODEL DIGEST MISMATCH"; sync_out; shutdown -h now; }
+if [ "$NEEDS_LLM" = 1 ]; then
+  # The dynamic LLM reward: Ollama on the T4, the same pinned model as development.
+  curl -fsSL https://ollama.com/install.sh | sh
+  systemctl enable --now ollama || (nohup ollama serve >/var/log/ollama.log 2>&1 &)
+  for i in \$(seq 1 60); do curl -s http://127.0.0.1:11434/api/tags && break; sleep 2; done
+  ollama pull $MODEL
+  curl -s http://127.0.0.1:11434/api/tags | grep -q '"digest":"$MODEL_DIGEST' || { echo "MODEL DIGEST MISMATCH"; sync_out; shutdown -h now; }
+fi
 docker build -t wta . || { echo "DOCKER BUILD FAILED"; sync_out; shutdown -h now; }
 ( while true; do sleep 300; sync_out; done ) &
 # Idle watchdog: every job writes its log continuously; silence means a hang.

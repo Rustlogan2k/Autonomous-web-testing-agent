@@ -3275,6 +3275,34 @@ give wide intervals.
 launcher (`cloud/aws/launch_experiment.sh`: spot CPU instance, hard self-termination, S3
 sync, offline LLM replay, budget alarm) is written but untested, and experiments run locally.
 
+### 2026-10-03 — two code reviews, a development check on booking_desk, and the freeze
+
+Recorded in full in `docs/methodology/2026-10-03-transfer-amendment-2.md`; the short form:
+
+- **Oracle review**: per-fault controls (the faulty build minus the candidate fault's own
+  patch) replace the clean-build control, because one fault's patch could make another
+  fault's assertion fire; failed controls reject; transient rejections retried; candidates
+  count distinct evidence; minimized traces re-held to the reproduction rule. All six
+  applications re-admitted under it (`reports/benchmark_validation.json`).
+- **RL review**: outcome bonus only at the model's `outcome_displayed` stage; two state slots
+  carry the LLM terms' episode history; one ε schedule for every learning arm; terminal
+  n-step windows; pretraining budget ends are not terminal; `dqn_scratch_nollm` added.
+- **booking_desk development check** found three general defects, each fixed for every arm:
+  `search_S` (and the learners' exploration guide) rewrote filled fields with every value
+  (new term `field_already_filled` −2.5); the LLM rubric scored the current page's
+  completeness, not progress through a multi-step task (prompt `progress-v3`, `STEP:` line
+  from `aria-current="step"`); the gate-reveal bonus paid single-page view switches and
+  never decayed across a run, so it dwarfed every other term (retention 0.8, run decay,
+  one control's worth per step). Scratch DQN on `shop_catalog` then verified at 750/596/572
+  (3/3 seeds); `booking_desk` (10-step witnesses, the deepest in the suite) stays censored
+  and is reported as is.
+- **Runner**: `--top-up` applies the pre-registered 3→6 seed rule mechanically.
+- **Cloud**: restricted IAM user `wta-operator` (profile `wta`), bucket in ap-south-1, $20
+  budget with alerts. The launcher now runs a GPU spot instance with the pinned model served
+  live (dynamic LLM reward, digest-checked) and a CPU spot instance (`NEEDS_LLM=0`) for the
+  arms without an LLM term. Waiting on the G-family spot vCPU quota (0 at the time of
+  writing).
+
 
 ## 6. Scoping decisions
 

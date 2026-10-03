@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T11:10:49+0530",
+  "generated_at": "2026-10-03T20:41:10+0530",
   "admitted": [
     "account_hub",
     "admin_records",
@@ -50,6 +50,11 @@
           "detail": "the assertion fires on the build with no seeded fault"
         },
         {
+          "name": "ACCT-01:witness_needs_its_own_patch",
+          "passed": true,
+          "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+        },
+        {
           "name": "ACCT-01:oracle_confirms",
           "passed": true,
           "detail": ""
@@ -61,6 +66,11 @@
         },
         {
           "name": "ACCT-01:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "ACCT-01:minimized_trace_needs_its_own_patch",
           "passed": true,
           "detail": ""
         },
@@ -85,6 +95,11 @@
           "detail": "the assertion fires on the build with no seeded fault"
         },
         {
+          "name": "ACCT-02:witness_needs_its_own_patch",
+          "passed": true,
+          "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+        },
+        {
           "name": "ACCT-02:oracle_confirms",
           "passed": true,
           "detail": ""
@@ -96,6 +111,11 @@
         },
         {
           "name": "ACCT-02:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "ACCT-02:minimized_trace_needs_its_own_patch",
           "passed": true,
           "detail": ""
         },
@@ -196,7 +216,7 @@
           ],
           "declared_shortest_path": 8,
           "verification_steps": 85,
-          "verification_seconds": 46.44
+          "verification_seconds": 64.66
         },
         {
           "fault_id": "ACCT-02",
@@ -244,7 +264,7 @@
           ],
           "declared_shortest_path": 7,
           "verification_steps": 78,
-          "verification_seconds": 55.69
+          "verification_seconds": 81.24
         }
       ],
       "random_walk": {
@@ -267,13 +287,13 @@
           "reached": 0,
           "rejections": {},
           "unique_states": 114,
-          "steps_per_second": 1.573,
+          "steps_per_second": 1.457,
           "verify_seconds": 0.0
         }
       },
-      "wall_clock_s": 904.5,
+      "wall_clock_s": 1059.99,
       "git": {
-        "commit": "7e353a73c276177d7a64c2df984dc2c0b1a074db",
+        "commit": "bab113f6f4a32485df3777857ce9f18958e8b3fe",
         "dirty": true
       },
       "env_settings": {
@@ -284,7 +304,8 @@
           "max_select_options": 4,
           "capture_field_labels": true,
           "disambiguate_shared_names": true
-        }
+        },
+        "capture_screenshots": true
       }
     },
     {
@@ -327,6 +348,11 @@
           "detail": "the assertion fires on the build with no seeded fault"
         },
         {
+          "name": "ADMIN-01:witness_needs_its_own_patch",
+          "passed": true,
+          "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+        },
+        {
           "name": "ADMIN-01:oracle_confirms",
           "passed": true,
           "detail": ""
@@ -338,6 +364,11 @@
         },
         {
           "name": "ADMIN-01:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "ADMIN-01:minimized_trace_needs_its_own_patch",
           "passed": true,
           "detail": ""
         },
@@ -362,6 +393,11 @@
           "detail": "the assertion fires on the build with no seeded fault"
         },
         {
+          "name": "ADMIN-02:witness_needs_its_own_patch",
+          "passed": true,
+          "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+        },
+        {
           "name": "ADMIN-02:oracle_confirms",
           "passed": true,
           "detail": ""
@@ -373,6 +409,11 @@
         },
         {
           "name": "ADMIN-02:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "ADMIN-02:minimized_trace_needs_its_own_patch",
           "passed": true,
           "detail": ""
         },
@@ -523,7 +564,7 @@
           ],
           "declared_shortest_path": 9,
           "verification_steps": 170,
-          "verification_seconds": 88.88
+          "verification_seconds": 126.81
         },
         {
           "fault_id": "ADMIN-02",
@@ -571,7 +612,7 @@
           ],
           "declared_shortest_path": 7,
           "verification_steps": 94,
-          "verification_seconds": 48.2
+          "verification_seconds": 80.25
         }
       ],
       "random_walk": {
@@ -594,13 +635,13 @@
           "reached": 1,
           "rejections": {},
           "unique_states": 51,
-          "steps_per_second": 5.111,
+          "steps_per_second": 3.787,
           "verify_seconds": 0.0
         }
       },
-      "wall_clock_s": 414.92,
+      "wall_clock_s": 607.92,
       "git": {
-        "commit": "7e353a73c276177d7a64c2df984dc2c0b1a074db",
+        "commit": "4b7d1c3ba40752f3d7b432fbb20f7bcd6f4dc4a7",
         "dirty": true
       },
       "env_settings": {
@@ -611,7 +652,8 @@
           "max_select_options": 4,
           "capture_field_labels": true,
           "disambiguate_shared_names": true
-        }
+        },
+        "capture_screenshots": true
       }
     },
     {
@@ -654,6 +696,11 @@
           "detail": "the assertion fires on the build with no seeded fault"
         },
         {
+          "name": "BOOK-01:witness_needs_its_own_patch",
+          "passed": true,
+          "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+        },
+        {
           "name": "BOOK-01:oracle_confirms",
           "passed": true,
           "detail": ""
@@ -665,6 +712,11 @@
         },
         {
           "name": "BOOK-01:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "BOOK-01:minimized_trace_needs_its_own_patch",
           "passed": true,
           "detail": ""
         },
@@ -689,6 +741,11 @@
           "detail": "the assertion fires on the build with no seeded fault"
         },
         {
+          "name": "BOOK-02:witness_needs_its_own_patch",
+          "passed": true,
+          "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+        },
+        {
           "name": "BOOK-02:oracle_confirms",
           "passed": true,
           "detail": ""
@@ -700,6 +757,11 @@
         },
         {
           "name": "BOOK-02:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "BOOK-02:minimized_trace_needs_its_own_patch",
           "passed": true,
           "detail": ""
         },
@@ -817,7 +879,7 @@
           ],
           "declared_shortest_path": 10,
           "verification_steps": 175,
-          "verification_seconds": 104.72
+          "verification_seconds": 145.27
         },
         {
           "fault_id": "BOOK-02",
@@ -883,7 +945,7 @@
           ],
           "declared_shortest_path": 10,
           "verification_steps": 166,
-          "verification_seconds": 98.22
+          "verification_seconds": 148.49
         }
       ],
       "random_walk": {
@@ -906,13 +968,13 @@
           "reached": 0,
           "rejections": {},
           "unique_states": 19,
-          "steps_per_second": 2.974,
+          "steps_per_second": 2.557,
           "verify_seconds": 0.0
         }
       },
-      "wall_clock_s": 647.0,
+      "wall_clock_s": 853.5,
       "git": {
-        "commit": "7e353a73c276177d7a64c2df984dc2c0b1a074db",
+        "commit": "bab113f6f4a32485df3777857ce9f18958e8b3fe",
         "dirty": true
       },
       "env_settings": {
@@ -923,7 +985,8 @@
           "max_select_options": 4,
           "capture_field_labels": true,
           "disambiguate_shared_names": true
-        }
+        },
+        "capture_screenshots": true
       }
     },
     {
@@ -966,6 +1029,11 @@
           "detail": "the assertion fires on the build with no seeded fault"
         },
         {
+          "name": "MEDIA-01:witness_needs_its_own_patch",
+          "passed": true,
+          "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+        },
+        {
           "name": "MEDIA-01:oracle_confirms",
           "passed": true,
           "detail": ""
@@ -977,6 +1045,11 @@
         },
         {
           "name": "MEDIA-01:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "MEDIA-01:minimized_trace_needs_its_own_patch",
           "passed": true,
           "detail": ""
         },
@@ -1001,6 +1074,11 @@
           "detail": "the assertion fires on the build with no seeded fault"
         },
         {
+          "name": "MEDIA-02:witness_needs_its_own_patch",
+          "passed": true,
+          "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+        },
+        {
           "name": "MEDIA-02:oracle_confirms",
           "passed": true,
           "detail": ""
@@ -1012,6 +1090,11 @@
         },
         {
           "name": "MEDIA-02:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "MEDIA-02:minimized_trace_needs_its_own_patch",
           "passed": true,
           "detail": ""
         },
@@ -1124,7 +1207,7 @@
           ],
           "declared_shortest_path": 6,
           "verification_steps": 63,
-          "verification_seconds": 42.2
+          "verification_seconds": 59.39
         },
         {
           "fault_id": "MEDIA-02",
@@ -1164,7 +1247,7 @@
           ],
           "declared_shortest_path": 6,
           "verification_steps": 64,
-          "verification_seconds": 42.31
+          "verification_seconds": 59.22
         }
       ],
       "random_walk": {
@@ -1187,13 +1270,13 @@
           "reached": 1,
           "rejections": {},
           "unique_states": 74,
-          "steps_per_second": 1.781,
+          "steps_per_second": 1.613,
           "verify_seconds": 0.0
         }
       },
-      "wall_clock_s": 802.56,
+      "wall_clock_s": 961.03,
       "git": {
-        "commit": "7e353a73c276177d7a64c2df984dc2c0b1a074db",
+        "commit": "bab113f6f4a32485df3777857ce9f18958e8b3fe",
         "dirty": true
       },
       "env_settings": {
@@ -1204,7 +1287,8 @@
           "max_select_options": 4,
           "capture_field_labels": true,
           "disambiguate_shared_names": true
-        }
+        },
+        "capture_screenshots": true
       }
     },
     {
@@ -1247,6 +1331,11 @@
           "detail": "the assertion fires on the build with no seeded fault"
         },
         {
+          "name": "SHOP-01:witness_needs_its_own_patch",
+          "passed": true,
+          "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+        },
+        {
           "name": "SHOP-01:oracle_confirms",
           "passed": true,
           "detail": ""
@@ -1258,6 +1347,11 @@
         },
         {
           "name": "SHOP-01:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "SHOP-01:minimized_trace_needs_its_own_patch",
           "passed": true,
           "detail": ""
         },
@@ -1274,12 +1368,17 @@
         {
           "name": "SHOP-02:witness_fires_on_faulty_build",
           "passed": true,
-          "detail": "url_matches: violated=True inconclusive=False URL must match 'checkout\\\\.html' observed='http://127.0.0.1:53484/confirmation.html'; region_empty: violated=True inconclusive=False region 'confirm_postcode': the application's contract requires a value here observed=''"
+          "detail": "url_matches: violated=True inconclusive=False URL must match 'checkout\\\\.html' observed='http://127.0.0.1:58942/confirmation.html'; region_empty: violated=True inconclusive=False region 'confirm_postcode': the application's contract requires a value here observed=''"
         },
         {
           "name": "SHOP-02:witness_silent_on_clean_build",
           "passed": true,
           "detail": "the assertion fires on the build with no seeded fault"
+        },
+        {
+          "name": "SHOP-02:witness_needs_its_own_patch",
+          "passed": true,
+          "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
         },
         {
           "name": "SHOP-02:oracle_confirms",
@@ -1293,6 +1392,11 @@
         },
         {
           "name": "SHOP-02:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "SHOP-02:minimized_trace_needs_its_own_patch",
           "passed": true,
           "detail": ""
         },
@@ -1368,8 +1472,8 @@
             }
           ],
           "declared_shortest_path": 8,
-          "verification_steps": 102,
-          "verification_seconds": 68.66
+          "verification_steps": 116,
+          "verification_seconds": 106.53
         },
         {
           "fault_id": "SHOP-02",
@@ -1409,8 +1513,8 @@
             }
           ],
           "declared_shortest_path": 7,
-          "verification_steps": 65,
-          "verification_seconds": 48.38
+          "verification_steps": 77,
+          "verification_seconds": 83.33
         }
       ],
       "random_walk": {
@@ -1433,13 +1537,13 @@
           "reached": 0,
           "rejections": {},
           "unique_states": 17,
-          "steps_per_second": 5.496,
+          "steps_per_second": 3.953,
           "verify_seconds": 0.0
         }
       },
-      "wall_clock_s": 363.73,
+      "wall_clock_s": 550.91,
       "git": {
-        "commit": "7e353a73c276177d7a64c2df984dc2c0b1a074db",
+        "commit": "4b7d1c3ba40752f3d7b432fbb20f7bcd6f4dc4a7",
         "dirty": true
       },
       "env_settings": {
@@ -1450,7 +1554,8 @@
           "max_select_options": 4,
           "capture_field_labels": true,
           "disambiguate_shared_names": true
-        }
+        },
+        "capture_screenshots": true
       }
     },
     {
@@ -1493,6 +1598,11 @@
           "detail": "the assertion fires on the build with no seeded fault"
         },
         {
+          "name": "SUPP-01:witness_needs_its_own_patch",
+          "passed": true,
+          "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+        },
+        {
           "name": "SUPP-01:oracle_confirms",
           "passed": true,
           "detail": ""
@@ -1504,6 +1614,11 @@
         },
         {
           "name": "SUPP-01:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "SUPP-01:minimized_trace_needs_its_own_patch",
           "passed": true,
           "detail": ""
         },
@@ -1528,6 +1643,11 @@
           "detail": "the assertion fires on the build with no seeded fault"
         },
         {
+          "name": "SUPP-02:witness_needs_its_own_patch",
+          "passed": true,
+          "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+        },
+        {
           "name": "SUPP-02:oracle_confirms",
           "passed": true,
           "detail": ""
@@ -1539,6 +1659,11 @@
         },
         {
           "name": "SUPP-02:minimized_trace_silent_on_clean",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "SUPP-02:minimized_trace_needs_its_own_patch",
           "passed": true,
           "detail": ""
         },
@@ -1649,7 +1774,7 @@
           ],
           "declared_shortest_path": 9,
           "verification_steps": 148,
-          "verification_seconds": 95.64
+          "verification_seconds": 134.88
         },
         {
           "fault_id": "SUPP-02",
@@ -1700,7 +1825,7 @@
           ],
           "declared_shortest_path": 7,
           "verification_steps": 87,
-          "verification_seconds": 49.34
+          "verification_seconds": 81.33
         }
       ],
       "random_walk": {
@@ -1723,13 +1848,13 @@
           "reached": 0,
           "rejections": {},
           "unique_states": 14,
-          "steps_per_second": 5.269,
+          "steps_per_second": 3.82,
           "verify_seconds": 0.0
         }
       },
-      "wall_clock_s": 416.55,
+      "wall_clock_s": 614.81,
       "git": {
-        "commit": "7e353a73c276177d7a64c2df984dc2c0b1a074db",
+        "commit": "4b7d1c3ba40752f3d7b432fbb20f7bcd6f4dc4a7",
         "dirty": true
       },
       "env_settings": {
@@ -1740,7 +1865,8 @@
           "max_select_options": 4,
           "capture_field_labels": true,
           "disambiguate_shared_names": true
-        }
+        },
+        "capture_screenshots": true
       }
     }
   ]
