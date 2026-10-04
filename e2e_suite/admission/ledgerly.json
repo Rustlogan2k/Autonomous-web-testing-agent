@@ -49,6 +49,157 @@
         "pass_lines": 1,
         "tail": []
       }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "c4c0903ece891e81c5ef4814cf23a20f90c0c9b920643381ac875d344a327348",
+        "fresh_context_sha": [
+          "c4c0903ece891e81c5ef4814cf23a20f90c0c9b920643381ac875d344a327348",
+          "c4c0903ece891e81c5ef4814cf23a20f90c0c9b920643381ac875d344a327348"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault LED-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "LED-1",
+        "subtype": "stale-state",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False total=42 round(gbp + eur * 0.86 + usd * 0.79, 2)=36.12"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 3,
+        "minimization_trials": 7,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 72.4
+      }
+    },
+    {
+      "name": "fault LED-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "LED-2",
+        "subtype": "workflow-completion",
+        "oracle": "existing",
+        "fault_class": "broken_transition",
+        "witness_length": 10,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Sent back",
+          "text_absent: violated=True inconclusive=False Resubmitted \u2014 Ana Ruiz"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 10,
+        "minimization_trials": 27,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 268.8
+      }
+    },
+    {
+      "name": "fault LED-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "LED-3",
+        "subtype": "missing-validation",
+        "oracle": "extension",
+        "fault_class": "constraint_bypass",
+        "witness_length": 12,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'total': 78.12}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 12,
+        "minimization_trials": 30,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 363.4
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
     }
   ],
   "sections": {
@@ -159,12 +310,480 @@
         "lines_added": 1,
         "chars_changed": 39
       }
+    },
+    "workflows": [
+      {
+        "name": "lodge a claim in pounds and euros [default vocabulary]",
+        "steps": 8,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "the manager approves a small claim [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "the manager escalates a claim over the limit and finance approves it [default vocabulary]",
+        "steps": 8,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "the manager sends a claim back with a note [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a sent-back claim is resubmitted and is back in the manager's queue [default vocabulary]",
+        "steps": 12,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "the editor's live summary converts dollars [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "remove a line before lodging [default vocabulary]",
+        "steps": 8,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "lodge a claim in pounds and euros [alt vocabulary]",
+        "steps": 8,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "the manager approves a small claim [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "the manager escalates a claim over the limit and finance approves it [alt vocabulary]",
+        "steps": 8,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "the manager sends a claim back with a note [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a sent-back claim is resubmitted and is back in the manager's queue [alt vocabulary]",
+        "steps": 12,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "the editor's live summary converts dollars [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "remove a line before lodging [alt vocabulary]",
+        "steps": 8,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "the manager's Approve approves a claim within the \u00a350 limit and is refused above it",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "Lodge claim is refused while a line has no amount and lodges once it has one",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "Save as template in the claim editor",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "Attach receipt in the claim editor",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "LED-1",
+        "subtype": "stale-state",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False total=42 round(gbp + eur * 0.86 + usd * 0.79, 2)=36.12"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 3,
+        "minimization_trials": 7,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "new-claim"
+          },
+          {
+            "type": "TYPE",
+            "id": "amount-1",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "currency-1",
+            "params": {
+              "option": "EUR"
+            }
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 72.4
+      },
+      {
+        "fault_id": "LED-2",
+        "subtype": "workflow-completion",
+        "oracle": "existing",
+        "fault_class": "broken_transition",
+        "witness_length": 10,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Sent back",
+          "text_absent: violated=True inconclusive=False Resubmitted \u2014 Ana Ruiz"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 10,
+        "minimization_trials": 27,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "SELECT",
+            "id": "viewing-as",
+            "params": {
+              "option": "ben"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "switch-role"
+          },
+          {
+            "type": "CLICK",
+            "id": "open-CL-102"
+          },
+          {
+            "type": "TYPE",
+            "id": "decision-note",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "send-back"
+          },
+          {
+            "type": "SELECT",
+            "id": "viewing-as",
+            "params": {
+              "option": "ana"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "switch-role"
+          },
+          {
+            "type": "CLICK",
+            "id": "claim-CL-102"
+          },
+          {
+            "type": "CLICK",
+            "id": "edit-claim"
+          },
+          {
+            "type": "CLICK",
+            "id": "resubmit-claim"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 268.8
+      },
+      {
+        "fault_id": "LED-3",
+        "subtype": "missing-validation",
+        "oracle": "extension",
+        "fault_class": "constraint_bypass",
+        "witness_length": 12,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'total': 78.12}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 12,
+        "minimization_trials": 30,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "new-claim"
+          },
+          {
+            "type": "TYPE",
+            "id": "description-1",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "TYPE",
+            "id": "amount-1",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "add-line"
+          },
+          {
+            "type": "TYPE",
+            "id": "description-2",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "currency-2",
+            "params": {
+              "option": "EUR"
+            }
+          },
+          {
+            "type": "TYPE",
+            "id": "amount-2",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "lodge-claim"
+          },
+          {
+            "type": "SELECT",
+            "id": "viewing-as",
+            "params": {
+              "option": "ben"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "switch-role"
+          },
+          {
+            "type": "CLICK",
+            "id": "open-CL-104"
+          },
+          {
+            "type": "CLICK",
+            "id": "approve-claim"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 363.4
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
     }
   },
   "admitted": true,
-  "checks_run": 8,
+  "checks_run": 20,
   "checks_failed": [],
-  "browser_checks_run": false,
+  "browser_checks_run": true,
   "docker_checks_run": false,
-  "wall_clock_s": 2.1
+  "wall_clock_s": 946.2
 }

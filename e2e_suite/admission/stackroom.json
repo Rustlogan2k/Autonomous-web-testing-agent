@@ -42,12 +42,164 @@
       "detail": {
         "passed": true,
         "summary": [
-          "Ran 9 tests in 0.878s",
+          "Ran 9 tests in 0.396s",
           "OK"
         ],
         "pass_lines": null,
         "tail": []
       }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "7e95c24711c9a74cc090144e4f057675b8f596966533a6119f5978f4b6314c2d",
+        "fresh_context_sha": [
+          "7e95c24711c9a74cc090144e4f057675b8f596966533a6119f5978f4b6314c2d",
+          "7e95c24711c9a74cc090144e4f057675b8f596966533a6119f5978f4b6314c2d"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault STK-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "STK-1",
+        "subtype": "incorrect-navigation",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False No items on this page",
+          "text_equals: violated=True inconclusive=False 7"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 3,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 56.5
+      }
+    },
+    {
+      "name": "fault STK-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "STK-2",
+        "subtype": "wrong-target",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "echoes_input: violated=True inconclusive=False 4",
+          "text_absent: violated=True inconclusive=False Saved SKU-102"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 56.2
+      }
+    },
+    {
+      "name": "fault STK-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "STK-3",
+        "subtype": "persistence",
+        "oracle": "existing",
+        "fault_class": "persistence_failure",
+        "witness_length": 2,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "echoes_input: violated=True inconclusive=False 2026-06-09 16:35 \u2014 SKU-138 archived (bulk action) 2026-06-09 16:30 \u2014 SKU-120 sto"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 2,
+        "minimization_trials": 2,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 28.1
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
     }
   ],
   "sections": {
@@ -106,12 +258,371 @@
         "lines_added": 1,
         "chars_changed": 105
       }
+    },
+    "workflows": [
+      {
+        "name": "restock two fastener lines in bulk [default vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "adjust one item's stock level [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "archive an item, then find it in the audit log [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "set a lamp's stock inline, then check the audit log [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "sort by stock to find the scarcest lines [default vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "restock every item on the second page [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "restock two fastener lines in bulk [alt vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "adjust one item's stock level [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "archive an item, then find it in the audit log [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "set a lamp's stock inline, then check the audit log [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "sort by stock to find the scarcest lines [alt vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "restock every item on the second page [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "the bulk Apply changes nothing with no row selected, and archives the selected rows otherwise",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "Commit changes is refused while the new stock level is empty, and saves once a level is entered",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "Sync refetches the grid",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "the Columns menu",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "STK-1",
+        "subtype": "incorrect-navigation",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False No items on this page",
+          "text_equals: violated=True inconclusive=False 7"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 3,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "page-next"
+          },
+          {
+            "type": "SELECT",
+            "id": "filter-category",
+            "params": {
+              "option": "Lighting"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "filter-apply"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 56.5
+      },
+      {
+        "fault_id": "STK-2",
+        "subtype": "wrong-target",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "echoes_input: violated=True inconclusive=False 4",
+          "text_absent: violated=True inconclusive=False Saved SKU-102"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "sort-stock"
+          },
+          {
+            "type": "CLICK",
+            "id": "adjust-SKU-131"
+          },
+          {
+            "type": "TYPE",
+            "id": "new-stock",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "commit-adjust"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 56.2
+      },
+      {
+        "fault_id": "STK-3",
+        "subtype": "persistence",
+        "oracle": "existing",
+        "fault_class": "persistence_failure",
+        "witness_length": 2,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "echoes_input: violated=True inconclusive=False 2026-06-09 16:35 \u2014 SKU-138 archived (bulk action) 2026-06-09 16:30 \u2014 SKU-120 sto"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 2,
+        "minimization_trials": 2,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "TYPE",
+            "id": "stock-SKU-101",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-log"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 28.1
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
     }
   },
   "admitted": true,
-  "checks_run": 8,
+  "checks_run": 20,
   "checks_failed": [],
-  "browser_checks_run": false,
+  "browser_checks_run": true,
   "docker_checks_run": false,
-  "wall_clock_s": 2.7
+  "wall_clock_s": 316.0
 }
