@@ -23,10 +23,8 @@
     },
     {
       "name": "trace_ids_exist",
-      "passed": false,
-      "detail": [
-        "workflow buy, then find the order in the history: id 'product-tea-towel' never appears in src/"
-      ]
+      "passed": true,
+      "detail": []
     },
     {
       "name": "patches_apply_exactly_once",
@@ -44,12 +42,163 @@
       "detail": {
         "passed": true,
         "summary": [
-          "Ran 10 tests in 0.847s",
+          "Ran 10 tests in 0.855s",
           "OK"
         ],
         "pass_lines": null,
         "tail": []
       }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "e895c17238bc46904012aebaee2cdc8a9b5d922340c5810d775d330830e4ad08",
+        "fresh_context_sha": [
+          "e895c17238bc46904012aebaee2cdc8a9b5d922340c5810d775d330830e4ad08",
+          "e895c17238bc46904012aebaee2cdc8a9b5d922340c5810d775d330830e4ad08"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault BAG-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "BAG-1",
+        "subtype": "stale-state",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 7,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False discount=2.4 round(subtotal * 0.1, 2)=100.8"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 17,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 167.3
+      }
+    },
+    {
+      "name": "fault BAG-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "BAG-2",
+        "subtype": "displayed-vs-submitted",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 9,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "echoes_input: violated=True inconclusive=False Standard delivery (3\u20135 days)",
+          "text_absent: violated=True inconclusive=False Order placed: BS-1001"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 30,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 298.7
+      }
+    },
+    {
+      "name": "fault BAG-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "BAG-3",
+        "subtype": "missing-validation",
+        "oracle": "existing",
+        "fault_class": "constraint_bypass",
+        "witness_length": 7,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_empty: violated=True inconclusive=False "
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 17,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 157.0
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
     }
   ],
   "sections": {
@@ -125,14 +274,421 @@
         "lines_added": 1,
         "chars_changed": 72
       }
+    },
+    "workflows": [
+      {
+        "name": "buy a lantern with standard delivery [default vocabulary]",
+        "steps": 8,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "use the 10% voucher on a kettle [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "collect a hammock from the shop [default vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "search, then sort by price [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "choose the large lantern [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "buy, then find the order in the history [default vocabulary]",
+        "steps": 9,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "buy a lantern with standard delivery [alt vocabulary]",
+        "steps": 8,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "use the 10% voucher on a kettle [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "collect a hammock from the shop [alt vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "search, then sort by price [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "choose the large lantern [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "buy, then find the order in the history [alt vocabulary]",
+        "steps": 9,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "Update bag changes the bag only after a quantity was edited",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "Use voucher changes the bag only when a voucher is chosen",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "Express checkout in the header",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "Gift options on the bag",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "BAG-1",
+        "subtype": "stale-state",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 7,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False discount=2.4 round(subtotal * 0.1, 2)=100.8"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 17,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "cat-lighting"
+          },
+          {
+            "type": "CLICK",
+            "id": "product-lantern"
+          },
+          {
+            "type": "CLICK",
+            "id": "add-to-bag"
+          },
+          {
+            "type": "SELECT",
+            "id": "voucher",
+            "params": {
+              "option": "welcome10"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "apply-voucher"
+          },
+          {
+            "type": "TYPE",
+            "id": "qty-1",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "update-bag"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 167.3
+      },
+      {
+        "fault_id": "BAG-2",
+        "subtype": "displayed-vs-submitted",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 9,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "echoes_input: violated=True inconclusive=False Standard delivery (3\u20135 days)",
+          "text_absent: violated=True inconclusive=False Order placed: BS-1001"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 30,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "cat-lighting"
+          },
+          {
+            "type": "CLICK",
+            "id": "product-lantern"
+          },
+          {
+            "type": "CLICK",
+            "id": "add-to-bag"
+          },
+          {
+            "type": "CLICK",
+            "id": "go-checkout"
+          },
+          {
+            "type": "SELECT",
+            "id": "method",
+            "params": {
+              "option": "express"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "review-order"
+          },
+          {
+            "type": "CLICK",
+            "id": "place-order"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 298.7
+      },
+      {
+        "fault_id": "BAG-3",
+        "subtype": "missing-validation",
+        "oracle": "existing",
+        "fault_class": "constraint_bypass",
+        "witness_length": 7,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_empty: violated=True inconclusive=False "
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 17,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "cat-lighting"
+          },
+          {
+            "type": "CLICK",
+            "id": "product-lantern"
+          },
+          {
+            "type": "CLICK",
+            "id": "add-to-bag"
+          },
+          {
+            "type": "CLICK",
+            "id": "go-checkout"
+          },
+          {
+            "type": "SELECT",
+            "id": "method",
+            "params": {
+              "option": "express"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "review-order"
+          },
+          {
+            "type": "CLICK",
+            "id": "place-order"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 157.0
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
     }
   },
-  "admitted": false,
-  "checks_run": 8,
-  "checks_failed": [
-    "trace_ids_exist"
-  ],
-  "browser_checks_run": false,
+  "admitted": true,
+  "checks_run": 20,
+  "checks_failed": [],
+  "browser_checks_run": true,
   "docker_checks_run": false,
-  "wall_clock_s": 2.1
+  "wall_clock_s": 819.3
 }

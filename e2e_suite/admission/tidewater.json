@@ -42,7 +42,7 @@
       "detail": {
         "passed": true,
         "summary": [
-          "Ran 11 tests in 0.598s",
+          "Ran 11 tests in 0.463s",
           "OK"
         ],
         "pass_lines": null,
@@ -51,43 +51,8 @@
     },
     {
       "name": "workflows_reachable_both_vocabularies",
-      "passed": false,
-      "detail": [
-        {
-          "name": "schedule then cancel from the dashboard [alt vocabulary]",
-          "steps": 8,
-          "passed": false,
-          "misses": 0,
-          "failed_expectations": [
-            {
-              "region": "scheduled_table",
-              "contains": "No scheduled transfers",
-              "observed": "Date From To Sum Nothing upcoming."
-            }
-          ],
-          "committed_state_changed": true,
-          "expected_state_change": true,
-          "errors": [],
-          "foreign_requests": []
-        },
-        {
-          "name": "filter statements to the Saver account [alt vocabulary]",
-          "steps": 3,
-          "passed": false,
-          "misses": 0,
-          "failed_expectations": [
-            {
-              "region": "statement_count",
-              "contains": "1 transactions",
-              "observed": "1 entries"
-            }
-          ],
-          "committed_state_changed": false,
-          "expected_state_change": false,
-          "errors": [],
-          "foreign_requests": []
-        }
-      ]
+      "passed": true,
+      "detail": []
     },
     {
       "name": "state_dependent_actions_real",
@@ -153,12 +118,12 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 66.3
+        "seconds": 133.8
       }
     },
     {
       "name": "fault TIDE-2",
-      "passed": false,
+      "passed": true,
       "detail": {
         "fault_id": "TIDE-2",
         "subtype": "state-transition",
@@ -172,13 +137,16 @@
         "buggy_detail": [
           "reached_with_invalid_input: violated=True inconclusive=False next-friday"
         ],
-        "confirmed": false,
-        "rejected_because": "replay did not satisfy the reproduction rule (1/2 reproduced, rule requires 2 all)",
-        "minimized_length": null,
-        "minimization_trials": null,
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 6,
+        "minimization_trials": 14,
         "replays": 2,
-        "passed": false,
-        "seconds": 14.4
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 108.5
       }
     },
     {
@@ -206,23 +174,13 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 44.3
+        "seconds": 83.3
       }
     },
     {
       "name": "benign_traces_silent_on_both_builds",
-      "passed": false,
-      "detail": [
-        {
-          "trace": 2,
-          "build": "buggy",
-          "resolves": true,
-          "fired": [
-            "TIDE-2"
-          ],
-          "passed": false
-        }
-      ]
+      "passed": true,
+      "detail": []
     },
     {
       "name": "clean_random_walk_no_candidates_errors_or_network",
@@ -403,15 +361,9 @@
       {
         "name": "schedule then cancel from the dashboard [alt vocabulary]",
         "steps": 8,
-        "passed": false,
+        "passed": true,
         "misses": 0,
-        "failed_expectations": [
-          {
-            "region": "scheduled_table",
-            "contains": "No scheduled transfers",
-            "observed": "Date From To Sum Nothing upcoming."
-          }
-        ],
+        "failed_expectations": [],
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
@@ -442,15 +394,9 @@
       {
         "name": "filter statements to the Saver account [alt vocabulary]",
         "steps": 3,
-        "passed": false,
+        "passed": true,
         "misses": 0,
-        "failed_expectations": [
-          {
-            "region": "statement_count",
-            "contains": "1 transactions",
-            "observed": "1 entries"
-          }
-        ],
+        "failed_expectations": [],
         "committed_state_changed": false,
         "expected_state_change": false,
         "errors": [],
@@ -548,7 +494,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 66.3
+        "seconds": 133.8
       },
       {
         "fault_id": "TIDE-2",
@@ -563,13 +509,48 @@
         "buggy_detail": [
           "reached_with_invalid_input: violated=True inconclusive=False next-friday"
         ],
-        "confirmed": false,
-        "rejected_because": "replay did not satisfy the reproduction rule (1/2 reproduced, rule requires 2 all)",
-        "minimized_length": null,
-        "minimization_trials": null,
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 6,
+        "minimization_trials": 14,
         "replays": 2,
-        "passed": false,
-        "seconds": 14.4
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-move"
+          },
+          {
+            "type": "CLICK",
+            "id": "to-amount"
+          },
+          {
+            "type": "TYPE",
+            "id": "amount",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "when",
+            "params": {
+              "option": "next-friday"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "review-transfer"
+          },
+          {
+            "type": "CLICK",
+            "id": "authorise"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 108.5
       },
       {
         "fault_id": "TIDE-3",
@@ -618,7 +599,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 44.3
+        "seconds": 83.3
       }
     ],
     "benign": [
@@ -661,10 +642,8 @@
         "trace": 2,
         "build": "buggy",
         "resolves": true,
-        "fired": [
-          "TIDE-2"
-        ],
-        "passed": false
+        "fired": [],
+        "passed": true
       }
     ],
     "random_walk_clean": {
@@ -676,14 +655,10 @@
       "passed": true
     }
   },
-  "admitted": false,
+  "admitted": true,
   "checks_run": 20,
-  "checks_failed": [
-    "workflows_reachable_both_vocabularies",
-    "fault TIDE-2",
-    "benign_traces_silent_on_both_builds"
-  ],
+  "checks_failed": [],
   "browser_checks_run": true,
   "docker_checks_run": false,
-  "wall_clock_s": 279.1
+  "wall_clock_s": 565.6
 }
