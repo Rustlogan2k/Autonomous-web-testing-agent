@@ -205,14 +205,32 @@ Everything below is fixed by the commit that adds this file.
   (`run_transfer.py --top-up`): seeds 3–5 for the two arms of a primary pair on every fold
   where that pair's seeds-0–2 difference is under 200 interactions. The rule is decided on
   seeds 0–2 only and is never re-decided on 0–5.
-- **Where it runs**: two spot instances in ap-south-1 from this commit
-  (`cloud/aws/launch_experiment.sh`). The GPU instance (g4dn.4xlarge) runs the arms with an
-  LLM term or a DQN prior pretrained with one: `dqn_scratch`, `dqn_pretrained`,
-  `dqn_zeroshot`, `dqn_pretrained_nollm`, their pretraining, and the `dqn_pretrained`
-  clean-build runs. The CPU instance (c7i.2xlarge, no model) runs `random`, `search_A0`,
-  `search_S`, `bandit_scratch`, `bandit_pretrained`, `dqn_scratch_nollm`, their pretraining
-  and the `search_S` clean-build runs. Each primary pair is on one instance, so each
-  instance applies the top-up rule to its own pair. The two result directories are merged
-  before analysis; `scripts/analyze_transfer.py` is unchanged.
+- **Where it runs** (revised 2026-10-04, before any job of the frozen run started: AWS
+  rejected the GPU quota increase, so the planned GPU instance does not exist). Split by
+  whether a job calls the language model:
+  - **The development laptop** (RTX 4050 Laptop GPU, 6 GB; the pinned model in Ollama,
+    measured at 0.78 judgments/s): `dqn_llm` pretraining and the `dqn_scratch`,
+    `dqn_pretrained`, `dqn_zeroshot` hunts, the `dqn_pretrained` clean-build runs, and the
+    top-up for the DQN pair. Every state the cache has not seen is judged live by the
+    pinned model; there is no offline mode in the frozen run.
+  - **One AWS spot instance** (c7i.2xlarge, ap-south-1, no model; `NEEDS_LLM=0`):
+    `random`, `search_A0`, `search_S`, `bandit_scratch`, `bandit_pretrained`,
+    `dqn_scratch_nollm`, `dqn_pretrained_nollm`, their pretraining (`bandit_nollm`,
+    `dqn_nollm`), the `search_S` clean-build runs, and the top-up for the bandit pair.
+
+  Each primary pair is on one machine, so each machine applies the top-up rule to its own
+  pair. The arms differ only in where their browsers and network run, not in anything they
+  compute: same commit, same configuration, same pinned dependency versions (the laptop's
+  virtualenv and the image's requirements are the same pins; torch 2.6.0 on CPU in both).
+  The two result directories are merged before analysis; `scripts/analyze_transfer.py` is
+  unchanged.
+
+  Alternatives rejected, with the measurement behind each: serving the laptop's model to
+  AWS browser workers over a tunnel (the GPU, not the browsers, bounds the LLM arms'
+  throughput, so it would add no speed; it would take the account's entire 8-vCPU quota,
+  need inbound SSH and wider IAM rights, and a network drop would silently remove LLM
+  terms); the model on AWS CPUs (15–30 s per judgment against ~10,000 needed); a hosted
+  model (a different model than the one validated, and new permissions); everything on
+  the laptop (20+ hours, against the owner's direction to keep major runs off it).
 - **Exclusions**: only runs that fail for infrastructure reasons, listed in the report; a
   failed job is rerun (the runner resumes), never dropped for its outcome.
