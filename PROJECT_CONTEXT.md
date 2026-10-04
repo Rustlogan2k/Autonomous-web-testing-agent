@@ -1,14 +1,183 @@
 # Semantic-Aware Web Testing Agent — Project Context
 
-Living reference document. Update this as scope, design decisions, or progress change — it's meant to let anyone (a future session, evaluators) get fully oriented without re-reading the whole conversation history.
+Living reference document. **§0 is the authoritative current state; read it first.** §1–§4
+describe the system, §5 is the dated history of how every decision was reached (kept in
+full, including negative results and retractions), §6–§7 record scoping and design
+decisions, §8 the current risks, §9 the ordered next steps, §10 the environment.
 
-Last updated: 2026-10-01.
+Last updated: 2026-10-04.
 
-**Current research checkpoint (2026-10-01): the final push is under way.** Multi-application benchmark (six applications, admission-validated), the transferable RL stack with the dynamic LLM progress reward, the leave-one-application-out runner, and the product tester are built; the transfer experiment is pre-registered with a dated amendment (`docs/methodology/2026-10-01-transfer-amendment.md`). See §5, 2026-09-30 → 10-01. The previous checkpoint (A0/A1/A2) completed on 2026-09-19 and is summarised in the same place.
+---
+
+## 0. Read this first — where the project stands (2026-10-04)
+
+### 0.1 What the project is now
+
+An **RL-based automated functional tester for web applications**. A browser environment
+(Playwright) exposes a live application; a transferable deep RL agent explores it; a
+**dynamic LLM reward** judges, online, how far each page the agent actually reaches has
+progressed through a task; a **deterministic seeded-fault oracle** verifies candidate
+faults (replay ×2, per-fault controls, delta-debugging minimization); a product layer turns
+any URL / static site / Dockerfile repository into an exploration session with evidence and
+a readable report. **Security testing is out of scope** (the title's "security" half,
+Agent A, was dropped); the project is functional testing only.
+
+| Component | Where | State |
+|---|---|---|
+| Browser environment, action registry, triggers | `src/web_testing_agent/envs/` | built; extended registry used by benchmark and product |
+| Learner: action-conditioned dueling Double DQN, shared per-action scorer, zero-initialised residual head for adaptation, prioritized n-step replay, search-guided ε-exploration; bandit variant | `rl/agent.py`, `rl/network.py`, `rl/replay.py` | built, frozen for the primary run (features v3.1) |
+| Dynamic LLM progress reward (`qwen2.5:7b-instruct`, digest `845dbda0ea48`, prompt `progress-v3`, live judgments + content-addressed cache) | `reward/progress.py`, `rl/reward.py`, spec `docs/llm_reward.md` | built, frozen |
+| Seeded-fault oracle (assertion grammar, per-fault controls, replay, ddmin) | `oracle/` | built, frozen |
+| Six-application benchmark, admission validator | `tests/fixtures/benchmark/`, `benchmark/`, `scripts/validate_benchmark.py`, `reports/benchmark_validation.json` | 6/6 admitted, 12 faults, 5 classes |
+| Transfer experiment runner + analysis (resumable, top-up rule) | `experiments/transfer.py`, `scripts/run_transfer.py`, `scripts/analyze_transfer.py` | built; **frozen primary run in progress** |
+| Product tester (URL / site / repo / benchmark → report) | `tester/`, `scripts/test_app.py` | works end to end on fixtures (Harbor demo); repo path requires a Dockerfile |
+| Web UI | `app/` (`python -m web_testing_agent.app`) | works; static-site upload and URL sessions verified |
+| Cloud launcher (restricted IAM, spot, self-terminating, S3 sync) | `cloud/aws/` | used for the primary run |
+| End-to-end application suite (8 apps, isolated, **no RL**) | branch `e2e-suite`, worktree `../RL web tester-e2e/e2e_suite/` | 3 fully admitted, 3 static+API admitted, 2 in progress (§0.6) |
+
+### 0.2 The frozen primary experiment
+
+**Question**: does pretraining on five applications speed up verified-fault discovery on a
+held-out sixth (leave-one-application-out), against scratch learners and information-matched
+non-learning baselines, with and without the dynamic LLM reward?
+
+- **Method is fixed by**: `docs/methodology/2026-09-18-transfer-preregistration.md`, amended
+  by `2026-10-01-transfer-amendment.md` and `2026-10-03-transfer-amendment-2.md` (all changes
+  before the run, each with its reason; §7 of amendment 2 is the frozen run spec).
+- **Arms (10)**: random, search_A0, search_S, bandit_scratch, bandit_pretrained, dqn_scratch,
+  dqn_scratch_nollm, dqn_pretrained, dqn_zeroshot, dqn_pretrained_nollm. Budget 2,000
+  interactions per hunt; seeds 0–2 plus the mechanical 3→6 top-up rule (|Δ| < 200);
+  primary statistic: per-fold paired difference, median across folds, fold bootstrap;
+  stratified log-rank secondary. Reported over all folds **and** over the four pristine folds
+  (`admin_records`, `support_portal`, `media_library`, `account_hub`); `shop_catalog` and
+  `booking_desk` are development applications.
+- **Compute split** (after AWS rejected the GPU quota and the account turned out to be on the
+  Free plan): LLM arms on the local RTX 4050 (live judgments, 0.78 judgments/s measured);
+  non-LLM arms on four AWS `m7i-flex.large` spot instances (2 vCPU each, folds split).
+- **Run status at 2026-10-04 18:45**:
+  - AWS `final-cpu-1` (account_hub) and `final-cpu-2` (media_library): **28/28 each, done,
+    self-terminated** (~4h50m, ~$0.24 each; top-up rule added 0 jobs).
+  - AWS `final-cpu-3` (booking_desk + shop_catalog) 42/56 and `final-cpu-4`
+    (admin_records + support_portal) 45/56, running, expected to finish the same evening.
+    Results sync to `s3://wta-runs-1b4341bb/runs/final-cpu-N/`.
+  - **Local LLM half (`runs/final-local/`): 12/78 jobs done**, all 12 with checkpoints
+    (pretraining for account_hub, admin_records, booking_desk, media_library × 3 seeds). It
+    **froze at 16:43** when Windows Modern Standby suspended the laptop ("Idle Timeout";
+    "never sleep on AC" does not prevent it). The six interrupted pretrainings restart from
+    scratch on resume; ~21k LLM judgments are cached.
+  - **Resume** (main checkout, Ollama running, screen-off timeout disabled, lid open, on AC):
+    `venv\Scripts\python.exe scripts/run_transfer.py --out-dir runs/final-local --arms
+    dqn_scratch dqn_pretrained dqn_zeroshot --clean-control-arms dqn_pretrained --top-up
+    --workers 6` — finished jobs are skipped. ~6–10 h remain.
+- **Provenance note**: jobs record the commit they ran at. Commits made during the run were
+  docs-only or provenance-only (`5ec9b3c` fixed empty commit hashes on cloud workers;
+  `c10699c` and later are documents); no computation changed.
+- **After it finishes**: download S3 results, merge `runs/final-local` with
+  `runs/final-cpu-*`, run `scripts/analyze_transfer.py` unchanged, report exactly what it
+  shows (§9).
+
+### 0.3 The frozen secondary diagnostic
+
+`docs/methodology/2026-10-04-contextual-diagnostic-preregistration.md` (commit `c10699c`,
+written while zero primary results existed) fixes a separate evaluation of whether the
+learned policy uses **state context** or memorizes actions/words/applications: controlled
+vocabulary (incl. unseen words and pseudo-words), workflow-structure, decoy and
+state-dependent-usefulness factors; arms `ctx_full`, `action_only`, `lexical_only`,
+`label_blind`, `search_S`, `random`; within-label Q contextuality, ranking changes,
+permutation invariance, decoy rate, transfer by factor, genuinely held-out apps; every
+threshold and decision rule. **Nothing is built or run for it until the primary finishes**;
+it has its own report and is never pooled with primary statistics.
+
+### 0.4 Claim limits (owner-mandated, apply to every report and presentation)
+
+- **A. Context**: the policy state (25 numbers: episode history, page-composition counts,
+  form fill, LLM history) has **no page semantics** — no heading, text or URL. The agent
+  can learn form-state/structural context, not semantic page context. Claim no more than
+  the diagnostic shows.
+- **B. Generalization**: six applications built from one designer's contract establish at
+  most **within-family** adaptation/transfer, not general web generalization; no zero-shot or
+  real-world claim without evidence.
+- **C. LLM reward**: its contribution is reported only through the frozen LLM vs no-LLM
+  comparisons; implemented ≠ useful.
+- **D. Warm-up exposure (disclose)**: amendment 1 says only the validator and uniform-random
+  exploration touched the pristine apps before the run, but the LLM cache warm-up
+  (`scripts/warm_caches.py`) also ran `search_S` on them (LLM judgments only, no oracle,
+  no tuning used them; logs `runs/warm_caches.log`, `runs/warm_v3.log`, checksums recorded).
+  The oracle review also ran scripted traces on MEDIA-02 / ADMIN-01 and motivated the
+  per-fault-control fix (instrument, not agent). Do not redefine "pristine".
+- **E. Representation leakage**: a control without a visible label falls back to its
+  description (can embed a DOM field name or radio `name#value`); the 14 page-composition
+  counts can fingerprint pages within an app. No claim of perfect identity invariance.
+- **F. Product completeness** (after primary + diagnostic): make the uploaded-repository
+  tester genuinely usable end to end; investigate Dockerfile-less repositories and
+  spec-less functional verification.
+
+### 0.5 Rules for anyone working on this repository now
+
+- The primary run's code, methodology, seeds, budgets, folds, representations, LLM reward,
+  oracle, benchmark discovery and fixtures are **frozen**; the contextual diagnostic is
+  frozen. Change nothing that affects them, and nothing because of a result.
+- During the run, commit only documents in the main checkout (uncommitted edits would mark
+  resumed jobs "dirty"); do suite work on the `e2e-suite` branch/worktree.
+- AWS: restricted IAM user `wta-operator` (profile `wta`), never root; region `ap-south-1`;
+  hard cap **$20** total (spent so far ≈ $0.5–1); spot only; launcher enforces a hard cap,
+  idle watchdog, self-termination and EBS deletion. The account is on the **Free plan**:
+  only free-tier instance types (`m7i-flex.large`, `c7i-flex.large`, t-micro/small), GPU
+  quota rejected.
+- Never push to GitHub without asking; never start "M0/M1" without explicit approval.
+
+### 0.6 The end-to-end application suite (isolated; no RL)
+
+Eight genuinely different small web applications with real backends, built as a testbed for
+the product (and, later and only by decision, for a future study). Branch `e2e-suite`,
+worktree `../RL web tester-e2e/e2e_suite/`; `CONVENTIONS.md` (incl. lessons from the
+pilots), `harness/` (variants, launcher, static/API/browser/Docker checks, isolated oracle
+extensions `region_stable_across_reload`, `input_absent`, `region_arithmetic`), admission
+reports in `admission/`. Invisible to the primary benchmark (no `faults.json`; an isolation
+test proves primary `discover()` still returns its six apps).
+
+| App | Domain | Architecture | Stack | Status |
+|---|---|---|---|---|
+| tidewater | banking | SPA, hash router, JSON API | Python stdlib + SQLite | **admitted 20/20** |
+| bagstreet | e-commerce | server-rendered pages, HTML forms (PRG) | Python stdlib + SQLite | **admitted 20/20** |
+| helpline | support desk | server-rendered + HTML fragment updates | Python stdlib + SQLite | **admitted 20/20** |
+| clinicflow | appointments | branching wizard, server drafts in URL, client conditionals | Python stdlib (WSGI) + SQLite per session | static+API admitted; browser validation pending |
+| orbit | kanban | modal-heavy SPA | Node built-ins, JSON per session | static+API admitted; builder's sequential browser checks + fault pipeline all passed |
+| wayfarer | trip planner | client drafts (localStorage) + server sealed versions, **no Dockerfile** | Node built-ins | static+API admitted; browser validation pending |
+| ledgerly | expense claims, multi-role | Node server-rendered + client form island | Node built-ins, event log | in progress (builder interrupted by API limit) |
+| stackroom | inventory admin | data grid, server-side paging/sort/filter, bulk ops | Python stdlib + SQLite | in progress (builder interrupted by API limit) |
+
+23 seeded faults planned across 11 subtypes (16 in the primary grammar, 7 needing the
+isolated extensions); every fault must pass the 10 mechanical admission checks (patch
+applies once, buggy = clean + patch only, witness fires on buggy, silent on clean and on
+its per-fault control, replay ×2, ddmin preserves it, benign traces silent, clean random
+walk silent, trigger reachable with the tester's own actions).
+
+### 0.7 Known limitations of the tester found this month (product work after the primary)
+
+- The environment treats a page as settled after the DOM is quiet; it does not wait for
+  in-flight requests, so slow async SPA transitions can be recorded early (the suite's
+  harness uses a 400 ms window).
+- Repository intake requires a Dockerfile (`wayfarer` exists to exercise this); Compose is
+  refused by design.
+- Without a specification, functional findings get only generic triggers and an unverified
+  LLM review; the suite's extension kinds are candidates for spec-less invariants.
+- Long local runs need Modern Standby disabled (screen-off timeout), not just sleep.
+
+### 0.8 Where to look
+
+`docs/methodology/` (all pre-registrations and amendments), `docs/llm_reward.md`,
+`docs/literature_review.md` + `docs/references/`, `docs/benchmark/CONTRACT.md`,
+`reports/benchmark_suite.md`, `reports/dev_tuning.md`, `cloud/aws/SETUP.md`,
+`e2e_suite/CONVENTIONS.md` (branch `e2e-suite`).
 
 ---
 
 ## 1. What this project is
+
+> **Current direction (October 2026):** functional testing only — security testing (Agent A,
+> the title's "security" half) is out of scope. The live system, its frozen experiment and
+> its claim limits are in §0; the text below records the original vision and positioning.
 
 **Title:** Semantic-Aware Web Testing Agent — Autonomous Security & Functional Bug Detection using LLM and Reinforcement Learning.
 
@@ -3304,6 +3473,35 @@ Recorded in full in `docs/methodology/2026-10-03-transfer-amendment-2.md`; the s
   writing).
 
 
+### 2026-10-04 — the run launches on a split compute plan, a diagnostic is pre-registered, and an isolated application suite is built
+
+- **Cloud constraints, met without changing the method.** AWS rejected the GPU quota; the
+  account is on the Free plan (only free-tier instance types). The LLM arms moved to the
+  local RTX 4050 (live judgments, measured 0.78/s at concurrency 2), the non-LLM arms to four
+  `m7i-flex.large` spot instances with folds split between them. A capped validation
+  instance (≈$0.01) proved spot launch, Docker build, the worker, S3 sync and
+  self-termination, and found one defect: cloud results recorded an empty commit (a `git
+  archive` has no `.git`); the launcher now passes the commit in (`5ec9b3c`). Recorded in
+  amendment 2 §7.
+- **A cache fix before the local run**: six workers judging the same pages spent 25% of GPU
+  time on duplicates because each process read the shared cache only at start; a miss now
+  reads what other workers appended (incremental, complete lines only).
+- **Run**: local half started 11:19 (12/78 done by 16:43, then frozen by Modern Standby);
+  AWS instances launched 11:49, two finished 28/28 by 16:40, two still running in the
+  evening.
+- **Contextual diagnostic pre-registered** (`c10699c`) before any primary result existed.
+- **Status/risk assessment** (recorded as claim limits A–F in §0.4): the state has no page
+  semantics; six apps show at most within-family transfer; the LLM reward's value comes only
+  from the frozen ablations; the search_S warm-up exposure and the oracle review's traces
+  on two pristine apps are disclosed; representation leakage via fallback descriptions and
+  composition counts is acknowledged.
+- **End-to-end application suite** (§0.6), built on branch `e2e-suite` with no RL:
+  harness, conventions, isolated oracle extensions, eight apps; three fully admitted, three
+  static+API admitted, two in progress. Lessons from building it are in
+  `e2e_suite/CONVENTIONS.md` §8 (assertions silent on clean for every path; conjunctive
+  one-time markers for scope; expectations on data not labels; the tester's settle window).
+
+
 ## 6. Scoping decisions
 
 ### 6.1 Agent B first
@@ -3350,102 +3548,57 @@ Two decisions that shape what the project can claim:
 
 ---
 
-## 8. Potential challenges and open risks
+## 8. Current risks (rewritten 2026-10-04)
 
-**Security of executing arbitrary uploaded code — still the most serious risk; partially mitigated 2026-08-02, three bypasses closed 2026-08-15.** Auto-deploy (§3.0a) means building and running whatever a user uploads. The policy gate (`intake/compose_policy.py`) blocks the class of attack that resource limits cannot touch — privilege escalation and host bind-mounts requested by the compose file itself. A 2026-08-15 review found three ways around it (`extends`, top-level `include`, and a named volume backed by `driver_opts: {device: /}`), all now blocked; see §5 and the new §7 principle. **That the gate shipped with three bypasses is itself the risk signal here** — it was written carefully, unit-tested, and still missed an entire category, because the category sat one layer above the one being validated. Assume more remain. **Remaining exposure:** the runner that applies `SANDBOX_RUN_ARGS` is not built yet, and a policy-clean container still runs untrusted code, so the network-isolation, read-only-rootfs, and timeout enforcement all remain to be implemented and *tested* (a passing policy check is not a sandbox). The browser pointed at that container is also a target and needs its own confinement.
+The August-era risk register (reward hacking on the toy site, judge overfitting, perception
+latency, compose-gate bypasses, ...) is preserved in git (`PROJECT_CONTEXT.md` at commit
+`afa5045`) and in §5. The risks that matter for the final submission now:
 
-**Repo Profiler context-length constraint — strategy decided 2026-08-02, unimplemented.** Resolved in favour of tree-sitter/static extraction feeding a long-context code model (§3.0b). The risk is now execution, not design: the static extractors are per-framework, and coverage across arbitrary uploaded repos will be uneven.
+| # | Risk | Severity | Evidence | Addressed by |
+|---|---|---|---|---|
+| 1 | The state has no page semantics, capping contextual learning | major (fatal for a *strong* contextual claim) | `rl/features.py` STATE_FIELDS | measured by the frozen diagnostic; reported as a limitation; page-context encoding is future work |
+| 2 | Generalization rests on one designer-built family, 4 pristine folds | major | benchmark construction, §0.4 B | scoped claim ("within-family adaptation"); diagnostic isolates mechanism; external validity only via real-site demos |
+| 3 | The learner may not beat `search_S`/`random` | major | dev: scratch DQN verifies shop_catalog at 572–750; nobody solves booking_desk | the primary answers it; a negative result is reported as such |
+| 4 | No functional oracle for arbitrary uploaded apps | major for the product | generic triggers + unverified LLM review only | user-supplied `faults.json` assertions; spec-less invariants (suite extensions) as post-primary work |
+| 5 | Statistical power / censoring | major | 2,000-step budget, 3–6 seeds, 4–6 folds | mechanical top-up only; inconclusive results reported as inconclusive |
+| 6 | Operational: the local half needs ~6–10 h uninterrupted | operational | froze 16:43 on Modern Standby | disable screen-off timeout before resuming; jobs are resumable |
 
-**Perception layer latency budget.** LLaVA-1.5 7B image captioning is comparatively slow (likely well over 500ms on its own on a single GPU), which conflicts with the <500ms/timestep target even with async concurrency. The spec mitigates this by making LLaVA "for complex pages" only and caching per unique screenshot, but the trigger condition for "complex page" and the cache hit rate during active RL exploration (where screenshots constantly change) both need validation once this layer is built.
-
-**Action-space staleness on dynamic/SPA pages.** Action specs (including CSS selectors) are built once per step from a DOM snapshot and used to execute the *next* action. On highly dynamic pages (AJAX-heavy SPAs — relevant for Nextcloud/OpenCart), the DOM can mutate between build and execution (timers, websockets, lazy-loaded content), causing a selector to go stale. The current design treats a failed action as legitimate data (`exec_success: False`) rather than crashing, which is reasonable, but a high stale-selector rate would degrade the agent's effective action space quality during training.
-
-**Non-stationary action-index semantics for DQN (see §3.3, §7 design decision).** A harder RL problem than the spec's Atari-style framing suggests, and it gets worse as site complexity/UI diversity grows. Compounded by the measured 87.5% no-op rate under the unmasked flat head. Mitigation designed (action-conditioned Q-network) but unbuilt.
-
-**Reward hacking for Agent B — validated under training 2026-08-02, and it was worse than predicted.** This risk was written as a hypothetical; a DQN then found **four distinct exploits in five runs** (§5), each one novel after the previous fix. All four are now closed and pinned by regression tests. The prediction that "a DQN is far more inventive at finding exploits than a test suite is" was correct, and understated: one of the tests written specifically to prevent exploit #1 *passed* while the exploit was live, because it used the cheapest trigger to write rather than the cheapest trigger available to the optimizer.
-
-**The deeper problem is not any individual exploit.** Run 5 measured that the best-by-reward checkpoint found *fewer* bugs than a lower-reward one — so optimizing this reward harder does not find more bugs. Hand-specified shaping is a weak proxy for the objective, which is a measured argument for source-grounded LLM judgment rather than an argued one. Assume any future reward change is exploitable until a training run says otherwise; the per-term breakdown in `info` is what makes diagnosis take minutes instead of days.
-
-**Reward weights are unvalidated defaults.** Every magnitude in `FunctionalRewardWeights` was chosen by reasoning about relative scale, not fitted to data. The relationships (bug ≫ novelty > step cost) matter more than the absolute values. Verified analytically that the intended policy ordering holds (find-bugs +22.80 > explore +1.80 > camp −30.15 > idle −38.15), but note that ordering candidate policies correctly is **not** the same as the reward tracking bug discovery — run 5 showed it does not (§5).
-
-**SSIM-based visual regression detection is underspecified.** The spec calls for "SSIM<0.85 between expected and actual page state → visual bug flag," but "expected page state" implies a baseline reference (e.g. from a prior known-good run), which needs a baseline store — not something the browser env alone can own. Deliberately left as an extension point rather than guessed at. It needs a concrete definition of "expected" before the trigger is worth implementing: the most likely answer is a per-state reference screenshot captured on first visit and compared on revisit, which makes it a *regression* detector rather than the bug detector the spec implies. Resolve that before building it (§9).
-
-**HTML/state non-determinism — addressed 2026-08-02, coverage unproven on real targets.** `perception/normalization.py` masks tokens/timestamps/hashes and canonicalizes URLs, and `state_fingerprint` is deliberately coarse. The pattern list is validated by unit tests against representative markup, but it has not yet met Nextcloud's or OpenCart's real asset pipelines; expect to add patterns once pointed at them. Under-masking makes every revisit look novel (inflating the exploration bonus); over-masking merges genuinely distinct states. Both failure modes are visible in the `unique_states` metric, which is worth watching early.
-
-**Domain-based episode termination — fired on Gitea and is now fixed (§5, 2026-08-08).** Loopback aliases and `www.` prefixes were already folded together, but Gitea's footer links to github.com and docs.gitea.com ended episodes after ~7 steps. Off-site navigation is now refused and undone rather than terminating. OAuth-style login flows and CDN/subdomain redirects remain untested and may need an in-scope host allowlist. Worth testing against each real target before relying on this signal at scale; may need an allowlist of additional in-scope hosts.
-
-**Training throughput at scale.** Each RL step does: a Playwright roundtrip (action + quiescence wait) + PNG screenshot + full HTML dump + DOM scan, and will additionally need CLIP+CodeBERT+MiniLM encoding once the perception layer lands. Measured on the toy site: **1.4–2.6 steps/s single-env** — and the toy site is trivially small, so real targets will be slower. At that rate the specified 300K-step curriculum is **~30–60 hours single-env before any GPU encoding**, which is optimistic rather than pessimistic. Two implications: (1) `SubprocVecEnv` parallelism is not optional, and each Chromium costs ~400MB RAM plus its share of encoder throughput; (2) **the 300K-step budget should be treated as aspirational** — plan for 30–50K and say so explicitly in the report rather than discovering the shortfall in week 10. Repo auto-deploy adds a further cost: builds and container startups are not free, and every new target app pays it.
-
-**Windows/Linux dev-prod split.** vLLM doesn't build natively on Windows (the primary dev machine); `bitsandbytes` (needed for LoRA fine-tuning) also has known Windows friction. If training/serving ultimately happens on Linux/A100 infrastructure, code written and smoke-tested on Windows needs a real cross-platform validation pass before Phase 3, not just an assumption that "it'll work the same."
-
-**Evaluation benchmark applicability.** OWASP Benchmark v1.2 is designed for security-scanner evaluation (more naturally Agent A's territory); Agent B's own 150-bug functional benchmark is still undefined (Phase 4). The toy seeded-bug site (§3.3) is a working 10-bug prototype of it with the same answer-key structure, and `evaluation/rollout.py` is the harness it should extend — but 10 bugs on a 5-page static site is not a benchmark, and the leap to 150 bugs across real applications is the larger part of the work.
-
-**The RL contribution has now been measured in the regime chosen to favour it, and it lost there too — resolved 2026-08-17.** The original entry here said run 5's shallow-site loss did not settle anything, for two good reasons: the flat head could not mask invalid actions while the baseline could, and the toy site is 5 shallow pages where sequential credit assignment is worth nothing. Both objections have been removed. The agent has masking (100% valid actions, every seed), and the deep-flow fixture puts the defect behind four ordered gates so random's success probability decays exponentially in sequence length.
-
-The result over 3 seeds and both encoder configurations (§5): ~~**masked random finds 10–12 distinct findings to the DQN's 0–4**, roughly 10× at equal step budget, with no seed overlap~~ **[findings figure retracted 2026-08-27 — self-link false positives; see that entry for what replaces it]**, and no policy of any kind passes stage 1. **"RL's actual claim remains untested" is no longer accurate and should be removed wherever it appears.** The honest statement is that RL was tested on its own terms and did not beat uniform-random exploration over the valid action set.
-
-One caveat kept deliberately: run 5's shallow-site numbers still carry the single-seed evaluation defect (§9 item 2b) and should be cited as suggestive until rerun. The deep-flow result above does not depend on them.
-
-**The project's thesis does not depend on RL winning — and as of 2026-08-07 it has a number.** The differentiator is source-grounded LLM judgment (§1); RL is the exploration mechanism. The worst-case defensible result was written here as a template with an unknown in it; that unknown is now filled: **deterministic triggers saturate at 3/10; the judge reaches 10/10 with zero false positives on known-correct behaviour.** The report should lead with the judge. RL remains the weakest component by evidence and the one most likely to yield a negative result, which is fine — a measured negative on exploration strategy alongside a strong positive on judgment quality is a coherent contribution.
-
-**The window, not the judge, is where defects live on a real target — now a pattern rather than an incident.** Ten defects have been found on Gitea across two passes (§5, 2026-08-08 and 08-09) and **not one was in the judge**. Every one had the same shape: the window stated something true about the *harness* as though it were true about the *application*, the judge reasoned soundly from it, and the verdict looked like a model failure. Recall, discrimination and evidence grounding were satisfied every time — the citations verbatim, the reasoning correct, the premises wrong. None was caught by a metric; they came from reading verdicts and disbelieving them. `judge/validate.py` catches the subset where a window contradicts its own record, which is a real and cheap defence, but it cannot catch a record that faithfully describes the harness acting on the application. **Budget a manual read of every surviving positive after first contact with any new target, and expect the fixes to be in the env.**
-
-**Judge evaluation is at real risk of overfitting to a 10-bug answer key — now demonstrated, not hypothesized.** The first run against held-out traffic (§5, 2026-08-08) found three defects the scripted corpus structurally could not reach, one of which had the renderer feeding the judge a false premise on every retyped field. Every judge number still comes from one 39-window scripted corpus over one 5-page site whose ground truth was authored alongside the judge. Four changes were made *after* seeing results on it (a fixture correction, the schema reorder, the reachability rendering, the lean-window trim), and per-bug tuning was deliberately stopped for exactly this reason (§5). The last of those was made for cost rather than accuracy and improved both models, which is weak evidence against overfitting — but only weak. Two mitigations exist and one is unused: **evidence grounding** is answer-key-independent and therefore transfers to any target, and the **random corpus** (150 windows, captured, never scored) is a partial held-out check. Neither substitutes for a real application — treat every current judge figure as provisional until it survives Gitea.
-
-**A 7B local judge is now close to usable, and the limiting factor was the window rather than the instructions.** Measured across five variants on `qwen2.5:7b`: evidence grounding moved 32% → 100% via few-shot, and the false-positive rate sat at exactly 2/7 across four *instruction* changes — then dropped to 1/7 with +54% discrimination as soon as the *window* was trimmed (§5). The earlier reading of that plateau as a capacity ceiling was wrong. Implication for the product: a hosted judge is the intended path and is acceptable, since the user uploads a repo to a service rather than running the model themselves. Implication for the report: "prompt engineering fixed the mechanical failure and could not touch the judgment failure" is a finding, not a shortfall. The residual risk is a hard dependency on a hosted model for the system's core claim — worth stating explicitly rather than eliding.
-
-**Reward-model grounding is partly validated, in the weaker of its two senses.** The claim has two halves. *Observation grounding* — that a judge given the right slice of observed behaviour can identify semantic bugs deterministic triggers cannot — is now **measured**: 10/10 vs 3/10 (§5). *Source grounding* — that feeding the Application Profile improves judgment further — was **measured properly on 2026-08-26 and did not reproduce.** With a version-pinned `qwen2.5:7b-instruct`, both arms in one session, the hand-authored profile changed **recall, false positives, discrimination and evidence grounding by nothing at all**, and produced slightly *more* positives on the random corpus (44 → 46). The earlier figure below used `gpt-oss:120b-cloud`, an unversioned tag, on a different corpus state. Original claim, retained because it was a real observation with a model that has since moved: on Gitea it halved the false-positive rate, 9 positives → 4, and bought no new true positives. Read that carefully. It shows the plumbing works and that a profile is worth extracting; it does **not** show that intent *derived from source* helps, because no source was read. The work was done mostly by the profile's `known-correct behaviour` entries, not by its `declared constraints` — and it is the constraints that would produce "the code defines X, testing observed Y". The differentiator in §1 is still untested and stays untested until the extractor exists. Do not let any of these three results be reported as evidence for another.
-
-What the offline work did establish about grounding generally: **what the judge is shown matters at least as much as which model reads it.** Two of the three judge defects were rendering problems, not model problems — BUG-05 was unjudgeable until the window showed the *declared* `min`/`max` alongside the accepted value, and BUG-08 was unjudgeable until a hide also listed what remained reachable. That is direct evidence for the grounding hypothesis's mechanism, even though it is not yet evidence for the Application Profile specifically.
-
-**Timeline ambition vs. scope — the dominant risk.** The final vision (§2) adds a whole new subsystem (Repo Intake) on top of an already-large original spec, and every component of it is on one critical path with no parallelism available. The scoping decisions in §6.1–6.2 already cut in the right places (Agent B only, Dockerfile-only auto-deploy), but that was scoping for a split effort; for a single builder the cuts need to go further. Concretely, the honest minimum for a defensible result is **§3.1 + §3.2 + §3.3 + §3.4 (Agent B end-to-end with a working reward model), evaluated against the random baseline on the toy site and one real target.** Repo Intake (§3.0) and the Bug Report Engine (§3.5) are what make the *vision* compelling but are not what makes the *result* valid — treat them as stretch scope and cut them first, rather than half-building everything in §3.0–3.5.
+Decision tree for weak or mixed results (frozen rules only, no new arms or tuning): RL
+transfers → report within scope; works on development folds only → overfitting to
+development apps, diagnostic explains; LLM helps but no transfer → two separate findings;
+baselines win → valid negative result with the pre-specified failure analysis (reach vs
+discover vs verify, coverage, reward decomposition); diagnostic shows memorization →
+report, fixes are future work; inconclusive → top-up rule only, then report.
 
 ---
 
-## 9. Open items / next steps
+## 9. Next steps, in order (rewritten 2026-10-04)
 
-Completed 2026-08-02: the toy validation site (was #1), viewport-aware prioritization (was #3), the Repo Profiler context decision (was #4), HTML/network normalization (was #9), and the exploration incentive (was #10).
+The August–September item list is preserved in git (`afa5045`) and §5.
 
-This is now a single ordered critical path rather than parallel workstreams, so the ordering matters more than it did: items 1–4 establish that the core claim holds, items 5–9 make it hold on a real application, and everything from 10 down is expansion that should be cut before the earlier items are compromised (§8, "Timeline ambition vs. scope").
-
-**RL critical path — replaced 2026-09-16.** The RL next-step recorded in the 2026-08-31 entry and in README's *"Where RL research resumes"* — *measure the run-to-run completion distribution at a fixed seed* — **is done** (1/2/5 completions of 5 across three replicates of seed 0; `reports/fixed_seed_completion_distribution.json`), and README is now stale on that point. The RL path is no longer "paused pending a measurement". In order:
-
-* **R1. The five-condition A0/A1/A2/B/C comparison** — the advisor-approved next milestone (§5, 2026-09-16). Resolves whether the A-vs-B gap was about *learning* or about *access to action-label information*. **Not started; A1/A2 not implemented.** Definitions must be frozen and committed before the fixture is inspected or their final results are read.
-* **R2. A delayed-credit web-testing formulation.** Deferred behind R1 by decision. The current reward is dense and immediate (novelty, reveal, repetition, step cost, failed action) and the archive supplies frontier-state returns, so the present benchmark does not strongly test what bootstrapping is for. Question 2 of §5's open list cannot be answered on it.
-* **R3. Cross-application transfer of learned action value** — the property the action-conditioned representation exists for, and the one a single-fixture benchmark structurally cannot see. Depends on item 5/6 (a second real target) more than on any RL change.
-* **Not approved, and not to be attempted opportunistically:** any change to the reward, observation, action encoding, archive behaviour or AC-DQN architecture. Five consecutive nulls were obtained under a frozen configuration, and that freeze is what makes them comparable.
-
-**Ordering note added 2026-08-08.** The toy site is now saturated — both candidate judges score 10/10, so it can neither discriminate between models nor detect further regressions in judgment quality. Everything that remains to be learned requires a real target. But **Gitea should be approached with the masked-random explorer and the judge, not with the DQN.** Those are two different questions — "does the pipeline work on a real application?" and "does RL beat random?" — and running them together on first contact means any failure is ambiguous between an environment problem, a judge problem, and an RL problem. The DQN is also the weakest component by evidence (it lost on the toy site), so pointing it at the hardest target first maximizes the chance of an uninterpretable result. Validate env + judge on Gitea first; keep the RL questions (1b, 1c) on fixtures where they can be answered cleanly.
-
-1. ~~Train the first DQN on the toy site and compare it against the random baseline~~ — **done 2026-08-02 (§5).** Result: DQN loses to masked random (1/3 vs 3/3 seeded bugs).
-   - ~~**1a. Build the LLM judge, offline first**~~ — **done 2026-08-07, improved 2026-08-08 (§5).** 10/10 vs the 3/10 deterministic ceiling, 0 false positives, 100% evidence grounding. The core claim holds. Superseded by items 1d–1e.
-   - ~~**1b. Give the DQN action masking**~~ — **done 2026-08-10 (§5).** `agents/masked_dqn.py`; 100% valid actions, 0/200 invalid in a controlled harness. Original note kept below because the implementation constraint it names is what the fix had to satisfy.
-     Original: **Give the DQN action masking** — the single highest-value RL change, and now the fair-fight version of the run-5 comparison. This is the action-conditioned Q-network (§3.3), which provides masking structurally. **Still open as of 2026-08-10.** Note the implementation constraint: SB3's DQN has no masking hook, and the policy only sees the observation, so the per-step valid-action mask has to be *appended to the observation* (alongside `EPISODE_CONTEXT_DIM`) for a custom policy to read it — masking the Q-values is not enough on its own, because ε-greedy also samples uniformly over the full 100 slots.
-   - ~~**1c. Build a deep-flow fixture**~~ — **done 2026-08-10 (§5).** `tests/fixtures/deep_flow_site`, four gates, defect only at the end, deterministic ceiling 0/1. No policy yet passes stage 1; see §5 for the two diagnosed causes.
-     Original: **Build a deep-flow fixture** — a 4–6 step sequential task with a bug only reachable at the end. The toy site cannot test RL's actual claim (credit assignment over multi-step flows); until this exists, "RL doesn't help" is only established for shallow sites. **Still open as of 2026-08-10, and the two prerequisites it was waiting on now exist**: session bootstrap (item 10) means an episode can *start* deep inside a flow, and label/`nth` matching means the macro can be written against a real application. The fixture is now the last thing standing between this project and a fair test of its exploration claim.
-   - ~~**1d. Score the judge on the random corpus**~~ — **done 2026-08-08 (§5).** Found three defects in this project's own code, including a renderer that asserted byte-identity it had not checked. Re-scored after the fixes. Keep doing this after any change to `judge/window.py`: the scripted corpus cannot see rendering bugs, because its ground truth was written against the same rendering.
-   - ~~**1e. Wire the judge into the live reward loop**~~ — **done 2026-08-09 (§5).** `reward/llm_judge.py`; `start_episode()` on the ABC, `StepContext` passed to `score()`, live windows rendered by the same code as the offline corpus. Runnable end to end via `scripts/run_judged.py`. **Evaluation path only** — see the latency note in §3.4.
-2. ~~**Design the judge-call gating filter**~~ — **done 2026-08-09 (§5).** `reward/gating.py`, replayed and loss-checked by `scripts/measure_gate.py`: skips 38–45% of windows while losing 0 of 14 positives on the toy scripted corpus and 0 of 24 on the toy random corpus. The rule is "an action that should have changed state was taken", and *the page changed* is checked **before** any failure rule — the first version skipped `success: False` steps and would have discarded BUG-01, whose `RAPID_CLICK` reports failure because clicks 2-5 time out after click 1 already navigated.
-2b. ~~**Rerun `train_toy.py`, over three seeds**~~ — **done 2026-08-26 (§5).** Result: unmasked DQN **0/3 seeded bugs [0-1]** against masked random's **3/3 [2-3]**; state coverage 6 [6-7] against 15 [14-16]. Run 5's 1/3 was seed 0, the only seed on which *any* arm found a bug — including unmasked random — so it was never a DQN result. Not a fair masked-vs-unmasked test (this script trains an unmasked head); the deep-flow 3-seed run is still the evidence for that. Original note kept below.
-
-    Original: **Rerun `train_toy.py`, over three seeds** — and the reasons have grown since this item was written. (i) Every `unique_states` figure in §5's run-5 table is void (measured 8, actually 22 once the env could perceive form state). (ii) **The run-5 comparison has the same n=1 defect the deep-flow run had** (§5, 2026-08-15): its DQN rows were evaluated with `deterministic=True` against a static fixture, so they are one trajectory reported as `--eval-episodes` samples, while the random rows they lose to are genuinely stochastic. The headline "DQN found 1/3 seeded bugs against masked random's 3/3" is therefore a single trajectory from a single training seed against a real 3-episode mean. The harness is fixed (`--eval-epsilon`, default 0.05, and `TrainedPolicy` now passes the action mask it had been dropping); the numbers are not. ~45 min per seed. **Until this is rerun, cite run 5 as suggestive, not as a result** — and note that fixing it could move the conclusion in either direction.
-2c. ~~**Fix the network-trace truncation before any real target.**~~ — **done 2026-08-08.** Was: `WebTestingEnv._page_info` caps `info["page"]["network"]` by slicing the *serialized JSON string* at 100 KB, which can cut mid-object. The trace recorder degrades safely (`test_a_truncated_network_trace_degrades_instead_of_failing`) but degrades by dropping **the entire network trace for that step**. The toy site's payloads are far too small to ever trigger it; Gitea's will, and it will do so on precisely the busiest steps — silently removing all HTTP evidence exactly where a failed request is most likely. Truncate the event *list*, not the string. ~20 lines, and it is the one known defect guaranteed to fire on first contact with a real app.
-3. ~~**Semantic perception pipeline**~~ — **built 2026-08-10, remeasured over 3 seeds 2026-08-17 (§5).** `perception/encoders/models.py`; ~5% throughput overhead, 951 MB VRAM. Settled: at fixture scale the encoders **cost** the agent return (non-overlapping seed ranges on both arms) and cost the unmasked agent 30 points of valid-action rate; the flow-depth difference the original claim was made on is not separable at n=3. Keep them — the argument for them was always about large, diverse targets where memorisation is impossible, and that case is still untested rather than refuted. Do not expect them to move any fixture number.
-4. **Wire `InverseDynamicsHead` in as an auxiliary loss** (§3.2). The `features_extractor` half of this item was already done and the item was never narrowed: `FusionFeaturesExtractor` is the `features_extractor_class` in both `scripts/train_toy.py` and `scripts/compare_agents.py`, so the fusion MLP has been receiving TD gradients in every run reported here. What remains is the auxiliary objective — `InverseDynamicsHead` is built and unit-tested but is not trained by anything, so the 1664→256 projection is still shaped by TD error alone, which §3.2 notes is a weak signal for a projection that size.
-5. ~~**Wire `WebFunctionalEnv` up against real Gitea**~~ — **done 2026-08-08, re-captured and re-scored 2026-08-09 (§5).** Env, capture and judge all run against a live Gitea; 13/13 probed routes reachable anonymously. Ten defects found across the two passes, none of them in the judge. The ungrounded positive rate fell 16.4% → 5.6% as the harness defects were closed. The current corpus is `gitea5-random`. The three intermediate captures from the debug rounds were deleted once their fixes landed — the numbers survive in `reports/judge_gitea4_{grounded,ungrounded}.json`, which embed their own verdicts, and the captures themselves are regenerable in three minutes. `gitea-random` is kept as the pre-fix corpus behind the 16.4% figure in the 2026-08-08 entry.
-   - **5a. Re-read the surviving positives on any new target, by hand.** Seven of this project's ten Gitea defects were found this way and none by a metric (§5, 2026-08-08 and 08-09). Budget it after every first contact.
-6. ~~**Build the auto-deploy runner** (§3.0a)~~ — **done, commit `4539c0f`; corrected 2026-08-30.** `intake/runner.py`: detection → policy gate → deadlined build → `SANDBOX_RUN_ARGS` → health check → exhaustive teardown, with 32 fake-client unit tests and a Docker-gated integration smoke test. What remains is **compose execution**, which is deliberately refused rather than approximated. Original note kept below.
-    Original: detection + build/run + applying `SANDBOX_RUN_ARGS` + health check. The policy gate is built; the sandbox enforcement is not, and must be tested adversarially, not just written.
-7. **Build the Repo Profiler module** (§3.0b) — tree-sitter repo map + static route/model/validation extraction, then the long-context model over that slice. **The schema and the consumer already exist** (`intake/profile.py`, built 2026-08-09), so this item is now only the extractor, and it is written against a profile shape that has already been measured. **Reprioritise on the 2026-08-26 A/B, which says the profile contributes nothing measurable** (§5): recall, false positives, discrimination and grounding were all unchanged by a hand-authored, correct profile. An extractor would have to beat a baseline of zero, so this item's value is now an open question rather than an assumed win — and the honest next step is a source-derived A/B, not an extractor built on faith.
-8. **Evaluate prompted vs. fine-tuned Phi-3 for the reward model** (§3.4) before committing the 1,000-example manual annotation effort.
-9. `SubprocVecEnv` parallelism + a throughput measurement on a real target, to fix a realistic step budget (§8).
-10. ~~Session/auth bootstrap support for `WebFunctionalEnv`~~ — **done 2026-08-10 (§5).** `setup_actions=[...]`, replayed per episode, excluded from the step budget and the reward. `data/profiles/gitea_login.json` is the working macro.
-11. Resolve the SSIM/"expected state" baseline design question before implementing that trigger for real (§8).
-12. ~~Bug Report Engine~~ — **done, commit `c5cce3d`; corrected 2026-08-30.** `reporting/report.py` + 15 unit tests; JSON and Markdown, deterministic findings and judge verdicts kept separate, repro steps from the trace, ungrounded verdicts quarantined. **Still open:** the inconsistency-diffing capability (§3.5), which needs the Application Profile in the report path.
-13. Expand the toy site's 10 seeded bugs toward the 150-bug benchmark (§8), reusing `answer_key.json`'s structure.
-14. `open-clip-torch`/`openai-clip`, `bitsandbytes`, `trl`, `asyncio-throttle` are in `requirements.txt` but not yet installed — needed for Phase 2 (perception) and Phase 3 (LoRA fine-tuning). Reconsider whether a separate CLIP package is needed at all given `transformers` already ships `CLIPModel`/`CLIPProcessor`.
-15. `WebSecurityEnv` (Agent A) remains unbuilt — secondary priority, and the first thing to drop under time pressure (§6.1, §8).
-16. Write the related-work section against the RL-GUI-testing and LLM-GUI-testing literature (§1), not just against ZAP/Burp/Cypress.
+1. **Finish the primary run**: disable the screen-off timeout (with the owner's OK), resume
+   the local half (§0.2), download the AWS results when `final-cpu-3/4` finish.
+2. **Merge and analyse, unchanged**: `runs/final-local` + `runs/final-cpu-*` →
+   `scripts/analyze_transfer.py`; list infrastructure failures and rerun them; commit raw
+   results and the report. Then commit the deferred documentation (this file is current).
+3. **Audit the results** against §0.4 (claim limits) before writing any conclusion.
+4. **Run the frozen contextual diagnostic** exactly as pre-registered (build its generator
+   and probes, then evaluate); its own report.
+5. **Finish the application suite**: browser-validate clinicflow, orbit, wayfarer; finish
+   ledgerly and stackroom; Docker checks for all Dockerfile apps; diversity report; merge
+   the `e2e-suite` branch when the primary no longer depends on this checkout.
+6. **Product completeness (F)**, decided after 2–5: uploaded-repo tester end to end through
+   the UI; Dockerfile-less repositories (stack templates, `wayfarer` as the test case);
+   spec-less functional verification (generic invariants measured against the suite's
+   ground truth); settle-on-in-flight-requests in the environment.
+7. **Before the demo**: three end-to-end runs (ZIP with assertions → verified findings; a
+   Dockerfile repo through the UI; a live URL with generic triggers and the unverified
+   review), with trained product weights (`scripts/train_tester.py`).
+8. **Final report and presentation**: methodology with every amendment and deviation,
+   results exactly as produced (all folds and pristine folds), the diagnostic in its own
+   section, a claims table (shown / not shown), AWS cost, literature positioning (agent,
+   curiosity bonus and LLM potential are not novel; the contribution is the combination and
+   the evaluation discipline).
 
 ---
 
@@ -3482,3 +3635,13 @@ Two consequences worth knowing before relying on a clone: the Gitea corpora and 
 - vLLM does not compile natively on Windows — use a `transformers` pipeline fallback locally, or Docker/WSL for real serving.
 - `bitsandbytes` has known Windows compatibility issues (historically needs WSL or a precompiled fork) — revisit at Phase 3 rather than assuming a plain `pip install` works.
 - Auto-deploy (§3.0a) will need real container sandboxing (resource/network/timeout limits) before it's safe to run against untrusted uploaded repos — treat as a security requirement, not a later hardening pass.
+- **Added 2026-10-04.** Ollama serves `qwen2.5:7b-instruct` (digest `845dbda0ea48`) locally
+  at `127.0.0.1:11434`; RTX 4050 Laptop (6 GB) sustains ~0.78 judgments/s. Docker Desktop is
+  running. AWS CLI v2 at `C:\Program Files\Amazon\AWSCLIV2ws.exe` (not on Git Bash's
+  PATH), profile `wta`. Node 22.17 is installed (used by the suite's Node apps).
+- **Windows Modern Standby suspends long runs** even with "sleep: never" on AC; the
+  screen-off timeout (`powercfg /change monitor-timeout-ac 0`) is what must be disabled
+  before an unattended local run.
+- **Python on Windows writes CRLF** through `Path.write_text`; the `e2e-suite` branch pins
+  LF via `.gitattributes` because patch anchors contain newlines.
+- **Second worktree**: `../RL web tester-e2e` on branch `e2e-suite` (the application suite).
