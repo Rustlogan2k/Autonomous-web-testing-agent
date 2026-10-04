@@ -121,15 +121,19 @@ def _evaluate(spec: dict, regions: dict, app: BenchmarkApp, trajectory: Trajecto
         expression = spec["expression"]
         if not _SAFE_EXPRESSION.match(expression) or "__" in expression:
             return ExtResult(kind, False, True, f"refusing expression {expression!r}")
-        lhs, _, rhs = expression.partition("==")
+        scope = {"__builtins__": {}, "round": round, "abs": abs, "min": min, "max": max}
         try:
-            left = eval(lhs, {"__builtins__": {}, "round": round}, dict(values))  # noqa: S307
-            right = eval(rhs, {"__builtins__": {}, "round": round}, dict(values))  # noqa: S307
+            if "==" in expression:
+                lhs, _, rhs = expression.partition("==")
+                left, right = eval(lhs, scope, dict(values)), eval(rhs, scope, dict(values))  # noqa: S307
+                violated = abs(float(left) - float(right)) > float(spec.get("tolerance", 0.005))
+                observed = f"{lhs.strip()}={left:g} {rhs.strip()}={right:g}"
+            else:  # a boolean rule such as `total <= 50`
+                violated = not bool(eval(expression, scope, dict(values)))  # noqa: S307
+                observed = f"{values}"
         except Exception as exc:  # noqa: BLE001
             return ExtResult(kind, False, True, f"expression failed: {exc}")
-        violated = abs(float(left) - float(right)) > float(spec.get("tolerance", 0.005))
-        return ExtResult(kind, violated, False, f"{expression} with {values}",
-                         f"{lhs.strip()}={left:g} {rhs.strip()}={right:g}")
+        return ExtResult(kind, violated, False, f"{expression} with {values}", observed)
     # A primary kind inside an extension fault: evaluated by the primary oracle, unchanged.
     result = evaluate_assertion(AssertionSpec.from_dict(spec), app, trajectory)
     return ExtResult(result.kind, result.violated, result.inconclusive, result.detail,

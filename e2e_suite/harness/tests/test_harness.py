@@ -103,3 +103,16 @@ def test_region_arithmetic_compares_numbers_on_the_same_page_under_a_guard():
     assert not ext_oracle.verify(fault, regions, APP, fresh).violated
     verdict = ext_oracle.verify(fault, regions, APP, other)
     assert not verdict.violated and not verdict.inconclusive
+
+
+def test_region_arithmetic_accepts_a_boolean_rule():
+    fault = {"fault_id": "F", "assertions": [{
+        "kind": "region_arithmetic", "where": ".*", "expression": "total <= 50",
+        "operands": {"total": "t"}, "guard": {"region": "s", "contains": "Approved"}}]}
+    regions = {"t": "#t", "s": "#s"}
+    over = _trajectory([("u", '<b id="s">Approved</b><b id="t">£78.12</b>', None, None)])
+    under = _trajectory([("u", '<b id="s">Approved</b><b id="t">£42.00</b>', None, None)])
+    pending = _trajectory([("u", '<b id="s">Awaiting approval</b><b id="t">£78.12</b>', None, None)])
+    assert ext_oracle.verify(fault, regions, APP, over).violated
+    assert not ext_oracle.verify(fault, regions, APP, under).violated
+    assert not ext_oracle.verify(fault, regions, APP, pending).violated
