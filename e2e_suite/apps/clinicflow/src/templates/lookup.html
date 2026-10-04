@@ -1,0 +1,10 @@
+<p class="step-kicker">{{ service }}</p>
+<h1>{{ t("lookup.title") }}</h1>
+<form class="stack" method="post" action="/book/{{ draft }}/lookup" autocomplete="off" novalidate>
+  <div class="field">
+    <label for="lookup-email">{{ t("field.lookup_email") }}</label>
+    <input id="lookup-email" name="lookup_email" type="email">
+  </div>
+  {{ payment|raw }}
+  <p class="actions"><button id="find-record" class="primary" type="submit">{{ t("act.find_record") }}</button></p>
+</form>

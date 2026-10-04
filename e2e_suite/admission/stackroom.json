@@ -1,0 +1,117 @@
+{
+  "app_id": "stackroom",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "Ran 9 tests in 0.878s",
+          "OK"
+        ],
+        "pass_lines": null,
+        "tail": []
+      }
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 56,
+      "keys_used_by_source": 49,
+      "action_keys": 9,
+      "unused_keys": [
+        "col.name",
+        "log.adjust",
+        "log.bulk",
+        "log.import",
+        "log.inline",
+        "status.active",
+        "status.archived"
+      ],
+      "default_action_labels": {
+        "act.adjust": "Adjust",
+        "act.apply": "Apply",
+        "act.back_grid": "Back to stock list",
+        "act.columns": "Columns",
+        "act.commit": "Commit changes",
+        "act.discard": "Discard",
+        "act.next": "Next page",
+        "act.prev": "Previous page",
+        "act.sync": "Sync"
+      },
+      "alt_action_labels": {
+        "act.adjust": "Change level",
+        "act.apply": "Run",
+        "act.back_grid": "Return to inventory",
+        "act.columns": "Show fields",
+        "act.commit": "Save adjustment",
+        "act.discard": "Abandon",
+        "act.next": "Later rows",
+        "act.prev": "Earlier rows",
+        "act.sync": "Reload list"
+      }
+    },
+    "patch_sizes": {
+      "STK-1": {
+        "file": "src/static/stackroom.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 19
+      },
+      "STK-2": {
+        "file": "src/inventory.py",
+        "lines_removed": 2,
+        "lines_added": 3,
+        "chars_changed": 159
+      },
+      "STK-3": {
+        "file": "src/inventory.py",
+        "lines_removed": 2,
+        "lines_added": 1,
+        "chars_changed": 105
+      }
+    }
+  },
+  "admitted": true,
+  "checks_run": 8,
+  "checks_failed": [],
+  "browser_checks_run": false,
+  "docker_checks_run": false,
+  "wall_clock_s": 2.7
+}

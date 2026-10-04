@@ -1,0 +1,10 @@
+<h1>{{ t("bookings.title") }}</h1>
+<h2>{{ t("bookings.upcoming") }}</h2>
+<table class="ledger">
+  <thead><tr><th scope="col">{{ t("label.reference") }}</th><th scope="col">{{ t("label.when") }}</th>
+    <th scope="col">{{ t("label.with") }}</th><th scope="col">{{ t("label.service") }}</th></tr></thead>
+  <tbody id="upcoming-list">{{ upcoming|raw }}</tbody>
+</table>
+<h2>{{ t("bookings.cancelled") }}</h2>
+<ul id="cancelled-list" class="plain">{{ cancelled|raw }}</ul>
+<p><a id="list-start" class="button" href="/book">{{ t("act.start") }}</a></p>

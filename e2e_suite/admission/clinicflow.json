@@ -1,0 +1,150 @@
+{
+  "app_id": "clinicflow",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "Ran 11 tests in 2.856s",
+          "OK"
+        ],
+        "pass_lines": null,
+        "tail": []
+      }
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 103,
+      "keys_used_by_source": 81,
+      "action_keys": 18,
+      "unused_keys": [
+        "cell.booked",
+        "cell.free",
+        "cell.held",
+        "missing.body",
+        "msg.answers_needed",
+        "msg.cancel_tick",
+        "msg.dob_bad",
+        "msg.email_bad",
+        "msg.finish_first",
+        "msg.insurer_needed",
+        "msg.name_needed",
+        "msg.no_longer_active",
+        "msg.not_found",
+        "msg.payment_needed",
+        "msg.slot_taken",
+        "msg.slot_unknown",
+        "msg.slot_yours",
+        "msg.too_long",
+        "replaced.body",
+        "status.answered",
+        "status.not_answered",
+        "status.not_needed"
+      ],
+      "default_action_labels": {
+        "act.book": "Book visit",
+        "act.cancel": "Cancel visit",
+        "act.change_time": "Change time",
+        "act.find_record": "Find my record",
+        "act.hold": "Hold slot",
+        "act.manage": "Manage booking",
+        "act.new_patient": "New patient",
+        "act.next_free": "Next available",
+        "act.print": "Print summary",
+        "act.reschedule": "Reschedule",
+        "act.resume": "Carry on with your booking",
+        "act.returning": "Returning patient",
+        "act.save_answers": "Save answers",
+        "act.save_details": "Choose time",
+        "act.start": "Book an appointment",
+        "act.start_over": "Start a new booking",
+        "act.to_questions": "Answer questions",
+        "act.to_review": "Review booking"
+      },
+      "alt_action_labels": {
+        "act.book": "Lock in appointment",
+        "act.cancel": "Call off visit",
+        "act.change_time": "Pick another time",
+        "act.find_record": "Look me up",
+        "act.hold": "Reserve time",
+        "act.manage": "View appointment",
+        "act.new_patient": "First visit here",
+        "act.next_free": "First free time",
+        "act.print": "Printable view",
+        "act.reschedule": "Move appointment",
+        "act.resume": "Return to your booking",
+        "act.returning": "I have been before",
+        "act.save_answers": "Keep answers",
+        "act.save_details": "Pick a time",
+        "act.start": "Make an appointment",
+        "act.start_over": "Begin again",
+        "act.to_questions": "Pre-visit form",
+        "act.to_review": "Check appointment"
+      }
+    },
+    "patch_sizes": {
+      "CLIN-1": {
+        "file": "src/store.py",
+        "lines_removed": 4,
+        "lines_added": 4,
+        "chars_changed": 217
+      },
+      "CLIN-2": {
+        "file": "src/assets/booking.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 42
+      },
+      "CLIN-3": {
+        "file": "src/wizard.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 23
+      }
+    }
+  },
+  "admitted": true,
+  "checks_run": 8,
+  "checks_failed": [],
+  "browser_checks_run": false,
+  "docker_checks_run": false,
+  "wall_clock_s": 4.5
+}

@@ -1,0 +1,756 @@
+{
+  "app_id": "helpline",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "Ran 12 tests in 0.877s",
+          "OK"
+        ],
+        "pass_lines": null,
+        "tail": []
+      }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "853bf8e5a53c197bf71e9842b25d3d152eddebf5160c52fb6650cda0836d0178",
+        "fresh_context_sha": [
+          "853bf8e5a53c197bf71e9842b25d3d152eddebf5160c52fb6650cda0836d0178",
+          "853bf8e5a53c197bf71e9842b25d3d152eddebf5160c52fb6650cda0836d0178"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault HELP-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "HELP-1",
+        "subtype": "state-transition",
+        "oracle": "existing",
+        "fault_class": "broken_transition",
+        "witness_length": 6,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Resolved",
+          "text_absent: violated=True inconclusive=False Customer"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 6,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 102.0
+      }
+    },
+    {
+      "name": "fault HELP-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "HELP-2",
+        "subtype": "workflow-completion",
+        "oracle": "existing",
+        "fault_class": "broken_transition",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "echoes_input: violated=True inconclusive=False None",
+          "text_absent: violated=True inconclusive=False Merged #106 into this ticket."
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 53.6
+      }
+    },
+    {
+      "name": "fault HELP-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "HELP-3",
+        "subtype": "stale-state",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 3,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False #102 No internet since the storm Tom Okafor Urgent Triage Kai Hand off #101 Rout"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 3,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 40.3
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 107,
+      "keys_used_by_source": 81,
+      "action_keys": 14,
+      "unused_keys": [
+        "channel.chat",
+        "channel.email",
+        "channel.phone",
+        "msg.already_oncall",
+        "msg.already_resolved",
+        "msg.bad_transition",
+        "msg.close_needs_resolved",
+        "msg.merge_invalid",
+        "msg.merge_target_done",
+        "msg.no_such_ticket",
+        "msg.reply_empty",
+        "msg.reply_too_long",
+        "msg.resolve_needs_reply",
+        "msg.ticket_closed",
+        "priority.high",
+        "priority.low",
+        "priority.normal",
+        "priority.urgent",
+        "role.agent",
+        "role.customer",
+        "status.closed",
+        "status.in_progress",
+        "status.new",
+        "status.resolved",
+        "status.triage",
+        "status.waiting"
+      ],
+      "default_action_labels": {
+        "act.apply": "Apply",
+        "act.cancel": "Cancel",
+        "act.close": "Close",
+        "act.handoff": "Hand off",
+        "act.handoff_to": "Hand off to",
+        "act.log_customer": "Log customer reply",
+        "act.mark_done": "Mark done",
+        "act.merge_confirm": "Merge tickets",
+        "act.merge_open": "Merge\u2026",
+        "act.refresh": "Refresh queue",
+        "act.resolve": "Resolve",
+        "act.send_reply": "Send reply",
+        "act.start_triage": "Start triage",
+        "act.start_work": "Start work"
+      },
+      "alt_action_labels": {
+        "act.apply": "Show",
+        "act.cancel": "Never mind",
+        "act.close": "Archive",
+        "act.handoff": "Reassign",
+        "act.handoff_to": "Reassign to",
+        "act.log_customer": "Record caller's answer",
+        "act.mark_done": "Dismiss",
+        "act.merge_confirm": "Combine tickets",
+        "act.merge_open": "Combine\u2026",
+        "act.refresh": "Reload list",
+        "act.resolve": "Mark solved",
+        "act.send_reply": "Respond",
+        "act.start_triage": "Begin sorting",
+        "act.start_work": "Pick up"
+      }
+    },
+    "patch_sizes": {
+      "HELP-1": {
+        "file": "src/desk.py",
+        "lines_removed": 2,
+        "lines_added": 2,
+        "chars_changed": 65
+      },
+      "HELP-2": {
+        "file": "src/desk.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 51
+      },
+      "HELP-3": {
+        "file": "src/desk.py",
+        "lines_removed": 2,
+        "lines_added": 2,
+        "chars_changed": 22
+      }
+    },
+    "workflows": [
+      {
+        "name": "answer a new ticket and resolve it [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "hand a ticket to Kai from its page, then check the unassigned list [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "merge a duplicate billing ticket [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "show only unassigned tickets [default vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "log a phone reply on a ticket waiting for the customer [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "resolve and close an answered ticket [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "hand a ticket to Kai from the queue [default vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "triage a new ticket and start work on it [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "read a resolved ticket's history [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "answer a new ticket and resolve it [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "hand a ticket to Kai from its page, then check the unassigned list [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "merge a duplicate billing ticket [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "show only unassigned tickets [alt vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "log a phone reply on a ticket waiting for the customer [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "resolve and close an answered ticket [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "hand a ticket to Kai from the queue [alt vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "triage a new ticket and start work on it [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "read a resolved ticket's history [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "Resolve changes a ticket only once the agent has replied after the customer",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "Close changes a ticket only once it is resolved",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "Mark done on the on-call notification",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "Refresh queue",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "HELP-1",
+        "subtype": "state-transition",
+        "oracle": "existing",
+        "fault_class": "broken_transition",
+        "witness_length": 6,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Resolved",
+          "text_absent: violated=True inconclusive=False Customer"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 6,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "open-101"
+          },
+          {
+            "type": "TYPE",
+            "id": "reply-body",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "send-reply"
+          },
+          {
+            "type": "CLICK",
+            "id": "resolve"
+          },
+          {
+            "type": "TYPE",
+            "id": "customer-body",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "log-customer-reply"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 102.0
+      },
+      {
+        "fault_id": "HELP-2",
+        "subtype": "workflow-completion",
+        "oracle": "existing",
+        "fault_class": "broken_transition",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "echoes_input: violated=True inconclusive=False None",
+          "text_absent: violated=True inconclusive=False Merged #106 into this ticket."
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "open-105"
+          },
+          {
+            "type": "CLICK",
+            "id": "open-merge"
+          },
+          {
+            "type": "SELECT",
+            "id": "merge-source",
+            "params": {
+              "option": "106"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "merge-confirm"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 53.6
+      },
+      {
+        "fault_id": "HELP-3",
+        "subtype": "stale-state",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 3,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False #102 No internet since the storm Tom Okafor Urgent Triage Kai Hand off #101 Rout"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 3,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "SELECT",
+            "id": "filter-assignee",
+            "params": {
+              "option": "none"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "apply-filters"
+          },
+          {
+            "type": "CLICK",
+            "id": "handoff-102"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 40.3
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 3,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 3,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
+    }
+  },
+  "admitted": true,
+  "checks_run": 20,
+  "checks_failed": [],
+  "browser_checks_run": true,
+  "docker_checks_run": false,
+  "wall_clock_s": 422.0
+}

@@ -1,0 +1,110 @@
+{
+  "app_id": "wayfarer",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "# tests 12",
+          "# pass 12",
+          "# fail 0"
+        ],
+        "pass_lines": 1,
+        "tail": []
+      }
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 65,
+      "keys_used_by_source": 65,
+      "action_keys": 12,
+      "unused_keys": [],
+      "default_action_labels": {
+        "act.all_trips": "All trips",
+        "act.create_trip": "Plan trip",
+        "act.favourite": "Favourite",
+        "act.nudge_down": "Nudge down",
+        "act.nudge_up": "Nudge up",
+        "act.open": "Open",
+        "act.permalink": "Link to this itinerary",
+        "act.pin": "Pin stop",
+        "act.seal": "Seal itinerary",
+        "act.share": "Share",
+        "act.strike": "Strike",
+        "act.weather": "Weather"
+      },
+      "alt_action_labels": {
+        "act.all_trips": "Back to journeys",
+        "act.create_trip": "Create trip",
+        "act.favourite": "Star",
+        "act.nudge_down": "Lower",
+        "act.nudge_up": "Raise",
+        "act.open": "View",
+        "act.permalink": "Permanent address",
+        "act.pin": "Add waypoint",
+        "act.seal": "Freeze plan",
+        "act.share": "Get link",
+        "act.strike": "Drop",
+        "act.weather": "Forecast"
+      }
+    },
+    "patch_sizes": {
+      "WAY-1": {
+        "file": "src/static/app.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 68
+      },
+      "WAY-2": {
+        "file": "src/static/app.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 9
+      }
+    }
+  },
+  "admitted": true,
+  "checks_run": 8,
+  "checks_failed": [],
+  "browser_checks_run": false,
+  "docker_checks_run": false,
+  "wall_clock_s": 1.7
+}

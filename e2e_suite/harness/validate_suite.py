@@ -38,7 +38,10 @@ def api_tests(app: AppManifest, clean_dir: Path) -> dict:
     with Server(app, clean_dir) as server:
         env = {**os.environ, "E2E_BASE_URL": server.url}
         if app.data["start"][0] == "node":
-            command = [shutil.which("node") or "node", "--test", "--test-reporter=tap", str(tests)]
+            # Node 22 does not take a directory as a test path; a glob relative to the app is
+            # the documented form (found by the orbit builder).
+            command = [shutil.which("node") or "node", "--test", "--test-reporter=tap",
+                       "tests/**/*.test.mjs", "tests/**/*.test.js"]
         else:
             command = [sys.executable, "-m", "unittest", "discover", "-s", str(tests), "-v"]
         completed = subprocess.run(command, capture_output=True, text=True, env=env, timeout=600,

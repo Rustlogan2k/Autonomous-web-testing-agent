@@ -1,0 +1,6 @@
+{
+  "name": "ledgerly",
+  "private": true,
+  "type": "module",
+  "description": "Marks src/ as ES modules so the server and the browser share src/static/money.js. No dependencies."
+}

@@ -1,0 +1,40 @@
+:root {
+  --ink: #1f2a2e;
+  --paper: #fbf8f2;
+  --sand: #efe6d4;
+  --sea: #1d6b74;
+  --sea-dark: #134a50;
+  --coral: #c4553a;
+  --rule: #d9cfbb;
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  color: var(--ink);
+  background: var(--paper);
+}
+body { margin: 0; }
+.masthead { display: flex; align-items: baseline; gap: 1rem; padding: .9rem 1.5rem; background: var(--sea); color: #fff; }
+.wordmark { font-size: 1.4rem; font-weight: bold; letter-spacing: .04em; }
+.tagline { opacity: .8; font-style: italic; flex: 1; }
+.masthead a { color: #fff; }
+main { max-width: 56rem; margin: 0 auto; padding: 1.25rem 1.5rem 3rem; }
+h1 { margin: .2rem 0 .4rem; }
+.muted { color: #5d6a6e; }
+table { border-collapse: collapse; width: 100%; margin: .5rem 0 1.5rem; }
+th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid var(--rule); }
+.planner-form, .day, .weather { background: #fff; border: 1px solid var(--rule); border-radius: 6px; padding: 1rem 1.2rem; margin: 1rem 0; }
+.planner-form label, .pin label { display: block; font-size: .85rem; margin-top: .5rem; }
+input[type="text"], input[type="date"], select { font: inherit; padding: .3rem .4rem; border: 1px solid var(--rule); border-radius: 4px; }
+button { font: inherit; padding: .3rem .7rem; border: 1px solid var(--sea); border-radius: 4px; background: #fff; color: var(--sea-dark); cursor: pointer; }
+button.lead { background: var(--sea); color: #fff; }
+.toolbar { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .8rem 0; }
+.flag { margin-left: .6rem; padding: .05rem .5rem; border-radius: 999px; background: var(--sand); font-size: .85rem; }
+.flag:empty { display: none; }
+.notice { min-height: 1.3rem; color: var(--sea-dark); }
+.problem { min-height: 1.1rem; color: var(--coral); font-size: .9rem; margin: .3rem 0 0; }
+ol.stops { margin: .3rem 0; padding-left: 1.6rem; }
+ol.stops li { padding: .35rem 0; border-bottom: 1px dotted var(--rule); }
+.stop-length { color: #5d6a6e; margin: 0 .5rem; font-size: .9rem; }
+.stop-tools button { font-size: .8rem; padding: .1rem .45rem; }
+.fav[aria-pressed="true"] { background: #f4c542; border-color: #c99a14; color: var(--ink); }
+.pin { display: flex; flex-wrap: wrap; gap: .5rem; align-items: flex-end; margin-top: .6rem; }
+.share-meta strong { color: var(--sea-dark); }
+#share-days h3 { margin: 1rem 0 .3rem; font-size: 1rem; }

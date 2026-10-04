@@ -1,0 +1,18 @@
+<p class="step-kicker">{{ service }}</p>
+<h1>{{ t("details.title") }}</h1>
+<form class="stack" method="post" action="/book/{{ draft }}/details" autocomplete="off" novalidate>
+  <div class="field">
+    <label for="full-name">{{ t("field.full_name") }}</label>
+    <input id="full-name" name="full_name" type="text">
+  </div>
+  <div class="field">
+    <label for="dob">{{ t("field.dob") }}</label>
+    <input id="dob" name="dob" type="date">
+  </div>
+  <div class="field">
+    <label for="email">{{ t("field.email") }}</label>
+    <input id="email" name="email" type="email">
+  </div>
+  {{ payment|raw }}
+  <p class="actions"><button id="save-details" class="primary" type="submit">{{ t("act.save_details") }}</button></p>
+</form>

@@ -1,0 +1,13 @@
+{{ banner|raw }}
+<h1>{{ t("booked.title") }}</h1>
+<dl class="summary">
+  <dt>{{ t("label.reference") }}</dt><dd><strong id="booking-ref">{{ ref }}</strong></dd>
+  <dt>{{ t("label.status") }}</dt><dd><span id="booking-state">{{ state }}</span></dd>
+  <dt>{{ t("label.service") }}</dt><dd><span id="booking-service">{{ service }}</span></dd>
+  <dt>{{ t("label.with") }}</dt><dd><span id="booking-with">{{ with_name }}</span></dd>
+  <dt>{{ t("label.when") }}</dt><dd><span id="booking-when">{{ when }}</span></dd>
+  <dt>{{ t("label.patient") }}</dt><dd><span id="booking-patient">{{ patient }}</span></dd>
+  <dt>{{ t("label.paid_by") }}</dt><dd><span id="paid-by">{{ paid }}</span></dd>
+  <dt>{{ t("label.questions") }}</dt><dd><span id="booked-answers">{{ answers }}</span></dd>
+</dl>
+<p class="actions"><a id="manage-booking" class="button" href="/bookings/{{ ref }}">{{ t("act.manage") }}</a></p>

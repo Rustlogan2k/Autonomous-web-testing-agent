@@ -1,0 +1,170 @@
+{
+  "app_id": "ledgerly",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "# tests 12",
+          "# pass 12",
+          "# fail 0"
+        ],
+        "pass_lines": 1,
+        "tail": []
+      }
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 107,
+      "keys_used_by_source": 62,
+      "action_keys": 16,
+      "unused_keys": [
+        "category.hotel",
+        "category.meals",
+        "category.other",
+        "category.travel",
+        "event.approved",
+        "event.claim_drafted",
+        "event.draft_saved",
+        "event.escalated",
+        "event.lodged",
+        "event.rejected",
+        "event.resubmitted",
+        "event.sent_back",
+        "home.queue_empty",
+        "missing.body",
+        "msg.done_approve",
+        "msg.done_escalate",
+        "msg.done_lodge",
+        "msg.done_reject",
+        "msg.done_resubmit",
+        "msg.done_save",
+        "msg.done_send_back",
+        "msg.line_amount",
+        "msg.line_category",
+        "msg.line_currency",
+        "msg.line_description",
+        "msg.line_description_long",
+        "msg.no_lines",
+        "msg.not_editable",
+        "msg.not_your_decision",
+        "msg.not_your_turn",
+        "msg.note_long",
+        "msg.note_needed",
+        "msg.only_claimant",
+        "msg.over_limit",
+        "msg.template_soon",
+        "msg.too_many_lines",
+        "role.employee",
+        "role.finance",
+        "role.manager",
+        "status.approved",
+        "status.awaiting",
+        "status.draft",
+        "status.rejected",
+        "status.sent_back",
+        "status.with_finance"
+      ],
+      "default_action_labels": {
+        "act.add_line": "Add line",
+        "act.approve": "Approve",
+        "act.attach_receipt": "Attach receipt",
+        "act.back_to_claims": "Back to claims",
+        "act.edit_claim": "Edit claim",
+        "act.escalate": "Escalate",
+        "act.lodge": "Lodge claim",
+        "act.new_claim": "New claim",
+        "act.reject": "Reject",
+        "act.remove_line": "Remove",
+        "act.resubmit": "Resubmit",
+        "act.save_changes": "Save changes",
+        "act.save_draft": "Save draft",
+        "act.save_template": "Save as template",
+        "act.send_back": "Send back",
+        "act.switch_role": "Switch"
+      },
+      "alt_action_labels": {
+        "act.add_line": "Another item",
+        "act.approve": "Sign off",
+        "act.attach_receipt": "Add a receipt",
+        "act.back_to_claims": "All expense reports",
+        "act.edit_claim": "Make changes",
+        "act.escalate": "Refer upward",
+        "act.lodge": "File expenses",
+        "act.new_claim": "Start an expense report",
+        "act.reject": "Decline",
+        "act.remove_line": "Drop item",
+        "act.resubmit": "Send in again",
+        "act.save_changes": "Keep my edits",
+        "act.save_draft": "Keep for later",
+        "act.save_template": "Store as a pattern",
+        "act.send_back": "Return for edits",
+        "act.switch_role": "Change view"
+      }
+    },
+    "patch_sizes": {
+      "LED-1": {
+        "file": "src/static/claim-editor.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 35
+      },
+      "LED-2": {
+        "file": "src/claims.js",
+        "lines_removed": 2,
+        "lines_added": 1,
+        "chars_changed": 60
+      },
+      "LED-3": {
+        "file": "src/claims.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 39
+      }
+    }
+  },
+  "admitted": true,
+  "checks_run": 8,
+  "checks_failed": [],
+  "browser_checks_run": false,
+  "docker_checks_run": false,
+  "wall_clock_s": 2.1
+}

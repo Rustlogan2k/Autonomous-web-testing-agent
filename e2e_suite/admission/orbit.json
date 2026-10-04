@@ -1,0 +1,122 @@
+{
+  "app_id": "orbit",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "# tests 15",
+          "# pass 15",
+          "# fail 0"
+        ],
+        "pass_lines": 1,
+        "tail": []
+      }
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 72,
+      "keys_used_by_source": 72,
+      "action_keys": 15,
+      "unused_keys": [],
+      "default_action_labels": {
+        "act.add_card": "Add card",
+        "act.cancel_new_card": "Cancel",
+        "act.close": "Close",
+        "act.column_menu": "Column options",
+        "act.comment": "Add comment",
+        "act.copy_link": "Copy link",
+        "act.move": "Move",
+        "act.new_card": "New card",
+        "act.open_board": "Open board",
+        "act.park": "Park",
+        "act.pull_in": "Pull in",
+        "act.ship": "Ship",
+        "act.ship_ready": "Ship all ready",
+        "act.unwatch": "Stop watching",
+        "act.watch": "Watch card"
+      },
+      "alt_action_labels": {
+        "act.add_card": "Save task",
+        "act.cancel_new_card": "Discard",
+        "act.close": "Back to board",
+        "act.column_menu": "More actions",
+        "act.comment": "Post note",
+        "act.copy_link": "Share link",
+        "act.move": "Relocate",
+        "act.new_card": "Create task",
+        "act.open_board": "Show board",
+        "act.park": "Hold",
+        "act.pull_in": "Start",
+        "act.ship": "Release",
+        "act.ship_ready": "Release everything finished",
+        "act.unwatch": "Unfollow",
+        "act.watch": "Follow"
+      }
+    },
+    "patch_sizes": {
+      "ORB-1": {
+        "file": "src/board.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 12
+      },
+      "ORB-2": {
+        "file": "src/board.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 36
+      },
+      "ORB-3": {
+        "file": "src/server.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 5
+      }
+    }
+  },
+  "admitted": true,
+  "checks_run": 8,
+  "checks_failed": [],
+  "browser_checks_run": false,
+  "docker_checks_run": false,
+  "wall_clock_s": 2.6
+}

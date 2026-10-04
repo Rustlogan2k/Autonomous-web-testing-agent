@@ -1,0 +1,112 @@
+{
+  "projects": [
+    {
+      "id": "web",
+      "name": "Website relaunch",
+      "summary": "New marketing site, launching before the autumn campaign.",
+      "columns": [
+        {"id": "backlog", "name": "Backlog", "wip": null},
+        {"id": "doing", "name": "Doing", "wip": 3},
+        {"id": "review", "name": "Review", "wip": 2},
+        {"id": "shipped", "name": "Shipped", "wip": null}
+      ]
+    },
+    {
+      "id": "ops",
+      "name": "Office move",
+      "summary": "Moving the studio to the riverside building in July.",
+      "columns": [
+        {"id": "backlog", "name": "Backlog", "wip": null},
+        {"id": "doing", "name": "Doing", "wip": 2},
+        {"id": "review", "name": "Review", "wip": 2},
+        {"id": "shipped", "name": "Shipped", "wip": null}
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "n": 1, "project": "web", "column": "backlog", "title": "Cookie banner",
+      "description": "Consent banner for analytics cookies, shown on the first visit only.",
+      "checklist": [["Draft the consent text", false], ["Wire up the opt-out", false]],
+      "blocked_by": []
+    },
+    {
+      "n": 2, "project": "web", "column": "backlog", "title": "Search page",
+      "description": "Site search over blog posts and product pages, fed by the sitemap.",
+      "checklist": [["Index the blog posts", false], ["Results layout", false], ["Empty state", false]],
+      "blocked_by": [3]
+    },
+    {
+      "n": 3, "project": "web", "column": "backlog", "title": "Sitemap",
+      "description": "Generate sitemap.xml from the page tree on every publish.",
+      "checklist": [["List every public route", false], ["Submit to the search console", false]],
+      "blocked_by": []
+    },
+    {
+      "n": 4, "project": "web", "column": "doing", "title": "Pricing page copy",
+      "description": "Rewrite the three plan descriptions in the new tone of voice.",
+      "checklist": [["Outline the plans", true], ["Write the comparison table", false], ["Legal check of the small print", false]],
+      "blocked_by": []
+    },
+    {
+      "n": 5, "project": "web", "column": "doing", "title": "Hero illustration",
+      "description": "Homepage hero artwork in light and dark variants.",
+      "checklist": [["Sketch three directions", true], ["Final artwork", false]],
+      "blocked_by": []
+    },
+    {
+      "n": 6, "project": "web", "column": "doing", "title": "Analytics events",
+      "description": "Track sign-ups, plan views and demo requests with the new event schema.",
+      "checklist": [["Agree the event names", true], ["Add the tracking calls", true], ["Verify in staging", false], ["Dashboard for marketing", false]],
+      "blocked_by": []
+    },
+    {
+      "n": 7, "project": "web", "column": "review", "title": "Release notes",
+      "description": "Launch announcement listing what is new, including the analytics changes.",
+      "checklist": [["Collect the changes", true], ["Write the announcement", true], ["Proofread", true]],
+      "blocked_by": [6]
+    },
+    {
+      "n": 8, "project": "web", "column": "review", "title": "Contact form",
+      "description": "Replace the mailto link with a form that files a ticket.",
+      "checklist": [["Form fields", true], ["Spam protection", true], ["Thank-you page", false]],
+      "blocked_by": []
+    },
+    {
+      "n": 9, "project": "web", "column": "shipped", "title": "Style guide",
+      "description": "Colours, type scale and spacing tokens for the new site.",
+      "checklist": [["Colour palette", true], ["Type scale", true]],
+      "blocked_by": []
+    },
+    {
+      "n": 10, "project": "web", "column": "shipped", "title": "Domain transfer",
+      "description": "Move the domain to the new registrar and point it at the new host.",
+      "checklist": [["Unlock the domain", true], ["Transfer", true], ["Update the DNS records", true]],
+      "blocked_by": [9]
+    },
+    {
+      "n": 11, "project": "ops", "column": "doing", "title": "Book movers",
+      "description": "Removal company for the furniture and the server rack.",
+      "checklist": [["Get three quotes", true], ["Confirm the date", false]],
+      "blocked_by": []
+    },
+    {
+      "n": 12, "project": "ops", "column": "review", "title": "Floor plan",
+      "description": "Desk layout for the new floor, agreed with every team.",
+      "checklist": [["Measure the rooms", true], ["Assign the desks", true]],
+      "blocked_by": []
+    },
+    {
+      "n": 13, "project": "ops", "column": "backlog", "title": "Internet line",
+      "description": "Fibre installation at the new address before move-in day.",
+      "checklist": [["Order the line", false], ["Book the engineer", false], ["Test the router", false]],
+      "blocked_by": []
+    },
+    {
+      "n": 14, "project": "ops", "column": "backlog", "title": "Farewell lunch",
+      "description": "Last lunch in the old office once the movers are booked.",
+      "checklist": [["Pick a restaurant", false], ["Send the invitations", false]],
+      "blocked_by": [11]
+    }
+  ]
+}

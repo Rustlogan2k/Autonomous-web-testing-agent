@@ -1,0 +1,20 @@
+<div class="field">
+  <label for="payment">{{ t("field.payment") }}</label>
+  <select id="payment" name="payment">
+    <option value="" disabled selected>{{ t("pay.choose") }}</option>
+    <option value="self">{{ t("pay.self") }}</option>
+    <option value="insurer">{{ t("pay.insurer") }}</option>
+  </select>
+  <input type="hidden" id="payment-mode" name="payment_mode" value="">
+</div>
+<fieldset id="insurer-fields" class="reveal" hidden>
+  <legend>{{ t("pay.insurer_legend") }}</legend>
+  <div class="field">
+    <label for="insurer-name">{{ t("field.insurer_name") }}</label>
+    <input id="insurer-name" name="insurer_name" type="text">
+  </div>
+  <div class="field">
+    <label for="insurer-member">{{ t("field.insurer_member") }}</label>
+    <input id="insurer-member" name="insurer_member" type="number" min="0" step="1">
+  </div>
+</fieldset>

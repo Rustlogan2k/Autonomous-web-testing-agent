@@ -1,0 +1,34 @@
+{
+  "clinic": "Harbourside Health",
+  "address": "2 Pilot Street, Harbourside",
+  "days_shown": 5,
+  "times": ["09:00", "11:00", "14:00", "16:00"],
+  "services": [
+    {"id": "gp", "name": "GP appointment", "minutes": 15, "questions": false},
+    {"id": "physio", "name": "Physiotherapy", "minutes": 40, "questions": true},
+    {"id": "nurse", "name": "Practice nurse", "minutes": 20, "questions": false}
+  ],
+  "practitioners": [
+    {"id": "okafor", "name": "Dr Amara Okafor", "service": "gp",
+     "booked_by_others": [[0, "09:00"], [0, "14:00"], [1, "11:00"], [2, "09:00"], [3, "16:00"], [4, "11:00"]]},
+    {"id": "lindqvist", "name": "Dr Ben Lindqvist", "service": "gp",
+     "booked_by_others": [[0, "11:00"], [1, "09:00"], [2, "14:00"], [4, "16:00"]]},
+    {"id": "natarajan", "name": "Priya Natarajan", "service": "physio",
+     "booked_by_others": [[0, "09:00"], [1, "14:00"], [2, "11:00"], [3, "09:00"], [4, "14:00"]]},
+    {"id": "whitlock", "name": "Tom Whitlock", "service": "physio",
+     "booked_by_others": [[1, "16:00"], [3, "11:00"], [4, "09:00"]]},
+    {"id": "bevan", "name": "Carys Bevan", "service": "nurse",
+     "booked_by_others": [[0, "16:00"], [2, "09:00"], [3, "14:00"], [4, "11:00"]]}
+  ],
+  "patients": [
+    {"name": "Alex Morgan", "dob": "1984-03-02", "email": "tester@example.com"},
+    {"name": "Sam Ellery", "dob": "1990-11-23", "email": "sam.ellery@example.org"}
+  ],
+  "injury_areas": [
+    {"id": "back", "name": "Lower back"},
+    {"id": "knee", "name": "Knee"},
+    {"id": "shoulder", "name": "Shoulder"},
+    {"id": "neck", "name": "Neck"},
+    {"id": "ankle", "name": "Ankle"}
+  ]
+}
