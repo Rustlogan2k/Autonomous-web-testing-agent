@@ -135,7 +135,10 @@ if [ "$DRY_RUN" = 1 ]; then
   exit 0
 fi
 
-STAGE="$(mktemp -d)"
+# A relative staging directory: on Windows, git and the AWS CLI are native programs that
+# cannot open Git Bash's /tmp, and MSYS_NO_PATHCONV (above) stops it being translated.
+STAGE="runs/.launch-stage-$$"
+mkdir -p "$STAGE"
 git archive --format=tar.gz -o "$STAGE/code.tar.gz" "$COMMIT"
 tar -czf "$STAGE/caches.tar.gz" data/llm_cache models/semantic
 "$AWS" s3 cp "$STAGE/code.tar.gz" "s3://$BUCKET/code/$SHORT/code.tar.gz" "${A[@]}" --only-show-errors
