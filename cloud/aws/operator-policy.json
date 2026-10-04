@@ -12,8 +12,7 @@
             "c7i.xlarge",
             "c7i.2xlarge",
             "c7i.4xlarge",
-            "g4dn.2xlarge",
-            "g4dn.4xlarge"
+            "m7i-flex.large"
           ]
         }
       }
