@@ -361,3 +361,13 @@ def test_a_control_replay_that_crashes_rejects_rather_than_passes():
     pipeline = VerificationPipeline(APP, World("1"), control_runner=Broken())
     finding = pipeline.confirm(ECHO, World("1").run(TRACE), budget_at_discovery=3)
     assert not finding.confirmed and finding.rejection_kind == "control_error"
+
+
+def test_a_worker_without_git_records_the_commit_the_launcher_passed(tmp_path, monkeypatch):
+    from web_testing_agent.experiments import transfer
+
+    monkeypatch.setattr(transfer, "REPO_ROOT", tmp_path)  # a code archive: no .git
+    monkeypatch.setenv("WTA_GIT_COMMIT", "0123abcd")
+    assert transfer.git_state() == {"commit": "0123abcd", "dirty": False, "source": "launcher"}
+    monkeypatch.delenv("WTA_GIT_COMMIT")
+    assert transfer.git_state()["commit"] == ""

@@ -99,7 +99,7 @@ docker build -t wta . || { echo "DOCKER BUILD FAILED"; sync_out; shutdown -h now
     if [ -z "\$(find \$RUN/logs -newermt '-$IDLE_MINUTES minutes' -type f 2>/dev/null | head -1)" ]; then
       echo "IDLE FOR $IDLE_MINUTES MINUTES"; sync_out; shutdown -h now; fi; done ) &
 docker run --rm --network host --shm-size=2g \
-  -e OLLAMA_HOST=http://127.0.0.1:11434 \
+  -e OLLAMA_HOST=http://127.0.0.1:11434 -e WTA_GIT_COMMIT=$COMMIT \
   -v /srv/runs:/app/runs -v /srv/wta/data/llm_cache:/app/data/llm_cache \
   -v /srv/wta/models/semantic:/app/models/semantic wta \
   python scripts/run_transfer.py --out-dir runs/$RUN_NAME --workers $WORKERS $EXTRA_ARGS \

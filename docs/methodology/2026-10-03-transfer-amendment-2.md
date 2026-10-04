@@ -225,6 +225,15 @@ Everything below is fixed by the commit that adds this file.
   The two result directories are merged before analysis; `scripts/analyze_transfer.py` is
   unchanged.
 
+  Commits. The local run started at `1fef49d`. A capped AWS validation instance
+  (2026-10-04, one 100-step `search_S` hunt, about seven minutes, terminated itself) found
+  that cloud results recorded an empty commit, because a worker runs from a `git archive`
+  with no `.git`; the next commit passes the commit in from the launcher. It changes only
+  how provenance is recorded, so local jobs started after it carry the newer hash and
+  nothing they compute differs. The AWS instances also moved from one c7i.2xlarge to four
+  m7i-flex.large (2 vCPU each, folds split across them), because the account's Free plan
+  allows only free-tier instance types.
+
   Alternatives rejected, with the measurement behind each: serving the laptop's model to
   AWS browser workers over a tunnel (the GPU, not the browsers, bounds the LLM arms'
   throughput, so it would add no speed; it would take the account's entire 8-vCPU quota,

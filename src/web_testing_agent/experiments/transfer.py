@@ -225,8 +225,14 @@ def git_state() -> dict:
                                   text=True, timeout=20, check=False).stdout.strip()
         except OSError:
             return ""
-    return {"commit": run("rev-parse", "HEAD"),
-            "dirty": bool(run("status", "--porcelain", "--untracked-files=no"))}
+    commit = run("rev-parse", "HEAD")
+    if not commit and os.environ.get("WTA_GIT_COMMIT"):
+        # A cloud worker runs from a `git archive` of one commit, which carries no .git;
+        # the launcher passes that commit in. An archive of a commit is clean by
+        # construction.
+        return {"commit": os.environ["WTA_GIT_COMMIT"], "dirty": False, "source": "launcher"}
+    return {"commit": commit, "dirty": bool(run("status", "--porcelain", "--untracked-files=no")),
+            "source": "git"}
 
 
 def provenance(config: ExperimentConfig) -> dict:

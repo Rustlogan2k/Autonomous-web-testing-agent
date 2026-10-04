@@ -74,6 +74,7 @@
         "ec2:CancelSpotInstanceRequests",
         "ec2:GetConsoleOutput",
         "ec2:DescribeInstanceTypes",
+        "ec2:DescribeVolumes",
         "servicequotas:GetServiceQuota"
       ],
       "Resource": "*"
