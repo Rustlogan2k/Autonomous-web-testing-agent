@@ -310,6 +310,21 @@ def test_the_judgment_cache_round_trips_and_compacts(tmp_path):
     assert not list(tmp_path.glob("progress.shard.*.jsonl"))
 
 
+def test_a_miss_reads_what_other_processes_appended_including_a_row_finished_later(tmp_path):
+    reader = JudgmentCache(tmp_path)
+    assert reader.get("k1", refresh=True) is None
+    other = tmp_path / "progress.shard.4242.jsonl"
+    row = json.dumps(Judgment(key="k1", progress=6, digest="d").to_row())
+    half = json.dumps(Judgment(key="k2", progress=8, digest="e").to_row())
+    other.write_text(row + "\n" + half[:20], encoding="utf-8")  # k2 mid-write
+    assert reader.get("k1") is None  # no refresh: memory only
+    assert reader.get("k1", refresh=True).progress == 6
+    assert reader.get("k2", refresh=True) is None
+    with other.open("a", encoding="utf-8") as handle:
+        handle.write(half[20:] + "\n")
+    assert reader.get("k2", refresh=True).progress == 8
+
+
 def test_compaction_keeps_a_shard_written_after_the_merge_read_it(tmp_path, monkeypatch):
     JudgmentCache(tmp_path).put(Judgment(key="k1", progress=2, stage="browsing", digest="d"))
     late = tmp_path / "progress.shard.99999.jsonl"
