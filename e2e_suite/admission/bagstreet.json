@@ -1,0 +1,138 @@
+{
+  "app_id": "bagstreet",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": false,
+      "detail": [
+        "workflow buy, then find the order in the history: id 'product-tea-towel' never appears in src/"
+      ]
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "Ran 10 tests in 0.847s",
+          "OK"
+        ],
+        "pass_lines": null,
+        "tail": []
+      }
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 85,
+      "keys_used_by_source": 73,
+      "action_keys": 15,
+      "unused_keys": [
+        "express.body",
+        "gifts.body",
+        "method.collect",
+        "method.express",
+        "method.standard",
+        "missing.body",
+        "orders.missing",
+        "orders.missing_title",
+        "voucher.bundle5",
+        "voucher.freeship",
+        "voucher.none",
+        "voucher.welcome10"
+      ],
+      "default_action_labels": {
+        "act.add": "Add to bag",
+        "act.apply_filters": "Show",
+        "act.apply_voucher": "Use voucher",
+        "act.change_delivery": "Change delivery",
+        "act.checkout": "Go to checkout",
+        "act.edit_bag": "Edit bag",
+        "act.express": "Express checkout",
+        "act.gift_options": "Gift options",
+        "act.keep_shopping": "Keep shopping",
+        "act.more_like_this": "More like this",
+        "act.place_order": "Place order",
+        "act.remove": "Remove",
+        "act.review_order": "Review order",
+        "act.search": "Search",
+        "act.update_bag": "Update bag"
+      },
+      "alt_action_labels": {
+        "act.add": "Put in basket",
+        "act.apply_filters": "Refine",
+        "act.apply_voucher": "Redeem",
+        "act.change_delivery": "Different delivery",
+        "act.checkout": "Pay now",
+        "act.edit_bag": "Amend basket",
+        "act.express": "One-click buy",
+        "act.gift_options": "Wrap as a gift",
+        "act.keep_shopping": "Back to the store",
+        "act.more_like_this": "Similar items",
+        "act.place_order": "Confirm purchase",
+        "act.remove": "Take out",
+        "act.review_order": "Summarise",
+        "act.search": "Find",
+        "act.update_bag": "Recalculate"
+      }
+    },
+    "patch_sizes": {
+      "BAG-1": {
+        "file": "src/server.py",
+        "lines_removed": 2,
+        "lines_added": 1,
+        "chars_changed": 85
+      },
+      "BAG-2": {
+        "file": "src/pages.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 20
+      },
+      "BAG-3": {
+        "file": "src/server.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 72
+      }
+    }
+  },
+  "admitted": false,
+  "checks_run": 8,
+  "checks_failed": [
+    "trace_ids_exist"
+  ],
+  "browser_checks_run": false,
+  "docker_checks_run": false,
+  "wall_clock_s": 2.1
+}
