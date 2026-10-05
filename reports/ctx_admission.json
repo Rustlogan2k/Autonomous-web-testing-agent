@@ -1,0 +1,4248 @@
+{
+  "_note": "Admission of the 12 ctxbench variants by the unchanged primary validator (scripts/validate_benchmark.py, WTA_BENCHMARK_ROOT=tests/fixtures/ctxbench, --random-steps 600), three parallel batches. Pre-registration \u00a72: every variant admitted; none dropped.",
+  "admitted": [
+    "ctx_v0_s1_d0",
+    "ctx_v0_s1_d1",
+    "ctx_v0_s2_d0",
+    "ctx_v0_s3_d0",
+    "ctx_v0_s4_d0",
+    "ctx_v0_s5_d0",
+    "ctx_v1_s1_d0",
+    "ctx_v1_s2_d0",
+    "ctx_vs_s1_d0",
+    "ctx_vu1_s1_d0",
+    "ctx_vu1_s5_d1",
+    "ctx_vu2_s1_d0"
+  ],
+  "rejected": [],
+  "batches": [
+    {
+      "generated_at": "2026-10-05T22:22:46+0530",
+      "git": {
+        "commit": "42206e59c5a3c03179fd8b3e2497fc04e79d4e02",
+        "dirty": false
+      },
+      "env_settings": {
+        "max_steps": 40,
+        "settle_quiet_ms": null,
+        "headless": true,
+        "registry": {
+          "max_select_options": 4,
+          "capture_field_labels": true,
+          "disambiguate_shared_names": true
+        },
+        "capture_screenshots": true,
+        "reveal_min_retained": 0.8,
+        "reveal_run_decay": true
+      },
+      "random_steps": 600,
+      "seed": 0,
+      "wall_clock_s": 5048.3,
+      "admitted": [
+        "ctx_v0_s1_d0",
+        "ctx_v0_s2_d0",
+        "ctx_v1_s1_d0",
+        "ctx_v1_s2_d0"
+      ],
+      "rejected": [],
+      "applications": [
+        {
+          "app_id": "ctx_v0_s1_d0",
+          "passed": true,
+          "checks": [
+            {
+              "name": "metadata_well_formed",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "faulty_build_is_clean_plus_patches",
+              "passed": true,
+              "detail": "faulty build in sync (10 files, 2 patches)"
+            },
+            {
+              "name": "has_benign_trace",
+              "passed": true,
+              "detail": "an application must declare at least one correct walk through its workflow"
+            },
+            {
+              "name": "CTX-1:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-1:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'configure.html', 'configure.html', 'configure.html', 'contact.html', 'contact.html', 'contact.html', 'review.html']"
+            },
+            {
+              "name": "CTX-1:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "numeric_equals: violated=True inconclusive=False region 'review_deposit': expected 'quantity * 12' observed='12.0'"
+            },
+            {
+              "name": "CTX-1:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-1:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-1:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-2:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'configure.html', 'configure.html', 'contact.html', 'contact.html', 'contact.html', 'review.html', 'contact.html', 'contact.html', 'review.html', 'done.html']"
+            },
+            {
+              "name": "CTX-2:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "text_absent: violated=True inconclusive=False region 'done_contact': must not contain 'not-an-email' observed='Test User Input \u00b7 not-an-email'"
+            },
+            {
+              "name": "CTX-2:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-2:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-2:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "benign_0:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_0:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "clean_build_silent_to_deterministic_triggers",
+              "passed": true,
+              "detail": ""
+            }
+          ],
+          "faults": [
+            {
+              "fault_id": "CTX-1",
+              "fault_class": "calculation_error",
+              "witness_length": 9,
+              "confirmed": true,
+              "minimized_length": 9,
+              "minimization_trials": 26,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "SELECT",
+                  "id": "quantity",
+                  "params": {
+                    "option": "3"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                }
+              ],
+              "declared_shortest_path": 9,
+              "verification_steps": 152,
+              "verification_seconds": 193.99
+            },
+            {
+              "fault_id": "CTX-2",
+              "fault_class": "constraint_bypass",
+              "witness_length": 12,
+              "confirmed": true,
+              "minimized_length": 12,
+              "minimization_trials": 30,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "edit-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "type_mismatch"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "commit"
+                }
+              ],
+              "declared_shortest_path": 12,
+              "verification_steps": 221,
+              "verification_seconds": 288.92
+            }
+          ],
+          "random_walk": {
+            "steps": 600,
+            "seed": 0,
+            "clean": {
+              "raw_candidates": 0,
+              "raw_candidates_per_1000_steps": 0.0,
+              "by_fault": {
+                "CTX-1": 0,
+                "CTX-2": 0
+              },
+              "deterministic_triggers": [],
+              "timing_triggers": 0
+            },
+            "buggy": {
+              "time_to_first_verified": 600,
+              "censored": true,
+              "verified": 0,
+              "reached": 0,
+              "rejections": {},
+              "unique_states": 12,
+              "steps_per_second": 1.455,
+              "verify_seconds": 0.0
+            }
+          },
+          "wall_clock_s": 1412.72
+        },
+        {
+          "app_id": "ctx_v0_s2_d0",
+          "passed": true,
+          "checks": [
+            {
+              "name": "metadata_well_formed",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "faulty_build_is_clean_plus_patches",
+              "passed": true,
+              "detail": "faulty build in sync (11 files, 2 patches)"
+            },
+            {
+              "name": "has_benign_trace",
+              "passed": true,
+              "detail": "an application must declare at least one correct walk through its workflow"
+            },
+            {
+              "name": "CTX-1:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-1:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'hub.html', 'items.html', 'items.html', 'hub.html', 'configure.html', 'configure.html', 'configure.html', 'hub.html', 'contact.html', 'contact.html', 'contact.html', 'hub.html', 'review.html']"
+            },
+            {
+              "name": "CTX-1:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "numeric_equals: violated=True inconclusive=False region 'review_deposit': expected 'quantity * 12' observed='12.0'"
+            },
+            {
+              "name": "CTX-1:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-1:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-1:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-2:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'hub.html', 'items.html', 'items.html', 'hub.html', 'configure.html', 'configure.html', 'hub.html', 'contact.html', 'contact.html', 'contact.html', 'hub.html', 'review.html', 'contact.html', 'contact.html', 'review.html', 'done.html']"
+            },
+            {
+              "name": "CTX-2:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "text_absent: violated=True inconclusive=False region 'done_contact': must not contain 'not-an-email' observed='Test User Input \u00b7 not-an-email'"
+            },
+            {
+              "name": "CTX-2:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-2:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-2:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "benign_0:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_0:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "clean_build_silent_to_deterministic_triggers",
+              "passed": true,
+              "detail": ""
+            }
+          ],
+          "faults": [
+            {
+              "fault_id": "CTX-1",
+              "fault_class": "calculation_error",
+              "witness_length": 13,
+              "confirmed": true,
+              "minimized_length": 13,
+              "minimization_trials": 34,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "task-items"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "task-configure"
+                },
+                {
+                  "type": "SELECT",
+                  "id": "quantity",
+                  "params": {
+                    "option": "3"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "task-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "go-review"
+                }
+              ],
+              "declared_shortest_path": 13,
+              "verification_steps": 281,
+              "verification_seconds": 363.17
+            },
+            {
+              "fault_id": "CTX-2",
+              "fault_class": "constraint_bypass",
+              "witness_length": 16,
+              "confirmed": true,
+              "minimized_length": 16,
+              "minimization_trials": 30,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "task-items"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "task-configure"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "task-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "go-review"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "edit-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "type_mismatch"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "commit"
+                }
+              ],
+              "declared_shortest_path": 16,
+              "verification_steps": 290,
+              "verification_seconds": 290.45
+            }
+          ],
+          "random_walk": {
+            "steps": 600,
+            "seed": 0,
+            "clean": {
+              "raw_candidates": 0,
+              "raw_candidates_per_1000_steps": 0.0,
+              "by_fault": {
+                "CTX-1": 0,
+                "CTX-2": 0
+              },
+              "deterministic_triggers": [],
+              "timing_triggers": 0
+            },
+            "buggy": {
+              "time_to_first_verified": 600,
+              "censored": true,
+              "verified": 0,
+              "reached": 0,
+              "rejections": {},
+              "unique_states": 14,
+              "steps_per_second": 2.223,
+              "verify_seconds": 0.0
+            }
+          },
+          "wall_clock_s": 1312.16
+        },
+        {
+          "app_id": "ctx_v1_s1_d0",
+          "passed": true,
+          "checks": [
+            {
+              "name": "metadata_well_formed",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "faulty_build_is_clean_plus_patches",
+              "passed": true,
+              "detail": "faulty build in sync (10 files, 2 patches)"
+            },
+            {
+              "name": "has_benign_trace",
+              "passed": true,
+              "detail": "an application must declare at least one correct walk through its workflow"
+            },
+            {
+              "name": "CTX-1:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-1:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'configure.html', 'configure.html', 'configure.html', 'contact.html', 'contact.html', 'contact.html', 'review.html']"
+            },
+            {
+              "name": "CTX-1:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "numeric_equals: violated=True inconclusive=False region 'review_deposit': expected 'quantity * 12' observed='12.0'"
+            },
+            {
+              "name": "CTX-1:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-1:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-1:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-2:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'configure.html', 'configure.html', 'contact.html', 'contact.html', 'contact.html', 'review.html', 'contact.html', 'contact.html', 'review.html', 'done.html']"
+            },
+            {
+              "name": "CTX-2:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "text_absent: violated=True inconclusive=False region 'done_contact': must not contain 'not-an-email' observed='Test User Input \u00b7 not-an-email'"
+            },
+            {
+              "name": "CTX-2:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-2:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-2:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "benign_0:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_0:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "clean_build_silent_to_deterministic_triggers",
+              "passed": true,
+              "detail": ""
+            }
+          ],
+          "faults": [
+            {
+              "fault_id": "CTX-1",
+              "fault_class": "calculation_error",
+              "witness_length": 9,
+              "confirmed": true,
+              "minimized_length": 9,
+              "minimization_trials": 26,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "SELECT",
+                  "id": "quantity",
+                  "params": {
+                    "option": "3"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                }
+              ],
+              "declared_shortest_path": 9,
+              "verification_steps": 152,
+              "verification_seconds": 148.0
+            },
+            {
+              "fault_id": "CTX-2",
+              "fault_class": "constraint_bypass",
+              "witness_length": 12,
+              "confirmed": true,
+              "minimized_length": 12,
+              "minimization_trials": 30,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "edit-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "type_mismatch"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "commit"
+                }
+              ],
+              "declared_shortest_path": 12,
+              "verification_steps": 221,
+              "verification_seconds": 226.36
+            }
+          ],
+          "random_walk": {
+            "steps": 600,
+            "seed": 0,
+            "clean": {
+              "raw_candidates": 0,
+              "raw_candidates_per_1000_steps": 0.0,
+              "by_fault": {
+                "CTX-1": 0,
+                "CTX-2": 0
+              },
+              "deterministic_triggers": [],
+              "timing_triggers": 0
+            },
+            "buggy": {
+              "time_to_first_verified": 600,
+              "censored": true,
+              "verified": 0,
+              "reached": 0,
+              "rejections": {},
+              "unique_states": 12,
+              "steps_per_second": 1.805,
+              "verify_seconds": 0.0
+            }
+          },
+          "wall_clock_s": 1138.08
+        },
+        {
+          "app_id": "ctx_v1_s2_d0",
+          "passed": true,
+          "checks": [
+            {
+              "name": "metadata_well_formed",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "faulty_build_is_clean_plus_patches",
+              "passed": true,
+              "detail": "faulty build in sync (11 files, 2 patches)"
+            },
+            {
+              "name": "has_benign_trace",
+              "passed": true,
+              "detail": "an application must declare at least one correct walk through its workflow"
+            },
+            {
+              "name": "CTX-1:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-1:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'hub.html', 'items.html', 'items.html', 'hub.html', 'configure.html', 'configure.html', 'configure.html', 'hub.html', 'contact.html', 'contact.html', 'contact.html', 'hub.html', 'review.html']"
+            },
+            {
+              "name": "CTX-1:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "numeric_equals: violated=True inconclusive=False region 'review_deposit': expected 'quantity * 12' observed='12.0'"
+            },
+            {
+              "name": "CTX-1:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-1:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-1:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-2:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'hub.html', 'items.html', 'items.html', 'hub.html', 'configure.html', 'configure.html', 'hub.html', 'contact.html', 'contact.html', 'contact.html', 'hub.html', 'review.html', 'contact.html', 'contact.html', 'review.html', 'done.html']"
+            },
+            {
+              "name": "CTX-2:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "text_absent: violated=True inconclusive=False region 'done_contact': must not contain 'not-an-email' observed='Test User Input \u00b7 not-an-email'"
+            },
+            {
+              "name": "CTX-2:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-2:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-2:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "benign_0:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_0:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "clean_build_silent_to_deterministic_triggers",
+              "passed": true,
+              "detail": ""
+            }
+          ],
+          "faults": [
+            {
+              "fault_id": "CTX-1",
+              "fault_class": "calculation_error",
+              "witness_length": 13,
+              "confirmed": true,
+              "minimized_length": 13,
+              "minimization_trials": 34,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "task-items"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "task-configure"
+                },
+                {
+                  "type": "SELECT",
+                  "id": "quantity",
+                  "params": {
+                    "option": "3"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "task-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "go-review"
+                }
+              ],
+              "declared_shortest_path": 13,
+              "verification_steps": 281,
+              "verification_seconds": 270.11
+            },
+            {
+              "fault_id": "CTX-2",
+              "fault_class": "constraint_bypass",
+              "witness_length": 16,
+              "confirmed": true,
+              "minimized_length": 16,
+              "minimization_trials": 30,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "task-items"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "task-configure"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "task-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "go-review"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "edit-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "type_mismatch"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "commit"
+                }
+              ],
+              "declared_shortest_path": 16,
+              "verification_steps": 290,
+              "verification_seconds": 282.75
+            }
+          ],
+          "random_walk": {
+            "steps": 600,
+            "seed": 0,
+            "clean": {
+              "raw_candidates": 0,
+              "raw_candidates_per_1000_steps": 0.0,
+              "by_fault": {
+                "CTX-1": 0,
+                "CTX-2": 0
+              },
+              "deterministic_triggers": [],
+              "timing_triggers": 0
+            },
+            "buggy": {
+              "time_to_first_verified": 600,
+              "censored": true,
+              "verified": 0,
+              "reached": 0,
+              "rejections": {},
+              "unique_states": 14,
+              "steps_per_second": 2.28,
+              "verify_seconds": 0.0
+            }
+          },
+          "wall_clock_s": 1185.3
+        }
+      ]
+    },
+    {
+      "generated_at": "2026-10-05T22:23:19+0530",
+      "git": {
+        "commit": "42206e59c5a3c03179fd8b3e2497fc04e79d4e02",
+        "dirty": false
+      },
+      "env_settings": {
+        "max_steps": 40,
+        "settle_quiet_ms": null,
+        "headless": true,
+        "registry": {
+          "max_select_options": 4,
+          "capture_field_labels": true,
+          "disambiguate_shared_names": true
+        },
+        "capture_screenshots": true,
+        "reveal_min_retained": 0.8,
+        "reveal_run_decay": true
+      },
+      "random_steps": 600,
+      "seed": 0,
+      "wall_clock_s": 5081.2,
+      "admitted": [
+        "ctx_v0_s1_d1",
+        "ctx_v0_s4_d0",
+        "ctx_v0_s5_d0",
+        "ctx_vu1_s5_d1"
+      ],
+      "rejected": [],
+      "applications": [
+        {
+          "app_id": "ctx_v0_s1_d1",
+          "passed": true,
+          "checks": [
+            {
+              "name": "metadata_well_formed",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "faulty_build_is_clean_plus_patches",
+              "passed": true,
+              "detail": "faulty build in sync (10 files, 2 patches)"
+            },
+            {
+              "name": "has_benign_trace",
+              "passed": true,
+              "detail": "an application must declare at least one correct walk through its workflow"
+            },
+            {
+              "name": "CTX-1:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-1:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'configure.html', 'configure.html', 'configure.html', 'contact.html', 'contact.html', 'contact.html', 'review.html']"
+            },
+            {
+              "name": "CTX-1:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "numeric_equals: violated=True inconclusive=False region 'review_deposit': expected 'quantity * 12' observed='12.0'"
+            },
+            {
+              "name": "CTX-1:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-1:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-1:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-2:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'configure.html', 'configure.html', 'contact.html', 'contact.html', 'contact.html', 'review.html', 'contact.html', 'contact.html', 'review.html', 'done.html']"
+            },
+            {
+              "name": "CTX-2:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "text_absent: violated=True inconclusive=False region 'done_contact': must not contain 'not-an-email' observed='Test User Input \u00b7 not-an-email'"
+            },
+            {
+              "name": "CTX-2:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-2:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-2:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "benign_0:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_0:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "clean_build_silent_to_deterministic_triggers",
+              "passed": true,
+              "detail": ""
+            }
+          ],
+          "faults": [
+            {
+              "fault_id": "CTX-1",
+              "fault_class": "calculation_error",
+              "witness_length": 9,
+              "confirmed": true,
+              "minimized_length": 9,
+              "minimization_trials": 26,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "SELECT",
+                  "id": "quantity",
+                  "params": {
+                    "option": "3"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                }
+              ],
+              "declared_shortest_path": 9,
+              "verification_steps": 152,
+              "verification_seconds": 194.81
+            },
+            {
+              "fault_id": "CTX-2",
+              "fault_class": "constraint_bypass",
+              "witness_length": 12,
+              "confirmed": true,
+              "minimized_length": 12,
+              "minimization_trials": 30,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "edit-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "type_mismatch"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "commit"
+                }
+              ],
+              "declared_shortest_path": 12,
+              "verification_steps": 221,
+              "verification_seconds": 288.64
+            }
+          ],
+          "random_walk": {
+            "steps": 600,
+            "seed": 0,
+            "clean": {
+              "raw_candidates": 0,
+              "raw_candidates_per_1000_steps": 0.0,
+              "by_fault": {
+                "CTX-1": 0,
+                "CTX-2": 0
+              },
+              "deterministic_triggers": [],
+              "timing_triggers": 0
+            },
+            "buggy": {
+              "time_to_first_verified": 600,
+              "censored": true,
+              "verified": 0,
+              "reached": 0,
+              "rejections": {},
+              "unique_states": 12,
+              "steps_per_second": 1.516,
+              "verify_seconds": 0.0
+            }
+          },
+          "wall_clock_s": 1382.3
+        },
+        {
+          "app_id": "ctx_v0_s4_d0",
+          "passed": true,
+          "checks": [
+            {
+              "name": "metadata_well_formed",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "faulty_build_is_clean_plus_patches",
+              "passed": true,
+              "detail": "faulty build in sync (4 files, 2 patches)"
+            },
+            {
+              "name": "has_benign_trace",
+              "passed": true,
+              "detail": "an application must declare at least one correct walk through its workflow"
+            },
+            {
+              "name": "CTX-1:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-1:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'index.html#items', 'index.html#items', 'index.html#configure', 'index.html#configure', 'index.html#configure', 'index.html#contact', 'index.html#contact', 'index.html#contact', 'index.html#review']"
+            },
+            {
+              "name": "CTX-1:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "numeric_equals: violated=True inconclusive=False region 'review_deposit': expected 'quantity * 12' observed='12.0'"
+            },
+            {
+              "name": "CTX-1:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-1:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-1:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-2:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'index.html#items', 'index.html#items', 'index.html#configure', 'index.html#configure', 'index.html#contact', 'index.html#contact', 'index.html#contact', 'index.html#review', 'index.html#contact', 'index.html#contact', 'index.html#review', 'index.html#done']"
+            },
+            {
+              "name": "CTX-2:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "text_absent: violated=True inconclusive=False region 'done_contact': must not contain 'not-an-email' observed='Test User Input \u00b7 not-an-email'"
+            },
+            {
+              "name": "CTX-2:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-2:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-2:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "benign_0:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_0:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "clean_build_silent_to_deterministic_triggers",
+              "passed": true,
+              "detail": ""
+            }
+          ],
+          "faults": [
+            {
+              "fault_id": "CTX-1",
+              "fault_class": "calculation_error",
+              "witness_length": 9,
+              "confirmed": true,
+              "minimized_length": 9,
+              "minimization_trials": 26,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "SELECT",
+                  "id": "quantity",
+                  "params": {
+                    "option": "3"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                }
+              ],
+              "declared_shortest_path": 9,
+              "verification_steps": 152,
+              "verification_seconds": 204.92
+            },
+            {
+              "fault_id": "CTX-2",
+              "fault_class": "constraint_bypass",
+              "witness_length": 12,
+              "confirmed": true,
+              "minimized_length": 12,
+              "minimization_trials": 30,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "edit-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "type_mismatch"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "commit"
+                }
+              ],
+              "declared_shortest_path": 12,
+              "verification_steps": 221,
+              "verification_seconds": 258.49
+            }
+          ],
+          "random_walk": {
+            "steps": 600,
+            "seed": 0,
+            "clean": {
+              "raw_candidates": 0,
+              "raw_candidates_per_1000_steps": 0.0,
+              "by_fault": {
+                "CTX-1": 0,
+                "CTX-2": 0
+              },
+              "deterministic_triggers": [],
+              "timing_triggers": 0
+            },
+            "buggy": {
+              "time_to_first_verified": 600,
+              "censored": true,
+              "verified": 0,
+              "reached": 0,
+              "rejections": {},
+              "unique_states": 12,
+              "steps_per_second": 1.349,
+              "verify_seconds": 0.0
+            }
+          },
+          "wall_clock_s": 1452.99
+        },
+        {
+          "app_id": "ctx_v0_s5_d0",
+          "passed": true,
+          "checks": [
+            {
+              "name": "metadata_well_formed",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "faulty_build_is_clean_plus_patches",
+              "passed": true,
+              "detail": "faulty build in sync (10 files, 2 patches)"
+            },
+            {
+              "name": "has_benign_trace",
+              "passed": true,
+              "detail": "an application must declare at least one correct walk through its workflow"
+            },
+            {
+              "name": "CTX-1:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-1:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'contact.html', 'contact.html', 'contact.html', 'configure.html', 'configure.html', 'configure.html', 'review.html']"
+            },
+            {
+              "name": "CTX-1:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "numeric_equals: violated=True inconclusive=False region 'review_deposit': expected 'quantity * 12' observed='12.0'"
+            },
+            {
+              "name": "CTX-1:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-1:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-1:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-2:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'contact.html', 'contact.html', 'contact.html', 'configure.html', 'configure.html', 'review.html', 'contact.html', 'contact.html', 'review.html', 'done.html']"
+            },
+            {
+              "name": "CTX-2:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "text_absent: violated=True inconclusive=False region 'done_contact': must not contain 'not-an-email' observed='Test User Input \u00b7 not-an-email'"
+            },
+            {
+              "name": "CTX-2:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-2:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-2:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "benign_0:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_0:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "clean_build_silent_to_deterministic_triggers",
+              "passed": true,
+              "detail": ""
+            }
+          ],
+          "faults": [
+            {
+              "fault_id": "CTX-1",
+              "fault_class": "calculation_error",
+              "witness_length": 9,
+              "confirmed": true,
+              "minimized_length": 9,
+              "minimization_trials": 26,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "SELECT",
+                  "id": "quantity",
+                  "params": {
+                    "option": "3"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                }
+              ],
+              "declared_shortest_path": 9,
+              "verification_steps": 146,
+              "verification_seconds": 151.06
+            },
+            {
+              "fault_id": "CTX-2",
+              "fault_class": "constraint_bypass",
+              "witness_length": 12,
+              "confirmed": true,
+              "minimized_length": 12,
+              "minimization_trials": 30,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "edit-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "type_mismatch"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "commit"
+                }
+              ],
+              "declared_shortest_path": 12,
+              "verification_steps": 221,
+              "verification_seconds": 224.92
+            }
+          ],
+          "random_walk": {
+            "steps": 600,
+            "seed": 0,
+            "clean": {
+              "raw_candidates": 0,
+              "raw_candidates_per_1000_steps": 0.0,
+              "by_fault": {
+                "CTX-1": 0,
+                "CTX-2": 0
+              },
+              "deterministic_triggers": [],
+              "timing_triggers": 0
+            },
+            "buggy": {
+              "time_to_first_verified": 600,
+              "censored": true,
+              "verified": 0,
+              "reached": 0,
+              "rejections": {},
+              "unique_states": 12,
+              "steps_per_second": 1.802,
+              "verify_seconds": 0.0
+            }
+          },
+          "wall_clock_s": 1131.89
+        },
+        {
+          "app_id": "ctx_vu1_s5_d1",
+          "passed": true,
+          "checks": [
+            {
+              "name": "metadata_well_formed",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "faulty_build_is_clean_plus_patches",
+              "passed": true,
+              "detail": "faulty build in sync (10 files, 2 patches)"
+            },
+            {
+              "name": "has_benign_trace",
+              "passed": true,
+              "detail": "an application must declare at least one correct walk through its workflow"
+            },
+            {
+              "name": "CTX-1:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-1:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'contact.html', 'contact.html', 'contact.html', 'configure.html', 'configure.html', 'configure.html', 'review.html']"
+            },
+            {
+              "name": "CTX-1:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "numeric_equals: violated=True inconclusive=False region 'review_deposit': expected 'quantity * 12' observed='12.0'"
+            },
+            {
+              "name": "CTX-1:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-1:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-1:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-2:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'contact.html', 'contact.html', 'contact.html', 'configure.html', 'configure.html', 'review.html', 'contact.html', 'contact.html', 'review.html', 'done.html']"
+            },
+            {
+              "name": "CTX-2:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "text_absent: violated=True inconclusive=False region 'done_contact': must not contain 'not-an-email' observed='Test User Input \u00b7 not-an-email'"
+            },
+            {
+              "name": "CTX-2:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-2:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-2:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "benign_0:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_0:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "clean_build_silent_to_deterministic_triggers",
+              "passed": true,
+              "detail": ""
+            }
+          ],
+          "faults": [
+            {
+              "fault_id": "CTX-1",
+              "fault_class": "calculation_error",
+              "witness_length": 9,
+              "confirmed": true,
+              "minimized_length": 9,
+              "minimization_trials": 26,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "SELECT",
+                  "id": "quantity",
+                  "params": {
+                    "option": "3"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                }
+              ],
+              "declared_shortest_path": 9,
+              "verification_steps": 146,
+              "verification_seconds": 153.2
+            },
+            {
+              "fault_id": "CTX-2",
+              "fault_class": "constraint_bypass",
+              "witness_length": 12,
+              "confirmed": true,
+              "minimized_length": 12,
+              "minimization_trials": 30,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "edit-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "type_mismatch"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "commit"
+                }
+              ],
+              "declared_shortest_path": 12,
+              "verification_steps": 221,
+              "verification_seconds": 219.94
+            }
+          ],
+          "random_walk": {
+            "steps": 600,
+            "seed": 0,
+            "clean": {
+              "raw_candidates": 0,
+              "raw_candidates_per_1000_steps": 0.0,
+              "by_fault": {
+                "CTX-1": 0,
+                "CTX-2": 0
+              },
+              "deterministic_triggers": [],
+              "timing_triggers": 0
+            },
+            "buggy": {
+              "time_to_first_verified": 600,
+              "censored": true,
+              "verified": 0,
+              "reached": 0,
+              "rejections": {},
+              "unique_states": 11,
+              "steps_per_second": 1.829,
+              "verify_seconds": 0.0
+            }
+          },
+          "wall_clock_s": 1113.99
+        }
+      ]
+    },
+    {
+      "generated_at": "2026-10-05T22:20:35+0530",
+      "git": {
+        "commit": "42206e59c5a3c03179fd8b3e2497fc04e79d4e02",
+        "dirty": false
+      },
+      "env_settings": {
+        "max_steps": 40,
+        "settle_quiet_ms": null,
+        "headless": true,
+        "registry": {
+          "max_select_options": 4,
+          "capture_field_labels": true,
+          "disambiguate_shared_names": true
+        },
+        "capture_screenshots": true,
+        "reveal_min_retained": 0.8,
+        "reveal_run_decay": true
+      },
+      "random_steps": 600,
+      "seed": 0,
+      "wall_clock_s": 4917.4,
+      "admitted": [
+        "ctx_v0_s3_d0",
+        "ctx_vs_s1_d0",
+        "ctx_vu1_s1_d0",
+        "ctx_vu2_s1_d0"
+      ],
+      "rejected": [],
+      "applications": [
+        {
+          "app_id": "ctx_v0_s3_d0",
+          "passed": true,
+          "checks": [
+            {
+              "name": "metadata_well_formed",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "faulty_build_is_clean_plus_patches",
+              "passed": true,
+              "detail": "faulty build in sync (4 files, 2 patches)"
+            },
+            {
+              "name": "has_benign_trace",
+              "passed": true,
+              "detail": "an application must declare at least one correct walk through its workflow"
+            },
+            {
+              "name": "CTX-1:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-1:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'index.html#items', 'index.html#items', 'index.html#configure', 'index.html#configure', 'index.html#configure', 'index.html#contact', 'index.html#contact', 'index.html#contact', 'index.html#review']"
+            },
+            {
+              "name": "CTX-1:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "numeric_equals: violated=True inconclusive=False region 'review_deposit': expected 'quantity * 12' observed='12.0'"
+            },
+            {
+              "name": "CTX-1:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-1:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-1:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-2:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'index.html#items', 'index.html#items', 'index.html#configure', 'index.html#configure', 'index.html#contact', 'index.html#contact', 'index.html#contact', 'index.html#review', 'index.html#contact', 'index.html#contact', 'index.html#review', 'index.html#done']"
+            },
+            {
+              "name": "CTX-2:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "text_absent: violated=True inconclusive=False region 'done_contact': must not contain 'not-an-email' observed='Test User Input \u00b7 not-an-email'"
+            },
+            {
+              "name": "CTX-2:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-2:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-2:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "benign_0:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_0:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "clean_build_silent_to_deterministic_triggers",
+              "passed": true,
+              "detail": ""
+            }
+          ],
+          "faults": [
+            {
+              "fault_id": "CTX-1",
+              "fault_class": "calculation_error",
+              "witness_length": 9,
+              "confirmed": true,
+              "minimized_length": 9,
+              "minimization_trials": 26,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "SELECT",
+                  "id": "quantity",
+                  "params": {
+                    "option": "3"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                }
+              ],
+              "declared_shortest_path": 9,
+              "verification_steps": 152,
+              "verification_seconds": 189.81
+            },
+            {
+              "fault_id": "CTX-2",
+              "fault_class": "constraint_bypass",
+              "witness_length": 12,
+              "confirmed": true,
+              "minimized_length": 12,
+              "minimization_trials": 30,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "edit-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "type_mismatch"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "commit"
+                }
+              ],
+              "declared_shortest_path": 12,
+              "verification_steps": 221,
+              "verification_seconds": 282.72
+            }
+          ],
+          "random_walk": {
+            "steps": 600,
+            "seed": 0,
+            "clean": {
+              "raw_candidates": 0,
+              "raw_candidates_per_1000_steps": 0.0,
+              "by_fault": {
+                "CTX-1": 0,
+                "CTX-2": 0
+              },
+              "deterministic_triggers": [],
+              "timing_triggers": 0
+            },
+            "buggy": {
+              "time_to_first_verified": 600,
+              "censored": true,
+              "verified": 0,
+              "reached": 0,
+              "rejections": {},
+              "unique_states": 18,
+              "steps_per_second": 1.45,
+              "verify_seconds": 0.0
+            }
+          },
+          "wall_clock_s": 1404.97
+        },
+        {
+          "app_id": "ctx_vs_s1_d0",
+          "passed": true,
+          "checks": [
+            {
+              "name": "metadata_well_formed",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "faulty_build_is_clean_plus_patches",
+              "passed": true,
+              "detail": "faulty build in sync (10 files, 2 patches)"
+            },
+            {
+              "name": "has_benign_trace",
+              "passed": true,
+              "detail": "an application must declare at least one correct walk through its workflow"
+            },
+            {
+              "name": "CTX-1:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-1:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'configure.html', 'configure.html', 'configure.html', 'contact.html', 'contact.html', 'contact.html', 'review.html']"
+            },
+            {
+              "name": "CTX-1:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "numeric_equals: violated=True inconclusive=False region 'review_deposit': expected 'quantity * 12' observed='12.0'"
+            },
+            {
+              "name": "CTX-1:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-1:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-1:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-2:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'configure.html', 'configure.html', 'contact.html', 'contact.html', 'contact.html', 'review.html', 'contact.html', 'contact.html', 'review.html', 'done.html']"
+            },
+            {
+              "name": "CTX-2:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "text_absent: violated=True inconclusive=False region 'done_contact': must not contain 'not-an-email' observed='Test User Input \u00b7 not-an-email'"
+            },
+            {
+              "name": "CTX-2:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-2:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-2:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "benign_0:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_0:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "clean_build_silent_to_deterministic_triggers",
+              "passed": true,
+              "detail": ""
+            }
+          ],
+          "faults": [
+            {
+              "fault_id": "CTX-1",
+              "fault_class": "calculation_error",
+              "witness_length": 9,
+              "confirmed": true,
+              "minimized_length": 9,
+              "minimization_trials": 26,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "SELECT",
+                  "id": "quantity",
+                  "params": {
+                    "option": "3"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                }
+              ],
+              "declared_shortest_path": 9,
+              "verification_steps": 152,
+              "verification_seconds": 209.55
+            },
+            {
+              "fault_id": "CTX-2",
+              "fault_class": "constraint_bypass",
+              "witness_length": 12,
+              "confirmed": true,
+              "minimized_length": 12,
+              "minimization_trials": 30,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "edit-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "type_mismatch"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "commit"
+                }
+              ],
+              "declared_shortest_path": 12,
+              "verification_steps": 221,
+              "verification_seconds": 252.08
+            }
+          ],
+          "random_walk": {
+            "steps": 600,
+            "seed": 0,
+            "clean": {
+              "raw_candidates": 0,
+              "raw_candidates_per_1000_steps": 0.0,
+              "by_fault": {
+                "CTX-1": 0,
+                "CTX-2": 0
+              },
+              "deterministic_triggers": [],
+              "timing_triggers": 0
+            },
+            "buggy": {
+              "time_to_first_verified": 600,
+              "censored": true,
+              "verified": 0,
+              "reached": 0,
+              "rejections": {},
+              "unique_states": 12,
+              "steps_per_second": 1.783,
+              "verify_seconds": 0.0
+            }
+          },
+          "wall_clock_s": 1236.45
+        },
+        {
+          "app_id": "ctx_vu1_s1_d0",
+          "passed": true,
+          "checks": [
+            {
+              "name": "metadata_well_formed",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "faulty_build_is_clean_plus_patches",
+              "passed": true,
+              "detail": "faulty build in sync (10 files, 2 patches)"
+            },
+            {
+              "name": "has_benign_trace",
+              "passed": true,
+              "detail": "an application must declare at least one correct walk through its workflow"
+            },
+            {
+              "name": "CTX-1:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-1:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'configure.html', 'configure.html', 'configure.html', 'contact.html', 'contact.html', 'contact.html', 'review.html']"
+            },
+            {
+              "name": "CTX-1:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "numeric_equals: violated=True inconclusive=False region 'review_deposit': expected 'quantity * 12' observed='12.0'"
+            },
+            {
+              "name": "CTX-1:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-1:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-1:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-2:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'configure.html', 'configure.html', 'contact.html', 'contact.html', 'contact.html', 'review.html', 'contact.html', 'contact.html', 'review.html', 'done.html']"
+            },
+            {
+              "name": "CTX-2:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "text_absent: violated=True inconclusive=False region 'done_contact': must not contain 'not-an-email' observed='Test User Input \u00b7 not-an-email'"
+            },
+            {
+              "name": "CTX-2:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-2:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-2:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "benign_0:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_0:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "clean_build_silent_to_deterministic_triggers",
+              "passed": true,
+              "detail": ""
+            }
+          ],
+          "faults": [
+            {
+              "fault_id": "CTX-1",
+              "fault_class": "calculation_error",
+              "witness_length": 9,
+              "confirmed": true,
+              "minimized_length": 9,
+              "minimization_trials": 26,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "SELECT",
+                  "id": "quantity",
+                  "params": {
+                    "option": "3"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                }
+              ],
+              "declared_shortest_path": 9,
+              "verification_steps": 152,
+              "verification_seconds": 178.89
+            },
+            {
+              "fault_id": "CTX-2",
+              "fault_class": "constraint_bypass",
+              "witness_length": 12,
+              "confirmed": true,
+              "minimized_length": 12,
+              "minimization_trials": 30,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "edit-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "type_mismatch"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "commit"
+                }
+              ],
+              "declared_shortest_path": 12,
+              "verification_steps": 221,
+              "verification_seconds": 224.55
+            }
+          ],
+          "random_walk": {
+            "steps": 600,
+            "seed": 0,
+            "clean": {
+              "raw_candidates": 0,
+              "raw_candidates_per_1000_steps": 0.0,
+              "by_fault": {
+                "CTX-1": 0,
+                "CTX-2": 0
+              },
+              "deterministic_triggers": [],
+              "timing_triggers": 0
+            },
+            "buggy": {
+              "time_to_first_verified": 600,
+              "censored": true,
+              "verified": 0,
+              "reached": 0,
+              "rejections": {},
+              "unique_states": 12,
+              "steps_per_second": 1.805,
+              "verify_seconds": 0.0
+            }
+          },
+          "wall_clock_s": 1159.86
+        },
+        {
+          "app_id": "ctx_vu2_s1_d0",
+          "passed": true,
+          "checks": [
+            {
+              "name": "metadata_well_formed",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "faulty_build_is_clean_plus_patches",
+              "passed": true,
+              "detail": "faulty build in sync (10 files, 2 patches)"
+            },
+            {
+              "name": "has_benign_trace",
+              "passed": true,
+              "detail": "an application must declare at least one correct walk through its workflow"
+            },
+            {
+              "name": "CTX-1:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-1:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'configure.html', 'configure.html', 'configure.html', 'contact.html', 'contact.html', 'contact.html', 'review.html']"
+            },
+            {
+              "name": "CTX-1:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "numeric_equals: violated=True inconclusive=False region 'review_deposit': expected 'quantity * 12' observed='12.0'"
+            },
+            {
+              "name": "CTX-1:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-1:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-1:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-1:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:has_reachability_witness",
+              "passed": true,
+              "detail": "faults.json declares no trigger_trace for this fault"
+            },
+            {
+              "name": "CTX-2:witness_replays_on_faulty_build",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve; urls=['index.html', 'items.html', 'items.html', 'configure.html', 'configure.html', 'contact.html', 'contact.html', 'contact.html', 'review.html', 'contact.html', 'contact.html', 'review.html', 'done.html']"
+            },
+            {
+              "name": "CTX-2:witness_fires_on_faulty_build",
+              "passed": true,
+              "detail": "text_absent: violated=True inconclusive=False region 'done_contact': must not contain 'not-an-email' observed='Test User Input \u00b7 not-an-email'"
+            },
+            {
+              "name": "CTX-2:witness_silent_on_clean_build",
+              "passed": true,
+              "detail": "the assertion fires on the build with no seeded fault"
+            },
+            {
+              "name": "CTX-2:witness_needs_its_own_patch",
+              "passed": true,
+              "detail": "the assertion fires on the faulty build without this fault's patch, so it would be credited for another fault's symptom"
+            },
+            {
+              "name": "CTX-2:oracle_confirms",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_still_fires",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_silent_on_clean",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "CTX-2:minimized_trace_needs_its_own_patch",
+              "passed": true,
+              "detail": ""
+            },
+            {
+              "name": "benign_0:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_0:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_0:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_1:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_1:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_buggy",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_buggy",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "benign_2:replays_on_clean",
+              "passed": true,
+              "detail": "0 scripted step(s) did not resolve"
+            },
+            {
+              "name": "benign_2:silent_on_clean",
+              "passed": true,
+              "detail": "a correct walk tripped []"
+            },
+            {
+              "name": "clean_build_silent_to_deterministic_triggers",
+              "passed": true,
+              "detail": ""
+            }
+          ],
+          "faults": [
+            {
+              "fault_id": "CTX-1",
+              "fault_class": "calculation_error",
+              "witness_length": 9,
+              "confirmed": true,
+              "minimized_length": 9,
+              "minimization_trials": 26,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "SELECT",
+                  "id": "quantity",
+                  "params": {
+                    "option": "3"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                }
+              ],
+              "declared_shortest_path": 9,
+              "verification_steps": 152,
+              "verification_seconds": 147.33
+            },
+            {
+              "fault_id": "CTX-2",
+              "fault_class": "constraint_bypass",
+              "witness_length": 12,
+              "confirmed": true,
+              "minimized_length": 12,
+              "minimization_trials": 30,
+              "minimization_exhausted": false,
+              "minimized_trace": [
+                {
+                  "type": "CLICK",
+                  "id": "start-request"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "add-laser"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "advance-items"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "return-date",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-config"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-name",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "valid_typical"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "edit-contact"
+                },
+                {
+                  "type": "TYPE",
+                  "id": "contact-email",
+                  "params": {
+                    "category": "type_mismatch"
+                  }
+                },
+                {
+                  "type": "CLICK",
+                  "id": "save-contact"
+                },
+                {
+                  "type": "CLICK",
+                  "id": "commit"
+                }
+              ],
+              "declared_shortest_path": 12,
+              "verification_steps": 221,
+              "verification_seconds": 225.56
+            }
+          ],
+          "random_walk": {
+            "steps": 600,
+            "seed": 0,
+            "clean": {
+              "raw_candidates": 0,
+              "raw_candidates_per_1000_steps": 0.0,
+              "by_fault": {
+                "CTX-1": 0,
+                "CTX-2": 0
+              },
+              "deterministic_triggers": [],
+              "timing_triggers": 0
+            },
+            "buggy": {
+              "time_to_first_verified": 600,
+              "censored": true,
+              "verified": 0,
+              "reached": 0,
+              "rejections": {},
+              "unique_states": 12,
+              "steps_per_second": 1.823,
+              "verify_seconds": 0.0
+            }
+          },
+          "wall_clock_s": 1116.05
+        }
+      ]
+    }
+  ]
+}

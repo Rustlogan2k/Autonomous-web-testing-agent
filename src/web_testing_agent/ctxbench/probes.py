@@ -170,17 +170,46 @@ def _replay(env, steps: list[dict]) -> tuple[list[dict], list[int], dict]:
     return infos, taken, info
 
 
-def _probe_state(app: SuiteApp, url: str, trace_name: str, prefix: list[dict]) -> dict:
-    """Record one probe state's history and label every action available in it."""
+def reachable_length(url: str, steps: list[dict]) -> int:
+    """How many of `steps` resolve, in order, on the build at `url`.
+
+    A fault's witness can run past what the correct application allows: CTX-2's ends by
+    sending a request whose malformed email the clean build refuses to save, so its final
+    "Send request" never appears there. The probe states are the clean build's, so a walk
+    contributes the prefixes it actually reaches and its truncation is recorded.
+    """
+    env = make_env(url, SETTINGS)
+    try:
+        _, info = env.reset()
+        for number, step in enumerate(steps):
+            index = ScriptedPolicy._match(step, info.get("action_specs") or [])  # noqa: SLF001
+            if index is None:
+                return number
+            _, _, terminated, truncated, info = env.step(index)
+            if terminated or truncated:
+                return number + 1
+        return len(steps)
+    finally:
+        env.close()
+
+
+def _probe_state(app: SuiteApp, url: str, trace_name: str, prefix: list[dict],
+                 known: set[str] | None = None) -> dict | None:
+    """Record one probe state's history and label every action available in it.
+
+    Returns None, without labelling, when the prefix reaches an app state in `known`.
+    """
     if len(prefix) + 1 >= SETTINGS.max_steps:
         raise ReplayError(f"a {len(prefix)}-step prefix does not fit a {SETTINGS.max_steps}-step episode")
     env = make_env(url, SETTINGS)
     try:
         infos, taken, last = _replay(env, prefix)
+        app_state = _app_state(env)
+        if known is not None and app_state in known:
+            return None
         before = _progress(env)
         if before is None:
             raise ReplayError(f"no progress counter at {_page(env).url}")
-        app_state = _app_state(env)
         decoys = _decoys(env)
         specs: list[ActionSpec] = list(last.get("action_specs") or [])
         identities = [_identity(s) for s in specs]
@@ -228,25 +257,31 @@ def build_variant(app_id: str, root: Path = OUT_ROOT) -> dict:
     app = load_app(app_id, root)
     structure = variant(app_id)["structure"]
     started = time.monotonic()
-    candidates = []
-    for name, trace in walks(structure).items():
-        for length in range(len(trace) + 1):
-            candidates.append((length, name, trace[:length]))
-    # Shortest first, so the kept history for a shared state is the most direct one.
-    candidates.sort(key=lambda c: (c[0], c[1]))
-
+    git = git_state()  # at the start: the code that builds the probes, not whatever is later
     states: list[dict] = []
-    seen: dict[str, str] = {}
+    truncated: dict[str, dict] = {}
     with serve_app(app, ("clean",)) as urls:
-        for length, name, prefix in candidates:
-            # Cheap dedupe first: identical prefixes reach identical states.
+        candidates = []
+        for name, trace in walks(structure).items():
+            reach = reachable_length(urls["clean"], trace)
+            if reach < len(trace):
+                truncated[name] = {"length": len(trace), "reachable": reach,
+                                   "first_unreachable_step": trace[reach]}
+            candidates += [(length, name, trace[:length]) for length in range(reach + 1)]
+        # Shortest first, so the kept history for a shared state is the most direct one.
+        candidates.sort(key=lambda c: (c[0], c[1]))
+
+        seen_prefixes: set[str] = set()
+        known: set[str] = set()
+        for _length, name, prefix in candidates:
             key = json.dumps(prefix, sort_keys=True)
-            if key in seen:
+            if key in seen_prefixes:  # identical prefixes reach identical states
                 continue
-            state = _probe_state(app, urls["clean"], name, prefix)
-            seen[key] = state["app_state"]
-            if any(s["app_state"] == state["app_state"] for s in states):
+            seen_prefixes.add(key)
+            state = _probe_state(app, urls["clean"], name, prefix, known)
+            if state is None:
                 continue
+            known.add(state["app_state"])
             states.append(state)
     for number, state in enumerate(states):
         state["probe_id"] = f"{app_id}:{number:03d}"
@@ -254,7 +289,8 @@ def build_variant(app_id: str, root: Path = OUT_ROOT) -> dict:
         "version": PROBE_VERSION, "app_id": app_id, "build": "clean",
         "variant": variant(app_id),
         "env_settings": SETTINGS.to_dict(),
-        "git": git_state(),
+        "git": git,
+        "truncated_walks": truncated,
         "wall_clock_s": round(time.monotonic() - started, 1),
         "states": states,
     }

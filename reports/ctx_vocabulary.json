@@ -1,0 +1,634 @@
+{
+  "control_keys": [
+    "act.begin",
+    "act.add",
+    "act.remove",
+    "act.advance",
+    "act.advance_alt",
+    "act.save",
+    "act.edit",
+    "act.commit",
+    "act.to_review",
+    "act.new",
+    "act.home",
+    "act.close",
+    "field.quantity",
+    "field.purpose",
+    "field.return_date",
+    "field.name",
+    "field.email",
+    "title.items",
+    "title.configure",
+    "title.contact",
+    "title.review",
+    "title.help"
+  ],
+  "training_labels": [
+    "Add",
+    "Another application",
+    "Back home",
+    "Carry on",
+    "Change",
+    "Check",
+    "Check application",
+    "Close",
+    "Contact",
+    "Details of loan",
+    "Due back",
+    "E-mail",
+    "Edit",
+    "Email address",
+    "Equipment",
+    "Full name",
+    "Guidance",
+    "Help",
+    "How many",
+    "Items",
+    "Loan settings",
+    "Main page",
+    "Move along",
+    "New request",
+    "Open an application",
+    "Pick",
+    "Place application",
+    "Proceed",
+    "Purpose",
+    "Quantity",
+    "Reason",
+    "Remove",
+    "Return date",
+    "Review",
+    "Review request",
+    "Save",
+    "Send request",
+    "Shut",
+    "Start a request",
+    "Store",
+    "Unpick",
+    "Who you are",
+    "Your name"
+  ],
+  "token_overlap": {
+    "VS": [],
+    "VU1": [],
+    "VU2": []
+  },
+  "profiles": {
+    "VS": {
+      "labels": 21,
+      "sentence_model": {
+        "mean": 0.4826,
+        "median": 0.4818,
+        "max": 0.7718,
+        "per_label": {
+          "Assistance": {
+            "cosine": 0.5907,
+            "nearest": "Help"
+          },
+          "Booking options": {
+            "cosine": 0.32,
+            "nearest": "Store"
+          },
+          "Confirm booking": {
+            "cosine": 0.3847,
+            "nearest": "Proceed"
+          },
+          "Correspondent": {
+            "cosine": 0.312,
+            "nearest": "E-mail"
+          },
+          "Count": {
+            "cosine": 0.5669,
+            "nearest": "How many"
+          },
+          "Deselect": {
+            "cosine": 0.5836,
+            "nearest": "Remove"
+          },
+          "Dismiss": {
+            "cosine": 0.4972,
+            "nearest": "Remove"
+          },
+          "Fresh booking": {
+            "cosine": 0.4326,
+            "nearest": "Store"
+          },
+          "Gear": {
+            "cosine": 0.6842,
+            "nearest": "Equipment"
+          },
+          "Go forward": {
+            "cosine": 0.5606,
+            "nearest": "Proceed"
+          },
+          "Hand-in day": {
+            "cosine": 0.2993,
+            "nearest": "Back home"
+          },
+          "Initiate booking": {
+            "cosine": 0.3514,
+            "nearest": "Proceed"
+          },
+          "Inspect booking": {
+            "cosine": 0.3394,
+            "nearest": "Review request"
+          },
+          "Intention": {
+            "cosine": 0.4664,
+            "nearest": "Purpose"
+          },
+          "Keep": {
+            "cosine": 0.5872,
+            "nearest": "Save"
+          },
+          "Landing": {
+            "cosine": 0.3675,
+            "nearest": "Back home"
+          },
+          "Mailbox": {
+            "cosine": 0.5939,
+            "nearest": "E-mail"
+          },
+          "Modify": {
+            "cosine": 0.7718,
+            "nearest": "Change"
+          },
+          "Select": {
+            "cosine": 0.5642,
+            "nearest": "Pick"
+          },
+          "Summary": {
+            "cosine": 0.3801,
+            "nearest": "Proceed"
+          },
+          "Surname and forename": {
+            "cosine": 0.4818,
+            "nearest": "Full name"
+          }
+        }
+      },
+      "network_input_projection": {
+        "mean": 0.5171,
+        "median": 0.4422,
+        "max": 0.8026,
+        "per_label": {
+          "Assistance": {
+            "cosine": 0.4393,
+            "nearest": "Help"
+          },
+          "Booking options": {
+            "cosine": 0.4417,
+            "nearest": "Loan settings"
+          },
+          "Confirm booking": {
+            "cosine": 0.3363,
+            "nearest": "Details of loan"
+          },
+          "Correspondent": {
+            "cosine": 0.3507,
+            "nearest": "Main page"
+          },
+          "Count": {
+            "cosine": 0.5803,
+            "nearest": "How many"
+          },
+          "Deselect": {
+            "cosine": 0.6826,
+            "nearest": "Remove"
+          },
+          "Dismiss": {
+            "cosine": 0.4421,
+            "nearest": "Shut"
+          },
+          "Fresh booking": {
+            "cosine": 0.3511,
+            "nearest": "Store"
+          },
+          "Gear": {
+            "cosine": 0.7092,
+            "nearest": "Equipment"
+          },
+          "Go forward": {
+            "cosine": 0.5682,
+            "nearest": "Move along"
+          },
+          "Hand-in day": {
+            "cosine": 0.4105,
+            "nearest": "Purpose"
+          },
+          "Initiate booking": {
+            "cosine": 0.373,
+            "nearest": "Place application"
+          },
+          "Inspect booking": {
+            "cosine": 0.4137,
+            "nearest": "Details of loan"
+          },
+          "Intention": {
+            "cosine": 0.4422,
+            "nearest": "Guidance"
+          },
+          "Keep": {
+            "cosine": 0.5605,
+            "nearest": "Save"
+          },
+          "Landing": {
+            "cosine": 0.3664,
+            "nearest": "Back home"
+          },
+          "Mailbox": {
+            "cosine": 0.7566,
+            "nearest": "E-mail"
+          },
+          "Modify": {
+            "cosine": 0.8026,
+            "nearest": "Change"
+          },
+          "Select": {
+            "cosine": 0.4982,
+            "nearest": "Pick"
+          },
+          "Summary": {
+            "cosine": 0.5673,
+            "nearest": "Guidance"
+          },
+          "Surname and forename": {
+            "cosine": 0.7666,
+            "nearest": "Full name"
+          }
+        }
+      }
+    },
+    "VU1": {
+      "labels": 21,
+      "sentence_model": {
+        "mean": 0.4485,
+        "median": 0.4226,
+        "max": 0.6444,
+        "per_label": {
+          "Advice": {
+            "cosine": 0.6234,
+            "nearest": "Guidance"
+          },
+          "Amend": {
+            "cosine": 0.6196,
+            "nearest": "Change"
+          },
+          "Commence lodgement": {
+            "cosine": 0.4268,
+            "nearest": "Proceed"
+          },
+          "Conceal": {
+            "cosine": 0.3887,
+            "nearest": "Carry on"
+          },
+          "Correspondence": {
+            "cosine": 0.331,
+            "nearest": "Contact"
+          },
+          "Deadline": {
+            "cosine": 0.4593,
+            "nearest": "Due back"
+          },
+          "Enlist": {
+            "cosine": 0.3368,
+            "nearest": "Guidance"
+          },
+          "Inbox": {
+            "cosine": 0.6159,
+            "nearest": "E-mail"
+          },
+          "Inventory": {
+            "cosine": 0.6444,
+            "nearest": "Items"
+          },
+          "Lobby": {
+            "cosine": 0.3391,
+            "nearest": "Place application"
+          },
+          "Lodge": {
+            "cosine": 0.2981,
+            "nearest": "Contact"
+          },
+          "Moniker": {
+            "cosine": 0.4226,
+            "nearest": "Full name"
+          },
+          "Onward": {
+            "cosine": 0.5877,
+            "nearest": "Proceed"
+          },
+          "Overview": {
+            "cosine": 0.4709,
+            "nearest": "Guidance"
+          },
+          "Particulars": {
+            "cosine": 0.3996,
+            "nearest": "Items"
+          },
+          "Peruse": {
+            "cosine": 0.3571,
+            "nearest": "Quantity"
+          },
+          "Rationale": {
+            "cosine": 0.408,
+            "nearest": "Reason"
+          },
+          "Recommence": {
+            "cosine": 0.3693,
+            "nearest": "Proceed"
+          },
+          "Retain": {
+            "cosine": 0.407,
+            "nearest": "Save"
+          },
+          "Tally": {
+            "cosine": 0.4623,
+            "nearest": "Quantity"
+          },
+          "Withdraw": {
+            "cosine": 0.451,
+            "nearest": "Remove"
+          }
+        }
+      },
+      "network_input_projection": {
+        "mean": 0.4768,
+        "median": 0.4505,
+        "max": 0.7712,
+        "per_label": {
+          "Advice": {
+            "cosine": 0.6203,
+            "nearest": "Guidance"
+          },
+          "Amend": {
+            "cosine": 0.6045,
+            "nearest": "Change"
+          },
+          "Commence lodgement": {
+            "cosine": 0.4147,
+            "nearest": "Proceed"
+          },
+          "Conceal": {
+            "cosine": 0.4139,
+            "nearest": "Guidance"
+          },
+          "Correspondence": {
+            "cosine": 0.2936,
+            "nearest": "Place application"
+          },
+          "Deadline": {
+            "cosine": 0.4505,
+            "nearest": "Due back"
+          },
+          "Enlist": {
+            "cosine": 0.3377,
+            "nearest": "Move along"
+          },
+          "Inbox": {
+            "cosine": 0.7712,
+            "nearest": "E-mail"
+          },
+          "Inventory": {
+            "cosine": 0.7062,
+            "nearest": "Items"
+          },
+          "Lobby": {
+            "cosine": 0.3591,
+            "nearest": "Check"
+          },
+          "Lodge": {
+            "cosine": 0.4142,
+            "nearest": "Place application"
+          },
+          "Moniker": {
+            "cosine": 0.5972,
+            "nearest": "Your name"
+          },
+          "Onward": {
+            "cosine": 0.5848,
+            "nearest": "Proceed"
+          },
+          "Overview": {
+            "cosine": 0.5321,
+            "nearest": "Guidance"
+          },
+          "Particulars": {
+            "cosine": 0.4633,
+            "nearest": "Equipment"
+          },
+          "Peruse": {
+            "cosine": 0.4189,
+            "nearest": "Purpose"
+          },
+          "Rationale": {
+            "cosine": 0.5753,
+            "nearest": "Reason"
+          },
+          "Recommence": {
+            "cosine": 0.3002,
+            "nearest": "Equipment"
+          },
+          "Retain": {
+            "cosine": 0.4438,
+            "nearest": "Save"
+          },
+          "Tally": {
+            "cosine": 0.4991,
+            "nearest": "Quantity"
+          },
+          "Withdraw": {
+            "cosine": 0.2123,
+            "nearest": "Shut"
+          }
+        }
+      }
+    },
+    "VU2": {
+      "labels": 21,
+      "sentence_model": {
+        "mean": 0.3443,
+        "median": 0.3234,
+        "max": 0.5762,
+        "per_label": {
+          "Brask": {
+            "cosine": 0.3139,
+            "nearest": "Unpick"
+          },
+          "Dresk": {
+            "cosine": 0.5762,
+            "nearest": "Unpick"
+          },
+          "Fenlow": {
+            "cosine": 0.2934,
+            "nearest": "Pick"
+          },
+          "Fizzon": {
+            "cosine": 0.3626,
+            "nearest": "Pick"
+          },
+          "Glonk": {
+            "cosine": 0.4186,
+            "nearest": "Unpick"
+          },
+          "Grindle": {
+            "cosine": 0.3976,
+            "nearest": "Items"
+          },
+          "Hobwin": {
+            "cosine": 0.327,
+            "nearest": "Full name"
+          },
+          "Klett": {
+            "cosine": 0.321,
+            "nearest": "Pick"
+          },
+          "Mopt": {
+            "cosine": 0.2799,
+            "nearest": "Close"
+          },
+          "Plimova": {
+            "cosine": 0.2997,
+            "nearest": "Unpick"
+          },
+          "Plimoven": {
+            "cosine": 0.3495,
+            "nearest": "Unpick"
+          },
+          "Pradda": {
+            "cosine": 0.3419,
+            "nearest": "Full name"
+          },
+          "Quillet": {
+            "cosine": 0.3712,
+            "nearest": "Items"
+          },
+          "Skeevo": {
+            "cosine": 0.3137,
+            "nearest": "Edit"
+          },
+          "Snorbel": {
+            "cosine": 0.2915,
+            "nearest": "Your name"
+          },
+          "Torvin": {
+            "cosine": 0.3154,
+            "nearest": "Edit"
+          },
+          "Trelly": {
+            "cosine": 0.3142,
+            "nearest": "Your name"
+          },
+          "Vadrim": {
+            "cosine": 0.3234,
+            "nearest": "Your name"
+          },
+          "Wubbet": {
+            "cosine": 0.2851,
+            "nearest": "Shut"
+          },
+          "Yarrom": {
+            "cosine": 0.3373,
+            "nearest": "Your name"
+          },
+          "Zarn": {
+            "cosine": 0.3981,
+            "nearest": "Pick"
+          }
+        }
+      },
+      "network_input_projection": {
+        "mean": 0.4692,
+        "median": 0.4814,
+        "max": 0.5984,
+        "per_label": {
+          "Brask": {
+            "cosine": 0.4814,
+            "nearest": "Unpick"
+          },
+          "Dresk": {
+            "cosine": 0.5984,
+            "nearest": "Unpick"
+          },
+          "Fenlow": {
+            "cosine": 0.5203,
+            "nearest": "Reason"
+          },
+          "Fizzon": {
+            "cosine": 0.5086,
+            "nearest": "Pick"
+          },
+          "Glonk": {
+            "cosine": 0.5066,
+            "nearest": "Unpick"
+          },
+          "Grindle": {
+            "cosine": 0.5094,
+            "nearest": "Equipment"
+          },
+          "Hobwin": {
+            "cosine": 0.5185,
+            "nearest": "Your name"
+          },
+          "Klett": {
+            "cosine": 0.456,
+            "nearest": "Unpick"
+          },
+          "Mopt": {
+            "cosine": 0.3576,
+            "nearest": "Details of loan"
+          },
+          "Plimova": {
+            "cosine": 0.4004,
+            "nearest": "Purpose"
+          },
+          "Plimoven": {
+            "cosine": 0.3971,
+            "nearest": "Purpose"
+          },
+          "Pradda": {
+            "cosine": 0.4774,
+            "nearest": "Full name"
+          },
+          "Quillet": {
+            "cosine": 0.4875,
+            "nearest": "Equipment"
+          },
+          "Skeevo": {
+            "cosine": 0.4092,
+            "nearest": "Pick"
+          },
+          "Snorbel": {
+            "cosine": 0.4422,
+            "nearest": "Full name"
+          },
+          "Torvin": {
+            "cosine": 0.3352,
+            "nearest": "Full name"
+          },
+          "Trelly": {
+            "cosine": 0.5502,
+            "nearest": "Unpick"
+          },
+          "Vadrim": {
+            "cosine": 0.4901,
+            "nearest": "Full name"
+          },
+          "Wubbet": {
+            "cosine": 0.3819,
+            "nearest": "Shut"
+          },
+          "Yarrom": {
+            "cosine": 0.4637,
+            "nearest": "Reason"
+          },
+          "Zarn": {
+            "cosine": 0.5624,
+            "nearest": "Pick"
+          }
+        }
+      }
+    }
+  },
+  "label_model": "sentence-transformers/all-MiniLM-L6-v2"
+}
