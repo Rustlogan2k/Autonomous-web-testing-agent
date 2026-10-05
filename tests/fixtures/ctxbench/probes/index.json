@@ -1,0 +1,170 @@
+{
+  "ctx_v0_s1_d0": {
+    "app_id": "ctx_v0_s1_d0",
+    "states": 28,
+    "states_with_progress_action": 26,
+    "states_with_decoy": 0,
+    "actions_by_effect": {
+      "progress": 80,
+      "no-op": 394,
+      "regress": 95,
+      "decoy": 0
+    },
+    "wall_clock_s": 926.0,
+    "sha256": "c73c1e554ea43ae325fb1e34507330c432db222ca2260508f3d3aaee1c7724d3"
+  },
+  "ctx_v0_s1_d1": {
+    "app_id": "ctx_v0_s1_d1",
+    "states": 28,
+    "states_with_progress_action": 26,
+    "states_with_decoy": 22,
+    "actions_by_effect": {
+      "progress": 80,
+      "no-op": 394,
+      "regress": 95,
+      "decoy": 44
+    },
+    "wall_clock_s": 980.2,
+    "sha256": "841d6a5c421d1c70d118a613f26a4d4177f8e2d104de56c80ec5f8e38348426d"
+  },
+  "ctx_v0_s2_d0": {
+    "app_id": "ctx_v0_s2_d0",
+    "states": 34,
+    "states_with_progress_action": 29,
+    "states_with_decoy": 0,
+    "actions_by_effect": {
+      "progress": 102,
+      "no-op": 439,
+      "regress": 109,
+      "decoy": 0
+    },
+    "wall_clock_s": 1308.4,
+    "sha256": "35045d272245e275324f841761c6b70e286dadc5efd583c0a7e3e8ab3ccfa35a"
+  },
+  "ctx_v0_s3_d0": {
+    "app_id": "ctx_v0_s3_d0",
+    "states": 28,
+    "states_with_progress_action": 26,
+    "states_with_decoy": 0,
+    "actions_by_effect": {
+      "progress": 91,
+      "no-op": 419,
+      "regress": 139,
+      "decoy": 0
+    },
+    "wall_clock_s": 1008.6,
+    "sha256": "64723aae6e1e4d887e5250fff12d67457a8073317bacfcdd6f145c8a0981886a"
+  },
+  "ctx_v0_s4_d0": {
+    "app_id": "ctx_v0_s4_d0",
+    "states": 28,
+    "states_with_progress_action": 26,
+    "states_with_decoy": 0,
+    "actions_by_effect": {
+      "progress": 81,
+      "no-op": 475,
+      "regress": 95,
+      "decoy": 0
+    },
+    "wall_clock_s": 1273.5,
+    "sha256": "7828fa540a9e77fc397011f031f5423d24ae0d53848f6d67e25e57fa9a1dab4a"
+  },
+  "ctx_v0_s5_d0": {
+    "app_id": "ctx_v0_s5_d0",
+    "states": 25,
+    "states_with_progress_action": 23,
+    "states_with_decoy": 0,
+    "actions_by_effect": {
+      "progress": 74,
+      "no-op": 342,
+      "regress": 85,
+      "decoy": 0
+    },
+    "wall_clock_s": 838.8,
+    "sha256": "14fa1b7613d2e794ca38b4900b2c238034352d0e2b0d3a7dd6f9ac17b095ed1b"
+  },
+  "ctx_v1_s1_d0": {
+    "app_id": "ctx_v1_s1_d0",
+    "states": 28,
+    "states_with_progress_action": 26,
+    "states_with_decoy": 0,
+    "actions_by_effect": {
+      "progress": 80,
+      "no-op": 394,
+      "regress": 95,
+      "decoy": 0
+    },
+    "wall_clock_s": 930.5,
+    "sha256": "0574759fedb71700e0f31f238df39721c13eac1c62fad3b70932b3dac3eca93c"
+  },
+  "ctx_v1_s2_d0": {
+    "app_id": "ctx_v1_s2_d0",
+    "states": 34,
+    "states_with_progress_action": 29,
+    "states_with_decoy": 0,
+    "actions_by_effect": {
+      "progress": 102,
+      "no-op": 439,
+      "regress": 109,
+      "decoy": 0
+    },
+    "wall_clock_s": 1294.0,
+    "sha256": "216bf496a7a79cf74604bcea05325fad25943aabac541187bd49d5db343052c2"
+  },
+  "ctx_vs_s1_d0": {
+    "app_id": "ctx_vs_s1_d0",
+    "states": 28,
+    "states_with_progress_action": 26,
+    "states_with_decoy": 0,
+    "actions_by_effect": {
+      "progress": 80,
+      "no-op": 394,
+      "regress": 95,
+      "decoy": 0
+    },
+    "wall_clock_s": 929.0,
+    "sha256": "d4ff56b45d12a0cad3f23eda55df653198bfbcbee0deaf3d87ef88f6f5c2fc36"
+  },
+  "ctx_vu1_s1_d0": {
+    "app_id": "ctx_vu1_s1_d0",
+    "states": 28,
+    "states_with_progress_action": 26,
+    "states_with_decoy": 0,
+    "actions_by_effect": {
+      "progress": 80,
+      "no-op": 394,
+      "regress": 95,
+      "decoy": 0
+    },
+    "wall_clock_s": 928.2,
+    "sha256": "d27e3d3cd2254b28908dee790e2bd624167316b9fc904d2d29170794592ed6e8"
+  },
+  "ctx_vu1_s5_d1": {
+    "app_id": "ctx_vu1_s5_d1",
+    "states": 25,
+    "states_with_progress_action": 23,
+    "states_with_decoy": 19,
+    "actions_by_effect": {
+      "progress": 74,
+      "no-op": 342,
+      "regress": 85,
+      "decoy": 38
+    },
+    "wall_clock_s": 882.4,
+    "sha256": "3911fb9a48667c3d79435b20142097cf08f03f9c3b114153fdb4db9feb85754a"
+  },
+  "ctx_vu2_s1_d0": {
+    "app_id": "ctx_vu2_s1_d0",
+    "states": 28,
+    "states_with_progress_action": 26,
+    "states_with_decoy": 0,
+    "actions_by_effect": {
+      "progress": 80,
+      "no-op": 394,
+      "regress": 95,
+      "decoy": 0
+    },
+    "wall_clock_s": 919.5,
+    "sha256": "95e13592220edc26a99c18c731c756b6cf5a8c49415d6b83b3147faa462b9bd5"
+  }
+}
