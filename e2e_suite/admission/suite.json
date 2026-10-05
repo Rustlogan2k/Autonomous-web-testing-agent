@@ -1,0 +1,521 @@
+{
+  "apps": {
+    "bagstreet": {
+      "admitted": true,
+      "checks": 20,
+      "browser": true,
+      "failed": []
+    },
+    "clinicflow": {
+      "admitted": true,
+      "checks": 20,
+      "browser": true,
+      "failed": []
+    },
+    "helpline": {
+      "admitted": true,
+      "checks": 20,
+      "browser": true,
+      "failed": []
+    },
+    "ledgerly": {
+      "admitted": true,
+      "checks": 20,
+      "browser": true,
+      "failed": []
+    },
+    "orbit": {
+      "admitted": true,
+      "checks": 20,
+      "browser": true,
+      "failed": []
+    },
+    "stackroom": {
+      "admitted": true,
+      "checks": 20,
+      "browser": true,
+      "failed": []
+    },
+    "tidewater": {
+      "admitted": true,
+      "checks": 20,
+      "browser": true,
+      "failed": []
+    },
+    "wayfarer": {
+      "admitted": true,
+      "checks": 19,
+      "browser": true,
+      "failed": []
+    }
+  },
+  "diversity": {
+    "apps": {
+      "bagstreet": {
+        "architecture": "server-rendered-multipage+html-forms",
+        "stack": "python-stdlib+sqlite",
+        "persistence": "sqlite rows partitioned by session; everything rendered from the database (post/redirect/get)",
+        "workflow_kinds": [
+          "linear-wizard",
+          "revisit"
+        ],
+        "views": 10,
+        "transitions": 17,
+        "features": [
+          "conditional-section",
+          "cross-page-state",
+          "dynamic-validation",
+          "filter",
+          "server-rendered",
+          "server-state",
+          "sort",
+          "table"
+        ],
+        "faults": 3,
+        "fault_subtypes": [
+          "displayed-vs-submitted",
+          "missing-validation",
+          "stale-state"
+        ],
+        "longest_witness": 9,
+        "dockerfile": true
+      },
+      "clinicflow": {
+        "architecture": "server-rendered-branching-wizard+client-conditionals",
+        "stack": "python-stdlib-wsgiref+sqlite",
+        "persistence": "one sqlite file per session; the booking draft is a server-side row addressed in the URL",
+        "workflow_kinds": [
+          "branching",
+          "linear-wizard",
+          "revisit"
+        ],
+        "views": 12,
+        "transitions": 21,
+        "features": [
+          "conditional-section",
+          "cross-page-state",
+          "dynamic-validation",
+          "enable-disable",
+          "server-rendered",
+          "server-state",
+          "table"
+        ],
+        "faults": 3,
+        "fault_subtypes": [
+          "displayed-vs-submitted",
+          "missing-validation",
+          "stale-state"
+        ],
+        "longest_witness": 15,
+        "dockerfile": true
+      },
+      "helpline": {
+        "architecture": "server-rendered+html-fragments",
+        "stack": "python-stdlib+sqlite",
+        "persistence": "one sqlite database file per session, copied from a seeded template; every page and fragment rendered from it",
+        "workflow_kinds": [
+          "branching",
+          "hub-and-spoke",
+          "modal-heavy",
+          "state-machine"
+        ],
+        "views": 7,
+        "transitions": 15,
+        "features": [
+          "conditional-section",
+          "cross-page-state",
+          "enable-disable",
+          "filter",
+          "fragment-update",
+          "modal",
+          "server-rendered",
+          "server-state",
+          "table",
+          "tabs"
+        ],
+        "faults": 3,
+        "fault_subtypes": [
+          "stale-state",
+          "state-transition",
+          "workflow-completion"
+        ],
+        "longest_witness": 6,
+        "dockerfile": true
+      },
+      "ledgerly": {
+        "architecture": "node-server-rendered+client-form-island",
+        "stack": "node-builtins+json-files",
+        "persistence": "append-only event log per session (JSON lines), folded over the seed on every request; nothing is ever rewritten",
+        "workflow_kinds": [
+          "branching",
+          "nested-form",
+          "revisit",
+          "state-machine"
+        ],
+        "views": 12,
+        "transitions": 22,
+        "features": [
+          "client-state",
+          "dynamic-validation",
+          "enable-disable",
+          "multi-role",
+          "nested-form",
+          "server-rendered",
+          "server-state",
+          "table"
+        ],
+        "faults": 3,
+        "fault_subtypes": [
+          "missing-validation",
+          "stale-state",
+          "workflow-completion"
+        ],
+        "longest_witness": 12,
+        "dockerfile": true
+      },
+      "orbit": {
+        "architecture": "spa-modal+json-api",
+        "stack": "node-builtins+json-files",
+        "persistence": "one JSON file per session, read at the start of every request and written after every mutation; the client keeps tabs, menus, drafts and 'watching' in memory",
+        "workflow_kinds": [
+          "hub-and-spoke",
+          "modal-heavy",
+          "state-machine"
+        ],
+        "views": 7,
+        "transitions": 19,
+        "features": [
+          "bulk-operation",
+          "client-state",
+          "conditional-section",
+          "dynamic-validation",
+          "enable-disable",
+          "modal",
+          "reload-persistence",
+          "server-state",
+          "spa",
+          "tabs"
+        ],
+        "faults": 3,
+        "fault_subtypes": [
+          "missing-validation",
+          "persistence"
+        ],
+        "longest_witness": 5,
+        "dockerfile": true
+      },
+      "stackroom": {
+        "architecture": "data-grid+json-api(server-side paging)",
+        "stack": "python-stdlib+sqlite",
+        "persistence": "sqlite rows partitioned by session; the grid's state lives in its query string (history.replaceState); column visibility is client-only",
+        "workflow_kinds": [
+          "data-grid",
+          "hub-and-spoke"
+        ],
+        "views": 5,
+        "transitions": 11,
+        "features": [
+          "bulk-operation",
+          "client-state",
+          "cross-page-state",
+          "enable-disable",
+          "filter",
+          "server-state",
+          "sort",
+          "table"
+        ],
+        "faults": 3,
+        "fault_subtypes": [
+          "incorrect-navigation",
+          "persistence",
+          "wrong-target"
+        ],
+        "longest_witness": 4,
+        "dockerfile": true
+      },
+      "tidewater": {
+        "architecture": "spa-hash-router+json-api",
+        "stack": "python-stdlib+sqlite",
+        "persistence": "sqlite rows partitioned by session; client keeps wizard state and a payee cache in memory",
+        "workflow_kinds": [
+          "hub-and-spoke",
+          "linear-wizard",
+          "modal-heavy",
+          "revisit"
+        ],
+        "views": 12,
+        "transitions": 19,
+        "features": [
+          "client-state",
+          "conditional-section",
+          "cross-page-state",
+          "dynamic-validation",
+          "filter",
+          "modal",
+          "server-state",
+          "spa",
+          "table"
+        ],
+        "faults": 3,
+        "fault_subtypes": [
+          "missing-validation",
+          "stale-state",
+          "state-transition"
+        ],
+        "longest_witness": 7,
+        "dockerfile": true
+      },
+      "wayfarer": {
+        "architecture": "client-draft-spa+server-sealed-versions",
+        "stack": "node-builtins+localStorage+server-versions",
+        "persistence": "the itinerary being edited is a client-side draft in localStorage (written synchronously on every edit); the server keeps trips, write-once sealed versions (one JSON file per version) and share tokens under WTA_DATA_DIR",
+        "workflow_kinds": [
+          "hub-and-spoke",
+          "nested-form",
+          "revisit"
+        ],
+        "views": 6,
+        "transitions": 12,
+        "features": [
+          "client-state",
+          "conditional-section",
+          "cross-page-state",
+          "nested-form",
+          "reload-persistence",
+          "server-state",
+          "spa",
+          "table"
+        ],
+        "faults": 2,
+        "fault_subtypes": [
+          "cross-page",
+          "persistence"
+        ],
+        "longest_witness": 7,
+        "dockerfile": false
+      }
+    },
+    "workflow_kind_matrix": {
+      "linear-wizard": [
+        "bagstreet",
+        "clinicflow",
+        "tidewater"
+      ],
+      "hub-and-spoke": [
+        "helpline",
+        "orbit",
+        "stackroom",
+        "tidewater",
+        "wayfarer"
+      ],
+      "branching": [
+        "clinicflow",
+        "helpline",
+        "ledgerly"
+      ],
+      "modal-heavy": [
+        "helpline",
+        "orbit",
+        "tidewater"
+      ],
+      "revisit": [
+        "bagstreet",
+        "clinicflow",
+        "ledgerly",
+        "tidewater",
+        "wayfarer"
+      ],
+      "state-machine": [
+        "helpline",
+        "ledgerly",
+        "orbit"
+      ],
+      "nested-form": [
+        "ledgerly",
+        "wayfarer"
+      ],
+      "data-grid": [
+        "stackroom"
+      ]
+    },
+    "feature_matrix": {
+      "modal": [
+        "helpline",
+        "orbit",
+        "tidewater"
+      ],
+      "tabs": [
+        "helpline",
+        "orbit"
+      ],
+      "nested-form": [
+        "ledgerly",
+        "wayfarer"
+      ],
+      "conditional-section": [
+        "bagstreet",
+        "clinicflow",
+        "helpline",
+        "orbit",
+        "tidewater",
+        "wayfarer"
+      ],
+      "table": [
+        "bagstreet",
+        "clinicflow",
+        "helpline",
+        "ledgerly",
+        "stackroom",
+        "tidewater",
+        "wayfarer"
+      ],
+      "filter": [
+        "bagstreet",
+        "helpline",
+        "stackroom",
+        "tidewater"
+      ],
+      "sort": [
+        "bagstreet",
+        "stackroom"
+      ],
+      "bulk-operation": [
+        "orbit",
+        "stackroom"
+      ],
+      "cross-page-state": [
+        "bagstreet",
+        "clinicflow",
+        "helpline",
+        "stackroom",
+        "tidewater",
+        "wayfarer"
+      ],
+      "client-state": [
+        "ledgerly",
+        "orbit",
+        "stackroom",
+        "tidewater",
+        "wayfarer"
+      ],
+      "server-state": [
+        "bagstreet",
+        "clinicflow",
+        "helpline",
+        "ledgerly",
+        "orbit",
+        "stackroom",
+        "tidewater",
+        "wayfarer"
+      ],
+      "spa": [
+        "orbit",
+        "tidewater",
+        "wayfarer"
+      ],
+      "server-rendered": [
+        "bagstreet",
+        "clinicflow",
+        "helpline",
+        "ledgerly"
+      ],
+      "fragment-update": [
+        "helpline"
+      ],
+      "dynamic-validation": [
+        "bagstreet",
+        "clinicflow",
+        "ledgerly",
+        "orbit",
+        "tidewater"
+      ],
+      "enable-disable": [
+        "clinicflow",
+        "helpline",
+        "ledgerly",
+        "orbit",
+        "stackroom"
+      ],
+      "multi-role": [
+        "ledgerly"
+      ],
+      "reload-persistence": [
+        "orbit",
+        "wayfarer"
+      ]
+    },
+    "source_line_jaccard": {
+      "bagstreet~clinicflow": 0.008,
+      "bagstreet~helpline": 0.021,
+      "bagstreet~ledgerly": 0.001,
+      "bagstreet~orbit": 0.001,
+      "bagstreet~stackroom": 0.01,
+      "bagstreet~tidewater": 0.032,
+      "bagstreet~wayfarer": 0.002,
+      "clinicflow~helpline": 0.008,
+      "clinicflow~ledgerly": 0.001,
+      "clinicflow~orbit": 0.001,
+      "clinicflow~stackroom": 0.005,
+      "clinicflow~tidewater": 0.007,
+      "clinicflow~wayfarer": 0.002,
+      "helpline~ledgerly": 0.002,
+      "helpline~orbit": 0.002,
+      "helpline~stackroom": 0.009,
+      "helpline~tidewater": 0.014,
+      "helpline~wayfarer": 0.002,
+      "ledgerly~orbit": 0.014,
+      "ledgerly~stackroom": 0.004,
+      "ledgerly~tidewater": 0.001,
+      "ledgerly~wayfarer": 0.009,
+      "orbit~stackroom": 0.003,
+      "orbit~tidewater": 0.008,
+      "orbit~wayfarer": 0.018,
+      "stackroom~tidewater": 0.019,
+      "stackroom~wayfarer": 0.007,
+      "tidewater~wayfarer": 0.005
+    },
+    "max_source_line_jaccard": 0.032,
+    "action_vocab_jaccard_between_apps": {
+      "bagstreet~clinicflow": 0.035,
+      "bagstreet~helpline": 0.023,
+      "bagstreet~ledgerly": 0.091,
+      "bagstreet~orbit": 0.044,
+      "bagstreet~stackroom": 0.026,
+      "bagstreet~tidewater": 0.136,
+      "bagstreet~wayfarer": 0.048,
+      "clinicflow~helpline": 0.038,
+      "clinicflow~ledgerly": 0.036,
+      "clinicflow~orbit": 0.037,
+      "clinicflow~stackroom": 0.021,
+      "clinicflow~tidewater": 0.054,
+      "clinicflow~wayfarer": 0.0,
+      "helpline~ledgerly": 0.049,
+      "helpline~orbit": 0.05,
+      "helpline~stackroom": 0.062,
+      "helpline~tidewater": 0.125,
+      "helpline~wayfarer": 0.026,
+      "ledgerly~orbit": 0.047,
+      "ledgerly~stackroom": 0.088,
+      "ledgerly~tidewater": 0.091,
+      "ledgerly~wayfarer": 0.024,
+      "orbit~stackroom": 0.0,
+      "orbit~tidewater": 0.119,
+      "orbit~wayfarer": 0.108,
+      "stackroom~tidewater": 0.083,
+      "stackroom~wayfarer": 0.031,
+      "tidewater~wayfarer": 0.073
+    },
+    "action_vocab_jaccard_default_vs_alt": {
+      "bagstreet": 0.058,
+      "clinicflow": 0.127,
+      "helpline": 0.077,
+      "ledgerly": 0.094,
+      "orbit": 0.048,
+      "stackroom": 0.071,
+      "tidewater": 0.115,
+      "wayfarer": 0.118
+    },
+    "problems": [],
+    "passed": true
+  }
+}

@@ -237,10 +237,12 @@ def check_faults(app: AppManifest, urls: dict[str, str], *, max_trials: int = 30
     oracle_app = app.oracle_app()
     faulty, clean = _runner(urls["buggy"]), _runner(urls["clean"])
     controls = {f["fault_id"]: _runner(urls[f"without-{f['fault_id']}"]) for f in app.faults}
+    # The primary pipeline refuses an app with no primary-grammar faults (wayfarer's are all
+    # extension faults), so it is built only when there is something for it to verify.
     pipeline = VerificationPipeline(oracle_app, faulty, control_runner=clean,
                                     control_runners={k: v for k, v in controls.items()
                                                      if k in {f.fault_id for f in oracle_app.faults}},
-                                    max_minimization_trials=max_trials)
+                                    max_minimization_trials=max_trials) if oracle_app.faults else None
     regions = app.data["regions"]
     specs = {f.fault_id: f for f in oracle_app.faults}
     results = []

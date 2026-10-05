@@ -184,7 +184,15 @@ def main() -> int:
     reports = []
     for app in apps:
         print(f"== {app.app_id}", flush=True)
-        report = validate(app, browser=args.browser, docker=args.docker, walk_steps=args.walk_steps)
+        try:
+            report = validate(app, browser=args.browser, docker=args.docker, walk_steps=args.walk_steps)
+        except Exception as exc:  # noqa: BLE001 - a crash is a failed admission, never a stale report
+            import traceback
+            report = {"app_id": app.app_id, "checks": [_check("harness_completed", False,
+                      traceback.format_exc()[-2000:])], "sections": {}, "admitted": False,
+                      "checks_run": 1, "checks_failed": ["harness_completed"],
+                      "browser_checks_run": args.browser, "docker_checks_run": args.docker,
+                      "wall_clock_s": None}
         (ADMISSION_ROOT / f"{app.app_id}.json").write_text(json.dumps(report, indent=2, default=str),
                                                            encoding="utf-8")
         print(f"   admitted={report['admitted']} failed={report['checks_failed']} "

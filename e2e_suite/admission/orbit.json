@@ -49,6 +49,156 @@
         "pass_lines": 1,
         "tail": []
       }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "d4a421d171f4c51f7f72fc04f08afce7c8532cbe426ebc52f7f58f3387f0d840",
+        "fresh_context_sha": [
+          "d4a421d171f4c51f7f72fc04f08afce7c8532cbe426ebc52f7f58f3387f0d840",
+          "d4a421d171f4c51f7f72fc04f08afce7c8532cbe426ebc52f7f58f3387f0d840"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault ORB-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "ORB-1",
+        "subtype": "missing-validation",
+        "oracle": "existing",
+        "fault_class": "constraint_bypass",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False 4/3"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 97.5
+      }
+    },
+    {
+      "name": "fault ORB-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "ORB-2",
+        "subtype": "missing-validation",
+        "oracle": "existing",
+        "fault_class": "constraint_bypass",
+        "witness_length": 3,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False #9 Style guide 2/2 #10 Domain transfer 3/3 #7 Release notes 3/3 Blocked"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 3,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 42.2
+      }
+    },
+    {
+      "name": "fault ORB-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "ORB-3",
+        "subtype": "persistence",
+        "oracle": "extension",
+        "fault_class": "persistence_failure",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='2 of 3 done' after='1 of 3 done'"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 102.3
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
     }
   ],
   "sections": {
@@ -111,12 +261,407 @@
         "lines_added": 1,
         "chars_changed": 5
       }
+    },
+    "workflows": [
+      {
+        "name": "park a Doing card, then pull in the next backlog card [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "finish the contact form's checklist and ship it from the card [default vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "ship everything ready in Review from the column menu [default vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "unblock the release notes by shipping their dependency, then ship them [default vocabulary]",
+        "steps": 10,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "comment on a card [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "add a card to the office move backlog [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "move a card into Review from its card [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "park a Doing card, then pull in the next backlog card [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "finish the contact form's checklist and ship it from the card [alt vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "ship everything ready in Review from the column menu [alt vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "unblock the release notes by shipping their dependency, then ship them [alt vocabulary]",
+        "steps": 10,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "comment on a card [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "add a card to the office move backlog [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "move a card into Review from its card [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "Ship on a card whose checklist is unfinished commits nothing; after ticking the last item the same button ships it",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "Pull in is refused while Doing is at its WIP limit; once a Doing card is parked the same button pulls the next card in",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "Watch card",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "Copy link",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "ORB-1",
+        "subtype": "missing-validation",
+        "oracle": "existing",
+        "fault_class": "constraint_bypass",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False 4/3"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "open-project-web"
+          },
+          {
+            "type": "CLICK",
+            "id": "card-1"
+          },
+          {
+            "type": "CLICK",
+            "id": "move-card"
+          },
+          {
+            "type": "CLICK",
+            "id": "close-card"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 97.5
+      },
+      {
+        "fault_id": "ORB-2",
+        "subtype": "missing-validation",
+        "oracle": "existing",
+        "fault_class": "constraint_bypass",
+        "witness_length": 3,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False #9 Style guide 2/2 #10 Domain transfer 3/3 #7 Release notes 3/3 Blocked"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 3,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "open-project-web"
+          },
+          {
+            "type": "CLICK",
+            "id": "col-menu-review"
+          },
+          {
+            "type": "CLICK",
+            "id": "ship-ready"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 42.2
+      },
+      {
+        "fault_id": "ORB-3",
+        "subtype": "persistence",
+        "oracle": "extension",
+        "fault_class": "persistence_failure",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='2 of 3 done' after='1 of 3 done'"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "open-project-web"
+          },
+          {
+            "type": "CLICK",
+            "id": "card-4"
+          },
+          {
+            "type": "CLICK",
+            "id": "tab-checklist"
+          },
+          {
+            "type": "CLICK",
+            "id": "check-4-2"
+          },
+          {
+            "type": "REFRESH"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 102.3
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 3,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 3,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
     }
   },
   "admitted": true,
-  "checks_run": 8,
+  "checks_run": 20,
   "checks_failed": [],
-  "browser_checks_run": false,
+  "browser_checks_run": true,
   "docker_checks_run": false,
-  "wall_clock_s": 2.6
+  "wall_clock_s": 454.0
 }
