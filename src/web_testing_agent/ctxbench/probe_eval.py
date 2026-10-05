@@ -28,6 +28,7 @@ import numpy as np
 
 from ..rl.features import FeatureExtractor, semantic_label
 from . import probes as probe_sets
+from .analyze import greedy_set
 from .runner import ARMS, HELD_OUT, LEARNED, SEEDS, TRAINING, checkpoint_path
 
 PERMUTATION_STATES = 100
@@ -143,7 +144,7 @@ def permutation_check(out_dir: Path, variants: tuple[str, ...], seed: int = 0) -
     for arm in LEARNED:
         for model_seed in SEEDS:
             agent = QAgent.load(checkpoint_path(out_dir, arm, model_seed), labels=labels)
-            worst, greedy_mismatches = 0.0, 0
+            worst, greedy_mismatches, positional = 0.0, 0, 0
             for e, perms in zip(encoded, orders, strict=True):
                 base = agent.q_values(e)
                 for order in perms:
@@ -160,10 +161,16 @@ def permutation_check(out_dir: Path, variants: tuple[str, ...], seed: int = 0) -
                     restored = np.empty_like(q)
                     restored[order] = q
                     worst = max(worst, float(np.abs(restored - base).max()))
-                    greedy_mismatches += int(order[int(np.argmax(q))] != int(np.argmax(base)))
+                    # The greedy choice must be the same action: the same set of actions tied
+                    # for the best score. Which one of a tie `argmax` takes is positional, and
+                    # is counted separately.
+                    same_set = np.array_equal(greedy_set(restored), greedy_set(base))
+                    greedy_mismatches += int(not same_set)
+                    positional += int(order[int(np.argmax(q))] != int(np.argmax(base)))
             out["arms"][f"{arm}|{model_seed}"] = {
                 "max_abs_difference": worst,
                 "greedy_mismatches": greedy_mismatches,
+                "positional_tie_breaks_differing": positional,
                 "passed": worst <= PERMUTATION_TOLERANCE and greedy_mismatches == 0,
             }
     out["passed"] = all(row["passed"] for row in out["arms"].values())

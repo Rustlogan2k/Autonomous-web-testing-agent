@@ -128,3 +128,14 @@ def test_condition_states():
     assert not unresolved.holds() and not unresolved.clearly_fails()
     assert A.Condition("x", 0.5, np.linspace(0.4, 0.6, 101), 0.70, ">=").clearly_fails()
     assert A.verdict([[unresolved]]) == "inconclusive"
+
+
+def test_greedy_metrics_split_ties_evenly():
+    # Two actions tie for best, one progress and one not: top-1 is 0.5, whatever the order.
+    states = [{"probe_id": "v:000", "labels": ["a", "b", "c"],
+               "effects": ["no-op", "progress", "decoy"]}]
+    for scores in ([2.0, 2.0, 1.0], [2.0, 1.0, 2.0]):
+        t = A.variant_tables(states, [{"v:000": scores}])
+        expected_top1 = 0.5 if scores[1] == 2.0 else 0.0
+        assert t.top1[0, 0] == pytest.approx(expected_top1)
+        assert t.decoy_greedy[0, 0] == pytest.approx(0.5 if scores[2] == 2.0 else 0.0)

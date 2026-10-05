@@ -23,6 +23,11 @@ exists (this file is committed before the first diagnostic run):
   branch has a condition that fails with its whole interval on the failing side; and
   *inconclusive* otherwise. The rules are applied to `ctx_full`; the other arms are
   reported as calibration.
+- **Ties.** Greedy metrics (top-1 accuracy, decoy rate) count every action tied for the
+  highest score, weighted equally: the expectation under uniform tie-breaking. Masked arms
+  tie exactly on actions whose unmasked features are identical, and taking the first of
+  them would make their metrics depend on the env's action order (found by the pipeline
+  smoke test, before any diagnostic run).
 - **Labels.** "The same label" in diagnostics 2 and 3 is the action's type, its semantic
   label and its value (`probe_eval.label_key`). An action is *useful* in a state when its
   executed effect there is `progress`.
@@ -53,6 +58,7 @@ VOCAB_SYNONYM = "ctx_vs_s1_d0"
 VOCAB_UNSEEN = ("ctx_vu1_s1_d0", "ctx_vu2_s1_d0")
 VU2 = "ctx_vu2_s1_d0"
 TAU_MIN_SHARED = 3
+TIE_TOLERANCE = 1e-6
 TAU_CONTRAST = 0.20
 REPORT = REPO_ROOT / "reports" / "contextual_diagnostic"
 
@@ -105,13 +111,13 @@ def variant_tables(states: list[dict], scores_by_seed: list[dict]) -> VariantTab
         has_decoy = bool((effects == "decoy").any())
         for s, scores in enumerate(scores_by_seed):
             q = np.asarray(scores[state["probe_id"]], dtype=np.float64)
-            greedy = int(np.argmax(q))
+            greedy = greedy_set(q)
             if progress.any():
-                top1[s, k] = float(progress[greedy])
+                top1[s, k] = float(progress[greedy].mean())
                 if (~progress).any():
                     auroc[s, k] = _auroc(q[progress], q[~progress])
             if has_decoy:
-                decoy[s, k] = float(effects[greedy] == "decoy")
+                decoy[s, k] = float((effects[greedy] == "decoy").mean())
 
     # Diagnostic 2: for each label, every (state where useful, state where not) pair.
     occurrences: dict[str, list[tuple[int, int, bool]]] = {}
@@ -177,6 +183,17 @@ def variant_tables(states: list[dict], scores_by_seed: list[dict]) -> VariantTab
 
     variance = [_variance_shares(states, scores) for scores in scores_by_seed]
     return VariantTables(n, top1, auroc, decoy, label_pairs, tau_pairs, variance)
+
+
+def greedy_set(q: np.ndarray) -> np.ndarray:
+    """Mask of the actions tied for the highest score (within `TIE_TOLERANCE`).
+
+    A masked arm scores actions whose visible features are identical identically (a
+    lexical-only arm cannot tell a click from a rapid click on the same label), and argmax
+    would then pick by position in the env's action list. Greedy metrics are therefore the
+    expectation under uniform tie-breaking: the share of tied-best actions that qualify.
+    """
+    return q >= q.max() - TIE_TOLERANCE
 
 
 def _cmp(a: float, b: float) -> float:
@@ -629,7 +646,7 @@ def hunt_summary(out_dir: Path, config: CtxConfig) -> dict:
                 "seed": job["seed"],
                 "time": float(hunt["time_to_first_verified"]),
                 "censored": bool(hunt["censored"]),
-                "verified": len(hunt["oracle"]["verified"]),
+                "verified": int(hunt["oracle"]["verified"]),
                 "decoys_per_episode": record["decoys"]["per_episode"],
                 "decoy_selections": record["decoys"]["selections"],
             }
@@ -801,6 +818,7 @@ def main(argv: list[str] | None = None) -> int:
     arguments.report.with_name(arguments.report.name + "_numbers.md").write_text(
         render(payload), encoding="utf-8"
     )
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # a Windows console is cp1252
     print(render(payload))
     return 0
 
