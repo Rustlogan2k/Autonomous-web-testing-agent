@@ -94,8 +94,26 @@ class TransferQNetwork(nn.Module):
         self.dueling = dueling
         self.base = ActionScorer(state_dim, action_dim, dueling=dueling)
         self.delta: ActionScorer | None = None
+        self.register_buffer("state_mask", None, persistent=False)
+        self.register_buffer("action_mask", None, persistent=False)
         if residual:
             self.add_residual(residual_scale)
+
+    def set_input_mask(self, state_mask, action_mask) -> None:
+        """Zero the given input columns at every forward pass (the contextual diagnostic's
+        ablation arms). Non-persistent: not part of `state_dict`, so weights copy between
+        masked and unmasked networks unchanged. `None` for both removes the mask."""
+        if (state_mask is None) != (action_mask is None):
+            raise ValueError("set both input masks or neither")
+        if state_mask is None:
+            self.state_mask = self.action_mask = None
+            return
+        state_mask = th.as_tensor(state_mask, dtype=th.float32)
+        action_mask = th.as_tensor(action_mask, dtype=th.float32)
+        if state_mask.shape != (self.state_dim,) or action_mask.shape != (self.action_dim,):
+            raise ValueError(f"input masks must have shapes ({self.state_dim},), ({self.action_dim},)")
+        self.register_buffer("state_mask", state_mask, persistent=False)
+        self.register_buffer("action_mask", action_mask, persistent=False)
 
     def add_residual(self, scale: float = 0.5) -> None:
         """Freeze `base` and attach a zero-output residual head. Idempotent."""
@@ -122,6 +140,8 @@ class TransferQNetwork(nn.Module):
             # the observation was not built from a live env. A run that costs hours must
             # not continue past an observation it cannot interpret.
             raise ValueError("action mask is empty for at least one observation in the batch")
+        if self.state_mask is not None:
+            state, actions = state * self.state_mask, actions * self.action_mask
         q_values = self.base(state, actions, mask)
         if self.delta is not None:
             q_values = q_values + self.delta(state, actions, mask)

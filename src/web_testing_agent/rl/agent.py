@@ -79,6 +79,8 @@ from .features import (
 
 _LLM_STATE_SLOTS = (STATE_FIELDS.index("llm_best_progress_this_episode"),
                     STATE_FIELDS.index("llm_outcomes_paid_this_episode"))
+from .masks import MODES as MASK_MODES
+from .masks import input_masks
 from .network import TransferQNetwork
 from .replay import PrioritizedReplay, Transition, collate
 from .reward import RewardComposer
@@ -117,10 +119,15 @@ class AgentConfig:
     total_steps: int = 2000
     learn: bool = True
     seed: int = 0
+    #: Which inputs the Q-network sees (`rl/masks.py`). Only the contextual diagnostic's
+    #: ablation arms set this; "none" is the primary agent.
+    input_mask: str = "none"
 
     def __post_init__(self) -> None:
         if self.algorithm not in ("dqn", "bandit"):
             raise ValueError(f"algorithm must be 'dqn' or 'bandit', got {self.algorithm!r}")
+        if self.input_mask not in MASK_MODES:
+            raise ValueError(f"input_mask must be one of {MASK_MODES}, got {self.input_mask!r}")
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -179,6 +186,7 @@ class QAgent:
             residual=self.network.has_residual)
         self.target.load_state_dict(self.network.state_dict())
         self.target.requires_grad_(False)
+        self._apply_input_mask()
         self.optimizer = self._make_optimizer()
         self.replay = PrioritizedReplay(
             self.config.buffer_size, alpha=self.config.per_alpha,
@@ -202,6 +210,11 @@ class QAgent:
         self._current_info_id = 0
 
     # -- construction helpers ------------------------------------------------------------
+
+    def _apply_input_mask(self) -> None:
+        masks = input_masks(self.config.input_mask)
+        for net in (self.network, self.target):
+            net.set_input_mask(*(masks or (None, None)))
 
     def _make_optimizer(self) -> th.optim.Optimizer | None:
         parameters = self.network.trainable_parameters()
@@ -233,6 +246,7 @@ class QAgent:
             residual_scale=residual_scale)
         self.target.load_state_dict(self.network.state_dict())
         self.target.requires_grad_(False)
+        self._apply_input_mask()
         self.optimizer = self._make_optimizer()
 
     # -- the hunt's policy protocol ---------------------------------------------------------
@@ -431,6 +445,11 @@ class QAgent:
                 f"{FEATURE_VERSION} ({STATE_DIM}, {ACTION_DIM})")
         saved = AgentConfig(**header["config"])
         config = config or saved
+        if config.input_mask != saved.input_mask:
+            # The weights were fitted to what the saved mask let through; scoring other
+            # columns with them is the same silent failure as a changed feature layout.
+            raise ValueError(f"{path} was trained with input_mask={saved.input_mask!r}; "
+                             f"the override asks for {config.input_mask!r}")
         network = TransferQNetwork(STATE_DIM, ACTION_DIM, dueling=saved.dueling,
                                    residual=bool(header.get("residual")))
         network.load_state_dict(blob["network"])
