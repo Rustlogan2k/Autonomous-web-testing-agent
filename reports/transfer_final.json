@@ -1,0 +1,2538 @@
+{
+  "experiment_dir": "runs\\final-merged",
+  "config": {
+    "budget": 2000,
+    "episode_steps": 40,
+    "settle_quiet_ms": 80,
+    "pretrain_steps_per_app": 1500,
+    "llm_weight": 1.0,
+    "llm_model": "qwen2.5:7b-instruct",
+    "llm_offline": false,
+    "max_minimization_trials": 30,
+    "target_epsilon": [
+      0.5,
+      0.05,
+      0.5
+    ],
+    "pretrain_epsilon": [
+      1.0,
+      0.1,
+      0.5
+    ]
+  },
+  "commits": [
+    "811094a390589fcf21b6d99b831e34b76bcb1bd5",
+    "c10699ce4fd10feea772bcb0eb4d99f4e62eab85"
+  ],
+  "any_dirty_tree": false,
+  "budget": 2000.0,
+  "folds": [
+    "account_hub",
+    "admin_records",
+    "booking_desk",
+    "media_library",
+    "shop_catalog",
+    "support_portal"
+  ],
+  "development_folds": [
+    "booking_desk",
+    "shop_catalog"
+  ],
+  "pristine_held_out_folds": [
+    "account_hub",
+    "admin_records",
+    "media_library",
+    "support_portal"
+  ],
+  "arms": [
+    "bandit_pretrained",
+    "bandit_scratch",
+    "dqn_pretrained",
+    "dqn_pretrained_nollm",
+    "dqn_scratch",
+    "dqn_scratch_nollm",
+    "dqn_zeroshot",
+    "random",
+    "search_A0",
+    "search_S"
+  ],
+  "runs": 210,
+  "excluded_infrastructure_failures": [],
+  "primary_and_secondary_all_folds": [
+    {
+      "treatment": "dqn_pretrained",
+      "control": "dqn_scratch",
+      "per_fold_difference": {
+        "account_hub": -879.0,
+        "admin_records": 0.0,
+        "booking_desk": 0.0,
+        "media_library": -619.0,
+        "shop_catalog": 112.0,
+        "support_portal": 469.0
+      },
+      "median_difference": 0.0,
+      "mean_difference": -152.83,
+      "bootstrap_95ci_median": [
+        -749.0,
+        290.5
+      ],
+      "folds_favouring_treatment": 2,
+      "n_folds": 6,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "transfer: pretrained vs scratch, same learner (primary tester)",
+      "stratified_logrank": {
+        "arm_a": "dqn_pretrained",
+        "arm_b": "dqn_scratch",
+        "chi2": 0.4009,
+        "p_value": 0.52662,
+        "observed_minus_expected_a": -1.228,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "treatment": "bandit_pretrained",
+      "control": "bandit_scratch",
+      "per_fold_difference": {
+        "account_hub": -263.0,
+        "admin_records": -297.83,
+        "booking_desk": 0.0,
+        "media_library": -1096.0,
+        "shop_catalog": -367.67,
+        "support_portal": 376.33
+      },
+      "median_difference": -280.42,
+      "mean_difference": -274.69,
+      "bootstrap_95ci_median": [
+        -731.83,
+        188.17
+      ],
+      "folds_favouring_treatment": 4,
+      "n_folds": 6,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "transfer: the pre-registered C vs B comparison",
+      "stratified_logrank": {
+        "arm_a": "bandit_pretrained",
+        "arm_b": "bandit_scratch",
+        "chi2": 2.9434,
+        "p_value": 0.08623,
+        "observed_minus_expected_a": 3.279,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "treatment": "dqn_pretrained",
+      "control": "search_S",
+      "per_fold_difference": {
+        "account_hub": -1046.33,
+        "admin_records": 0.0,
+        "booking_desk": 0.0,
+        "media_library": -338.67,
+        "shop_catalog": -722.17,
+        "support_portal": 0.0
+      },
+      "median_difference": -169.33,
+      "mean_difference": -351.19,
+      "bootstrap_95ci_median": [
+        -884.25,
+        0.0
+      ],
+      "folds_favouring_treatment": 3,
+      "n_folds": 6,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "learned vs search with identical features",
+      "stratified_logrank": {
+        "arm_a": "dqn_pretrained",
+        "arm_b": "search_S",
+        "chi2": 2.9279,
+        "p_value": 0.08706,
+        "observed_minus_expected_a": 2.844,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "treatment": "dqn_pretrained",
+      "control": "search_A0",
+      "per_fold_difference": {
+        "account_hub": -1147.67,
+        "admin_records": 0.0,
+        "booking_desk": 0.0,
+        "media_library": -339.0,
+        "shop_catalog": -1276.17,
+        "support_portal": 0.0
+      },
+      "median_difference": -169.5,
+      "mean_difference": -460.47,
+      "bootstrap_95ci_median": [
+        -1211.92,
+        0.0
+      ],
+      "folds_favouring_treatment": 3,
+      "n_folds": 6,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "learned vs the pre-registered search arm A",
+      "stratified_logrank": {
+        "arm_a": "dqn_pretrained",
+        "arm_b": "search_A0",
+        "chi2": 7.4312,
+        "p_value": 0.00641,
+        "observed_minus_expected_a": 4.187,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "treatment": "dqn_pretrained",
+      "control": "random",
+      "per_fold_difference": {
+        "account_hub": -1147.67,
+        "admin_records": 0.0,
+        "booking_desk": 0.0,
+        "media_library": -302.33,
+        "shop_catalog": -1276.17,
+        "support_portal": 0.0
+      },
+      "median_difference": -151.17,
+      "mean_difference": -454.36,
+      "bootstrap_95ci_median": [
+        -1211.92,
+        0.0
+      ],
+      "folds_favouring_treatment": 3,
+      "n_folds": 6,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "learned vs uniform random",
+      "stratified_logrank": {
+        "arm_a": "dqn_pretrained",
+        "arm_b": "random",
+        "chi2": 5.2102,
+        "p_value": 0.02246,
+        "observed_minus_expected_a": 3.687,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "treatment": "dqn_pretrained",
+      "control": "dqn_pretrained_nollm",
+      "per_fold_difference": {
+        "account_hub": -222.67,
+        "admin_records": 440.67,
+        "booking_desk": 0.0,
+        "media_library": 34.67,
+        "shop_catalog": -20.5,
+        "support_portal": 315.0
+      },
+      "median_difference": 17.33,
+      "mean_difference": 91.19,
+      "bootstrap_95ci_median": [
+        -121.58,
+        377.83
+      ],
+      "folds_favouring_treatment": 2,
+      "n_folds": 6,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "ablation: dynamic LLM reward on vs off",
+      "stratified_logrank": {
+        "arm_a": "dqn_pretrained",
+        "arm_b": "dqn_pretrained_nollm",
+        "chi2": 0.0982,
+        "p_value": 0.75399,
+        "observed_minus_expected_a": -0.574,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "treatment": "dqn_pretrained",
+      "control": "dqn_zeroshot",
+      "per_fold_difference": {
+        "account_hub": -242.0,
+        "admin_records": 0.0,
+        "booking_desk": 0.0,
+        "media_library": -619.0,
+        "shop_catalog": -168.5,
+        "support_portal": 0.0
+      },
+      "median_difference": -84.25,
+      "mean_difference": -171.58,
+      "bootstrap_95ci_median": [
+        -430.5,
+        0.0
+      ],
+      "folds_favouring_treatment": 3,
+      "n_folds": 6,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "ablation: online adaptation on vs off",
+      "stratified_logrank": {
+        "arm_a": "dqn_pretrained",
+        "arm_b": "dqn_zeroshot",
+        "chi2": 0.3862,
+        "p_value": 0.53432,
+        "observed_minus_expected_a": 1.052,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "treatment": "dqn_scratch",
+      "control": "bandit_scratch",
+      "per_fold_difference": {
+        "account_hub": 521.67,
+        "admin_records": 0.0,
+        "booking_desk": 0.0,
+        "media_library": 0.0,
+        "shop_catalog": -367.83,
+        "support_portal": -92.67
+      },
+      "median_difference": 0.0,
+      "mean_difference": 10.19,
+      "bootstrap_95ci_median": [
+        -230.25,
+        260.83
+      ],
+      "folds_favouring_treatment": 2,
+      "n_folds": 6,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "ablation: bootstrapped vs myopic, from scratch",
+      "stratified_logrank": {
+        "arm_a": "dqn_scratch",
+        "arm_b": "bandit_scratch",
+        "chi2": 0.1282,
+        "p_value": 0.72028,
+        "observed_minus_expected_a": 0.644,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    }
+  ],
+  "comparisons_pristine_folds_only": [
+    {
+      "treatment": "dqn_pretrained",
+      "control": "dqn_scratch",
+      "per_fold_difference": {
+        "account_hub": -879.0,
+        "admin_records": 0.0,
+        "media_library": -619.0,
+        "support_portal": 469.0
+      },
+      "median_difference": -309.5,
+      "mean_difference": -257.25,
+      "bootstrap_95ci_median": [
+        -879.0,
+        469.0
+      ],
+      "folds_favouring_treatment": 2,
+      "n_folds": 4,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "transfer: pretrained vs scratch, same learner (primary tester)",
+      "stratified_logrank": {
+        "arm_a": "dqn_pretrained",
+        "arm_b": "dqn_scratch",
+        "chi2": 0.1907,
+        "p_value": 0.66232,
+        "observed_minus_expected_a": 0.517,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "treatment": "bandit_pretrained",
+      "control": "bandit_scratch",
+      "per_fold_difference": {
+        "account_hub": -263.0,
+        "admin_records": -297.83,
+        "media_library": -1096.0,
+        "support_portal": 376.33
+      },
+      "median_difference": -280.42,
+      "mean_difference": -320.13,
+      "bootstrap_95ci_median": [
+        -1096.0,
+        376.33
+      ],
+      "folds_favouring_treatment": 3,
+      "n_folds": 4,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "transfer: the pre-registered C vs B comparison",
+      "stratified_logrank": {
+        "arm_a": "bandit_pretrained",
+        "arm_b": "bandit_scratch",
+        "chi2": 2.5862,
+        "p_value": 0.1078,
+        "observed_minus_expected_a": 2.512,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "treatment": "dqn_pretrained",
+      "control": "search_S",
+      "per_fold_difference": {
+        "account_hub": -1046.33,
+        "admin_records": 0.0,
+        "media_library": -338.67,
+        "support_portal": 0.0
+      },
+      "median_difference": -169.33,
+      "mean_difference": -346.25,
+      "bootstrap_95ci_median": [
+        -1046.33,
+        0.0
+      ],
+      "folds_favouring_treatment": 2,
+      "n_folds": 4,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "learned vs search with identical features",
+      "stratified_logrank": {
+        "arm_a": "dqn_pretrained",
+        "arm_b": "search_S",
+        "chi2": 0.773,
+        "p_value": 0.37928,
+        "observed_minus_expected_a": 0.95,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "treatment": "dqn_pretrained",
+      "control": "search_A0",
+      "per_fold_difference": {
+        "account_hub": -1147.67,
+        "admin_records": 0.0,
+        "media_library": -339.0,
+        "support_portal": 0.0
+      },
+      "median_difference": -169.5,
+      "mean_difference": -371.67,
+      "bootstrap_95ci_median": [
+        -1147.67,
+        0.0
+      ],
+      "folds_favouring_treatment": 2,
+      "n_folds": 4,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "learned vs the pre-registered search arm A",
+      "stratified_logrank": {
+        "arm_a": "dqn_pretrained",
+        "arm_b": "search_A0",
+        "chi2": 1.4694,
+        "p_value": 0.22544,
+        "observed_minus_expected_a": 1.2,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "treatment": "dqn_pretrained",
+      "control": "random",
+      "per_fold_difference": {
+        "account_hub": -1147.67,
+        "admin_records": 0.0,
+        "media_library": -302.33,
+        "support_portal": 0.0
+      },
+      "median_difference": -151.17,
+      "mean_difference": -362.5,
+      "bootstrap_95ci_median": [
+        -1147.67,
+        0.0
+      ],
+      "folds_favouring_treatment": 2,
+      "n_folds": 4,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "learned vs uniform random",
+      "stratified_logrank": {
+        "arm_a": "dqn_pretrained",
+        "arm_b": "random",
+        "chi2": 0.3984,
+        "p_value": 0.52793,
+        "observed_minus_expected_a": 0.7,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "treatment": "dqn_pretrained",
+      "control": "dqn_pretrained_nollm",
+      "per_fold_difference": {
+        "account_hub": -222.67,
+        "admin_records": 440.67,
+        "media_library": 34.67,
+        "support_portal": 315.0
+      },
+      "median_difference": 174.83,
+      "mean_difference": 141.92,
+      "bootstrap_95ci_median": [
+        -222.67,
+        440.67
+      ],
+      "folds_favouring_treatment": 1,
+      "n_folds": 4,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "ablation: dynamic LLM reward on vs off",
+      "stratified_logrank": {
+        "arm_a": "dqn_pretrained",
+        "arm_b": "dqn_pretrained_nollm",
+        "chi2": 0.3021,
+        "p_value": 0.58257,
+        "observed_minus_expected_a": -0.75,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "treatment": "dqn_pretrained",
+      "control": "dqn_zeroshot",
+      "per_fold_difference": {
+        "account_hub": -242.0,
+        "admin_records": 0.0,
+        "media_library": -619.0,
+        "support_portal": 0.0
+      },
+      "median_difference": -121.0,
+      "mean_difference": -215.25,
+      "bootstrap_95ci_median": [
+        -619.0,
+        0.0
+      ],
+      "folds_favouring_treatment": 2,
+      "n_folds": 4,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "ablation: online adaptation on vs off",
+      "stratified_logrank": {
+        "arm_a": "dqn_pretrained",
+        "arm_b": "dqn_zeroshot",
+        "chi2": 0.2649,
+        "p_value": 0.60678,
+        "observed_minus_expected_a": 0.567,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "treatment": "dqn_scratch",
+      "control": "bandit_scratch",
+      "per_fold_difference": {
+        "account_hub": 521.67,
+        "admin_records": 0.0,
+        "media_library": 0.0,
+        "support_portal": -92.67
+      },
+      "median_difference": 0.0,
+      "mean_difference": 107.25,
+      "bootstrap_95ci_median": [
+        -92.67,
+        521.67
+      ],
+      "folds_favouring_treatment": 1,
+      "n_folds": 4,
+      "reading": "negative = treatment reaches a verified fault in fewer interactions",
+      "why": "ablation: bootstrapped vs myopic, from scratch",
+      "stratified_logrank": {
+        "arm_a": "dqn_scratch",
+        "arm_b": "bandit_scratch",
+        "chi2": 0.1249,
+        "p_value": 0.72375,
+        "observed_minus_expected_a": -0.417,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    }
+  ],
+  "top_up_rule_folds_needing_seeds_3_to_5": {
+    "dqn_pretrained - dqn_scratch": [
+      "admin_records",
+      "booking_desk",
+      "shop_catalog"
+    ],
+    "bandit_pretrained - bandit_scratch": [
+      "admin_records",
+      "booking_desk"
+    ]
+  },
+  "arm_survival": {
+    "bandit_pretrained": {
+      "runs": 24,
+      "verified_runs": 10,
+      "discovery_rate": 0.4167,
+      "restricted_mean_time": 1483.4,
+      "median_time_uncensored": 548.5,
+      "km_curve_pooled": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          181.0,
+          0.9583
+        ],
+        [
+          199.0,
+          0.9167
+        ],
+        [
+          256.0,
+          0.875
+        ],
+        [
+          503.0,
+          0.8333
+        ],
+        [
+          513.0,
+          0.7917
+        ],
+        [
+          584.0,
+          0.75
+        ],
+        [
+          1152.0,
+          0.7083
+        ],
+        [
+          1200.0,
+          0.6667
+        ],
+        [
+          1502.0,
+          0.625
+        ],
+        [
+          1511.0,
+          0.5833
+        ]
+      ]
+    },
+    "bandit_scratch": {
+      "runs": 24,
+      "verified_runs": 5,
+      "discovery_rate": 0.2083,
+      "restricted_mean_time": 1726.6,
+      "median_time_uncensored": 628.0,
+      "km_curve_pooled": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          311.0,
+          0.9583
+        ],
+        [
+          435.0,
+          0.9167
+        ],
+        [
+          628.0,
+          0.875
+        ],
+        [
+          871.0,
+          0.8333
+        ],
+        [
+          1194.0,
+          0.7917
+        ]
+      ]
+    },
+    "dqn_pretrained": {
+      "runs": 27,
+      "verified_runs": 9,
+      "discovery_rate": 0.3333,
+      "restricted_mean_time": 1520.1,
+      "median_time_uncensored": 550.0,
+      "km_curve_pooled": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          143.0,
+          0.963
+        ],
+        [
+          255.0,
+          0.9259
+        ],
+        [
+          302.0,
+          0.8889
+        ],
+        [
+          305.0,
+          0.8519
+        ],
+        [
+          550.0,
+          0.8148
+        ],
+        [
+          597.0,
+          0.7778
+        ],
+        [
+          816.0,
+          0.7407
+        ],
+        [
+          1014.0,
+          0.7037
+        ],
+        [
+          1061.0,
+          0.6667
+        ]
+      ]
+    },
+    "dqn_pretrained_nollm": {
+      "runs": 18,
+      "verified_runs": 7,
+      "discovery_rate": 0.3889,
+      "restricted_mean_time": 1401.7,
+      "median_time_uncensored": 571.0,
+      "km_curve_pooled": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          39.0,
+          0.9444
+        ],
+        [
+          80.0,
+          0.8889
+        ],
+        [
+          153.0,
+          0.8333
+        ],
+        [
+          571.0,
+          0.7778
+        ],
+        [
+          654.0,
+          0.7222
+        ],
+        [
+          678.0,
+          0.6667
+        ],
+        [
+          1055.0,
+          0.6111
+        ]
+      ]
+    },
+    "dqn_scratch": {
+      "runs": 27,
+      "verified_runs": 9,
+      "discovery_rate": 0.3333,
+      "restricted_mean_time": 1609.6,
+      "median_time_uncensored": 596.0,
+      "km_curve_pooled": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          303.0,
+          0.963
+        ],
+        [
+          572.0,
+          0.9259
+        ],
+        [
+          577.0,
+          0.8889
+        ],
+        [
+          593.0,
+          0.8519
+        ],
+        [
+          596.0,
+          0.8148
+        ],
+        [
+          750.0,
+          0.7778
+        ],
+        [
+          873.0,
+          0.7407
+        ],
+        [
+          1539.0,
+          0.7037
+        ],
+        [
+          1655.0,
+          0.6667
+        ]
+      ]
+    },
+    "dqn_scratch_nollm": {
+      "runs": 18,
+      "verified_runs": 5,
+      "discovery_rate": 0.2778,
+      "restricted_mean_time": 1748.4,
+      "median_time_uncensored": 1536.0,
+      "km_curve_pooled": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          382.0,
+          0.9444
+        ],
+        [
+          411.0,
+          0.8889
+        ],
+        [
+          1536.0,
+          0.8333
+        ],
+        [
+          1553.0,
+          0.7778
+        ],
+        [
+          1590.0,
+          0.7222
+        ]
+      ]
+    },
+    "dqn_zeroshot": {
+      "runs": 18,
+      "verified_runs": 4,
+      "discovery_rate": 0.2222,
+      "restricted_mean_time": 1664.4,
+      "median_time_uncensored": 418.0,
+      "km_curve_pooled": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          95.0,
+          0.9444
+        ],
+        [
+          254.0,
+          0.8889
+        ],
+        [
+          582.0,
+          0.8333
+        ],
+        [
+          1029.0,
+          0.7778
+        ]
+      ]
+    },
+    "random": {
+      "runs": 18,
+      "verified_runs": 2,
+      "discovery_rate": 0.1111,
+      "restricted_mean_time": 1947.2,
+      "median_time_uncensored": 1525.0,
+      "km_curve_pooled": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          1503.0,
+          0.9444
+        ],
+        [
+          1547.0,
+          0.8889
+        ]
+      ]
+    },
+    "search_A0": {
+      "runs": 18,
+      "verified_runs": 1,
+      "discovery_rate": 0.0556,
+      "restricted_mean_time": 1953.3,
+      "median_time_uncensored": 1160.0,
+      "km_curve_pooled": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          1160.0,
+          0.9444
+        ]
+      ]
+    },
+    "search_S": {
+      "runs": 18,
+      "verified_runs": 3,
+      "discovery_rate": 0.1667,
+      "restricted_mean_time": 1844.1,
+      "median_time_uncensored": 1159.0,
+      "km_curve_pooled": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          338.0,
+          0.9444
+        ],
+        [
+          1159.0,
+          0.8889
+        ],
+        [
+          1696.0,
+          0.8333
+        ]
+      ]
+    }
+  },
+  "arm_metrics": {
+    "bandit_pretrained": {
+      "runs": 24,
+      "faults_reached_fraction": 0.5208,
+      "faults_discovered_fraction": 0.2917,
+      "faults_verified_fraction": 0.2292,
+      "candidates": 14,
+      "candidates_rejected": {
+        "fires_on_clean_build": 3
+      },
+      "mean_unique_states": 239.6,
+      "mean_state_changing_fraction": 0.813,
+      "mean_failed_action_fraction": 0.039,
+      "mean_minimized_trace_length": 9.36,
+      "mean_original_trace_length": 27.36,
+      "mean_verify_seconds": 95.9,
+      "runs_with_verification_cap_hit": 0
+    },
+    "bandit_scratch": {
+      "runs": 24,
+      "faults_reached_fraction": 0.4792,
+      "faults_discovered_fraction": 0.125,
+      "faults_verified_fraction": 0.1042,
+      "candidates": 6,
+      "candidates_rejected": {
+        "fires_on_clean_build": 1
+      },
+      "mean_unique_states": 239.8,
+      "mean_state_changing_fraction": 0.802,
+      "mean_failed_action_fraction": 0.035,
+      "mean_minimized_trace_length": 8.6,
+      "mean_original_trace_length": 31.0,
+      "mean_verify_seconds": 25.4,
+      "runs_with_verification_cap_hit": 0
+    },
+    "dqn_pretrained": {
+      "runs": 27,
+      "faults_reached_fraction": 0.4815,
+      "faults_discovered_fraction": 0.2407,
+      "faults_verified_fraction": 0.2222,
+      "candidates": 16,
+      "candidates_rejected": {
+        "fires_on_clean_build": 4
+      },
+      "mean_unique_states": 155.9,
+      "mean_state_changing_fraction": 0.739,
+      "mean_failed_action_fraction": 0.066,
+      "mean_minimized_trace_length": 7.08,
+      "mean_original_trace_length": 21.75,
+      "mean_verify_seconds": 74.9,
+      "runs_with_verification_cap_hit": 0
+    },
+    "dqn_pretrained_nollm": {
+      "runs": 18,
+      "faults_reached_fraction": 0.4444,
+      "faults_discovered_fraction": 0.25,
+      "faults_verified_fraction": 0.25,
+      "candidates": 9,
+      "candidates_rejected": {},
+      "mean_unique_states": 190.1,
+      "mean_state_changing_fraction": 0.712,
+      "mean_failed_action_fraction": 0.057,
+      "mean_minimized_trace_length": 7.11,
+      "mean_original_trace_length": 25.33,
+      "mean_verify_seconds": 51.8,
+      "runs_with_verification_cap_hit": 0
+    },
+    "dqn_scratch": {
+      "runs": 27,
+      "faults_reached_fraction": 0.537,
+      "faults_discovered_fraction": 0.2963,
+      "faults_verified_fraction": 0.2778,
+      "candidates": 20,
+      "candidates_rejected": {
+        "fires_on_clean_build": 5
+      },
+      "mean_unique_states": 211.9,
+      "mean_state_changing_fraction": 0.757,
+      "mean_failed_action_fraction": 0.056,
+      "mean_minimized_trace_length": 7.6,
+      "mean_original_trace_length": 22.8,
+      "mean_verify_seconds": 69.0,
+      "runs_with_verification_cap_hit": 0
+    },
+    "dqn_scratch_nollm": {
+      "runs": 18,
+      "faults_reached_fraction": 0.4167,
+      "faults_discovered_fraction": 0.2222,
+      "faults_verified_fraction": 0.1667,
+      "candidates": 15,
+      "candidates_rejected": {
+        "fires_on_clean_build": 9
+      },
+      "mean_unique_states": 277.3,
+      "mean_state_changing_fraction": 0.741,
+      "mean_failed_action_fraction": 0.05,
+      "mean_minimized_trace_length": 7.33,
+      "mean_original_trace_length": 24.17,
+      "mean_verify_seconds": 53.5,
+      "runs_with_verification_cap_hit": 0
+    },
+    "dqn_zeroshot": {
+      "runs": 18,
+      "faults_reached_fraction": 0.3611,
+      "faults_discovered_fraction": 0.1389,
+      "faults_verified_fraction": 0.1389,
+      "candidates": 5,
+      "candidates_rejected": {},
+      "mean_unique_states": 114.8,
+      "mean_state_changing_fraction": 0.678,
+      "mean_failed_action_fraction": 0.058,
+      "mean_minimized_trace_length": 7.2,
+      "mean_original_trace_length": 17.0,
+      "mean_verify_seconds": 37.8,
+      "runs_with_verification_cap_hit": 0
+    },
+    "random": {
+      "runs": 18,
+      "faults_reached_fraction": 0.1944,
+      "faults_discovered_fraction": 0.0556,
+      "faults_verified_fraction": 0.0556,
+      "candidates": 2,
+      "candidates_rejected": {},
+      "mean_unique_states": 85.4,
+      "mean_state_changing_fraction": 0.48,
+      "mean_failed_action_fraction": 0.086,
+      "mean_minimized_trace_length": 12.0,
+      "mean_original_trace_length": 25.0,
+      "mean_verify_seconds": 54.2,
+      "runs_with_verification_cap_hit": 0
+    },
+    "search_A0": {
+      "runs": 18,
+      "faults_reached_fraction": 0.1389,
+      "faults_discovered_fraction": 0.0556,
+      "faults_verified_fraction": 0.0278,
+      "candidates": 2,
+      "candidates_rejected": {
+        "fires_on_clean_build": 1
+      },
+      "mean_unique_states": 66.7,
+      "mean_state_changing_fraction": 0.56,
+      "mean_failed_action_fraction": 0.022,
+      "mean_minimized_trace_length": 7.0,
+      "mean_original_trace_length": 40.0,
+      "mean_verify_seconds": 15.5,
+      "runs_with_verification_cap_hit": 0
+    },
+    "search_S": {
+      "runs": 18,
+      "faults_reached_fraction": 0.4722,
+      "faults_discovered_fraction": 0.1389,
+      "faults_verified_fraction": 0.0833,
+      "candidates": 8,
+      "candidates_rejected": {
+        "fires_on_clean_build": 5
+      },
+      "mean_unique_states": 121.4,
+      "mean_state_changing_fraction": 0.846,
+      "mean_failed_action_fraction": 0.044,
+      "mean_minimized_trace_length": 9.33,
+      "mean_original_trace_length": 24.33,
+      "mean_verify_seconds": 45.6,
+      "runs_with_verification_cap_hit": 0
+    }
+  },
+  "false_positive_controls_clean_build": [
+    {
+      "fold": "account_hub",
+      "arm": "dqn_pretrained",
+      "seed": 0,
+      "raw_candidates_on_correct_build": 0,
+      "verified_findings_on_correct_build": 0
+    },
+    {
+      "fold": "admin_records",
+      "arm": "dqn_pretrained",
+      "seed": 0,
+      "raw_candidates_on_correct_build": 0,
+      "verified_findings_on_correct_build": 0
+    },
+    {
+      "fold": "booking_desk",
+      "arm": "dqn_pretrained",
+      "seed": 0,
+      "raw_candidates_on_correct_build": 0,
+      "verified_findings_on_correct_build": 0
+    },
+    {
+      "fold": "media_library",
+      "arm": "dqn_pretrained",
+      "seed": 0,
+      "raw_candidates_on_correct_build": 0,
+      "verified_findings_on_correct_build": 0
+    },
+    {
+      "fold": "shop_catalog",
+      "arm": "dqn_pretrained",
+      "seed": 0,
+      "raw_candidates_on_correct_build": 1,
+      "verified_findings_on_correct_build": 0
+    },
+    {
+      "fold": "support_portal",
+      "arm": "dqn_pretrained",
+      "seed": 0,
+      "raw_candidates_on_correct_build": 0,
+      "verified_findings_on_correct_build": 0
+    },
+    {
+      "fold": "account_hub",
+      "arm": "search_S",
+      "seed": 0,
+      "raw_candidates_on_correct_build": 0,
+      "verified_findings_on_correct_build": 0
+    },
+    {
+      "fold": "admin_records",
+      "arm": "search_S",
+      "seed": 0,
+      "raw_candidates_on_correct_build": 0,
+      "verified_findings_on_correct_build": 0
+    },
+    {
+      "fold": "booking_desk",
+      "arm": "search_S",
+      "seed": 0,
+      "raw_candidates_on_correct_build": 0,
+      "verified_findings_on_correct_build": 0
+    },
+    {
+      "fold": "media_library",
+      "arm": "search_S",
+      "seed": 0,
+      "raw_candidates_on_correct_build": 0,
+      "verified_findings_on_correct_build": 0
+    },
+    {
+      "fold": "shop_catalog",
+      "arm": "search_S",
+      "seed": 0,
+      "raw_candidates_on_correct_build": 1,
+      "verified_findings_on_correct_build": 0
+    },
+    {
+      "fold": "support_portal",
+      "arm": "search_S",
+      "seed": 0,
+      "raw_candidates_on_correct_build": 0,
+      "verified_findings_on_correct_build": 0
+    }
+  ],
+  "per_fold_runs": {
+    "account_hub": {
+      "bandit_pretrained": [
+        {
+          "seed": 0,
+          "time": 256,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 584,
+          "censored": false,
+          "verified": 1
+        }
+      ],
+      "bandit_scratch": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 435,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 1194,
+          "censored": false,
+          "verified": 1
+        }
+      ],
+      "dqn_pretrained": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 255,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 302,
+          "censored": false,
+          "verified": 1
+        }
+      ],
+      "dqn_pretrained_nollm": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 654,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 571,
+          "censored": false,
+          "verified": 1
+        }
+      ],
+      "dqn_scratch": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 1539,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 1655,
+          "censored": false,
+          "verified": 1
+        }
+      ],
+      "dqn_scratch_nollm": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 1536,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_zeroshot": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 1029,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 254,
+          "censored": false,
+          "verified": 1
+        }
+      ],
+      "random": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "search_A0": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "search_S": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 1696,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ]
+    },
+    "admin_records": {
+      "bandit_pretrained": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 3,
+          "time": 1511,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 4,
+          "time": 1200,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 5,
+          "time": 1502,
+          "censored": false,
+          "verified": 1
+        }
+      ],
+      "bandit_scratch": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 3,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 4,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 5,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_pretrained": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 3,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 4,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 5,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_pretrained_nollm": [
+        {
+          "seed": 0,
+          "time": 678,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_scratch": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 3,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 4,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 5,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_scratch_nollm": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_zeroshot": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "random": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "search_A0": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "search_S": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ]
+    },
+    "booking_desk": {
+      "bandit_pretrained": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 3,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 4,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 5,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "bandit_scratch": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 3,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 4,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 5,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_pretrained": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 3,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 4,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 5,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_pretrained_nollm": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_scratch": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 3,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 4,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 5,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_scratch_nollm": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_zeroshot": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "random": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "search_A0": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "search_S": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ]
+    },
+    "media_library": {
+      "bandit_pretrained": [
+        {
+          "seed": 0,
+          "time": 513,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 1,
+          "time": 199,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "bandit_scratch": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_pretrained": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 143,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_pretrained_nollm": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 39,
+          "censored": false,
+          "verified": 1
+        }
+      ],
+      "dqn_scratch": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_scratch_nollm": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 1590,
+          "censored": false,
+          "verified": 1
+        }
+      ],
+      "dqn_zeroshot": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "random": [
+        {
+          "seed": 0,
+          "time": 1547,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 1503,
+          "censored": false,
+          "verified": 1
+        }
+      ],
+      "search_A0": [
+        {
+          "seed": 0,
+          "time": 1160,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "search_S": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 1159,
+          "censored": false,
+          "verified": 1
+        }
+      ]
+    },
+    "shop_catalog": {
+      "bandit_pretrained": [
+        {
+          "seed": 0,
+          "time": 1152,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 1,
+          "time": 181,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 503,
+          "censored": false,
+          "verified": 2
+        }
+      ],
+      "bandit_scratch": [
+        {
+          "seed": 0,
+          "time": 628,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 1,
+          "time": 311,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_pretrained": [
+        {
+          "seed": 0,
+          "time": 1014,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 1,
+          "time": 305,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 550,
+          "censored": false,
+          "verified": 2
+        },
+        {
+          "seed": 3,
+          "time": 597,
+          "censored": false,
+          "verified": 2
+        },
+        {
+          "seed": 4,
+          "time": 816,
+          "censored": false,
+          "verified": 2
+        },
+        {
+          "seed": 5,
+          "time": 1061,
+          "censored": false,
+          "verified": 1
+        }
+      ],
+      "dqn_pretrained_nollm": [
+        {
+          "seed": 0,
+          "time": 153,
+          "censored": false,
+          "verified": 2
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 80,
+          "censored": false,
+          "verified": 2
+        }
+      ],
+      "dqn_scratch": [
+        {
+          "seed": 0,
+          "time": 750,
+          "censored": false,
+          "verified": 2
+        },
+        {
+          "seed": 1,
+          "time": 596,
+          "censored": false,
+          "verified": 2
+        },
+        {
+          "seed": 2,
+          "time": 572,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 3,
+          "time": 873,
+          "censored": false,
+          "verified": 2
+        },
+        {
+          "seed": 4,
+          "time": 303,
+          "censored": false,
+          "verified": 2
+        },
+        {
+          "seed": 5,
+          "time": 577,
+          "censored": false,
+          "verified": 2
+        }
+      ],
+      "dqn_scratch_nollm": [
+        {
+          "seed": 0,
+          "time": 1553,
+          "censored": false,
+          "verified": 2
+        },
+        {
+          "seed": 1,
+          "time": 382,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 411,
+          "censored": false,
+          "verified": 1
+        }
+      ],
+      "dqn_zeroshot": [
+        {
+          "seed": 0,
+          "time": 582,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 1,
+          "time": 95,
+          "censored": false,
+          "verified": 2
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "random": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "search_A0": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "search_S": [
+        {
+          "seed": 0,
+          "time": 338,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ]
+    },
+    "support_portal": {
+      "bandit_pretrained": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "bandit_scratch": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 871,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_pretrained": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_pretrained_nollm": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 1055,
+          "censored": false,
+          "verified": 1
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_scratch": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 593,
+          "censored": false,
+          "verified": 2
+        }
+      ],
+      "dqn_scratch_nollm": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "dqn_zeroshot": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "random": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "search_A0": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ],
+      "search_S": [
+        {
+          "seed": 0,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 1,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        },
+        {
+          "seed": 2,
+          "time": 2000,
+          "censored": true,
+          "verified": 0
+        }
+      ]
+    }
+  }
+}
