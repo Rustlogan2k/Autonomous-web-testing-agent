@@ -1,3 +1,5 @@
 # Benchmark fixtures are compared byte for byte (the faulty build must equal the clean
 # build plus declared patches), so their line endings must not depend on the checkout.
 tests/fixtures/benchmark/** text eol=lf
+tests/fixtures/ctxbench/** text eol=lf
+src/web_testing_agent/ctxbench/templates/** text eol=lf
