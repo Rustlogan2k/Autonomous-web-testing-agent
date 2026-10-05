@@ -437,6 +437,9 @@ class Schedule:
     config: ExperimentConfig
     workers: int = 4
     log: list[str] = field(default_factory=list)
+    #: The module each job runs in (`python -m <module> --config ... --job ...`). Another
+    #: experiment with its own jobs and `_main` reuses this scheduler by naming its module.
+    module: str = "web_testing_agent.experiments.transfer"
 
 
 def run_schedule(schedule: Schedule) -> dict:
@@ -499,7 +502,7 @@ def run_schedule(schedule: Schedule) -> dict:
             pending.remove(job)
             handle = (logs / f"{job.job_id}.log").open("w", encoding="utf-8")
             running[job.job_id] = subprocess.Popen(  # noqa: S603
-                [sys.executable, "-m", "web_testing_agent.experiments.transfer",
+                [sys.executable, "-m", schedule.module,
                  "--config", str(config_path), "--out-dir", str(out_dir),
                  "--job", json.dumps(job.to_dict())],
                 stdout=handle, stderr=subprocess.STDOUT, cwd=REPO_ROOT)

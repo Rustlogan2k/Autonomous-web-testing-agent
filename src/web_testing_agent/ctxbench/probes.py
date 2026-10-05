@@ -40,11 +40,16 @@ from ..envs.types import ActionSpec, ActionType
 from ..evaluation.scripted import ScriptedPolicy
 from ..experiments.transfer import git_state
 from .generate import OUT_ROOT, VARIANTS, _step, traces, variant_id
+from .runner import CtxConfig
 
 PROBE_DIR = OUT_ROOT / "probes"
 PROBE_VERSION = "ctx-probes-1"
-#: The env the arms are evaluated in: the primary's experiment settings (no screenshots).
-SETTINGS = EnvSettings(capture_screenshots=False)
+#: The env the arms run in (`runner.CtxConfig`, i.e. the primary's settings). It must be
+#: the same: episode-context slot 0 is the step fraction through a `max_steps` episode, so
+#: a probe recorded under another episode length would encode states no arm ever saw.
+_RUN = CtxConfig()
+SETTINGS = EnvSettings(max_steps=_RUN.episode_steps, settle_quiet_ms=_RUN.settle_quiet_ms,
+                       capture_screenshots=False)
 EFFECTS = ("progress", "no-op", "regress", "decoy")
 
 
@@ -167,7 +172,9 @@ def _replay(env, steps: list[dict]) -> tuple[list[dict], list[int], dict]:
 
 def _probe_state(app: SuiteApp, url: str, trace_name: str, prefix: list[dict]) -> dict:
     """Record one probe state's history and label every action available in it."""
-    env = make_env(url, SETTINGS, max_steps=len(prefix) + 5)
+    if len(prefix) + 1 >= SETTINGS.max_steps:
+        raise ReplayError(f"a {len(prefix)}-step prefix does not fit a {SETTINGS.max_steps}-step episode")
+    env = make_env(url, SETTINGS)
     try:
         infos, taken, last = _replay(env, prefix)
         before = _progress(env)
