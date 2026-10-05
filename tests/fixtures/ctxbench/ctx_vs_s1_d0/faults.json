@@ -1,0 +1,315 @@
+{
+  "app_id": "ctx_vs_s1_d0",
+  "name": "Northbank Makerspace loans",
+  "entry": "index.html",
+  "_note": "ctxbench variant for the contextual diagnostic; not part of the primary suite.",
+  "regions": {
+    "review_deposit": "#review-deposit",
+    "done_contact": "#done-contact"
+  },
+  "faults": [
+    {
+      "fault_id": "CTX-1",
+      "fault_class": "calculation_error",
+      "description": "The deposit is computed when an item is added and not recomputed when the quantity changes, so the review shows the deposit for one item.",
+      "trigger_condition": "Add an item, choose a quantity other than one, complete the details and contact stages, and open the review.",
+      "expected_behaviour": "The review's deposit equals the quantity times the £12.00 deposit per item.",
+      "observable_violation": "The review shows £12.00 for a quantity of 3 (expected £36.00).",
+      "assertions": [
+        {
+          "kind": "numeric_equals",
+          "where": "(review\\.html|#review)$",
+          "region": "review_deposit",
+          "expression": "quantity * 12",
+          "describes": "the deposit is £12 per item on loan"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 0,
+      "shortest_path": 9,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "start-request"
+        },
+        {
+          "type": "CLICK",
+          "id": "add-laser"
+        },
+        {
+          "type": "CLICK",
+          "id": "advance-items"
+        },
+        {
+          "type": "SELECT",
+          "id": "quantity",
+          "params": {
+            "option": "3"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "return-date",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-config"
+        },
+        {
+          "type": "TYPE",
+          "id": "contact-name",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "contact-email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-contact"
+        }
+      ]
+    },
+    {
+      "fault_id": "CTX-2",
+      "fault_class": "constraint_bypass",
+      "description": "Contact details re-saved after an edit from the review skip the email check, so an invalid address is committed with the request.",
+      "trigger_condition": "Complete the request to the review, edit the contact details, enter an invalid email, save, and send the request.",
+      "expected_behaviour": "A request is only ever committed with a valid email address.",
+      "observable_violation": "The confirmation shows the contact email 'not-an-email'.",
+      "assertions": [
+        {
+          "kind": "text_absent",
+          "where": "(done\\.html|#done)$",
+          "region": "done_contact",
+          "expected": "not-an-email",
+          "describes": "a committed request never carries an invalid email address"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 1,
+      "shortest_path": 12,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "start-request"
+        },
+        {
+          "type": "CLICK",
+          "id": "add-laser"
+        },
+        {
+          "type": "CLICK",
+          "id": "advance-items"
+        },
+        {
+          "type": "TYPE",
+          "id": "return-date",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-config"
+        },
+        {
+          "type": "TYPE",
+          "id": "contact-name",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "contact-email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-contact"
+        },
+        {
+          "type": "CLICK",
+          "id": "edit-contact"
+        },
+        {
+          "type": "TYPE",
+          "id": "contact-email",
+          "params": {
+            "category": "type_mismatch"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-contact"
+        },
+        {
+          "type": "CLICK",
+          "id": "commit"
+        }
+      ]
+    }
+  ],
+  "benign_traces": [
+    [
+      {
+        "type": "CLICK",
+        "id": "start-request"
+      },
+      {
+        "type": "CLICK",
+        "id": "add-laser"
+      },
+      {
+        "type": "CLICK",
+        "id": "advance-items"
+      },
+      {
+        "type": "TYPE",
+        "id": "return-date",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "save-config"
+      },
+      {
+        "type": "TYPE",
+        "id": "contact-name",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "TYPE",
+        "id": "contact-email",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "save-contact"
+      },
+      {
+        "type": "CLICK",
+        "id": "commit"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "start-request"
+      },
+      {
+        "type": "CLICK",
+        "id": "add-laser"
+      },
+      {
+        "type": "CLICK",
+        "id": "advance-items"
+      },
+      {
+        "type": "TYPE",
+        "id": "return-date",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "save-config"
+      },
+      {
+        "type": "TYPE",
+        "id": "contact-name",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "TYPE",
+        "id": "contact-email",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "save-contact"
+      },
+      {
+        "type": "CLICK",
+        "id": "edit-config"
+      },
+      {
+        "type": "SELECT",
+        "id": "purpose",
+        "params": {
+          "option": "project"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "save-config"
+      },
+      {
+        "type": "CLICK",
+        "id": "commit"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "start-request"
+      },
+      {
+        "type": "CLICK",
+        "id": "add-laser"
+      },
+      {
+        "type": "CLICK",
+        "id": "add-printer"
+      },
+      {
+        "type": "CLICK",
+        "id": "remove-laser"
+      },
+      {
+        "type": "CLICK",
+        "id": "add-camera"
+      },
+      {
+        "type": "CLICK",
+        "id": "advance-items"
+      }
+    ]
+  ],
+  "characterization": {
+    "generator_seed": 0,
+    "vocab": "VS",
+    "structure": "S1",
+    "structure_name": "linear multi-page wizard",
+    "decoy": false,
+    "role": "held-out: vocabulary"
+  }
+}
