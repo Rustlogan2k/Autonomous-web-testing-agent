@@ -41,7 +41,10 @@ def test_the_suite_has_its_own_eight_applications():
 def test_the_main_checkout_has_no_modified_tracked_files():
     common = subprocess.run(["git", "rev-parse", "--git-common-dir"], capture_output=True,
                             text=True, cwd=SUITE_ROOT, check=True).stdout.strip()
-    main = Path(common).resolve().parent
+    # `--git-common-dir` is relative to the directory git ran in when it is not absolute
+    # (the main checkout answers "../.git"; a linked worktree answers an absolute path).
+    common_path = Path(common) if Path(common).is_absolute() else SUITE_ROOT / common
+    main = common_path.resolve().parent
     status = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"],
                             capture_output=True, text=True, cwd=main, check=True).stdout
     assert status.strip() == "", status
