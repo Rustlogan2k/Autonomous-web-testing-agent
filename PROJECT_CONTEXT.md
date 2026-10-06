@@ -5,7 +5,7 @@ describe the system, §5 is the dated history of how every decision was reached 
 full, including negative results and retractions), §6–§7 record scoping and design
 decisions, §8 the current risks, §9 the ordered next steps, §10 the environment.
 
-Last updated: 2026-10-06.
+Last updated: 2026-10-07.
 
 ---
 
@@ -193,6 +193,33 @@ Desktop running), then merging the branch.
   LLM review; the suite's extension kinds are candidates for spec-less invariants.
 - The agent's state carries no page meaning (claim limit A); improving that is agent work,
   not product work (§9).
+
+### 0.9 The hybrid tester (v2) — in development (approved 2026-10-06, deadline ≈ 2026-10-27)
+
+Design, data split, concerns and gates: `docs/methodology/2026-10-06-hybrid-v2-plan.md`
+(+ addenda §8–§10). Evaluation pre-registration (**draft**, needs the owner's approval before
+any agent runs on the suite): `docs/methodology/hybrid-v2-evaluation-preregistration.md`.
+Code: `src/web_testing_agent/hybrid/`.
+
+- **Data split**: development = the 6 benchmark apps, ctxbench, Gitea (non-admin user
+  `devtester`); held-out = the 8 suite apps (`e2e_suite/`, merged into the working branch).
+- **Pipeline**: markup-derived page abstraction (kind, path template, main heading, form
+  signature, alert) → archive of abstract states with exact replay (walks pruned of steps
+  that change neither the page fingerprint nor the cell) → test operators from standard test
+  design (complete_step, invalid_input, edit_after_review, back/reload_and_resume,
+  double_submit, collection_churn) → Thompson-sampling bandit over semantic keys (optional
+  cross-app prior) → v1's oracle unchanged + specification-free invariants (reload stability,
+  typed-value round trip, validation consistency) replayed twice and attributed to seeded
+  faults by per-fault controls.
+- **LLM labels**: Stage 0 gate failed (0.68 / 0.78); labeller v3 failed its re-test on fresh
+  pages (0.61 / 0.75; 0.93 / 0.83 on its revision data) → deterministic labels are final; the
+  owner chose an exploratory LLM-labels arm (option A).
+- **Verified so far**: suite infrastructure test 23/23 witnesses confirmed, 0 benign findings
+  (`reports/v2_suite_smoke.json`); Gitea: 34/34 logins, invariant false alarms found and
+  fixed; replay bug (pruned notice-raising steps) found on support_portal and fixed (failed
+  returns 6/14 → 0/28).
+- **Arms for the evaluation** (draft): random, search_S, v1_dqn (no LLM reward), hybrid_nolearn,
+  hybrid_bandit (primary), hybrid_bandit_prior, hybrid_bandit_llm (exploratory).
 
 ### 0.8 Where to look
 
