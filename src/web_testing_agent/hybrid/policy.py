@@ -179,8 +179,10 @@ class HybridPolicy:
         before_view, after_view = self._view(before), self._view(after)
         spec = next((s for s in before_view.specs if s.index == action), None)
         if spec is not None:
-            for candidate in self.invariants.check(before_view, spec, after_view, self.global_step):
-                candidate.trace = list(self.trace)
+            found = self.invariants.check(
+                before_view, spec, after_view, self.global_step, self.trace
+            )
+            for candidate in found:
                 self.candidates.append(candidate)
                 self._operator_candidates += 1
         # An episode that ends mid-operator still reports the operator's outcome.

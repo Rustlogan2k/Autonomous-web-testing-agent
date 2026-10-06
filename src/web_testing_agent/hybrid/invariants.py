@@ -77,6 +77,9 @@ class Candidate:
     detail: str
     #: the episode's actions up to and including the one after which it was seen
     trace: list[dict] = field(default_factory=list)
+    #: for validation_consistency: the walk on which the same value class was rejected
+    context_trace: list[dict] = field(default_factory=list)
+    reproduced: int | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -85,6 +88,8 @@ class Candidate:
             "url": self.url,
             "detail": self.detail,
             "trace_length": len(self.trace),
+            "context_trace_length": len(self.context_trace),
+            "reproduced": self.reproduced,
         }
 
 
@@ -96,9 +101,8 @@ class InvariantChecker:
         self.pending: dict[
             str, tuple[str, str]
         ] = {}  # field -> (meaning, category) since last submit
-        self.verdicts: dict[
-            tuple[str, str], set[str]
-        ] = {}  # (meaning, category) -> {"rejected","accepted"}
+        #: (meaning, category) -> outcome ("rejected" / "accepted") -> the walk that produced it
+        self.verdicts: dict[tuple[str, str], dict[str, list[dict]]] = {}
         self.seen: set[tuple[str, str]] = set()  # (invariant, detail) already raised this run
 
     def begin_episode(self) -> None:
@@ -106,8 +110,15 @@ class InvariantChecker:
         self.pending.clear()
 
     def check(
-        self, before: PageView, spec: ActionSpec, after: PageView, step: int
+        self,
+        before: PageView,
+        spec: ActionSpec,
+        after: PageView,
+        step: int,
+        trace: list[dict] | None = None,
     ) -> list[Candidate]:
+        """Candidates raised by one transition; `trace` is the episode's walk so far."""
+        trace = list(trace or [])
         found: list[Candidate] = []
         if spec.action_type is ActionType.REFRESH and before.url == after.url:
             old, new = content_text(before_html(before)), content_text(before_html(after))
@@ -119,9 +130,12 @@ class InvariantChecker:
             spec.action_type in (ActionType.CLICK, ActionType.RAPID_CLICK)
             and before.role_of(spec) == "submit"
         ):
-            found += self._judge_submission(after, step)
+            found += self._judge_submission(after, step, trace)
         found += self._round_trip(after, step)
-        return [c for c in found if c is not None]
+        out = [c for c in found if c is not None]
+        for candidate in out:
+            candidate.trace = trace
+        return out
 
     # -- the checks -----------------------------------------------------------------------------
 
@@ -134,23 +148,26 @@ class InvariantChecker:
             self.entered[identity] = (value, meaning, category)
         self.pending[identity] = (meaning, category)
 
-    def _judge_submission(self, after: PageView, step: int) -> list[Candidate | None]:
+    def _judge_submission(
+        self, after: PageView, step: int, trace: list[dict]
+    ) -> list[Candidate | None]:
         outcome = "rejected" if after.alert else "accepted"
         raised = []
         for meaning, category in self.pending.values():
             if category in ("", "valid_typical") or meaning == "other":
                 continue
-            seen = self.verdicts.setdefault((meaning, category), set())
+            seen = self.verdicts.setdefault((meaning, category), {})
             if outcome == "accepted" and "rejected" in seen:
-                raised.append(
-                    self._raise(
-                        "validation_consistency",
-                        step,
-                        after,
-                        f"{category} {meaning} rejected elsewhere, accepted here",
-                    )
+                candidate = self._raise(
+                    "validation_consistency",
+                    step,
+                    after,
+                    f"{category} {meaning} rejected elsewhere, accepted here",
                 )
-            seen.add(outcome)
+                if candidate is not None:
+                    candidate.context_trace = list(seen["rejected"])
+                raised.append(candidate)
+            seen.setdefault(outcome, list(trace))
         self.pending.clear()
         return raised
 
@@ -212,3 +229,60 @@ def _diff(old: str, new: str) -> str:
         if tag != "equal":
             return f"{old[max(0, i1 - 20):i2 + 20]!r} -> {new[max(0, j1 - 20):j2 + 20]!r}"
     return ""
+
+
+def reproduce(env_factory, candidate: Candidate, *, labeller=None, context: str = "") -> bool:
+    """Replay the candidate's walks in a fresh session and see whether it is raised again.
+
+    A validation-consistency candidate replays the rejecting walk first, then the accepting
+    one, through one checker, exactly as the run saw them.
+    """
+    from ..evaluation.scripted import ScriptedPolicy
+    from .abstraction import observe
+
+    checker = InvariantChecker()
+    env = env_factory()
+    try:
+        walks = [w for w in (candidate.context_trace, candidate.trace) if w]
+        for position, walk in enumerate(walks):
+            final = position == len(walks) - 1
+            _, info = env.reset()
+            checker.begin_episode()
+            before = observe(info, labeller, context=context)
+            for number, step in enumerate(walk):
+                index = ScriptedPolicy._match(step, before.specs)  # noqa: SLF001
+                if index is None:
+                    return False
+                spec = next(s for s in before.specs if s.index == index)
+                _, _, terminated, truncated, info = env.step(index)
+                after = observe(info, labeller, context=context)
+                for found in checker.check(before, spec, after, number, walk[: number + 1]):
+                    if final and (found.invariant, found.detail) == (
+                        candidate.invariant,
+                        candidate.detail,
+                    ):
+                        return True
+                before = after
+                if terminated or truncated:
+                    break
+        return False
+    finally:
+        env.close()
+
+
+def verify(
+    env_factory,
+    candidates: list[Candidate],
+    *,
+    replays: int = 2,
+    limit: int = 20,
+    labeller=None,
+    context: str = "",
+) -> list[Candidate]:
+    """Mark how many of `replays` reproduced each candidate (the first `limit` only)."""
+    for candidate in candidates[:limit]:
+        candidate.reproduced = sum(
+            reproduce(env_factory, candidate, labeller=labeller, context=context)
+            for _ in range(replays)
+        )
+    return candidates
