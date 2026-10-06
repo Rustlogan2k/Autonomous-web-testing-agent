@@ -27,7 +27,10 @@ from .abstraction import _ALERT_CLASS, _VOID, PageView
 from .labels import control_identity
 
 _CLOCK = re.compile(r"\b\d{1,2}:\d{2}(?::\d{2})?\b")
-_SKIP = {"script", "style", "noscript", "template"}
+#: Not page content: code, and form controls (their values are entry, not what the page says).
+_SKIP = {"script", "style", "noscript", "template", "textarea", "select"}
+#: Render timings some applications print (a footer's "Page: 4ms"), different on every load.
+_DURATION = re.compile(r"\b\d+(?:\.\d+)?\s?ms\b")
 MIN_ROUND_TRIP_LENGTH = 6
 NEAR_MATCH = 0.8
 
@@ -66,7 +69,8 @@ def content_text(html: str) -> str:
         parser.feed(html or "")
     except Exception:  # noqa: BLE001 - unreadable markup has no comparable content
         return ""
-    return _CLOCK.sub("{time}", " ".join(" ".join(parser.parts).split()))
+    text = " ".join(" ".join(parser.parts).split())
+    return _DURATION.sub("{ms}", _CLOCK.sub("{time}", text))
 
 
 @dataclass
@@ -174,7 +178,10 @@ class InvariantChecker:
     def _round_trip(self, after: PageView, step: int) -> list[Candidate | None]:
         text = content_text(before_html(after))
         raised = []
-        for value, _meaning, category in self.entered.values():
+        for raw, _meaning, category in self.entered.values():
+            # Pages collapse whitespace, so the comparison does too: a multi-line entry
+            # shown on one line is the same value.
+            value = " ".join(raw.split())
             if category != "valid_typical" or len(value) < MIN_ROUND_TRIP_LENGTH:
                 continue
             if not re.search(r"[A-Za-z]", value) or value in text:

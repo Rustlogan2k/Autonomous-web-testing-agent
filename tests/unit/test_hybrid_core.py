@@ -49,7 +49,12 @@ SPECS = [
 def _view(html=HTML):
     labels = deterministic_labels("http://h:1/orders/17/edit", html, SPECS)
     return PageView(
-        "http://h:1/orders/17/edit", labels, form_signature(html), shows_alert(html), SPECS
+        "http://h:1/orders/17/edit",
+        labels,
+        form_signature(html),
+        shows_alert(html),
+        SPECS,
+        html=html,
     )
 
 
@@ -124,3 +129,24 @@ def test_bandit_learns_and_backs_off_to_general_keys():
     assert restored.value("form", "reload_and_resume", "") == bandit.value(
         "form", "reload_and_resume", ""
     )
+
+
+def test_invariant_content_ignores_entries_timings_and_alerts():
+    from web_testing_agent.hybrid.invariants import content_text
+
+    page = (
+        "<h1>Issue 1</h1><textarea>draft text</textarea><select><option>a</option></select>"
+        '<p class="notice">Saved!</p><footer>Page: 4ms Template: 1.5 ms 10:42</footer>'
+    )
+    assert content_text(page) == "Issue 1 Page: {ms} Template: {ms} {time}"
+
+
+def test_round_trip_collapses_whitespace_like_a_page():
+    from web_testing_agent.hybrid.invariants import InvariantChecker
+
+    checker = InvariantChecker()
+    checker.entered['[id="c"]'] = ("multi-line\ncomment for testing", "free_text", "valid_typical")
+    shown = _view("<p>multi-line comment for testing</p>")
+    assert checker._round_trip(shown, 1) == []
+    altered = _view("<p>multi-line comment for testin</p>")
+    assert [c.invariant for c in checker._round_trip(altered, 2) if c] == ["round_trip"]
