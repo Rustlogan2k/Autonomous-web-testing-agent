@@ -17,6 +17,7 @@ import contextlib
 import hashlib
 import json
 import os
+import re
 import time
 import urllib.error
 import urllib.request
@@ -30,7 +31,7 @@ from ..utils.logging import get_logger
 
 logger = get_logger(__name__)
 
-LABEL_VERSION = "labels-v1"
+LABEL_VERSION = "labels-v2"
 
 PAGE_KINDS: tuple[str, ...] = (
     "home",
@@ -146,6 +147,24 @@ class _InputTypes(HTMLParser):
                 self.types[key] = values.get("type", "text").lower()
         elif tag == "textarea":
             self.textareas.update(keys)
+
+
+_VALUE_ATTR = re.compile(
+    r"""\s(?:value|checked|selected)(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*))?""", re.I
+)
+_INPUT_TAG = re.compile(r"<(?:input|option)\b[^>]*>", re.I)
+_TEXTAREA = re.compile(r"(<textarea\b[^>]*>).*?(</textarea>)", re.I | re.S)
+
+
+def without_entered_values(html: str) -> str:
+    """The page with every field's current value removed.
+
+    What a page *is* and what its controls *do* does not depend on what has been typed into
+    it; whether a field is filled is read from the form state, deterministically. Labelling
+    the value-free page means one model call per page, not one per keystroke.
+    """
+    html = _INPUT_TAG.sub(lambda m: _VALUE_ATTR.sub("", m.group(0)), html or "")
+    return _TEXTAREA.sub(r"\1\2", html)
 
 
 def control_identity(spec: ActionSpec) -> str:
@@ -318,7 +337,7 @@ class SemanticLabeller:
         context: str = "",
         visible_text: str | None = None,
     ) -> PageLabels | None:
-        digest = page_digest(url, html, visible_text)
+        digest = page_digest(url, without_entered_values(html), visible_text)
         controls = describe_controls(specs, html)
         listing = "\n".join(f"{c.key}: {c.line}" for c in controls)
         key = hashlib.sha256(

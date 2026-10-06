@@ -84,3 +84,13 @@ def test_concordance():
     assert stage0._concordance([0.1, 0.5, 0.9], [1, 2, 3]) == 1.0
     assert stage0._concordance([0.9, 0.5, 0.1], [1, 2, 3]) == 0.0
     assert stage0._concordance([0.5, 0.5], [1, 2]) == 0.5
+
+
+def test_labels_ignore_entered_values():
+    from web_testing_agent.hybrid.labels import without_entered_values
+
+    filled = '<input id="a" type="email" value="x@y.z"><textarea id="t">hi</textarea>'
+    empty = '<input id="a" type="email"><textarea id="t"></textarea>'
+    assert without_entered_values(filled) == empty
+    checked = '<input type=checkbox checked name=c><option value="3" selected>3</option>'
+    assert without_entered_values(checked) == "<input type=checkbox name=c><option>3</option>"
