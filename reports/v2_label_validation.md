@@ -17,6 +17,21 @@ unchanged, one revision only. Raw output: `v2_label_validation.json`.
 revision.** The cross-vocabulary condition (ctxbench rerun) is reported for completeness in
 `v2_stage0_labels_v3.json`; it cannot change the decision.
 
+## The same labeller on the data it was revised from
+
+The ctxbench rerun (`v2_stage0_labels_v3.json`, same terms as Stage 0) shows why the re-test
+had to use fresh pages:
+
+| | Stage 0 (v2, ctxbench) | v3, ctxbench (revised from these errors) | v3, fresh pages |
+|---|---|---|---|
+| Page kind | 0.68 | **0.93** | 0.61 |
+| Control role | 0.78 | **0.83** | 0.75 |
+| Cross-vocabulary agreement | 0.74 | 0.77 | — |
+
+On the probes whose errors motivated the revision, v3 clears both accuracy thresholds; on
+pages it had not been shaped by, it does not. Judged on the revision data alone, the
+labeller would have been adopted.
+
 ## Where the errors are
 
 - **Pages** (by application: support_portal 10/12, account_hub 8/12, admin_records 8/12,
