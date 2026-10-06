@@ -42,6 +42,26 @@ ARMS: dict[str, dict] = {
     "v1_dqn": {"kind": "v1_dqn"},
     "hybrid_nolearn": {"kind": "hybrid", "planner": "count", "labels": "deterministic"},
     "hybrid_bandit": {"kind": "hybrid", "planner": "bandit", "labels": "deterministic"},
+    # Development variants (exploration by v1's search score; preference for deep cells).
+    "dev_bandit_search": {
+        "kind": "hybrid",
+        "planner": "bandit",
+        "labels": "deterministic",
+        "explore": "search",
+    },
+    "dev_bandit_deep": {
+        "kind": "hybrid",
+        "planner": "bandit",
+        "labels": "deterministic",
+        "depth_bias": 2.0,
+    },
+    "dev_bandit_search_deep": {
+        "kind": "hybrid",
+        "planner": "bandit",
+        "labels": "deterministic",
+        "explore": "search",
+        "depth_bias": 2.0,
+    },
     "hybrid_bandit_llm": {"kind": "hybrid", "planner": "bandit", "labels": "llm"},
     # The bandit starting from the development applications' pooled evidence (hybrid/prior.py).
     "hybrid_bandit_prior": {
@@ -146,6 +166,8 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
         seed=job.seed,
         planner_factory=planner,
         episode_steps=config.episode_steps,
+        explore=spec.get("explore", "weighted"),
+        depth_bias=float(spec.get("depth_bias", 0.0)),
     )
     return policy, labeller
 

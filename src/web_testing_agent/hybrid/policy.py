@@ -88,10 +88,20 @@ class HybridPolicy:
         seed: int = 0,
         planner_factory=None,
         episode_steps: int = 40,
+        explore: str = "weighted",
+        depth_bias: float = 0.0,
     ) -> None:
         self.labeller = labeller
         self.context = context
-        self.archive = Archive(seed, episode_steps=episode_steps)
+        self.archive = Archive(seed, episode_steps=episode_steps, depth_bias=depth_bias)
+        #: Free exploration: role-weighted random ("weighted") or v1's fixed feature-search
+        #: score ("search"), which keeps its own visit memory over every step taken.
+        self.explore = explore
+        self.search = None
+        if explore == "search":
+            from ..rl.search import FeatureSearchPolicy
+
+            self.search = FeatureSearchPolicy(seed=seed, epsilon=0.05)
         self.planner = (planner_factory or Planner)(self.archive, seed)
         self.rng = np.random.default_rng(seed)
         self.offered: dict[str, list[tuple[str, str]]] = {}
@@ -114,6 +124,8 @@ class HybridPolicy:
     # -- the hunt protocol ----------------------------------------------------------------------
 
     def reset(self) -> None:
+        if getattr(self, "search", None) is not None:
+            self.search.reset()
         self.phase = "start"
         self.trace: list[dict] = []
         self.target: Cell | None = None
@@ -164,7 +176,7 @@ class HybridPolicy:
             spec = self._operator_step(view, cell)
         if spec is None:
             self.phase = "explore"
-            spec = self._explore_step(view, cell)
+            spec = self._explore_step(view, cell, observation, info)
         self.trace.append(step_for(spec))
         self._last_page = page
         self._last_cell = view.cell
@@ -190,6 +202,8 @@ class HybridPolicy:
             for candidate in found:
                 self.candidates.append(candidate)
                 self._operator_candidates += 1
+        if self.search is not None:
+            self.search.observe_transition(before, action, reward, after, terminated, done)
         # An episode that ends mid-operator still reports the operator's outcome.
         if self.operator is not None and (terminated or done):
             self._finish_operator(self._view(after))
@@ -257,7 +271,11 @@ class HybridPolicy:
             self._finish_operator(view)
         return spec
 
-    def _explore_step(self, view: PageView, cell: Cell) -> ActionSpec:
+    def _explore_step(self, view: PageView, cell: Cell, observation=None, info=None) -> ActionSpec:
+        if self.search is not None and info is not None:
+            position = self.search.act(observation or {}, info)
+            if 0 <= position < len(view.specs):
+                return view.specs[position]
         """Weighted choice favouring controls not yet tried in this cell."""
         tried = {(t.get("type"), t.get("id"), str(t.get("params"))) for t in self.trace}
         weights = []

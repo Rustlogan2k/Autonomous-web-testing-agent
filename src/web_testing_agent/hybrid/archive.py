@@ -63,11 +63,13 @@ class Cell:
 
 
 class Archive:
-    def __init__(self, seed: int = 0, *, episode_steps: int = 40) -> None:
+    def __init__(self, seed: int = 0, *, episode_steps: int = 40, depth_bias: float = 0.0) -> None:
         self.cells: dict[str, Cell] = {}
         #: Steps a return must leave free in the episode for the operator and exploration.
         self.min_room = 12
         self.episode_steps = episode_steps
+        #: Preference for deeper cells (0 = none): faults sit many steps into a workflow.
+        self.depth_bias = depth_bias
         self._rng = np.random.default_rng(seed)
 
     def __len__(self) -> int:
@@ -97,7 +99,8 @@ class Archive:
         opportunity = 1.0 + min(untried, 10) / 5.0
         reliability = 1.0 / (1.0 + 2.0 * cell.failed_returns)
         room = 1.0 if self.episode_steps - cell.depth >= self.min_room else 0.1
-        return novelty * opportunity * reliability * room
+        depth = 1.0 + self.depth_bias * min(cell.depth, 30) / 30.0
+        return novelty * opportunity * reliability * room * depth
 
     def choose(self, weights: dict[str, float]) -> Cell | None:
         keys = [k for k, w in weights.items() if w > 0]
