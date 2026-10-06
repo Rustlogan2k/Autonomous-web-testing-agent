@@ -1,0 +1,7 @@
+<p class="step-kicker">{{ service }}</p>
+<h1>{{ t("who.title") }}</h1>
+<p class="lede">{{ t("who.body") }}</p>
+<form class="choices pair" method="post" action="/book/{{ draft }}/who" autocomplete="off">
+  <button id="who-new" name="branch" value="new" type="submit">{{ t("act.new_patient") }}</button>
+  <button id="who-returning" name="branch" value="returning" type="submit">{{ t("act.returning") }}</button>
+</form>

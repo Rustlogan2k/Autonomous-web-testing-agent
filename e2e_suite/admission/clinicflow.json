@@ -1,0 +1,958 @@
+{
+  "app_id": "clinicflow",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "Ran 11 tests in 3.388s",
+          "OK"
+        ],
+        "pass_lines": null,
+        "tail": []
+      }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "aaa19b0fe1627125c3d5baf3e66b767295f956de2db8c5686b2f51723881876d",
+        "fresh_context_sha": [
+          "aaa19b0fe1627125c3d5baf3e66b767295f956de2db8c5686b2f51723881876d",
+          "aaa19b0fe1627125c3d5baf3e66b767295f956de2db8c5686b2f51723881876d"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault CLIN-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "CLIN-1",
+        "subtype": "stale-state",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 15,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False taken=8 others + yours=7"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 15,
+        "minimization_trials": 30,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 556.4
+      }
+    },
+    {
+      "name": "fault CLIN-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "CLIN-2",
+        "subtype": "displayed-vs-submitted",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 14,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "echoes_input: violated=True inconclusive=False Self-pay",
+          "echoes_input: violated=True inconclusive=False Self-pay",
+          "text_absent: violated=True inconclusive=False Appointment booked: CF-1001"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 13,
+        "minimization_trials": 30,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 419.4
+      }
+    },
+    {
+      "name": "fault CLIN-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "CLIN-3",
+        "subtype": "missing-validation",
+        "oracle": "existing",
+        "fault_class": "constraint_bypass",
+        "witness_length": 8,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Not answered"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 8,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 140.3
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "docker_offline_build_and_health",
+      "passed": true,
+      "detail": {
+        "image": "e2e-suite/clinicflow:clean",
+        "build_ok": true,
+        "build_seconds": 0.8,
+        "build_tail": [
+          "#10 naming to docker.io/e2e-suite/clinicflow:clean done",
+          "#10 unpacking to docker.io/e2e-suite/clinicflow:clean 0.1s done",
+          "#10 DONE 0.2s"
+        ],
+        "container_healthy": true,
+        "detail": "{'ok': True, 'app': 'clinicflow'}",
+        "image_mb": 43.3,
+        "passed": true
+      }
+    },
+    {
+      "name": "product_intake_matches_expectation",
+      "passed": true,
+      "detail": {
+        "profile": {
+          "languages": [
+            {
+              "language": "JSON",
+              "files": 4,
+              "bytes": 46105,
+              "share": 0.4169
+            },
+            {
+              "language": "Python",
+              "files": 4,
+              "bytes": 45404,
+              "share": 0.4105
+            },
+            {
+              "language": "HTML",
+              "files": 15,
+              "bytes": 9210,
+              "share": 0.0833
+            },
+            {
+              "language": "Markdown",
+              "files": 1,
+              "bytes": 3835,
+              "share": 0.0347
+            },
+            {
+              "language": "CSS",
+              "files": 1,
+              "bytes": 3717,
+              "share": 0.0336
+            },
+            {
+              "language": "JavaScript",
+              "files": 1,
+              "bytes": 2329,
+              "share": 0.0211
+            }
+          ],
+          "frameworks": [],
+          "build_definition": {
+            "value": "dockerfile",
+            "evidence": "Dockerfile",
+            "confidence": 1.0
+          }
+        },
+        "build_plan": {
+          "kind": "dockerfile",
+          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\clinicflow\\clean\\Dockerfile"
+        },
+        "product_can_build": true,
+        "matches_expectation": true,
+        "expectation": "buildable by the current intake"
+      }
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 103,
+      "keys_used_by_source": 81,
+      "action_keys": 18,
+      "unused_keys": [
+        "cell.booked",
+        "cell.free",
+        "cell.held",
+        "missing.body",
+        "msg.answers_needed",
+        "msg.cancel_tick",
+        "msg.dob_bad",
+        "msg.email_bad",
+        "msg.finish_first",
+        "msg.insurer_needed",
+        "msg.name_needed",
+        "msg.no_longer_active",
+        "msg.not_found",
+        "msg.payment_needed",
+        "msg.slot_taken",
+        "msg.slot_unknown",
+        "msg.slot_yours",
+        "msg.too_long",
+        "replaced.body",
+        "status.answered",
+        "status.not_answered",
+        "status.not_needed"
+      ],
+      "default_action_labels": {
+        "act.book": "Book visit",
+        "act.cancel": "Cancel visit",
+        "act.change_time": "Change time",
+        "act.find_record": "Find my record",
+        "act.hold": "Hold slot",
+        "act.manage": "Manage booking",
+        "act.new_patient": "New patient",
+        "act.next_free": "Next available",
+        "act.print": "Print summary",
+        "act.reschedule": "Reschedule",
+        "act.resume": "Carry on with your booking",
+        "act.returning": "Returning patient",
+        "act.save_answers": "Save answers",
+        "act.save_details": "Choose time",
+        "act.start": "Book an appointment",
+        "act.start_over": "Start a new booking",
+        "act.to_questions": "Answer questions",
+        "act.to_review": "Review booking"
+      },
+      "alt_action_labels": {
+        "act.book": "Lock in appointment",
+        "act.cancel": "Call off visit",
+        "act.change_time": "Pick another time",
+        "act.find_record": "Look me up",
+        "act.hold": "Reserve time",
+        "act.manage": "View appointment",
+        "act.new_patient": "First visit here",
+        "act.next_free": "First free time",
+        "act.print": "Printable view",
+        "act.reschedule": "Move appointment",
+        "act.resume": "Return to your booking",
+        "act.returning": "I have been before",
+        "act.save_answers": "Keep answers",
+        "act.save_details": "Pick a time",
+        "act.start": "Make an appointment",
+        "act.start_over": "Begin again",
+        "act.to_questions": "Pre-visit form",
+        "act.to_review": "Check appointment"
+      }
+    },
+    "patch_sizes": {
+      "CLIN-1": {
+        "file": "src/store.py",
+        "lines_removed": 4,
+        "lines_added": 4,
+        "chars_changed": 217
+      },
+      "CLIN-2": {
+        "file": "src/assets/booking.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 42
+      },
+      "CLIN-3": {
+        "file": "src/wizard.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 23
+      }
+    },
+    "workflows": [
+      {
+        "name": "a new patient books a GP and pays themselves [default vocabulary]",
+        "steps": 11,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a new patient books physiotherapy through an insurer [default vocabulary]",
+        "steps": 16,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a returning patient books the practice nurse [default vocabulary]",
+        "steps": 9,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "book a GP, then move the appointment [default vocabulary]",
+        "steps": 14,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "book the nurse, then cancel [default vocabulary]",
+        "steps": 12,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "choose the other GP's week [default vocabulary]",
+        "steps": 10,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "answer the physio questions and book from the same page [default vocabulary]",
+        "steps": 11,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a new patient books a GP and pays themselves [alt vocabulary]",
+        "steps": 11,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a new patient books physiotherapy through an insurer [alt vocabulary]",
+        "steps": 16,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a returning patient books the practice nurse [alt vocabulary]",
+        "steps": 9,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "book a GP, then move the appointment [alt vocabulary]",
+        "steps": 14,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "book the nurse, then cancel [alt vocabulary]",
+        "steps": 12,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "choose the other GP's week [alt vocabulary]",
+        "steps": 10,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "answer the physio questions and book from the same page [alt vocabulary]",
+        "steps": 11,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "Hold slot holds a free time, but changes nothing on a time that is already booked",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "Book visit is refused until the physiotherapy questions are answered",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "Next available on the slot table",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "Print summary on the booking check",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "CLIN-1",
+        "subtype": "stale-state",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 15,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False taken=8 others + yours=7"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 15,
+        "minimization_trials": 30,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-book"
+          },
+          {
+            "type": "CLICK",
+            "id": "svc-gp"
+          },
+          {
+            "type": "CLICK",
+            "id": "who-returning"
+          },
+          {
+            "type": "TYPE",
+            "id": "lookup-email",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "payment",
+            "params": {
+              "option": "self"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "find-record"
+          },
+          {
+            "type": "CLICK",
+            "id": "hold-0611-1100"
+          },
+          {
+            "type": "CLICK",
+            "id": "slots-done"
+          },
+          {
+            "type": "CLICK",
+            "id": "book-visit"
+          },
+          {
+            "type": "CLICK",
+            "id": "manage-booking"
+          },
+          {
+            "type": "CLICK",
+            "id": "reschedule-visit"
+          },
+          {
+            "type": "CLICK",
+            "id": "hold-0612-1400"
+          },
+          {
+            "type": "CLICK",
+            "id": "slots-done"
+          },
+          {
+            "type": "CLICK",
+            "id": "book-visit"
+          },
+          {
+            "type": "CLICK",
+            "id": "reschedule-visit"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 556.4
+      },
+      {
+        "fault_id": "CLIN-2",
+        "subtype": "displayed-vs-submitted",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 14,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "echoes_input: violated=True inconclusive=False Self-pay",
+          "echoes_input: violated=True inconclusive=False Self-pay",
+          "text_absent: violated=True inconclusive=False Appointment booked: CF-1001"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 13,
+        "minimization_trials": 30,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-book"
+          },
+          {
+            "type": "CLICK",
+            "id": "svc-gp"
+          },
+          {
+            "type": "CLICK",
+            "id": "who-new"
+          },
+          {
+            "type": "TYPE",
+            "id": "full-name",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "TYPE",
+            "id": "dob",
+            "params": {
+              "category": "boundary_min"
+            }
+          },
+          {
+            "type": "TYPE",
+            "id": "email",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "payment",
+            "params": {
+              "option": "self"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "payment",
+            "params": {
+              "option": "insurer"
+            }
+          },
+          {
+            "type": "TYPE",
+            "id": "insurer-name",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-details"
+          },
+          {
+            "type": "CLICK",
+            "id": "hold-0611-1100"
+          },
+          {
+            "type": "CLICK",
+            "id": "slots-done"
+          },
+          {
+            "type": "CLICK",
+            "id": "book-visit"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 419.4
+      },
+      {
+        "fault_id": "CLIN-3",
+        "subtype": "missing-validation",
+        "oracle": "existing",
+        "fault_class": "constraint_bypass",
+        "witness_length": 8,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Not answered"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 8,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-book"
+          },
+          {
+            "type": "CLICK",
+            "id": "svc-physio"
+          },
+          {
+            "type": "CLICK",
+            "id": "who-returning"
+          },
+          {
+            "type": "TYPE",
+            "id": "lookup-email",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "payment",
+            "params": {
+              "option": "self"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "find-record"
+          },
+          {
+            "type": "CLICK",
+            "id": "hold-0611-1100"
+          },
+          {
+            "type": "CLICK",
+            "id": "slots-done"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 140.3
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 3,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 3,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
+    },
+    "product_intake": {
+      "profile": {
+        "languages": [
+          {
+            "language": "JSON",
+            "files": 4,
+            "bytes": 46105,
+            "share": 0.4169
+          },
+          {
+            "language": "Python",
+            "files": 4,
+            "bytes": 45404,
+            "share": 0.4105
+          },
+          {
+            "language": "HTML",
+            "files": 15,
+            "bytes": 9210,
+            "share": 0.0833
+          },
+          {
+            "language": "Markdown",
+            "files": 1,
+            "bytes": 3835,
+            "share": 0.0347
+          },
+          {
+            "language": "CSS",
+            "files": 1,
+            "bytes": 3717,
+            "share": 0.0336
+          },
+          {
+            "language": "JavaScript",
+            "files": 1,
+            "bytes": 2329,
+            "share": 0.0211
+          }
+        ],
+        "frameworks": [],
+        "build_definition": {
+          "value": "dockerfile",
+          "evidence": "Dockerfile",
+          "confidence": 1.0
+        }
+      },
+      "build_plan": {
+        "kind": "dockerfile",
+        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\clinicflow\\clean\\Dockerfile"
+      },
+      "product_can_build": true,
+      "matches_expectation": true,
+      "expectation": "buildable by the current intake"
+    }
+  },
+  "admitted": true,
+  "checks_run": 22,
+  "checks_failed": [],
+  "browser_checks_run": true,
+  "docker_checks_run": true,
+  "wall_clock_s": 1457.2
+}

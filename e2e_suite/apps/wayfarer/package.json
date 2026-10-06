@@ -1,0 +1,15 @@
+{
+  "name": "wayfarer",
+  "version": "1.0.0",
+  "description": "Trip itinerary builder: local drafts in the browser, sealed immutable versions and share links on the server.",
+  "private": true,
+  "license": "UNLICENSED",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test tests/"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

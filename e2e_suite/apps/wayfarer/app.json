@@ -1,0 +1,654 @@
+{
+  "app_id": "wayfarer",
+  "name": "Wayfarer",
+  "domain": "travel itinerary planning",
+  "user_goal": "Plan a multi-day trip stop by stop, seal agreed versions of the itinerary, and share a read-only link to the latest sealed version.",
+  "architecture": "client-draft-spa+server-sealed-versions",
+  "stack": "node-builtins+localStorage+server-versions",
+  "persistence": "the itinerary being edited is a client-side draft in localStorage (written synchronously on every edit); the server keeps trips, write-once sealed versions (one JSON file per version) and share tokens under WTA_DATA_DIR",
+  "entry": "/",
+  "start": [
+    "node",
+    "src/server.js"
+  ],
+  "dockerfile": false,
+  "workflow_graph": {
+    "kind": [
+      "hub-and-spoke",
+      "nested-form",
+      "revisit"
+    ],
+    "nodes": [
+      "trips",
+      "trips:new-trip-form",
+      "trip",
+      "trip/day:pin-form",
+      "trip:weather-panel",
+      "share"
+    ],
+    "edges": [
+      [
+        "trips",
+        "trip"
+      ],
+      [
+        "trips",
+        "trips:new-trip-form"
+      ],
+      [
+        "trips:new-trip-form",
+        "trip"
+      ],
+      [
+        "trip",
+        "trip/day:pin-form"
+      ],
+      [
+        "trip/day:pin-form",
+        "trip"
+      ],
+      [
+        "trip",
+        "trip"
+      ],
+      [
+        "trip",
+        "trip:weather-panel"
+      ],
+      [
+        "trip:weather-panel",
+        "trip"
+      ],
+      [
+        "trip",
+        "share"
+      ],
+      [
+        "trip",
+        "trips"
+      ],
+      [
+        "share",
+        "trips"
+      ],
+      [
+        "share",
+        "share"
+      ]
+    ]
+  },
+  "features": [
+    "spa",
+    "client-state",
+    "server-state",
+    "reload-persistence",
+    "cross-page-state",
+    "nested-form",
+    "conditional-section",
+    "table"
+  ],
+  "vocabulary": {
+    "progress_keys": [
+      "act.pin",
+      "act.seal",
+      "act.share",
+      "act.create_trip",
+      "act.open"
+    ]
+  },
+  "regions": {
+    "trip_list": "#trip-list",
+    "trip_title": "#trip-title",
+    "trip_dates": "#trip-dates",
+    "sealed_version": "#sealed-version",
+    "draft_status": "#draft-status",
+    "trip_notice": "#trip-notice",
+    "day1_stops": "#day-1-stops",
+    "day2_stops": "#day-2-stops",
+    "share_version": "#share-version",
+    "share_count": "#share-count",
+    "share_shown": "#share-shown",
+    "share_days": "#share-days"
+  },
+  "workflows": [
+    {
+      "name": "pin a stop on day 1 and seal it as version 2",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-t1"
+        },
+        {
+          "type": "TYPE",
+          "id": "stop-name-1",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "pin-1"
+        },
+        {
+          "type": "CLICK",
+          "id": "seal"
+        }
+      ],
+      "expect": [
+        {
+          "region": "sealed_version",
+          "contains": "2"
+        },
+        {
+          "region": "day1_stops",
+          "contains": "Test User Input"
+        }
+      ]
+    },
+    {
+      "name": "reorder and strike on day 1, then seal",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-t1"
+        },
+        {
+          "type": "CLICK",
+          "id": "down-s1"
+        },
+        {
+          "type": "CLICK",
+          "id": "strike-s2"
+        },
+        {
+          "type": "CLICK",
+          "id": "seal"
+        }
+      ],
+      "expect": [
+        {
+          "region": "day1_stops",
+          "absent": "Fish market"
+        },
+        {
+          "region": "day1_stops",
+          "contains": "Harbour walk"
+        },
+        {
+          "region": "sealed_version",
+          "contains": "2"
+        }
+      ]
+    },
+    {
+      "name": "plan a new two-day trip and seal its first stop",
+      "trace": [
+        {
+          "type": "TYPE",
+          "id": "trip-name",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "trip-start",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "trip-days",
+          "params": {
+            "option": "2"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "create-trip"
+        },
+        {
+          "type": "TYPE",
+          "id": "stop-name-1",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "stop-length-1",
+          "params": {
+            "option": "half"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "pin-1"
+        },
+        {
+          "type": "CLICK",
+          "id": "seal"
+        }
+      ],
+      "expect": [
+        {
+          "region": "trip_title",
+          "contains": "Test User Input"
+        },
+        {
+          "region": "trip_dates",
+          "contains": "15 Jun 2026"
+        },
+        {
+          "region": "trip_dates",
+          "contains": "2"
+        },
+        {
+          "region": "day1_stops",
+          "contains": "Test User Input"
+        },
+        {
+          "region": "sealed_version",
+          "contains": "1"
+        }
+      ]
+    },
+    {
+      "name": "share the seeded itinerary",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-t1"
+        },
+        {
+          "type": "CLICK",
+          "id": "share"
+        }
+      ],
+      "expect": [
+        {
+          "region": "share_version",
+          "contains": "1"
+        },
+        {
+          "region": "share_count",
+          "contains": "5"
+        },
+        {
+          "region": "share_days",
+          "contains": "Lighthouse"
+        }
+      ]
+    },
+    {
+      "name": "pin on day 2, seal, then share the new version",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-t1"
+        },
+        {
+          "type": "TYPE",
+          "id": "stop-name-2",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "pin-2"
+        },
+        {
+          "type": "CLICK",
+          "id": "seal"
+        },
+        {
+          "type": "CLICK",
+          "id": "share"
+        }
+      ],
+      "expect": [
+        {
+          "region": "share_version",
+          "contains": "2"
+        },
+        {
+          "region": "share_count",
+          "contains": "6"
+        },
+        {
+          "region": "share_days",
+          "contains": "Test User Input"
+        },
+        {
+          "region": "share_shown",
+          "contains": "6"
+        }
+      ]
+    },
+    {
+      "name": "check the forecast, star a stop and return to the trip list",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-t1"
+        },
+        {
+          "type": "CLICK",
+          "id": "weather"
+        },
+        {
+          "type": "CLICK",
+          "id": "fav-s3"
+        },
+        {
+          "type": "CLICK",
+          "id": "back-trips"
+        }
+      ],
+      "expect": [
+        {
+          "region": "trip_list",
+          "contains": "Coast to Coast"
+        }
+      ],
+      "commits": false
+    }
+  ],
+  "state_dependent": [
+    {
+      "name": "Seal itinerary creates a new sealed version only when the draft differs from the latest one",
+      "useless": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "open-t1"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "seal"
+        }
+      },
+      "useful": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "open-t1"
+          },
+          {
+            "type": "TYPE",
+            "id": "stop-name-1",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "pin-1"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "seal"
+        }
+      }
+    },
+    {
+      "name": "Share issues a share link only for a trip that has a sealed version",
+      "useless": {
+        "trace": [
+          {
+            "type": "TYPE",
+            "id": "trip-name",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "TYPE",
+            "id": "trip-start",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "create-trip"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "share"
+        }
+      },
+      "useful": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "open-t1"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "share"
+        }
+      }
+    }
+  ],
+  "decoys": [
+    {
+      "name": "the Weather forecast",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-t1"
+        }
+      ],
+      "decoy": {
+        "type": "CLICK",
+        "id": "weather"
+      }
+    },
+    {
+      "name": "starring a stop as a favourite",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-t1"
+        }
+      ],
+      "decoy": {
+        "type": "CLICK",
+        "id": "fav-s1"
+      }
+    }
+  ],
+  "faults": [
+    {
+      "fault_id": "WAY-1",
+      "fault_class": "persistence_failure",
+      "subtype": "persistence",
+      "oracle": "extension",
+      "description": "Nudge up/down reorders the list captured when the day was drawn instead of the day's current list. Strike replaces the day's list (it filters out the struck stop), so after a strike a nudge reorders a stale copy that still holds the struck stop: the row moves on screen, but the draft that is saved keeps the old order, and a reload shows a different day.",
+      "trigger_condition": "Open the trip, strike a stop on day 1, then nudge another stop of that day (with nothing redrawing the planner in between), and reload.",
+      "expected_behaviour": "Every edit is saved exactly as it is shown, so the day's list is the same before and after a reload.",
+      "observable_violation": "Day 1 reads 'Lighthouse, Harbour walk' before the reload and 'Harbour walk, Lighthouse' after it.",
+      "assertions": [
+        {
+          "kind": "region_stable_across_reload",
+          "where": "#/trips/t\\d+$",
+          "region": "day1_stops",
+          "describes": "day 1's stops, in order, survive a reload of the planner unchanged"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 1,
+      "shortest_path": 4,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "open-t1"
+        },
+        {
+          "type": "CLICK",
+          "id": "strike-s2"
+        },
+        {
+          "type": "CLICK",
+          "id": "up-s3"
+        },
+        {
+          "type": "REFRESH"
+        }
+      ],
+      "patch": {
+        "file": "src/static/app.js",
+        "find": "const order = planner.draft.days[dayIndex].order; // the day's stops, top to bottom",
+        "replace": "const order = dayOrder; // the day's stops, top to bottom"
+      }
+    },
+    {
+      "fault_id": "WAY-2",
+      "fault_class": "state_corruption",
+      "subtype": "cross-page",
+      "oracle": "extension",
+      "description": "The share view asks for the trip's itinerary the way the planner does, preferring the local draft when one exists, so unsealed edits made in this browser leak into the shared itinerary while the server's metadata still describes the sealed version.",
+      "trigger_condition": "Open the trip, seal, pin another stop (a draft-only change), then press Share.",
+      "expected_behaviour": "A share link always shows the latest sealed version: it lists exactly the stops the sealed version has.",
+      "observable_violation": "The share page says 'Sealed version 2 · 6 stops' but 'Showing 7 stops'.",
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "#/share/[0-9a-f]{16}$",
+          "expression": "shown == sealed",
+          "operands": {
+            "shown": "share_shown",
+            "sealed": "share_count"
+          },
+          "describes": "the shared page lists exactly as many stops as the sealed version it names"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 0,
+      "shortest_path": 4,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "open-t1"
+        },
+        {
+          "type": "TYPE",
+          "id": "stop-name-1",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "pin-1"
+        },
+        {
+          "type": "CLICK",
+          "id": "seal"
+        },
+        {
+          "type": "TYPE",
+          "id": "stop-name-1",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "pin-1"
+        },
+        {
+          "type": "CLICK",
+          "id": "share"
+        }
+      ],
+      "patch": {
+        "file": "src/static/app.js",
+        "find": "const shown = itineraryFor(share.trip, sealed, { preferDraft: false });",
+        "replace": "const shown = itineraryFor(share.trip, sealed, { preferDraft: true });"
+      }
+    }
+  ],
+  "benign_traces": [
+    [
+      {
+        "type": "CLICK",
+        "id": "open-t1"
+      },
+      {
+        "type": "CLICK",
+        "id": "down-s1"
+      },
+      {
+        "type": "CLICK",
+        "id": "up-s3"
+      },
+      {
+        "type": "REFRESH"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "open-t1"
+      },
+      {
+        "type": "TYPE",
+        "id": "stop-name-1",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "pin-1"
+      },
+      {
+        "type": "CLICK",
+        "id": "seal"
+      },
+      {
+        "type": "CLICK",
+        "id": "share"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "open-t1"
+      },
+      {
+        "type": "CLICK",
+        "id": "strike-s2"
+      },
+      {
+        "type": "CLICK",
+        "id": "weather"
+      },
+      {
+        "type": "CLICK",
+        "id": "fav-s1"
+      },
+      {
+        "type": "CLICK",
+        "id": "seal"
+      },
+      {
+        "type": "REFRESH"
+      }
+    ]
+  ]
+}

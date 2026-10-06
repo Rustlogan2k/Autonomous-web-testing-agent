@@ -1,0 +1,17 @@
+<h1>{{ t("confirm.title") }}</h1>
+{{ moving|raw }}
+<dl class="summary">
+  <dt>{{ t("label.service") }}</dt><dd><span id="confirm-service">{{ service }}</span></dd>
+  <dt>{{ t("label.with") }}</dt><dd><span id="confirm-with">{{ with_name }}</span></dd>
+  <dt>{{ t("label.when") }}</dt><dd><span id="confirm-when">{{ when }}</span></dd>
+  <dt>{{ t("label.patient") }}</dt><dd><span id="confirm-patient">{{ patient }}</span></dd>
+  <dt>{{ t("label.paid_by") }}</dt><dd><span id="confirm-paid-by">{{ paid }}</span></dd>
+  <dt>{{ t("label.questions") }}</dt><dd><strong id="questions-status">{{ status }}</strong></dd>
+</dl>
+<form method="post" action="/book/{{ draft }}/book" autocomplete="off">
+  <p class="actions">
+    <a id="change-time" href="/book/{{ draft }}/slots">{{ t("act.change_time") }}</a>
+    <button id="print-view" class="quiet" type="button" aria-pressed="false">{{ t("act.print") }}</button>
+    <button id="book-visit" class="primary" type="submit">{{ t("act.book") }}</button>
+  </p>
+</form>

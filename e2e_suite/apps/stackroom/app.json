@@ -1,0 +1,635 @@
+{
+  "app_id": "stackroom",
+  "name": "Stackroom",
+  "domain": "inventory administration (hardware wholesaler's stockroom)",
+  "user_goal": "Find stock lines in a paged, filterable grid; restock or archive them in bulk; set stock levels inline or through the adjust page; review every change in the audit log.",
+  "architecture": "data-grid+json-api(server-side paging)",
+  "stack": "python-stdlib+sqlite",
+  "persistence": "sqlite rows partitioned by session; the grid's state lives in its query string (history.replaceState); column visibility is client-only",
+  "entry": "/",
+  "start": [
+    "python",
+    "src/server.py"
+  ],
+  "dockerfile": true,
+  "workflow_graph": {
+    "kind": [
+      "data-grid",
+      "hub-and-spoke"
+    ],
+    "nodes": [
+      "stock-grid",
+      "columns-menu",
+      "item-adjust",
+      "item-detail",
+      "audit-log"
+    ],
+    "edges": [
+      [
+        "stock-grid",
+        "stock-grid"
+      ],
+      [
+        "stock-grid",
+        "columns-menu"
+      ],
+      [
+        "columns-menu",
+        "stock-grid"
+      ],
+      [
+        "stock-grid",
+        "item-adjust"
+      ],
+      [
+        "item-adjust",
+        "item-detail"
+      ],
+      [
+        "item-adjust",
+        "stock-grid"
+      ],
+      [
+        "item-detail",
+        "stock-grid"
+      ],
+      [
+        "item-detail",
+        "audit-log"
+      ],
+      [
+        "stock-grid",
+        "audit-log"
+      ],
+      [
+        "audit-log",
+        "stock-grid"
+      ],
+      [
+        "item-adjust",
+        "audit-log"
+      ]
+    ]
+  },
+  "features": [
+    "table",
+    "filter",
+    "sort",
+    "bulk-operation",
+    "server-state",
+    "client-state",
+    "enable-disable",
+    "cross-page-state"
+  ],
+  "vocabulary": {
+    "progress_keys": [
+      "act.apply",
+      "act.commit"
+    ]
+  },
+  "regions": {
+    "match_count": "#match-count",
+    "empty_message": "#grid-empty",
+    "page_number": "#page-number",
+    "page_count": "#page-count",
+    "grid_rows": "#grid-rows",
+    "bulk_status": "#bulk-status",
+    "item_stock": "#item-stock",
+    "item_status": "#item-status",
+    "flash": "#flash",
+    "audit_log": "#audit-log",
+    "stock_sku_101": "#qty-SKU-101",
+    "stock_sku_102": "#qty-SKU-102",
+    "stock_sku_111": "#qty-SKU-111",
+    "stock_sku_120": "#qty-SKU-120",
+    "stock_sku_127": "#qty-SKU-127"
+  },
+  "workflows": [
+    {
+      "name": "restock two fastener lines in bulk",
+      "trace": [
+        {
+          "type": "SELECT",
+          "id": "filter-category",
+          "params": {
+            "option": "Fasteners"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "filter-apply"
+        },
+        {
+          "type": "CLICK",
+          "id": "pick-SKU-101"
+        },
+        {
+          "type": "CLICK",
+          "id": "pick-SKU-102"
+        },
+        {
+          "type": "SELECT",
+          "id": "bulk-action",
+          "params": {
+            "option": "restock"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "bulk-apply"
+        }
+      ],
+      "expect": [
+        {
+          "region": "match_count",
+          "contains": "14"
+        },
+        {
+          "region": "stock_sku_101",
+          "contains": "22"
+        },
+        {
+          "region": "stock_sku_102",
+          "contains": "95"
+        }
+      ]
+    },
+    {
+      "name": "adjust one item's stock level",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "adjust-SKU-105"
+        },
+        {
+          "type": "TYPE",
+          "id": "new-stock",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "commit-adjust"
+        }
+      ],
+      "expect": [
+        {
+          "region": "item_stock",
+          "contains": "42"
+        },
+        {
+          "region": "flash",
+          "contains": "SKU-105"
+        }
+      ]
+    },
+    {
+      "name": "archive an item, then find it in the audit log",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "pick-SKU-103"
+        },
+        {
+          "type": "CLICK",
+          "id": "bulk-apply"
+        },
+        {
+          "type": "CLICK",
+          "id": "nav-log"
+        }
+      ],
+      "expect": [
+        {
+          "region": "audit_log",
+          "contains": "SKU-103"
+        }
+      ]
+    },
+    {
+      "name": "set a lamp's stock inline, then check the audit log",
+      "trace": [
+        {
+          "type": "SELECT",
+          "id": "filter-category",
+          "params": {
+            "option": "Lighting"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "filter-apply"
+        },
+        {
+          "type": "TYPE",
+          "id": "stock-SKU-127",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "nav-log"
+        }
+      ],
+      "expect": [
+        {
+          "region": "audit_log",
+          "contains": "SKU-127"
+        },
+        {
+          "region": "audit_log",
+          "contains": "21 → 42"
+        }
+      ]
+    },
+    {
+      "name": "sort by stock to find the scarcest lines",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "sort-stock"
+        }
+      ],
+      "expect": [
+        {
+          "region": "grid_rows",
+          "contains": "SKU-117"
+        },
+        {
+          "region": "grid_rows",
+          "absent": "SKU-109"
+        },
+        {
+          "region": "page_count",
+          "contains": "4"
+        }
+      ],
+      "commits": false
+    },
+    {
+      "name": "restock every item on the second page",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "page-next"
+        },
+        {
+          "type": "CLICK",
+          "id": "pick-all"
+        },
+        {
+          "type": "SELECT",
+          "id": "bulk-action",
+          "params": {
+            "option": "restock"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "bulk-apply"
+        }
+      ],
+      "expect": [
+        {
+          "region": "page_number",
+          "contains": "2"
+        },
+        {
+          "region": "stock_sku_111",
+          "contains": "30"
+        },
+        {
+          "region": "stock_sku_120",
+          "contains": "28"
+        }
+      ]
+    }
+  ],
+  "state_dependent": [
+    {
+      "name": "the bulk Apply changes nothing with no row selected, and archives the selected rows otherwise",
+      "useless": {
+        "trace": [],
+        "action": {
+          "type": "CLICK",
+          "id": "bulk-apply"
+        }
+      },
+      "useful": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "pick-SKU-101"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "bulk-apply"
+        }
+      }
+    },
+    {
+      "name": "Commit changes is refused while the new stock level is empty, and saves once a level is entered",
+      "useless": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "adjust-SKU-101"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "commit-adjust"
+        }
+      },
+      "useful": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "adjust-SKU-101"
+          },
+          {
+            "type": "TYPE",
+            "id": "new-stock",
+            "params": {
+              "category": "valid_typical"
+            }
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "commit-adjust"
+        }
+      }
+    }
+  ],
+  "decoys": [
+    {
+      "name": "Sync refetches the grid",
+      "trace": [],
+      "decoy": {
+        "type": "CLICK",
+        "id": "sync-grid"
+      }
+    },
+    {
+      "name": "the Columns menu",
+      "trace": [],
+      "decoy": {
+        "type": "CLICK",
+        "id": "columns-toggle"
+      }
+    }
+  ],
+  "faults": [
+    {
+      "fault_id": "STK-1",
+      "fault_class": "state_corruption",
+      "subtype": "incorrect-navigation",
+      "oracle": "existing",
+      "description": "Applying a new filter keeps the page number the grid was on instead of returning to page 1. A narrower filter then asks the server for a page past the end of its results, and the grid says it is empty while items match.",
+      "trigger_condition": "Page forward to page 3, choose a category with at most ten items (Lighting), and apply the filter.",
+      "expected_behaviour": "A grid whose filter matches items never claims to have nothing to show: a new filter is shown from its first page.",
+      "observable_violation": "'No items on this page' under a match count of 7 (Page 3 of 1).",
+      "assertions": [
+        {
+          "kind": "text_absent",
+          "where": "/stock(\\?[^#]*)?$",
+          "region": "empty_message",
+          "expected": "No items",
+          "describes": "the grid shows its empty-page message ..."
+        },
+        {
+          "kind": "text_equals",
+          "where": "/stock(\\?[^#]*)?$",
+          "region": "match_count",
+          "expected": "0",
+          "describes": "... only when nothing matches the filter"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 0,
+      "shortest_path": 3,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "page-next"
+        },
+        {
+          "type": "CLICK",
+          "id": "page-next"
+        },
+        {
+          "type": "SELECT",
+          "id": "filter-category",
+          "params": {
+            "option": "Lighting"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "filter-apply"
+        }
+      ],
+      "patch": {
+        "file": "src/static/stackroom.js",
+        "find": "q: grid.draft.q, page: 1 });",
+        "replace": "q: grid.draft.q, page: grid.state.page });"
+      }
+    },
+    {
+      "fault_id": "STK-2",
+      "fault_class": "state_corruption",
+      "subtype": "wrong-target",
+      "oracle": "existing",
+      "description": "Committing an adjustment resolves the item from the row position the Adjust link carries, but looks that position up in the listing's default (SKU) order instead of the order the user was looking at. After sorting, the new level lands on a different item and the item the user adjusted keeps its old stock.",
+      "trigger_condition": "Sort the grid by stock, open Adjust on the second row, enter a new stock level and commit.",
+      "expected_behaviour": "Right after a commit, the adjusted item's page shows the stock level that was entered for it.",
+      "observable_violation": "SKU-131's page says 'Saved SKU-102' and still shows a stock of 4 after 42 was committed for it.",
+      "assertions": [
+        {
+          "kind": "echoes_input",
+          "where": "/items/SKU-\\d+$",
+          "region": "item_stock",
+          "input_field": "new_stock",
+          "describes": "the adjusted item shows the stock level just committed for it"
+        },
+        {
+          "kind": "text_absent",
+          "where": "/items/SKU-\\d+$",
+          "region": "flash",
+          "expected": "SKU-",
+          "describes": "(scope) judged on the page shown right after a commit, not on a later revisit"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 1,
+      "shortest_path": 4,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "sort-stock"
+        },
+        {
+          "type": "CLICK",
+          "id": "adjust-SKU-131"
+        },
+        {
+          "type": "TYPE",
+          "id": "new-stock",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "commit-adjust"
+        }
+      ],
+      "patch": {
+        "file": "src/inventory.py",
+        "find": "    return find_item(conn, sid, ref.sku)  # the SKU names the item; `at` is only the way back\n",
+        "replace": "    rows = matching_items(conn, sid, replace(ref.view, sort=\"sku\", direction=\"asc\"))  # the row the link pointed at\n    return rows[ref.at] if ref.at < len(rows) else None\n"
+      }
+    },
+    {
+      "fault_id": "STK-3",
+      "fault_class": "persistence_failure",
+      "subtype": "persistence",
+      "oracle": "existing",
+      "description": "Inline stock edits in the grid save the new level but never write the audit-log entry; adjustments and bulk actions are still audited, so the log silently misses every inline change.",
+      "trigger_condition": "Type a stock level into a row's inline stock cell, then open the audit log.",
+      "expected_behaviour": "Every saved stock level appears in the audit log.",
+      "observable_violation": "The log has no 'SKU-101 stock 12 → 42' entry although the grid shows 42 saved.",
+      "assertions": [
+        {
+          "kind": "echoes_input",
+          "where": "/log$",
+          "region": "audit_log",
+          "input_field": "stock_inline",
+          "describes": "the audit log records the stock level saved inline"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 1,
+      "shortest_path": 2,
+      "trigger_trace": [
+        {
+          "type": "TYPE",
+          "id": "stock-SKU-101",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "nav-log"
+        }
+      ],
+      "patch": {
+        "file": "src/inventory.py",
+        "find": "    _journal(conn, sid, stamp, sku, \"stock\", before, level, \"inline\")  # audited like every other change\n",
+        "replace": ""
+      }
+    }
+  ],
+  "benign_traces": [
+    [
+      {
+        "type": "SELECT",
+        "id": "filter-category",
+        "params": {
+          "option": "Tools"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "filter-apply"
+      },
+      {
+        "type": "CLICK",
+        "id": "page-next"
+      },
+      {
+        "type": "CLICK",
+        "id": "adjust-SKU-125"
+      },
+      {
+        "type": "TYPE",
+        "id": "new-stock",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "commit-adjust"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "pick-SKU-110"
+      },
+      {
+        "type": "SELECT",
+        "id": "bulk-action",
+        "params": {
+          "option": "restock"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "bulk-apply"
+      },
+      {
+        "type": "CLICK",
+        "id": "nav-log"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "sort-stock"
+      },
+      {
+        "type": "CLICK",
+        "id": "page-next"
+      },
+      {
+        "type": "CLICK",
+        "id": "page-prev"
+      },
+      {
+        "type": "CLICK",
+        "id": "columns-toggle"
+      },
+      {
+        "type": "CLICK",
+        "id": "col-location"
+      },
+      {
+        "type": "CLICK",
+        "id": "sync-grid"
+      },
+      {
+        "type": "TYPE",
+        "id": "stock-SKU-117",
+        "params": {
+          "category": "valid_typical"
+        }
+      }
+    ]
+  ]
+}

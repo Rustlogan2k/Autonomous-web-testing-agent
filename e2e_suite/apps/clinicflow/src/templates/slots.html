@@ -1,0 +1,18 @@
+<h1>{{ t("slots.title") }}</h1>
+{{ tabs|raw }}
+{{ moving|raw }}
+<dl class="tally">
+  <div><dt>{{ t("tally.taken") }}</dt><dd><output id="taken-count">{{ taken }}</output></dd></div>
+  <div><dt>{{ t("tally.others") }}</dt><dd><output id="others-count">{{ others }}</output></dd></div>
+  <div><dt>{{ t("tally.yours") }}</dt><dd><output id="yours-count">{{ yours }}</output></dd></div>
+</dl>
+<p><button id="next-free" class="quiet" type="button">{{ t("act.next_free") }}</button></p>
+<form method="post" action="/book/{{ draft }}/hold" autocomplete="off">
+  <input type="hidden" name="with" value="{{ practitioner }}">
+  <table class="week">
+    <thead><tr><th scope="col">{{ t("slots.time") }}</th>{{ head|raw }}</tr></thead>
+    <tbody>{{ rows|raw }}</tbody>
+  </table>
+</form>
+{{ held|raw }}
+<p class="actions">{{ onward|raw }}</p>

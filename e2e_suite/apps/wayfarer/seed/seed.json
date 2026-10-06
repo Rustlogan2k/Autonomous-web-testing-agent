@@ -1,0 +1,24 @@
+{
+  "trips": [
+    {
+      "id": "t1",
+      "name": "Coast to Coast",
+      "start": "2026-06-18",
+      "days": 3,
+      "sealed": [
+        [
+          {"id": "s1", "name": "Harbour walk", "length": "1h"},
+          {"id": "s2", "name": "Fish market", "length": "30m"},
+          {"id": "s3", "name": "Lighthouse", "length": "2h"}
+        ],
+        [
+          {"id": "s4", "name": "Cliff path", "length": "half"}
+        ],
+        [
+          {"id": "s5", "name": "Sandy bay", "length": "2h"}
+        ]
+      ]
+    }
+  ],
+  "next_trip": 2
+}

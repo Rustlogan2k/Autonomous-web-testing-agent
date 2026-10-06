@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }} — Harbourside Health</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/assets/clinic.css">
+</head>
+<body>
+<header class="topbar">
+  <a id="nav-home" class="wordmark" href="/">Harbourside Health</a>
+  <nav class="topnav" aria-label="{{ t("nav.label") }}">
+    {{ resume|raw }}
+    <a id="nav-book" href="/book">{{ t("nav.book") }}</a>
+    <a id="nav-bookings" href="/bookings">{{ t("nav.bookings") }}</a>
+  </nav>
+</header>
+<main class="sheet">
+{{ notice|raw }}{{ error|raw }}
+{{ body|raw }}
+</main>
+<footer class="foot"><p>{{ t("clinic.tagline") }}</p></footer>
+<script src="/assets/booking.js"></script>
+</body>
+</html>

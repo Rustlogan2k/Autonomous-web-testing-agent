@@ -1,0 +1,796 @@
+{
+  "app_id": "tidewater",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "Ran 11 tests in 0.557s",
+          "OK"
+        ],
+        "pass_lines": null,
+        "tail": []
+      }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "4fc68ee00d6caac818c0d2803d43fea88470c93a47dd7bea5f78b4ad3f9da0c8",
+        "fresh_context_sha": [
+          "4fc68ee00d6caac818c0d2803d43fea88470c93a47dd7bea5f78b4ad3f9da0c8",
+          "4fc68ee00d6caac818c0d2803d43fea88470c93a47dd7bea5f78b4ad3f9da0c8"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault TIDE-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "TIDE-1",
+        "subtype": "missing-validation",
+        "oracle": "existing",
+        "fault_class": "constraint_bypass",
+        "witness_length": 7,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False -\u00a317.00"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 17,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 128.7
+      }
+    },
+    {
+      "name": "fault TIDE-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "TIDE-2",
+        "subtype": "state-transition",
+        "oracle": "existing",
+        "fault_class": "broken_transition",
+        "witness_length": 6,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "reached_with_invalid_input: violated=True inconclusive=False next-friday"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 6,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 105.0
+      }
+    },
+    {
+      "name": "fault TIDE-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "TIDE-3",
+        "subtype": "stale-state",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "echoes_input: violated=True inconclusive=False Landlord (R. Okafor) Electric Co Mum Everyday \u2014 your account Saver \u2014 your accoun"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 81.5
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "docker_offline_build_and_health",
+      "passed": true,
+      "detail": {
+        "image": "e2e-suite/tidewater:clean",
+        "build_ok": true,
+        "build_seconds": 1.5,
+        "build_tail": [
+          "#10 naming to docker.io/e2e-suite/tidewater:clean done",
+          "#10 unpacking to docker.io/e2e-suite/tidewater:clean 0.1s done",
+          "#10 DONE 0.4s"
+        ],
+        "container_healthy": true,
+        "detail": "{'ok': True, 'app': 'tidewater'}",
+        "image_mb": 43.3,
+        "passed": true
+      }
+    },
+    {
+      "name": "product_intake_matches_expectation",
+      "passed": true,
+      "detail": {
+        "profile": {
+          "languages": [
+            {
+              "language": "JSON",
+              "files": 4,
+              "bytes": 24832,
+              "share": 0.3483
+            },
+            {
+              "language": "Python",
+              "files": 1,
+              "bytes": 22036,
+              "share": 0.3091
+            },
+            {
+              "language": "JavaScript",
+              "files": 1,
+              "bytes": 20386,
+              "share": 0.2859
+            },
+            {
+              "language": "CSS",
+              "files": 1,
+              "bytes": 2410,
+              "share": 0.0338
+            },
+            {
+              "language": "Markdown",
+              "files": 1,
+              "bytes": 1127,
+              "share": 0.0158
+            },
+            {
+              "language": "HTML",
+              "files": 1,
+              "bytes": 506,
+              "share": 0.0071
+            }
+          ],
+          "frameworks": [],
+          "build_definition": {
+            "value": "dockerfile",
+            "evidence": "Dockerfile",
+            "confidence": 1.0
+          }
+        },
+        "build_plan": {
+          "kind": "dockerfile",
+          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\tidewater\\clean\\Dockerfile"
+        },
+        "product_can_build": true,
+        "matches_expectation": true,
+        "expectation": "buildable by the current intake"
+      }
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 76,
+      "keys_used_by_source": 76,
+      "action_keys": 19,
+      "unused_keys": [],
+      "default_action_labels": {
+        "act.add_payee": "Add payee",
+        "act.apply_filter": "Apply",
+        "act.authorise": "Authorise",
+        "act.back_accounts": "Back to accounts",
+        "act.back_payees": "All payees",
+        "act.cancel_move": "Cancel",
+        "act.cancel_scheduled": "Cancel transfer",
+        "act.change_accounts": "Change accounts",
+        "act.change_details": "Change details",
+        "act.check_payee": "Check details",
+        "act.close": "Close",
+        "act.confirm_payee": "Add this payee",
+        "act.edit": "Edit",
+        "act.edit_payee_details": "Edit details",
+        "act.move": "Move money",
+        "act.promo": "Continue",
+        "act.refresh": "Refresh balances",
+        "act.review": "Review transfer",
+        "act.to_amount": "Set amount"
+      },
+      "alt_action_labels": {
+        "act.add_payee": "New recipient",
+        "act.apply_filter": "Show results",
+        "act.authorise": "Approve payment",
+        "act.back_accounts": "Return to overview",
+        "act.back_payees": "All recipients",
+        "act.cancel_move": "Abandon",
+        "act.cancel_scheduled": "Stop payment",
+        "act.change_accounts": "Switch accounts",
+        "act.change_details": "Amend",
+        "act.check_payee": "Verify recipient",
+        "act.close": "Dismiss",
+        "act.confirm_payee": "Save recipient",
+        "act.edit": "Rename",
+        "act.edit_payee_details": "Correct details",
+        "act.move": "Send funds",
+        "act.promo": "Find out more",
+        "act.refresh": "Update figures",
+        "act.review": "Check transfer",
+        "act.to_amount": "Enter sum"
+      }
+    },
+    "patch_sizes": {
+      "TIDE-1": {
+        "file": "src/server.py",
+        "lines_removed": 2,
+        "lines_added": 2,
+        "chars_changed": 81
+      },
+      "TIDE-2": {
+        "file": "src/server.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 19
+      },
+      "TIDE-3": {
+        "file": "src/static/app.js",
+        "lines_removed": 2,
+        "lines_added": 1,
+        "chars_changed": 67
+      }
+    },
+    "workflows": [
+      {
+        "name": "pay the landlord now [default vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "schedule a payment to Mum for next Friday [default vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "schedule then cancel from the dashboard [default vocabulary]",
+        "steps": 8,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "add a payee through the modal [default vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "rename a payee, then start a transfer [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "filter statements to the Saver account [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "pay the landlord now [alt vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "schedule a payment to Mum for next Friday [alt vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "schedule then cancel from the dashboard [alt vocabulary]",
+        "steps": 8,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "add a payee through the modal [alt vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "rename a payee, then start a transfer [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "filter statements to the Saver account [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "Authorise commits a reviewed transfer once; the same button on the same reviewed transfer after it was sent does nothing",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "the promotion's Continue",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "Refresh balances",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "TIDE-1",
+        "subtype": "missing-validation",
+        "oracle": "existing",
+        "fault_class": "constraint_bypass",
+        "witness_length": 7,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False -\u00a317.00"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 17,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-move"
+          },
+          {
+            "type": "CLICK",
+            "id": "to-amount"
+          },
+          {
+            "type": "TYPE",
+            "id": "amount",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "change-accounts"
+          },
+          {
+            "type": "SELECT",
+            "id": "from-account",
+            "params": {
+              "option": "saver"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "to-amount"
+          },
+          {
+            "type": "CLICK",
+            "id": "review-transfer"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 128.7
+      },
+      {
+        "fault_id": "TIDE-2",
+        "subtype": "state-transition",
+        "oracle": "existing",
+        "fault_class": "broken_transition",
+        "witness_length": 6,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "reached_with_invalid_input: violated=True inconclusive=False next-friday"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 6,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-move"
+          },
+          {
+            "type": "CLICK",
+            "id": "to-amount"
+          },
+          {
+            "type": "TYPE",
+            "id": "amount",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "when",
+            "params": {
+              "option": "next-friday"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "review-transfer"
+          },
+          {
+            "type": "CLICK",
+            "id": "authorise"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 105.0
+      },
+      {
+        "fault_id": "TIDE-3",
+        "subtype": "stale-state",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "echoes_input: violated=True inconclusive=False Landlord (R. Okafor) Electric Co Mum Everyday \u2014 your account Saver \u2014 your accoun"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-move"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-payees"
+          },
+          {
+            "type": "CLICK",
+            "id": "edit-mum"
+          },
+          {
+            "type": "TYPE",
+            "id": "nickname",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-move"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 81.5
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
+    },
+    "product_intake": {
+      "profile": {
+        "languages": [
+          {
+            "language": "JSON",
+            "files": 4,
+            "bytes": 24832,
+            "share": 0.3483
+          },
+          {
+            "language": "Python",
+            "files": 1,
+            "bytes": 22036,
+            "share": 0.3091
+          },
+          {
+            "language": "JavaScript",
+            "files": 1,
+            "bytes": 20386,
+            "share": 0.2859
+          },
+          {
+            "language": "CSS",
+            "files": 1,
+            "bytes": 2410,
+            "share": 0.0338
+          },
+          {
+            "language": "Markdown",
+            "files": 1,
+            "bytes": 1127,
+            "share": 0.0158
+          },
+          {
+            "language": "HTML",
+            "files": 1,
+            "bytes": 506,
+            "share": 0.0071
+          }
+        ],
+        "frameworks": [],
+        "build_definition": {
+          "value": "dockerfile",
+          "evidence": "Dockerfile",
+          "confidence": 1.0
+        }
+      },
+      "build_plan": {
+        "kind": "dockerfile",
+        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\tidewater\\clean\\Dockerfile"
+      },
+      "product_can_build": true,
+      "matches_expectation": true,
+      "expectation": "buildable by the current intake"
+    }
+  },
+  "admitted": true,
+  "checks_run": 22,
+  "checks_failed": [],
+  "browser_checks_run": true,
+  "docker_checks_run": true,
+  "wall_clock_s": 565.0
+}

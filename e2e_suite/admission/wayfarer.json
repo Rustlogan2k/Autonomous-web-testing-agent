@@ -1,0 +1,640 @@
+{
+  "app_id": "wayfarer",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "# tests 12",
+          "# pass 12",
+          "# fail 0"
+        ],
+        "pass_lines": 1,
+        "tail": []
+      }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "6b68d91da7bd68a60d67bd651b15d09ddb1996638f3359dc21403b8f9fca51a9",
+        "fresh_context_sha": [
+          "6b68d91da7bd68a60d67bd651b15d09ddb1996638f3359dc21403b8f9fca51a9",
+          "6b68d91da7bd68a60d67bd651b15d09ddb1996638f3359dc21403b8f9fca51a9"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault WAY-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "WAY-1",
+        "subtype": "persistence",
+        "oracle": "extension",
+        "fault_class": "persistence_failure",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='Lighthouse 2 hrs Nudge up Nudge down Strike Favourite Harbour walk 1 hr "
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 77.0
+      }
+    },
+    {
+      "name": "fault WAY-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "WAY-2",
+        "subtype": "cross-page",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 7,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False shown=7 sealed=6"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 8,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 99.6
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "product_intake_matches_expectation",
+      "passed": true,
+      "detail": {
+        "profile": {
+          "languages": [
+            {
+              "language": "JavaScript",
+              "files": 2,
+              "bytes": 39689,
+              "share": 0.5977
+            },
+            {
+              "language": "JSON",
+              "files": 4,
+              "bytes": 20236,
+              "share": 0.3048
+            },
+            {
+              "language": "Markdown",
+              "files": 1,
+              "bytes": 3437,
+              "share": 0.0518
+            },
+            {
+              "language": "CSS",
+              "files": 1,
+              "bytes": 2386,
+              "share": 0.0359
+            },
+            {
+              "language": "HTML",
+              "files": 1,
+              "bytes": 650,
+              "share": 0.0098
+            }
+          ],
+          "frameworks": [],
+          "build_definition": null
+        },
+        "build_plan_error": "RepoIntakeError: No Dockerfile or compose file found in C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\wayfarer\\clean (searched the root and one level down). v1 requires the repository to describe its own build; see \u00a76.2.\n--- dia",
+        "product_can_build": false,
+        "matches_expectation": true,
+        "expectation": "refused by the current intake (no Dockerfile): the limitation this app exists to exercise"
+      }
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 65,
+      "keys_used_by_source": 65,
+      "action_keys": 12,
+      "unused_keys": [],
+      "default_action_labels": {
+        "act.all_trips": "All trips",
+        "act.create_trip": "Plan trip",
+        "act.favourite": "Favourite",
+        "act.nudge_down": "Nudge down",
+        "act.nudge_up": "Nudge up",
+        "act.open": "Open",
+        "act.permalink": "Link to this itinerary",
+        "act.pin": "Pin stop",
+        "act.seal": "Seal itinerary",
+        "act.share": "Share",
+        "act.strike": "Strike",
+        "act.weather": "Weather"
+      },
+      "alt_action_labels": {
+        "act.all_trips": "Back to journeys",
+        "act.create_trip": "Create trip",
+        "act.favourite": "Star",
+        "act.nudge_down": "Lower",
+        "act.nudge_up": "Raise",
+        "act.open": "View",
+        "act.permalink": "Permanent address",
+        "act.pin": "Add waypoint",
+        "act.seal": "Freeze plan",
+        "act.share": "Get link",
+        "act.strike": "Drop",
+        "act.weather": "Forecast"
+      }
+    },
+    "patch_sizes": {
+      "WAY-1": {
+        "file": "src/static/app.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 68
+      },
+      "WAY-2": {
+        "file": "src/static/app.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 9
+      }
+    },
+    "workflows": [
+      {
+        "name": "pin a stop on day 1 and seal it as version 2 [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "reorder and strike on day 1, then seal [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "plan a new two-day trip and seal its first stop [default vocabulary]",
+        "steps": 8,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "share the seeded itinerary [default vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "pin on day 2, seal, then share the new version [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "check the forecast, star a stop and return to the trip list [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "pin a stop on day 1 and seal it as version 2 [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "reorder and strike on day 1, then seal [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "plan a new two-day trip and seal its first stop [alt vocabulary]",
+        "steps": 8,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "share the seeded itinerary [alt vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "pin on day 2, seal, then share the new version [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "check the forecast, star a stop and return to the trip list [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "Seal itinerary creates a new sealed version only when the draft differs from the latest one",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "Share issues a share link only for a trip that has a sealed version",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "the Weather forecast",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "starring a stop as a favourite",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "WAY-1",
+        "subtype": "persistence",
+        "oracle": "extension",
+        "fault_class": "persistence_failure",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='Lighthouse 2 hrs Nudge up Nudge down Strike Favourite Harbour walk 1 hr "
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "open-t1"
+          },
+          {
+            "type": "CLICK",
+            "id": "strike-s2"
+          },
+          {
+            "type": "CLICK",
+            "id": "up-s3"
+          },
+          {
+            "type": "REFRESH"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 77.0
+      },
+      {
+        "fault_id": "WAY-2",
+        "subtype": "cross-page",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 7,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False shown=7 sealed=6"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 8,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "open-t1"
+          },
+          {
+            "type": "TYPE",
+            "id": "stop-name-1",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "pin-1"
+          },
+          {
+            "type": "CLICK",
+            "id": "share"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 99.6
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
+    },
+    "product_intake": {
+      "profile": {
+        "languages": [
+          {
+            "language": "JavaScript",
+            "files": 2,
+            "bytes": 39689,
+            "share": 0.5977
+          },
+          {
+            "language": "JSON",
+            "files": 4,
+            "bytes": 20236,
+            "share": 0.3048
+          },
+          {
+            "language": "Markdown",
+            "files": 1,
+            "bytes": 3437,
+            "share": 0.0518
+          },
+          {
+            "language": "CSS",
+            "files": 1,
+            "bytes": 2386,
+            "share": 0.0359
+          },
+          {
+            "language": "HTML",
+            "files": 1,
+            "bytes": 650,
+            "share": 0.0098
+          }
+        ],
+        "frameworks": [],
+        "build_definition": null
+      },
+      "build_plan_error": "RepoIntakeError: No Dockerfile or compose file found in C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\wayfarer\\clean (searched the root and one level down). v1 requires the repository to describe its own build; see \u00a76.2.\n--- dia",
+      "product_can_build": false,
+      "matches_expectation": true,
+      "expectation": "refused by the current intake (no Dockerfile): the limitation this app exists to exercise"
+    }
+  },
+  "admitted": true,
+  "checks_run": 20,
+  "checks_failed": [],
+  "browser_checks_run": true,
+  "docker_checks_run": true,
+  "wall_clock_s": 391.3
+}

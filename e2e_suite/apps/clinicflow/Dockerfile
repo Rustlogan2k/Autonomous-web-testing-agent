@@ -1,0 +1,9 @@
+FROM python:3.12-slim
+WORKDIR /app
+COPY src ./src
+COPY seed ./seed
+COPY vocab ./vocab
+ENV PORT=8080 HOST=0.0.0.0 PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 WTA_DATA_DIR=/tmp/clinicflow
+EXPOSE 8080
+USER 65534
+CMD ["python", "src/server.py"]

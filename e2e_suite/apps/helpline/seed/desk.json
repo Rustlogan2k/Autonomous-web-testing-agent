@@ -1,0 +1,99 @@
+{
+  "tickets": [
+    {"id": 101, "subject": "Router keeps dropping Wi-Fi", "customer": "Priya Shah",
+     "email": "priya.shah@example.net", "phone": "0161 496 0101", "plan": "Fibre Plus",
+     "channel": "email", "priority": "high", "status": "new", "assignee": "",
+     "opened": "2026-06-09 18:12",
+     "conversation": [
+       {"role": "customer", "at": "2026-06-09 18:12",
+        "body": "The Wi-Fi drops every evening for a few minutes, then comes back. The router lights stay green the whole time."}
+     ]},
+    {"id": 102, "subject": "No internet since the storm", "customer": "Tom Okafor",
+     "email": "tom.okafor@example.net", "phone": "0113 496 0102", "plan": "Fibre Essential",
+     "channel": "phone", "priority": "urgent", "status": "triage", "assignee": "",
+     "opened": "2026-06-09 07:40",
+     "conversation": [
+       {"role": "customer", "at": "2026-06-09 07:40",
+        "body": "Nothing at all since the storm on Sunday night. I work from home, so this is urgent."}
+     ]},
+    {"id": 103, "subject": "Can't log in to my account", "customer": "Lena Fischer",
+     "email": "lena.fischer@example.net", "phone": "0117 496 0103", "plan": "Fibre Essential",
+     "channel": "chat", "priority": "normal", "status": "new", "assignee": "",
+     "opened": "2026-06-10 08:05",
+     "conversation": [
+       {"role": "customer", "at": "2026-06-10 08:05",
+        "body": "The password reset email never arrives, so I can't see my bills online."}
+     ]},
+    {"id": 104, "subject": "Slow speeds in the evening", "customer": "Ravi Menon",
+     "email": "ravi.menon@example.net", "phone": "0121 496 0104", "plan": "Fibre Max",
+     "channel": "email", "priority": "normal", "status": "in_progress", "assignee": "noor",
+     "opened": "2026-06-06 20:31",
+     "conversation": [
+       {"role": "customer", "at": "2026-06-06 20:31",
+        "body": "Speeds fall to almost nothing between eight and eleven every night."},
+       {"role": "agent", "author": "noor", "at": "2026-06-07 09:15",
+        "body": "Thanks Ravi. Could you run a speed test with a cable plugged in tonight and send us the result?"},
+       {"role": "customer", "at": "2026-06-08 21:02",
+        "body": "Done: wired it is just as slow. The test page says the line itself is fine."}
+     ]},
+    {"id": 105, "subject": "Charged twice in May", "customer": "Wei Chen",
+     "email": "wei.chen@example.net", "phone": "0131 496 0105", "plan": "Fibre Plus",
+     "channel": "email", "priority": "high", "status": "triage", "assignee": "noor",
+     "opened": "2026-06-08 12:44",
+     "conversation": [
+       {"role": "customer", "at": "2026-06-08 12:44",
+        "body": "My bank statement shows the monthly payment taken twice on the same day in May."}
+     ]},
+    {"id": 106, "subject": "Refund for the double charge", "customer": "Wei Chen",
+     "email": "wei.chen@example.net", "phone": "0131 496 0105", "plan": "Fibre Plus",
+     "channel": "chat", "priority": "normal", "status": "new", "assignee": "",
+     "opened": "2026-06-09 16:20",
+     "conversation": [
+       {"role": "customer", "at": "2026-06-09 16:20",
+        "body": "Following up by chat: when will the extra payment from May come back to my account?"}
+     ]},
+    {"id": 107, "subject": "Engineer visit didn't happen", "customer": "Grace O'Neill",
+     "email": "grace.oneill@example.net", "phone": "0141 496 0107", "plan": "Fibre Max",
+     "channel": "phone", "priority": "high", "status": "waiting", "assignee": "noor",
+     "opened": "2026-06-05 10:02",
+     "conversation": [
+       {"role": "customer", "at": "2026-06-05 10:02",
+        "body": "I waited in all morning and nobody came for the installation appointment."},
+       {"role": "agent", "author": "noor", "at": "2026-06-05 11:30",
+        "body": "Sorry Grace. I can rebook the visit for Thursday morning or Friday afternoon. Which suits you?"}
+     ]},
+    {"id": 108, "subject": "Upgrade to the fibre plan", "customer": "Jonas Berg",
+     "email": "jonas.berg@example.net", "phone": "0151 496 0108", "plan": "Copper Basic",
+     "channel": "email", "priority": "low", "status": "resolved", "assignee": "noor",
+     "opened": "2026-06-03 14:10",
+     "conversation": [
+       {"role": "customer", "at": "2026-06-03 14:10",
+        "body": "Fibre is now available on my street. How do I switch without losing my phone number?"},
+       {"role": "agent", "author": "noor", "at": "2026-06-04 09:05",
+        "body": "Good news Jonas: your number moves with you. I have scheduled the switch and emailed the details."}
+     ]},
+    {"id": 109, "subject": "Moving house next month", "customer": "Amara Diallo",
+     "email": "amara.diallo@example.net", "phone": "0161 496 0109", "plan": "Fibre Plus",
+     "channel": "phone", "priority": "low", "status": "in_progress", "assignee": "",
+     "opened": "2026-06-07 15:48",
+     "conversation": [
+       {"role": "customer", "at": "2026-06-07 15:48",
+        "body": "We move at the end of next month. Can the service move with us?"},
+       {"role": "agent", "author": "noor", "at": "2026-06-08 10:12",
+        "body": "Yes. What is the new address, and which day would you like the switch-over?"},
+       {"role": "customer", "at": "2026-06-09 19:30",
+        "body": "Flat 2, Orchard Court. Any day in the first week after we move is fine."}
+     ]},
+    {"id": 110, "subject": "Static IP address request", "customer": "Sofia Rossi",
+     "email": "sofia.rossi@example.net", "phone": "0191 496 0110", "plan": "Fibre Max",
+     "channel": "email", "priority": "normal", "status": "closed", "assignee": "noor",
+     "opened": "2026-05-28 09:00",
+     "conversation": [
+       {"role": "customer", "at": "2026-05-28 09:00",
+        "body": "I run a small home server and need a fixed address."},
+       {"role": "agent", "author": "noor", "at": "2026-05-28 13:45",
+        "body": "Done: the static address is active and shown in your account settings."}
+     ]}
+  ],
+  "links": [[102, 107]]
+}

@@ -1,0 +1,11 @@
+<form method="post" action="/bookings/{{ ref }}/reschedule" autocomplete="off">
+  <p class="actions"><button id="reschedule-visit" class="primary" type="submit">{{ t("act.reschedule") }}</button></p>
+</form>
+<form class="danger-zone" method="post" action="/bookings/{{ ref }}/cancel" autocomplete="off">
+  <fieldset>
+    <legend>{{ t("manage.cancel_legend") }}</legend>
+    <input id="cancel-confirm" name="confirm" type="checkbox" value="yes">
+    <label class="inline" for="cancel-confirm">{{ t("field.cancel_confirm") }}</label>
+    <p><button id="cancel-visit" type="submit" disabled>{{ t("act.cancel") }}</button></p>
+  </fieldset>
+</form>

@@ -1,0 +1,780 @@
+{
+  "app_id": "tidewater",
+  "name": "Tidewater",
+  "domain": "personal banking",
+  "user_goal": "Move money between accounts and to payees, now or on a schedule; manage payees; read statements.",
+  "architecture": "spa-hash-router+json-api",
+  "stack": "python-stdlib+sqlite",
+  "persistence": "sqlite rows partitioned by session; client keeps wizard state and a payee cache in memory",
+  "entry": "/",
+  "start": [
+    "python",
+    "src/server.py"
+  ],
+  "dockerfile": true,
+  "workflow_graph": {
+    "kind": [
+      "hub-and-spoke",
+      "linear-wizard",
+      "modal-heavy",
+      "revisit"
+    ],
+    "nodes": [
+      "dashboard",
+      "offers",
+      "move/accounts",
+      "move/amount",
+      "move/review",
+      "move/done",
+      "move/scheduled",
+      "payees",
+      "payee-modal:form",
+      "payee-modal:confirm",
+      "payee/edit",
+      "statements"
+    ],
+    "edges": [
+      [
+        "dashboard",
+        "move/accounts"
+      ],
+      [
+        "dashboard",
+        "payees"
+      ],
+      [
+        "dashboard",
+        "statements"
+      ],
+      [
+        "dashboard",
+        "offers"
+      ],
+      [
+        "offers",
+        "dashboard"
+      ],
+      [
+        "move/accounts",
+        "move/amount"
+      ],
+      [
+        "move/amount",
+        "move/accounts"
+      ],
+      [
+        "move/amount",
+        "move/review"
+      ],
+      [
+        "move/review",
+        "move/amount"
+      ],
+      [
+        "move/review",
+        "move/done"
+      ],
+      [
+        "move/review",
+        "move/scheduled"
+      ],
+      [
+        "payees",
+        "payee-modal:form"
+      ],
+      [
+        "payee-modal:form",
+        "payee-modal:confirm"
+      ],
+      [
+        "payee-modal:confirm",
+        "payee-modal:form"
+      ],
+      [
+        "payee-modal:confirm",
+        "payees"
+      ],
+      [
+        "payees",
+        "payee/edit"
+      ],
+      [
+        "payee/edit",
+        "payees"
+      ],
+      [
+        "dashboard",
+        "dashboard"
+      ],
+      [
+        "statements",
+        "statements"
+      ]
+    ]
+  },
+  "features": [
+    "spa",
+    "client-state",
+    "server-state",
+    "modal",
+    "conditional-section",
+    "table",
+    "filter",
+    "cross-page-state",
+    "dynamic-validation"
+  ],
+  "vocabulary": {
+    "progress_keys": [
+      "act.to_amount",
+      "act.review",
+      "act.authorise",
+      "act.confirm_payee",
+      "act.check_payee"
+    ]
+  },
+  "regions": {
+    "review_after": "#review-after",
+    "review_from": "#review-from",
+    "to_options": "#to-target",
+    "done_summary": "#done-summary",
+    "scheduled_date": "#scheduled-date",
+    "payee_table": "#payee-table",
+    "statement_count": "#statement-count",
+    "statement_table": "#statement-table",
+    "scheduled_table": "#scheduled-table",
+    "balance_everyday": "#balance-everyday"
+  },
+  "workflows": [
+    {
+      "name": "pay the landlord now",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-move"
+        },
+        {
+          "type": "CLICK",
+          "id": "to-amount"
+        },
+        {
+          "type": "TYPE",
+          "id": "amount",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "reference",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "review-transfer"
+        },
+        {
+          "type": "CLICK",
+          "id": "authorise"
+        },
+        {
+          "type": "CLICK",
+          "id": "done-accounts"
+        }
+      ],
+      "expect": [
+        {
+          "region": "balance_everyday",
+          "contains": "498.00"
+        }
+      ]
+    },
+    {
+      "name": "schedule a payment to Mum for next Friday",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-move"
+        },
+        {
+          "type": "SELECT",
+          "id": "to-target",
+          "params": {
+            "option": "payee:mum"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "to-amount"
+        },
+        {
+          "type": "TYPE",
+          "id": "amount",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "when",
+          "params": {
+            "option": "next-friday"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "review-transfer"
+        },
+        {
+          "type": "CLICK",
+          "id": "authorise"
+        }
+      ],
+      "expect": [
+        {
+          "region": "scheduled_date",
+          "contains": "Fri 12 Jun 2026"
+        }
+      ]
+    },
+    {
+      "name": "schedule then cancel from the dashboard",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-move"
+        },
+        {
+          "type": "CLICK",
+          "id": "to-amount"
+        },
+        {
+          "type": "TYPE",
+          "id": "amount",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "when",
+          "params": {
+            "option": "month-end"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "review-transfer"
+        },
+        {
+          "type": "CLICK",
+          "id": "authorise"
+        },
+        {
+          "type": "CLICK",
+          "id": "nav-accounts"
+        },
+        {
+          "type": "CLICK",
+          "id": "cancel-1"
+        }
+      ],
+      "expect": [
+        {
+          "region": "scheduled_table",
+          "absent": "Tue 30 Jun 2026"
+        },
+        {
+          "region": "balance_everyday",
+          "contains": "540.00"
+        }
+      ]
+    },
+    {
+      "name": "add a payee through the modal",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-payees"
+        },
+        {
+          "type": "CLICK",
+          "id": "add-payee"
+        },
+        {
+          "type": "TYPE",
+          "id": "new-payee-name",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "new-payee-bank",
+          "params": {
+            "option": "Northgate"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "new-payee-number",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "check-payee"
+        },
+        {
+          "type": "CLICK",
+          "id": "confirm-payee"
+        }
+      ],
+      "expect": [
+        {
+          "region": "payee_table",
+          "contains": "Test User Input"
+        }
+      ]
+    },
+    {
+      "name": "rename a payee, then start a transfer",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-payees"
+        },
+        {
+          "type": "CLICK",
+          "id": "edit-mum"
+        },
+        {
+          "type": "TYPE",
+          "id": "nickname",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "nav-move"
+        }
+      ],
+      "expect": [
+        {
+          "region": "to_options",
+          "contains": "Test User Input"
+        }
+      ]
+    },
+    {
+      "name": "filter statements to the Saver account",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-statements"
+        },
+        {
+          "type": "SELECT",
+          "id": "stmt-account",
+          "params": {
+            "option": "saver"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "apply-statement-filter"
+        }
+      ],
+      "expect": [
+        {
+          "region": "statement_count",
+          "contains": "1 "
+        },
+        {
+          "region": "statement_table",
+          "contains": "From Everyday"
+        },
+        {
+          "region": "statement_table",
+          "absent": "Salary"
+        }
+      ],
+      "commits": false
+    }
+  ],
+  "state_dependent": [
+    {
+      "name": "Authorise commits a reviewed transfer once; the same button on the same reviewed transfer after it was sent does nothing",
+      "useless": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-move"
+          },
+          {
+            "type": "CLICK",
+            "id": "to-amount"
+          },
+          {
+            "type": "TYPE",
+            "id": "amount",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "review-transfer"
+          },
+          {
+            "type": "CLICK",
+            "id": "authorise"
+          },
+          {
+            "type": "BROWSER_BACK"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "authorise"
+        }
+      },
+      "useful": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-move"
+          },
+          {
+            "type": "CLICK",
+            "id": "to-amount"
+          },
+          {
+            "type": "TYPE",
+            "id": "amount",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "review-transfer"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "authorise"
+        }
+      }
+    }
+  ],
+  "decoys": [
+    {
+      "name": "the promotion's Continue",
+      "trace": [],
+      "decoy": {
+        "type": "CLICK",
+        "id": "promo-continue"
+      }
+    },
+    {
+      "name": "Refresh balances",
+      "trace": [],
+      "decoy": {
+        "type": "CLICK",
+        "id": "refresh-balances"
+      }
+    }
+  ],
+  "faults": [
+    {
+      "fault_id": "TIDE-1",
+      "fault_class": "constraint_bypass",
+      "subtype": "missing-validation",
+      "oracle": "existing",
+      "description": "Funds are checked against a snapshot taken when the source account is first chosen. When the customer goes back and switches to a different source account, the snapshot is not refreshed, so a transfer larger than the new account holds is quoted and can be authorised.",
+      "trigger_condition": "Choose the accounts, enter an amount the first account can cover, go back, switch the source to the Saver (which holds less), and review.",
+      "expected_behaviour": "A transfer is never quoted for more than the source account holds: the review never shows a negative balance afterwards.",
+      "observable_violation": "The review shows a negative 'Available after transfer' for the Saver.",
+      "assertions": [
+        {
+          "kind": "text_absent",
+          "where": "#/move/review$",
+          "region": "review_after",
+          "expected": "-£",
+          "describes": "the review must never quote a transfer that leaves the source account below zero"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 0,
+      "shortest_path": 7,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-move"
+        },
+        {
+          "type": "CLICK",
+          "id": "to-amount"
+        },
+        {
+          "type": "TYPE",
+          "id": "amount",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "change-accounts"
+        },
+        {
+          "type": "SELECT",
+          "id": "from-account",
+          "params": {
+            "option": "saver"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "to-amount"
+        },
+        {
+          "type": "CLICK",
+          "id": "review-transfer"
+        }
+      ],
+      "patch": {
+        "file": "src/server.py",
+        "find": "            if source != draft[\"source\"]:\n                snapshot = available(conn, sid, source)",
+        "replace": "            if draft[\"available_snapshot\"] is None:\n                snapshot = available(conn, sid, source)"
+      }
+    },
+    {
+      "fault_id": "TIDE-2",
+      "fault_class": "broken_transition",
+      "subtype": "state-transition",
+      "oracle": "existing",
+      "description": "Authorising compares the transfer's timing against a constant left over from an earlier version of the API, so no future-dated transfer is recognised as scheduled: every one is executed at once.",
+      "trigger_condition": "Set up a transfer for next Friday (or the end of the month), review it, and authorise it.",
+      "expected_behaviour": "A transfer dated in the future is scheduled, not sent: the customer lands on the 'scheduled' confirmation and no money moves today.",
+      "observable_violation": "The customer lands on the 'Money sent' confirmation for a transfer they asked to send next Friday.",
+      "assertions": [
+        {
+          "kind": "reached_with_invalid_input",
+          "where": "#/move/done$",
+          "input_field": "when",
+          "expected": "^(next-friday|month-end)$",
+          "describes": "the 'sent now' confirmation is only for transfers the customer asked to send today"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 0,
+      "shortest_path": 6,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-move"
+        },
+        {
+          "type": "CLICK",
+          "id": "to-amount"
+        },
+        {
+          "type": "TYPE",
+          "id": "amount",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "when",
+          "params": {
+            "option": "next-friday"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "review-transfer"
+        },
+        {
+          "type": "CLICK",
+          "id": "authorise"
+        }
+      ],
+      "patch": {
+        "file": "src/server.py",
+        "find": "        if quote[\"run_when\"] in SCHEDULE_OPTIONS:",
+        "replace": "        if quote[\"run_when\"] == \"scheduled\":"
+      }
+    },
+    {
+      "fault_id": "TIDE-3",
+      "fault_class": "state_corruption",
+      "subtype": "stale-state",
+      "oracle": "existing",
+      "description": "Renaming a payee saves to the server, but the client's cached payee list that the transfer form reads is not invalidated, so the form keeps offering the old name for the rest of the session.",
+      "trigger_condition": "Open the transfer form (which caches payees), rename a payee, then open the transfer form again.",
+      "expected_behaviour": "The transfer form always lists payees under their current names.",
+      "observable_violation": "The 'To' list still shows the payee's old name after the rename was saved.",
+      "assertions": [
+        {
+          "kind": "echoes_input",
+          "where": "#/move$",
+          "region": "to_options",
+          "input_field": "nickname",
+          "describes": "a payee's saved nickname appears in the transfer form's payee list"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 1,
+      "shortest_path": 5,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-move"
+        },
+        {
+          "type": "CLICK",
+          "id": "nav-payees"
+        },
+        {
+          "type": "CLICK",
+          "id": "edit-mum"
+        },
+        {
+          "type": "TYPE",
+          "id": "nickname",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "nav-move"
+        }
+      ],
+      "patch": {
+        "file": "src/static/app.js",
+        "find": "      payeeCache = null; // the transfer form lists payees by name\n",
+        "replace": ""
+      }
+    }
+  ],
+  "benign_traces": [
+    [
+      {
+        "type": "CLICK",
+        "id": "nav-move"
+      },
+      {
+        "type": "CLICK",
+        "id": "to-amount"
+      },
+      {
+        "type": "TYPE",
+        "id": "amount",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "review-transfer"
+      },
+      {
+        "type": "CLICK",
+        "id": "authorise"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "nav-payees"
+      },
+      {
+        "type": "CLICK",
+        "id": "edit-electric"
+      },
+      {
+        "type": "TYPE",
+        "id": "nickname",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "back-to-payees"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "nav-statements"
+      },
+      {
+        "type": "SELECT",
+        "id": "stmt-direction",
+        "params": {
+          "option": "out"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "apply-statement-filter"
+      },
+      {
+        "type": "CLICK",
+        "id": "nav-move"
+      },
+      {
+        "type": "SELECT",
+        "id": "to-target",
+        "params": {
+          "option": "payee:electric"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "to-amount"
+      },
+      {
+        "type": "TYPE",
+        "id": "amount",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "review-transfer"
+      },
+      {
+        "type": "CLICK",
+        "id": "change-details"
+      },
+      {
+        "type": "CLICK",
+        "id": "review-transfer"
+      },
+      {
+        "type": "CLICK",
+        "id": "authorise"
+      }
+    ]
+  ]
+}

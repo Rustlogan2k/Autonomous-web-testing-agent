@@ -1,0 +1,1554 @@
+{
+  "app_id": "clinicflow",
+  "name": "Clinicflow (Harbourside Health)",
+  "domain": "healthcare appointment booking",
+  "user_goal": "Book a GP, physiotherapy or nurse appointment as a new or returning patient, answer the pre-visit questions when the service needs them, then reschedule or cancel it.",
+  "architecture": "server-rendered-branching-wizard+client-conditionals",
+  "stack": "python-stdlib-wsgiref+sqlite",
+  "persistence": "one sqlite file per session; the booking draft is a server-side row addressed in the URL",
+  "entry": "/",
+  "start": [
+    "python",
+    "src/server.py"
+  ],
+  "dockerfile": true,
+  "workflow_graph": {
+    "kind": [
+      "branching",
+      "linear-wizard",
+      "revisit"
+    ],
+    "nodes": [
+      "home",
+      "service",
+      "who",
+      "details",
+      "lookup",
+      "slots",
+      "questions",
+      "confirm",
+      "booked",
+      "manage",
+      "bookings",
+      "replaced"
+    ],
+    "edges": [
+      [
+        "home",
+        "service"
+      ],
+      [
+        "service",
+        "who"
+      ],
+      [
+        "who",
+        "details"
+      ],
+      [
+        "who",
+        "lookup"
+      ],
+      [
+        "details",
+        "slots"
+      ],
+      [
+        "lookup",
+        "slots"
+      ],
+      [
+        "slots",
+        "slots"
+      ],
+      [
+        "slots",
+        "questions"
+      ],
+      [
+        "slots",
+        "confirm"
+      ],
+      [
+        "questions",
+        "confirm"
+      ],
+      [
+        "questions",
+        "booked"
+      ],
+      [
+        "confirm",
+        "slots"
+      ],
+      [
+        "confirm",
+        "booked"
+      ],
+      [
+        "booked",
+        "manage"
+      ],
+      [
+        "manage",
+        "slots"
+      ],
+      [
+        "confirm",
+        "manage"
+      ],
+      [
+        "manage",
+        "bookings"
+      ],
+      [
+        "bookings",
+        "manage"
+      ],
+      [
+        "home",
+        "bookings"
+      ],
+      [
+        "service",
+        "replaced"
+      ],
+      [
+        "replaced",
+        "service"
+      ]
+    ]
+  },
+  "features": [
+    "server-rendered",
+    "conditional-section",
+    "table",
+    "dynamic-validation",
+    "cross-page-state",
+    "server-state",
+    "enable-disable"
+  ],
+  "vocabulary": {
+    "progress_keys": [
+      "act.save_details",
+      "act.find_record",
+      "act.hold",
+      "act.to_questions",
+      "act.to_review",
+      "act.save_answers",
+      "act.book"
+    ]
+  },
+  "regions": {
+    "taken": "#taken-count",
+    "others": "#others-count",
+    "yours": "#yours-count",
+    "held_slot": "#held-slot",
+    "questions_status": "#questions-status",
+    "confirm_when": "#confirm-when",
+    "booked_banner": "#booked-banner",
+    "booking_ref": "#booking-ref",
+    "booking_when": "#booking-when",
+    "booking_with": "#booking-with",
+    "booking_patient": "#booking-patient",
+    "paid_by": "#paid-by",
+    "booked_answers": "#booked-answers",
+    "manage_when": "#manage-when",
+    "upcoming": "#upcoming-list",
+    "cancelled_list": "#cancelled-list"
+  },
+  "workflows": [
+    {
+      "name": "a new patient books a GP and pays themselves",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-book"
+        },
+        {
+          "type": "CLICK",
+          "id": "svc-gp"
+        },
+        {
+          "type": "CLICK",
+          "id": "who-new"
+        },
+        {
+          "type": "TYPE",
+          "id": "full-name",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "dob",
+          "params": {
+            "category": "boundary_min"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "payment",
+          "params": {
+            "option": "self"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-details"
+        },
+        {
+          "type": "CLICK",
+          "id": "hold-0611-1100"
+        },
+        {
+          "type": "CLICK",
+          "id": "slots-done"
+        },
+        {
+          "type": "CLICK",
+          "id": "book-visit"
+        }
+      ],
+      "expect": [
+        {
+          "region": "booking_ref",
+          "contains": "CF-1001"
+        },
+        {
+          "region": "booking_when",
+          "contains": "Thu 11 Jun, 11:00"
+        },
+        {
+          "region": "booking_with",
+          "contains": "Amara Okafor"
+        },
+        {
+          "region": "booking_patient",
+          "contains": "Test User Input"
+        }
+      ]
+    },
+    {
+      "name": "a new patient books physiotherapy through an insurer",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-book"
+        },
+        {
+          "type": "CLICK",
+          "id": "svc-physio"
+        },
+        {
+          "type": "CLICK",
+          "id": "who-new"
+        },
+        {
+          "type": "TYPE",
+          "id": "full-name",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "dob",
+          "params": {
+            "category": "boundary_min"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "payment",
+          "params": {
+            "option": "insurer"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "insurer-name",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "insurer-member",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-details"
+        },
+        {
+          "type": "CLICK",
+          "id": "hold-0611-1100"
+        },
+        {
+          "type": "CLICK",
+          "id": "slots-done"
+        },
+        {
+          "type": "SELECT",
+          "id": "injury-area",
+          "params": {
+            "option": "knee"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "injury-notes",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-answers"
+        },
+        {
+          "type": "CLICK",
+          "id": "book-visit"
+        }
+      ],
+      "expect": [
+        {
+          "region": "paid_by",
+          "contains": "Test User Input"
+        },
+        {
+          "region": "paid_by",
+          "contains": "42"
+        },
+        {
+          "region": "booked_answers",
+          "contains": "Knee"
+        },
+        {
+          "region": "booking_with",
+          "contains": "Priya Natarajan"
+        }
+      ]
+    },
+    {
+      "name": "a returning patient books the practice nurse",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-book"
+        },
+        {
+          "type": "CLICK",
+          "id": "svc-nurse"
+        },
+        {
+          "type": "CLICK",
+          "id": "who-returning"
+        },
+        {
+          "type": "TYPE",
+          "id": "lookup-email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "payment",
+          "params": {
+            "option": "self"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "find-record"
+        },
+        {
+          "type": "CLICK",
+          "id": "hold-0611-0900"
+        },
+        {
+          "type": "CLICK",
+          "id": "slots-done"
+        },
+        {
+          "type": "CLICK",
+          "id": "book-visit"
+        }
+      ],
+      "expect": [
+        {
+          "region": "booking_patient",
+          "contains": "Alex Morgan"
+        },
+        {
+          "region": "booking_with",
+          "contains": "Carys Bevan"
+        },
+        {
+          "region": "booking_when",
+          "contains": "Thu 11 Jun, 09:00"
+        }
+      ]
+    },
+    {
+      "name": "book a GP, then move the appointment",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-book"
+        },
+        {
+          "type": "CLICK",
+          "id": "svc-gp"
+        },
+        {
+          "type": "CLICK",
+          "id": "who-returning"
+        },
+        {
+          "type": "TYPE",
+          "id": "lookup-email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "payment",
+          "params": {
+            "option": "self"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "find-record"
+        },
+        {
+          "type": "CLICK",
+          "id": "hold-0611-1100"
+        },
+        {
+          "type": "CLICK",
+          "id": "slots-done"
+        },
+        {
+          "type": "CLICK",
+          "id": "book-visit"
+        },
+        {
+          "type": "CLICK",
+          "id": "manage-booking"
+        },
+        {
+          "type": "CLICK",
+          "id": "reschedule-visit"
+        },
+        {
+          "type": "CLICK",
+          "id": "hold-0612-1400"
+        },
+        {
+          "type": "CLICK",
+          "id": "slots-done"
+        },
+        {
+          "type": "CLICK",
+          "id": "book-visit"
+        }
+      ],
+      "expect": [
+        {
+          "region": "manage_when",
+          "contains": "Fri 12 Jun, 14:00"
+        }
+      ]
+    },
+    {
+      "name": "book the nurse, then cancel",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-book"
+        },
+        {
+          "type": "CLICK",
+          "id": "svc-nurse"
+        },
+        {
+          "type": "CLICK",
+          "id": "who-returning"
+        },
+        {
+          "type": "TYPE",
+          "id": "lookup-email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "payment",
+          "params": {
+            "option": "self"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "find-record"
+        },
+        {
+          "type": "CLICK",
+          "id": "hold-0611-0900"
+        },
+        {
+          "type": "CLICK",
+          "id": "slots-done"
+        },
+        {
+          "type": "CLICK",
+          "id": "book-visit"
+        },
+        {
+          "type": "CLICK",
+          "id": "manage-booking"
+        },
+        {
+          "type": "CLICK",
+          "id": "cancel-confirm"
+        },
+        {
+          "type": "CLICK",
+          "id": "cancel-visit"
+        }
+      ],
+      "expect": [
+        {
+          "region": "cancelled_list",
+          "contains": "CF-1001"
+        },
+        {
+          "region": "upcoming",
+          "absent": "CF-1001"
+        }
+      ]
+    },
+    {
+      "name": "choose the other GP's week",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-book"
+        },
+        {
+          "type": "CLICK",
+          "id": "svc-gp"
+        },
+        {
+          "type": "CLICK",
+          "id": "who-returning"
+        },
+        {
+          "type": "TYPE",
+          "id": "lookup-email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "payment",
+          "params": {
+            "option": "self"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "find-record"
+        },
+        {
+          "type": "CLICK",
+          "id": "with-lindqvist"
+        },
+        {
+          "type": "CLICK",
+          "id": "hold-0611-0900"
+        },
+        {
+          "type": "CLICK",
+          "id": "slots-done"
+        },
+        {
+          "type": "CLICK",
+          "id": "book-visit"
+        }
+      ],
+      "expect": [
+        {
+          "region": "booking_with",
+          "contains": "Ben Lindqvist"
+        },
+        {
+          "region": "booking_when",
+          "contains": "Thu 11 Jun, 09:00"
+        }
+      ]
+    },
+    {
+      "name": "answer the physio questions and book from the same page",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-book"
+        },
+        {
+          "type": "CLICK",
+          "id": "svc-physio"
+        },
+        {
+          "type": "CLICK",
+          "id": "who-returning"
+        },
+        {
+          "type": "TYPE",
+          "id": "lookup-email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "payment",
+          "params": {
+            "option": "self"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "find-record"
+        },
+        {
+          "type": "CLICK",
+          "id": "hold-0611-1100"
+        },
+        {
+          "type": "CLICK",
+          "id": "slots-done"
+        },
+        {
+          "type": "SELECT",
+          "id": "injury-area",
+          "params": {
+            "option": "knee"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "injury-notes",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "book-visit"
+        }
+      ],
+      "expect": [
+        {
+          "region": "booked_answers",
+          "contains": "Knee"
+        },
+        {
+          "region": "booking_patient",
+          "contains": "Alex Morgan"
+        }
+      ]
+    }
+  ],
+  "state_dependent": [
+    {
+      "name": "Hold slot holds a free time, but changes nothing on a time that is already booked",
+      "useless": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-book"
+          },
+          {
+            "type": "CLICK",
+            "id": "svc-gp"
+          },
+          {
+            "type": "CLICK",
+            "id": "who-returning"
+          },
+          {
+            "type": "TYPE",
+            "id": "lookup-email",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "payment",
+            "params": {
+              "option": "self"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "find-record"
+          },
+          {
+            "type": "CLICK",
+            "id": "hold-0611-1100"
+          },
+          {
+            "type": "CLICK",
+            "id": "slots-done"
+          },
+          {
+            "type": "CLICK",
+            "id": "book-visit"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-book"
+          },
+          {
+            "type": "CLICK",
+            "id": "svc-gp"
+          },
+          {
+            "type": "CLICK",
+            "id": "who-returning"
+          },
+          {
+            "type": "TYPE",
+            "id": "lookup-email",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "payment",
+            "params": {
+              "option": "self"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "find-record"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "hold-0611-1100"
+        }
+      },
+      "useful": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-book"
+          },
+          {
+            "type": "CLICK",
+            "id": "svc-gp"
+          },
+          {
+            "type": "CLICK",
+            "id": "who-returning"
+          },
+          {
+            "type": "TYPE",
+            "id": "lookup-email",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "payment",
+            "params": {
+              "option": "self"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "find-record"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "hold-0611-1100"
+        }
+      }
+    },
+    {
+      "name": "Book visit is refused until the physiotherapy questions are answered",
+      "useless": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-book"
+          },
+          {
+            "type": "CLICK",
+            "id": "svc-physio"
+          },
+          {
+            "type": "CLICK",
+            "id": "who-returning"
+          },
+          {
+            "type": "TYPE",
+            "id": "lookup-email",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "payment",
+            "params": {
+              "option": "self"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "find-record"
+          },
+          {
+            "type": "CLICK",
+            "id": "hold-0611-1100"
+          },
+          {
+            "type": "CLICK",
+            "id": "slots-done"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "book-visit"
+        }
+      },
+      "useful": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-book"
+          },
+          {
+            "type": "CLICK",
+            "id": "svc-physio"
+          },
+          {
+            "type": "CLICK",
+            "id": "who-returning"
+          },
+          {
+            "type": "TYPE",
+            "id": "lookup-email",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "payment",
+            "params": {
+              "option": "self"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "find-record"
+          },
+          {
+            "type": "CLICK",
+            "id": "hold-0611-1100"
+          },
+          {
+            "type": "CLICK",
+            "id": "slots-done"
+          },
+          {
+            "type": "SELECT",
+            "id": "injury-area",
+            "params": {
+              "option": "knee"
+            }
+          },
+          {
+            "type": "TYPE",
+            "id": "injury-notes",
+            "params": {
+              "category": "valid_typical"
+            }
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "book-visit"
+        }
+      }
+    }
+  ],
+  "decoys": [
+    {
+      "name": "Next available on the slot table",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-book"
+        },
+        {
+          "type": "CLICK",
+          "id": "svc-gp"
+        },
+        {
+          "type": "CLICK",
+          "id": "who-returning"
+        },
+        {
+          "type": "TYPE",
+          "id": "lookup-email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "payment",
+          "params": {
+            "option": "self"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "find-record"
+        }
+      ],
+      "decoy": {
+        "type": "CLICK",
+        "id": "next-free"
+      }
+    },
+    {
+      "name": "Print summary on the booking check",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-book"
+        },
+        {
+          "type": "CLICK",
+          "id": "svc-gp"
+        },
+        {
+          "type": "CLICK",
+          "id": "who-returning"
+        },
+        {
+          "type": "TYPE",
+          "id": "lookup-email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "payment",
+          "params": {
+            "option": "self"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "find-record"
+        },
+        {
+          "type": "CLICK",
+          "id": "hold-0611-1100"
+        },
+        {
+          "type": "CLICK",
+          "id": "slots-done"
+        }
+      ],
+      "decoy": {
+        "type": "CLICK",
+        "id": "print-view"
+      }
+    }
+  ],
+  "faults": [
+    {
+      "fault_id": "CLIN-1",
+      "fault_class": "state_corruption",
+      "subtype": "stale-state",
+      "oracle": "extension",
+      "description": "Completing a reschedule reads the appointment's current time only after the appointment has been moved, so the release step looks for the old booking at the new time, finds nothing, and the old time stays occupied: the practitioner's week keeps a phantom 'Booked' slot that no appointment owns.",
+      "trigger_condition": "Book an appointment, reschedule it to a different time and confirm, then open the slot table for that practitioner again.",
+      "expected_behaviour": "On every slot table, the times taken equal those taken by other patients plus the times this patient holds or has booked.",
+      "observable_violation": "After one reschedule the table shows Taken 8, Taken by other patients 6, Yours 1.",
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "/book/\\d+/slots",
+          "expression": "taken == others + yours",
+          "operands": {
+            "taken": "taken",
+            "others": "others",
+            "yours": "yours"
+          },
+          "describes": "every taken time belongs to another patient or to this patient"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 1,
+      "shortest_path": 15,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-book"
+        },
+        {
+          "type": "CLICK",
+          "id": "svc-gp"
+        },
+        {
+          "type": "CLICK",
+          "id": "who-returning"
+        },
+        {
+          "type": "TYPE",
+          "id": "lookup-email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "payment",
+          "params": {
+            "option": "self"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "find-record"
+        },
+        {
+          "type": "CLICK",
+          "id": "hold-0611-1100"
+        },
+        {
+          "type": "CLICK",
+          "id": "slots-done"
+        },
+        {
+          "type": "CLICK",
+          "id": "book-visit"
+        },
+        {
+          "type": "CLICK",
+          "id": "manage-booking"
+        },
+        {
+          "type": "CLICK",
+          "id": "reschedule-visit"
+        },
+        {
+          "type": "CLICK",
+          "id": "hold-0612-1400"
+        },
+        {
+          "type": "CLICK",
+          "id": "slots-done"
+        },
+        {
+          "type": "CLICK",
+          "id": "book-visit"
+        },
+        {
+          "type": "CLICK",
+          "id": "reschedule-visit"
+        }
+      ],
+      "patch": {
+        "file": "src/store.py",
+        "find": "    leaving = booking_place(conn, ref)  # where the visit is now: read it before the booking moves\n    conn.execute(\"UPDATE bookings SET practitioner = ?, slot = ? WHERE ref = ?\",\n                 (row[\"practitioner\"], row[\"slot\"], ref))\n",
+        "replace": "    conn.execute(\"UPDATE bookings SET practitioner = ?, slot = ? WHERE ref = ?\",\n                 (row[\"practitioner\"], row[\"slot\"], ref))\n    leaving = booking_place(conn, ref)  # where the visit is now: read it before the booking moves\n"
+      }
+    },
+    {
+      "fault_id": "CLIN-2",
+      "fault_class": "state_corruption",
+      "subtype": "displayed-vs-submitted",
+      "oracle": "existing",
+      "description": "The payment widget copies the select into the hidden payment_mode field (which the server books with) only when the choice is not 'insurer'. A patient who picks self-pay and then switches to their insurer sees the insurer fields, fills them in, and is booked as self-pay.",
+      "trigger_condition": "On the registration (or lookup) form choose self-pay, then switch to insurer, enter the insurer and member number, and book.",
+      "expected_behaviour": "The appointment is paid the way the patient last chose on the form, with the insurer they entered.",
+      "observable_violation": "The confirmation says 'Self-pay' and shows no insurer.",
+      "assertions": [
+        {
+          "kind": "echoes_input",
+          "where": "/book/\\d+/booked$",
+          "region": "paid_by",
+          "input_field": "payment",
+          "describes": "the appointment is paid the way the patient chose"
+        },
+        {
+          "kind": "echoes_input",
+          "where": "/book/\\d+/booked$",
+          "region": "paid_by",
+          "input_field": "insurer_name",
+          "describes": "an insurer-paid appointment names the insurer the patient entered"
+        },
+        {
+          "kind": "text_absent",
+          "where": "/book/\\d+/booked$",
+          "region": "booked_banner",
+          "expected": "CF-",
+          "describes": "(scope) judged on the confirmation shown right after booking, not a revisit"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 1,
+      "shortest_path": 14,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-book"
+        },
+        {
+          "type": "CLICK",
+          "id": "svc-gp"
+        },
+        {
+          "type": "CLICK",
+          "id": "who-new"
+        },
+        {
+          "type": "TYPE",
+          "id": "full-name",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "dob",
+          "params": {
+            "category": "boundary_min"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "payment",
+          "params": {
+            "option": "self"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "payment",
+          "params": {
+            "option": "insurer"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "insurer-name",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "insurer-member",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-details"
+        },
+        {
+          "type": "CLICK",
+          "id": "hold-0611-1100"
+        },
+        {
+          "type": "CLICK",
+          "id": "slots-done"
+        },
+        {
+          "type": "CLICK",
+          "id": "book-visit"
+        }
+      ],
+      "patch": {
+        "file": "src/assets/booking.js",
+        "find": "    if (choice.value) payMode.value = choice.value;",
+        "replace": "    if (!insurer) payMode.value = choice.value;"
+      }
+    },
+    {
+      "fault_id": "CLIN-3",
+      "fault_class": "constraint_bypass",
+      "subtype": "missing-validation",
+      "oracle": "existing",
+      "description": "The returning-patient route omits the pre-visit questions step, so a returning physiotherapy patient goes from the slot table straight to the booking check and can book without the questionnaire the service requires.",
+      "trigger_condition": "Book physiotherapy as a returning patient: hold a time and go on.",
+      "expected_behaviour": "No physiotherapy booking reaches the booking check without its pre-visit answers.",
+      "observable_violation": "The booking check shows 'Pre-visit questions: Not answered' with a working Book visit button.",
+      "assertions": [
+        {
+          "kind": "text_absent",
+          "where": "/book/\\d+/confirm$",
+          "region": "questions_status",
+          "expected": "Not answered",
+          "describes": "the booking check is only reached with the questions answered or not needed"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 0,
+      "shortest_path": 8,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-book"
+        },
+        {
+          "type": "CLICK",
+          "id": "svc-physio"
+        },
+        {
+          "type": "CLICK",
+          "id": "who-returning"
+        },
+        {
+          "type": "TYPE",
+          "id": "lookup-email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "payment",
+          "params": {
+            "option": "self"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "find-record"
+        },
+        {
+          "type": "CLICK",
+          "id": "hold-0611-1100"
+        },
+        {
+          "type": "CLICK",
+          "id": "slots-done"
+        }
+      ],
+      "patch": {
+        "file": "src/wizard.py",
+        "find": "    \"returning\": (\"lookup\", \"slots\", \"questions\", \"confirm\"),",
+        "replace": "    \"returning\": (\"lookup\", \"slots\", \"confirm\"),"
+      }
+    }
+  ],
+  "benign_traces": [
+    [
+      {
+        "type": "CLICK",
+        "id": "nav-book"
+      },
+      {
+        "type": "CLICK",
+        "id": "svc-gp"
+      },
+      {
+        "type": "CLICK",
+        "id": "who-new"
+      },
+      {
+        "type": "TYPE",
+        "id": "full-name",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "TYPE",
+        "id": "dob",
+        "params": {
+          "category": "boundary_min"
+        }
+      },
+      {
+        "type": "TYPE",
+        "id": "email",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "SELECT",
+        "id": "payment",
+        "params": {
+          "option": "self"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "save-details"
+      },
+      {
+        "type": "CLICK",
+        "id": "hold-0611-1100"
+      },
+      {
+        "type": "CLICK",
+        "id": "slots-done"
+      },
+      {
+        "type": "CLICK",
+        "id": "book-visit"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "nav-book"
+      },
+      {
+        "type": "CLICK",
+        "id": "svc-nurse"
+      },
+      {
+        "type": "CLICK",
+        "id": "who-returning"
+      },
+      {
+        "type": "TYPE",
+        "id": "lookup-email",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "SELECT",
+        "id": "payment",
+        "params": {
+          "option": "self"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "find-record"
+      },
+      {
+        "type": "CLICK",
+        "id": "hold-0611-0900"
+      },
+      {
+        "type": "CLICK",
+        "id": "slots-done"
+      },
+      {
+        "type": "CLICK",
+        "id": "book-visit"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "nav-book"
+      },
+      {
+        "type": "CLICK",
+        "id": "svc-nurse"
+      },
+      {
+        "type": "CLICK",
+        "id": "who-returning"
+      },
+      {
+        "type": "TYPE",
+        "id": "lookup-email",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "SELECT",
+        "id": "payment",
+        "params": {
+          "option": "self"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "find-record"
+      },
+      {
+        "type": "CLICK",
+        "id": "hold-0611-0900"
+      },
+      {
+        "type": "CLICK",
+        "id": "slots-done"
+      },
+      {
+        "type": "CLICK",
+        "id": "book-visit"
+      },
+      {
+        "type": "CLICK",
+        "id": "manage-booking"
+      },
+      {
+        "type": "CLICK",
+        "id": "cancel-confirm"
+      },
+      {
+        "type": "CLICK",
+        "id": "cancel-visit"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "nav-book"
+      },
+      {
+        "type": "CLICK",
+        "id": "svc-physio"
+      },
+      {
+        "type": "CLICK",
+        "id": "who-new"
+      },
+      {
+        "type": "TYPE",
+        "id": "full-name",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "TYPE",
+        "id": "dob",
+        "params": {
+          "category": "boundary_min"
+        }
+      },
+      {
+        "type": "TYPE",
+        "id": "email",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "SELECT",
+        "id": "payment",
+        "params": {
+          "option": "insurer"
+        }
+      },
+      {
+        "type": "TYPE",
+        "id": "insurer-name",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "TYPE",
+        "id": "insurer-member",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "save-details"
+      },
+      {
+        "type": "CLICK",
+        "id": "hold-0611-1100"
+      },
+      {
+        "type": "CLICK",
+        "id": "slots-done"
+      },
+      {
+        "type": "SELECT",
+        "id": "injury-area",
+        "params": {
+          "option": "knee"
+        }
+      },
+      {
+        "type": "TYPE",
+        "id": "injury-notes",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "save-answers"
+      },
+      {
+        "type": "CLICK",
+        "id": "book-visit"
+      }
+    ]
+  ]
+}

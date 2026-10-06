@@ -1,0 +1,23 @@
+{
+  "accounts": [
+    {"id": "everyday", "name": "Everyday", "number": "•••• 4417", "balance": 54000},
+    {"id": "saver", "name": "Saver", "number": "•••• 9902", "balance": 2500},
+    {"id": "bills", "name": "Bills", "number": "•••• 3368", "balance": 18000}
+  ],
+  "payees": [
+    {"id": "landlord", "nickname": "Landlord (R. Okafor)", "bank": "Harbour Bank", "account_number": "40917722"},
+    {"id": "electric", "nickname": "Electric Co", "bank": "Northgate", "account_number": "11800342"},
+    {"id": "mum", "nickname": "Mum", "bank": "Coastal Mutual", "account_number": "70021904"}
+  ],
+  "transactions": [
+    {"account": "everyday", "date": "2026-06-01", "description": "Salary — Brightwater Ltd", "amount": 160000},
+    {"account": "everyday", "date": "2026-06-02", "description": "Rent — Landlord (R. Okafor)", "amount": -95000},
+    {"account": "everyday", "date": "2026-06-04", "description": "Grocer's Row", "amount": -6450},
+    {"account": "everyday", "date": "2026-06-06", "description": "To Saver", "amount": -2500},
+    {"account": "everyday", "date": "2026-06-07", "description": "Cinema Quay", "amount": -2100},
+    {"account": "saver", "date": "2026-06-06", "description": "From Everyday", "amount": 2500},
+    {"account": "bills", "date": "2026-06-01", "description": "From Everyday", "amount": 30000},
+    {"account": "bills", "date": "2026-06-03", "description": "Electric Co", "amount": -12000}
+  ],
+  "opening_balances": {"everyday": 50, "saver": 0, "bills": 0}
+}

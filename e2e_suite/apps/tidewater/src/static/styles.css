@@ -1,0 +1,30 @@
+:root { --ink: #10212b; --muted: #5b6b75; --line: #d6dee3; --tide: #0d6b7a; --bad: #a3271c; --bg: #f5f8f9; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 16px/1.45 system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+.topbar { display: flex; align-items: center; gap: 2rem; padding: .75rem 1.5rem; background: var(--tide); color: #fff; }
+.brand { font-weight: 700; letter-spacing: .04em; }
+#main-nav { display: flex; gap: 1rem; }
+#main-nav a, #main-nav button { color: #fff; background: none; border: 0; font: inherit; cursor: pointer; text-decoration: none; }
+main { max-width: 52rem; margin: 1.5rem auto; padding: 0 1rem; }
+.cards { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: 1rem; }
+.card, .panel { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 1rem; }
+.card h2 { margin: 0 0 .25rem; font-size: 1.05rem; }
+.muted { color: var(--muted); font-size: .9rem; }
+.balance { display: block; font-size: 1.5rem; margin-top: .5rem; }
+.steps { display: flex; gap: 1rem; padding: 0; list-style: none; color: var(--muted); }
+.steps [aria-current="step"] { color: var(--tide); font-weight: 700; }
+label { display: block; margin: .75rem 0 .25rem; font-weight: 600; }
+input, select { font: inherit; padding: .4rem .5rem; border: 1px solid var(--line); border-radius: 4px; min-width: 16rem; }
+.check label { display: inline; font-weight: 400; }
+.actions { display: flex; gap: .75rem; margin-top: 1.25rem; flex-wrap: wrap; }
+button { font: inherit; padding: .45rem .9rem; border-radius: 4px; border: 1px solid var(--tide); background: #fff; color: var(--tide); cursor: pointer; }
+button.primary { background: var(--tide); color: #fff; }
+.error { color: var(--bad); min-height: 1.2em; }
+table { width: 100%; border-collapse: collapse; background: #fff; }
+th, td { text-align: left; padding: .45rem .5rem; border-bottom: 1px solid var(--line); }
+dl.summary { display: grid; grid-template-columns: 12rem 1fr; gap: .4rem 1rem; }
+dl.summary dt { color: var(--muted); }
+.promo { margin-top: 1.5rem; background: #e7f3f5; }
+.modal-backdrop { position: fixed; inset: 0; background: rgba(16, 33, 43, .45); display: flex; align-items: center; justify-content: center; }
+.modal { background: #fff; border-radius: 8px; padding: 1.25rem; width: min(30rem, 92vw); }
+.saved { color: var(--tide); margin-left: .5rem; }

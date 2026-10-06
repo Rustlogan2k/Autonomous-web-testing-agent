@@ -1,0 +1,386 @@
+{
+  "app_id": "orbit",
+  "name": "Orbit",
+  "domain": "kanban project management",
+  "user_goal": "Move cards through Backlog, Doing, Review and Shipped within the board's WIP limits; finish checklists, respect dependencies, ship work, discuss it in comments.",
+  "architecture": "spa-modal+json-api",
+  "stack": "node-builtins+json-files",
+  "persistence": "one JSON file per session, read at the start of every request and written after every mutation; the client keeps tabs, menus, drafts and 'watching' in memory",
+  "entry": "/",
+  "start": ["node", "src/server.js"],
+  "dockerfile": true,
+  "workflow_graph": {
+    "kind": ["hub-and-spoke", "modal-heavy", "state-machine"],
+    "nodes": [
+      "projects",
+      "board",
+      "board:column-menu",
+      "board:new-card-form",
+      "card-modal:details",
+      "card-modal:checklist",
+      "card-modal:activity"
+    ],
+    "edges": [
+      ["projects", "board"],
+      ["board", "projects"],
+      ["board", "board"],
+      ["board", "board:column-menu"],
+      ["board:column-menu", "board"],
+      ["board:column-menu", "board:new-card-form"],
+      ["board:new-card-form", "board"],
+      ["board", "card-modal:details"],
+      ["card-modal:details", "card-modal:checklist"],
+      ["card-modal:details", "card-modal:activity"],
+      ["card-modal:checklist", "card-modal:details"],
+      ["card-modal:checklist", "card-modal:activity"],
+      ["card-modal:activity", "card-modal:details"],
+      ["card-modal:activity", "card-modal:checklist"],
+      ["card-modal:details", "card-modal:details"],
+      ["card-modal:details", "board"],
+      ["card-modal:checklist", "board"],
+      ["card-modal:activity", "board"],
+      ["card-modal:details", "projects"]
+    ]
+  },
+  "features": [
+    "spa",
+    "modal",
+    "tabs",
+    "client-state",
+    "server-state",
+    "reload-persistence",
+    "dynamic-validation",
+    "enable-disable",
+    "bulk-operation",
+    "conditional-section"
+  ],
+  "vocabulary": {
+    "progress_keys": ["act.pull_in", "act.ship", "act.park", "act.move", "act.ship_ready", "act.add_card"]
+  },
+  "regions": {
+    "project_list": "#project-list",
+    "board_message": "#board-message",
+    "col_backlog": "#col-backlog-cards",
+    "col_doing": "#col-doing-cards",
+    "col_review": "#col-review-cards",
+    "col_shipped": "#col-shipped-cards",
+    "wip_doing": "#wip-doing",
+    "wip_review": "#wip-review",
+    "card_progress": "#card-progress",
+    "card_message": "#card-message",
+    "comment_list": "#comment-list"
+  },
+  "workflows": [
+    {
+      "name": "park a Doing card, then pull in the next backlog card",
+      "trace": [
+        {"type": "CLICK", "id": "open-project-web"},
+        {"type": "CLICK", "id": "card-4"},
+        {"type": "CLICK", "id": "park-card"},
+        {"type": "CLICK", "id": "close-card"},
+        {"type": "CLICK", "id": "pull-in"}
+      ],
+      "expect": [
+        {"region": "col_doing", "contains": "Cookie banner"},
+        {"region": "col_backlog", "contains": "Pricing page copy"},
+        {"region": "wip_doing", "contains": "3/3"}
+      ]
+    },
+    {
+      "name": "finish the contact form's checklist and ship it from the card",
+      "trace": [
+        {"type": "CLICK", "id": "open-project-web"},
+        {"type": "CLICK", "id": "card-8"},
+        {"type": "CLICK", "id": "tab-checklist"},
+        {"type": "CLICK", "id": "check-8-3"},
+        {"type": "CLICK", "id": "ship-card"},
+        {"type": "CLICK", "id": "close-card"}
+      ],
+      "expect": [
+        {"region": "col_shipped", "contains": "Contact form"},
+        {"region": "wip_review", "contains": "1/2"}
+      ]
+    },
+    {
+      "name": "ship everything ready in Review from the column menu",
+      "trace": [
+        {"type": "CLICK", "id": "open-project-web"},
+        {"type": "CLICK", "id": "card-8"},
+        {"type": "CLICK", "id": "tab-checklist"},
+        {"type": "CLICK", "id": "check-8-3"},
+        {"type": "CLICK", "id": "close-card"},
+        {"type": "CLICK", "id": "col-menu-review"},
+        {"type": "CLICK", "id": "ship-ready"}
+      ],
+      "expect": [
+        {"region": "col_shipped", "contains": "Contact form"},
+        {"region": "col_review", "contains": "Release notes"},
+        {"region": "wip_review", "contains": "1/2"}
+      ]
+    },
+    {
+      "name": "unblock the release notes by shipping their dependency, then ship them",
+      "trace": [
+        {"type": "CLICK", "id": "open-project-web"},
+        {"type": "CLICK", "id": "card-7"},
+        {"type": "CLICK", "id": "dep-6"},
+        {"type": "CLICK", "id": "tab-checklist"},
+        {"type": "CLICK", "id": "check-6-3"},
+        {"type": "CLICK", "id": "check-6-4"},
+        {"type": "CLICK", "id": "ship-card"},
+        {"type": "BROWSER_BACK"},
+        {"type": "CLICK", "id": "ship-card"},
+        {"type": "CLICK", "id": "close-card"}
+      ],
+      "expect": [
+        {"region": "col_shipped", "contains": "Analytics events"},
+        {"region": "col_shipped", "contains": "Release notes"},
+        {"region": "wip_doing", "contains": "2/3"}
+      ]
+    },
+    {
+      "name": "comment on a card",
+      "trace": [
+        {"type": "CLICK", "id": "open-project-web"},
+        {"type": "CLICK", "id": "card-5"},
+        {"type": "CLICK", "id": "tab-activity"},
+        {"type": "TYPE", "id": "comment-body", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "add-comment"}
+      ],
+      "expect": [
+        {"region": "comment_list", "contains": "comment used for functional testing"}
+      ]
+    },
+    {
+      "name": "add a card to the office move backlog",
+      "trace": [
+        {"type": "CLICK", "id": "open-project-ops"},
+        {"type": "CLICK", "id": "col-menu-backlog"},
+        {"type": "CLICK", "id": "new-card"},
+        {"type": "TYPE", "id": "new-card-title", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "add-card"}
+      ],
+      "expect": [
+        {"region": "col_backlog", "contains": "Test User Input"},
+        {"region": "col_backlog", "contains": "Farewell lunch"}
+      ]
+    },
+    {
+      "name": "move a card into Review from its card",
+      "trace": [
+        {"type": "CLICK", "id": "open-project-ops"},
+        {"type": "CLICK", "id": "card-11"},
+        {"type": "SELECT", "id": "move-target", "params": {"option": "review"}},
+        {"type": "CLICK", "id": "move-card"},
+        {"type": "CLICK", "id": "close-card"}
+      ],
+      "expect": [
+        {"region": "col_review", "contains": "Book movers"},
+        {"region": "wip_review", "contains": "2/2"},
+        {"region": "col_doing", "absent": "Book movers"}
+      ]
+    }
+  ],
+  "state_dependent": [
+    {
+      "name": "Ship on a card whose checklist is unfinished commits nothing; after ticking the last item the same button ships it",
+      "useless": {
+        "trace": [
+          {"type": "CLICK", "id": "open-project-web"},
+          {"type": "CLICK", "id": "card-8"}
+        ],
+        "action": {"type": "CLICK", "id": "ship-card"}
+      },
+      "useful": {
+        "trace": [
+          {"type": "CLICK", "id": "open-project-web"},
+          {"type": "CLICK", "id": "card-8"},
+          {"type": "CLICK", "id": "tab-checklist"},
+          {"type": "CLICK", "id": "check-8-3"}
+        ],
+        "action": {"type": "CLICK", "id": "ship-card"}
+      }
+    },
+    {
+      "name": "Pull in is refused while Doing is at its WIP limit; once a Doing card is parked the same button pulls the next card in",
+      "useless": {
+        "trace": [
+          {"type": "CLICK", "id": "open-project-web"}
+        ],
+        "action": {"type": "CLICK", "id": "pull-in"}
+      },
+      "useful": {
+        "trace": [
+          {"type": "CLICK", "id": "open-project-web"},
+          {"type": "CLICK", "id": "card-4"},
+          {"type": "CLICK", "id": "park-card"},
+          {"type": "CLICK", "id": "close-card"}
+        ],
+        "action": {"type": "CLICK", "id": "pull-in"}
+      }
+    }
+  ],
+  "decoys": [
+    {
+      "name": "Watch card",
+      "trace": [
+        {"type": "CLICK", "id": "open-project-web"},
+        {"type": "CLICK", "id": "card-4"}
+      ],
+      "decoy": {"type": "CLICK", "id": "watch-card"}
+    },
+    {
+      "name": "Copy link",
+      "trace": [
+        {"type": "CLICK", "id": "open-project-web"},
+        {"type": "CLICK", "id": "card-7"}
+      ],
+      "decoy": {"type": "CLICK", "id": "copy-link"}
+    }
+  ],
+  "faults": [
+    {
+      "fault_id": "ORB-1",
+      "fault_class": "constraint_bypass",
+      "subtype": "missing-validation",
+      "oracle": "existing",
+      "description": "The card's 'Move to' checks the destination column's WIP limit with an off-by-one comparison (more than the limit instead of at the limit), so a card can be moved into a column that is exactly full. The board's Pull in checks the same limit correctly.",
+      "trigger_condition": "With Doing at its limit (3/3), open a Backlog card, choose Doing under 'Move to', move it, and return to the board.",
+      "expected_behaviour": "No column ever holds more cards than its WIP limit, whichever control moved the card there.",
+      "observable_violation": "The board's Doing column shows 4/3.",
+      "assertions": [
+        {
+          "kind": "text_absent",
+          "where": "#/board/[a-z]+$",
+          "region": "wip_doing",
+          "expected": "4/3",
+          "describes": "Doing never holds more cards than its WIP limit of 3"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 1,
+      "shortest_path": 5,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "open-project-web"},
+        {"type": "CLICK", "id": "card-1"},
+        {"type": "SELECT", "id": "move-target", "params": {"option": "doing"}},
+        {"type": "CLICK", "id": "move-card"},
+        {"type": "CLICK", "id": "close-card"}
+      ],
+      "patch": {
+        "file": "src/board.js",
+        "find": "inTarget.length >= target.wip",
+        "replace": "inTarget.length > target.wip"
+      }
+    },
+    {
+      "fault_id": "ORB-2",
+      "fault_class": "constraint_bypass",
+      "subtype": "missing-validation",
+      "oracle": "existing",
+      "description": "Review's bulk 'Ship all ready' selects cards by their checklist alone and ignores dependencies, so it ships 'Release notes' while the card it is blocked by (#6 Analytics events) is still in Doing. The card's own Ship button applies the full rule.",
+      "trigger_condition": "On the Website relaunch board, open Review's column menu and choose 'Ship all ready' while Release notes is still blocked.",
+      "expected_behaviour": "A card ships only once every card it is blocked by has shipped, so nothing in Shipped is ever blocked.",
+      "observable_violation": "Shipped contains 'Release notes' with its Blocked badge.",
+      "assertions": [
+        {
+          "kind": "text_absent",
+          "where": "#/board/[a-z]+$",
+          "region": "col_shipped",
+          "expected": "Blocked",
+          "describes": "no card in Shipped is still blocked by an unshipped card"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 3,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "open-project-web"},
+        {"type": "CLICK", "id": "col-menu-review"},
+        {"type": "CLICK", "id": "ship-ready"}
+      ],
+      "patch": {
+        "file": "src/board.js",
+        "find": ".filter((card) => shipRefusal(state, card, t) === null)",
+        "replace": ".filter((card) => checklistDone(card))"
+      }
+    },
+    {
+      "fault_id": "ORB-3",
+      "fault_class": "persistence_failure",
+      "subtype": "persistence",
+      "oracle": "extension",
+      "description": "The checklist-toggle route is registered as not persisting: the handler updates the card and answers with it, so the modal shows the tick, but the session file is never written, and a reload shows the checklist as it was.",
+      "trigger_condition": "Open a card, go to its Checklist tab, tick an item, and reload the page (the card's route reopens the modal).",
+      "expected_behaviour": "Every checklist change is saved before the answer is shown, so the card's progress is the same after a reload.",
+      "observable_violation": "The modal's progress reads '2 of 3 done' before the reload and '1 of 3 done' after it.",
+      "assertions": [
+        {
+          "kind": "region_stable_across_reload",
+          "where": "#/board/[a-z]+/card/\\d+$",
+          "region": "card_progress",
+          "describes": "a card's checklist progress survives a reload unchanged"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 1,
+      "shortest_path": 5,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "open-project-web"},
+        {"type": "CLICK", "id": "card-4"},
+        {"type": "CLICK", "id": "tab-checklist"},
+        {"type": "CLICK", "id": "check-4-2"},
+        {"type": "REFRESH"}
+      ],
+      "patch": {
+        "file": "src/server.js",
+        "find": "handler: toggleChecklistItem, persist: true",
+        "replace": "handler: toggleChecklistItem, persist: false"
+      }
+    }
+  ],
+  "benign_traces": [
+    [
+      {"type": "CLICK", "id": "open-project-web"},
+      {"type": "CLICK", "id": "card-5"},
+      {"type": "CLICK", "id": "tab-activity"},
+      {"type": "TYPE", "id": "comment-body", "params": {"category": "valid_typical"}},
+      {"type": "CLICK", "id": "add-comment"},
+      {"type": "REFRESH"},
+      {"type": "CLICK", "id": "close-card"}
+    ],
+    [
+      {"type": "CLICK", "id": "open-project-web"},
+      {"type": "CLICK", "id": "pull-in"},
+      {"type": "CLICK", "id": "card-5"},
+      {"type": "CLICK", "id": "park-card"},
+      {"type": "CLICK", "id": "close-card"},
+      {"type": "CLICK", "id": "pull-in"},
+      {"type": "REFRESH"}
+    ],
+    [
+      {"type": "CLICK", "id": "open-project-ops"},
+      {"type": "CLICK", "id": "card-11"},
+      {"type": "SELECT", "id": "move-target", "params": {"option": "review"}},
+      {"type": "CLICK", "id": "move-card"},
+      {"type": "CLICK", "id": "close-card"},
+      {"type": "CLICK", "id": "nav-projects"},
+      {"type": "CLICK", "id": "open-project-web"},
+      {"type": "CLICK", "id": "col-menu-backlog"},
+      {"type": "CLICK", "id": "new-card"},
+      {"type": "TYPE", "id": "new-card-title", "params": {"category": "valid_typical"}},
+      {"type": "CLICK", "id": "add-card"}
+    ],
+    [
+      {"type": "CLICK", "id": "open-project-web"},
+      {"type": "CLICK", "id": "card-7"},
+      {"type": "CLICK", "id": "tab-checklist"},
+      {"type": "CLICK", "id": "tab-details"},
+      {"type": "CLICK", "id": "dep-6"},
+      {"type": "CLICK", "id": "watch-card"},
+      {"type": "CLICK", "id": "copy-link"},
+      {"type": "REFRESH"},
+      {"type": "CLICK", "id": "close-card"}
+    ]
+  ]
+}

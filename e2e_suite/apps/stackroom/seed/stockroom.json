@@ -1,0 +1,343 @@
+{
+ "page_size": 10,
+ "items": [
+  {
+   "sku": "SKU-101",
+   "name": "Hex bolt M8 x 40 (box)",
+   "category": "Fasteners",
+   "location": "Aisle 1",
+   "stock": 12,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-102",
+   "name": "Hex nut M8 (box)",
+   "category": "Fasteners",
+   "location": "Aisle 1",
+   "stock": 85,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-103",
+   "name": "Wood screw 4 x 30",
+   "category": "Fasteners",
+   "location": "Aisle 1",
+   "stock": 30,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-104",
+   "name": "Coach screw 8 x 60",
+   "category": "Fasteners",
+   "location": "Aisle 1",
+   "stock": 7,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-105",
+   "name": "Penny washer M10",
+   "category": "Fasteners",
+   "location": "Aisle 1",
+   "stock": 64,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-106",
+   "name": "Plasterboard fixing",
+   "category": "Fasteners",
+   "location": "Aisle 1",
+   "stock": 150,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-107",
+   "name": "Masonry anchor 10 mm",
+   "category": "Fasteners",
+   "location": "Aisle 1",
+   "stock": 23,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-108",
+   "name": "Threaded rod M10 1 m",
+   "category": "Fasteners",
+   "location": "Aisle 1",
+   "stock": 9,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-109",
+   "name": "Panel pin 25 mm",
+   "category": "Fasteners",
+   "location": "Aisle 1",
+   "stock": 310,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-110",
+   "name": "Cable tie 300 mm",
+   "category": "Fasteners",
+   "location": "Aisle 1",
+   "stock": 56,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-111",
+   "name": "Rivet 4 mm (legacy)",
+   "category": "Fasteners",
+   "location": "Aisle 1",
+   "stock": 20,
+   "status": "archived"
+  },
+  {
+   "sku": "SKU-112",
+   "name": "Wing nut M6",
+   "category": "Fasteners",
+   "location": "Aisle 1",
+   "stock": 18,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-113",
+   "name": "Spring washer M8",
+   "category": "Fasteners",
+   "location": "Aisle 1",
+   "stock": 75,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-114",
+   "name": "Eye bolt M10",
+   "category": "Fasteners",
+   "location": "Aisle 1",
+   "stock": 27,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-115",
+   "name": "Claw hammer 16 oz",
+   "category": "Tools",
+   "location": "Aisle 2",
+   "stock": 14,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-116",
+   "name": "Spirit level 600 mm",
+   "category": "Tools",
+   "location": "Aisle 2",
+   "stock": 6,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-117",
+   "name": "Mitre saw 250 mm",
+   "category": "Tools",
+   "location": "Aisle 2",
+   "stock": 3,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-118",
+   "name": "Screwdriver set",
+   "category": "Tools",
+   "location": "Aisle 2",
+   "stock": 38,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-119",
+   "name": "Tape measure 5 m",
+   "category": "Tools",
+   "location": "Aisle 2",
+   "stock": 11,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-120",
+   "name": "Utility knife",
+   "category": "Tools",
+   "location": "Aisle 2",
+   "stock": 18,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-121",
+   "name": "Spare blades (10)",
+   "category": "Tools",
+   "location": "Aisle 2",
+   "stock": 52,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-122",
+   "name": "Cordless drill 18 V",
+   "category": "Tools",
+   "location": "Aisle 2",
+   "stock": 5,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-123",
+   "name": "Hacksaw 300 mm",
+   "category": "Tools",
+   "location": "Aisle 2",
+   "stock": 29,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-124",
+   "name": "Brace and bit (legacy)",
+   "category": "Tools",
+   "location": "Aisle 2",
+   "stock": 31,
+   "status": "archived"
+  },
+  {
+   "sku": "SKU-125",
+   "name": "Adjustable spanner",
+   "category": "Tools",
+   "location": "Aisle 2",
+   "stock": 16,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-126",
+   "name": "Pipe wrench 14 in",
+   "category": "Tools",
+   "location": "Aisle 2",
+   "stock": 8,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-127",
+   "name": "LED bulb E27 warm",
+   "category": "Lighting",
+   "location": "Aisle 3",
+   "stock": 21,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-128",
+   "name": "LED bulb GU10",
+   "category": "Lighting",
+   "location": "Aisle 3",
+   "stock": 35,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-129",
+   "name": "Batten fitting 1.2 m",
+   "category": "Lighting",
+   "location": "Aisle 3",
+   "stock": 13,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-130",
+   "name": "Outdoor wall lantern",
+   "category": "Lighting",
+   "location": "Aisle 3",
+   "stock": 60,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-131",
+   "name": "PIR floodlight",
+   "category": "Lighting",
+   "location": "Aisle 3",
+   "stock": 4,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-132",
+   "name": "Pendant set",
+   "category": "Lighting",
+   "location": "Aisle 3",
+   "stock": 19,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-133",
+   "name": "Under-cabinet strip",
+   "category": "Lighting",
+   "location": "Aisle 3",
+   "stock": 26,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-134",
+   "name": "Trade emulsion white 10 L",
+   "category": "Paint",
+   "location": "Aisle 4",
+   "stock": 33,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-135",
+   "name": "Gloss brilliant white 2.5 L",
+   "category": "Paint",
+   "location": "Aisle 4",
+   "stock": 15,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-136",
+   "name": "Masonry paint grey 5 L",
+   "category": "Paint",
+   "location": "Aisle 4",
+   "stock": 47,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-137",
+   "name": "Primer undercoat 1 L",
+   "category": "Paint",
+   "location": "Aisle 4",
+   "stock": 10,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-138",
+   "name": "Lead-free enamel (legacy)",
+   "category": "Paint",
+   "location": "Aisle 4",
+   "stock": 17,
+   "status": "archived"
+  },
+  {
+   "sku": "SKU-139",
+   "name": "Roller kit 9 in",
+   "category": "Paint",
+   "location": "Aisle 4",
+   "stock": 24,
+   "status": "active"
+  },
+  {
+   "sku": "SKU-140",
+   "name": "Dust sheet 3.6 m",
+   "category": "Paint",
+   "location": "Aisle 4",
+   "stock": 58,
+   "status": "active"
+  }
+ ],
+ "journal": [
+  {
+   "stamp": "2026-06-09 16:30",
+   "sku": "SKU-120",
+   "kind": "stock",
+   "before": "15",
+   "after": "18",
+   "origin": "import"
+  },
+  {
+   "stamp": "2026-06-09 16:35",
+   "sku": "SKU-138",
+   "kind": "archive",
+   "before": "active",
+   "after": "archived",
+   "origin": "bulk"
+  }
+ ]
+}

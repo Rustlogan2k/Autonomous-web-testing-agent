@@ -1,0 +1,19 @@
+<h1>{{ t("questions.title") }}</h1>
+<p class="lede">{{ t("questions.body") }}</p>
+<form class="stack" method="post" action="/book/{{ draft }}/questions" autocomplete="off" novalidate>
+  <div class="field">
+    <label for="injury-area">{{ t("field.injury_area") }}</label>
+    <select id="injury-area" name="injury_area">
+      <option value="">{{ t("area.choose") }}</option>
+      {{ options|raw }}
+    </select>
+  </div>
+  <div class="field">
+    <label for="injury-notes">{{ t("field.injury_notes") }}</label>
+    <textarea id="injury-notes" name="injury_notes" rows="4">{{ notes }}</textarea>
+  </div>
+  <p class="actions">
+    <button id="save-answers" type="submit">{{ t("act.save_answers") }}</button>
+    <button id="book-visit" class="primary" type="submit" formaction="/book/{{ draft }}/book">{{ t("act.book") }}</button>
+  </p>
+</form>

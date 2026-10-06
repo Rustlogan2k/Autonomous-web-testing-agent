@@ -1,0 +1,11 @@
+<h1>{{ t("manage.title") }}</h1>
+<dl class="summary">
+  <dt>{{ t("label.reference") }}</dt><dd><strong id="manage-ref">{{ ref }}</strong></dd>
+  <dt>{{ t("label.status") }}</dt><dd><span id="manage-state">{{ state }}</span></dd>
+  <dt>{{ t("label.service") }}</dt><dd><span id="manage-service">{{ service }}</span></dd>
+  <dt>{{ t("label.with") }}</dt><dd><span id="manage-with">{{ with_name }}</span></dd>
+  <dt>{{ t("label.when") }}</dt><dd><span id="manage-when">{{ when }}</span></dd>
+  <dt>{{ t("label.patient") }}</dt><dd><span id="manage-patient">{{ patient }}</span></dd>
+  <dt>{{ t("label.paid_by") }}</dt><dd><span id="manage-paid-by">{{ paid }}</span></dd>
+</dl>
+{{ actions|raw }}
