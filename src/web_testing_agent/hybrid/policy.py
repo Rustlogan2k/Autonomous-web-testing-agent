@@ -20,6 +20,7 @@ from ..envs.types import ActionSpec, ActionType
 from ..evaluation.scripted import ScriptedPolicy
 from .abstraction import PageView, observe
 from .archive import Archive, Cell, step_for
+from .invariants import Candidate, InvariantChecker
 from .operators import Operator, options
 
 NO_OP_INDEX = 0
@@ -105,6 +106,9 @@ class HybridPolicy:
             "pruned_steps": 0,
         }
         self._view_cache: tuple[int, PageView] | None = None
+        self.invariants = InvariantChecker()
+        self.candidates: list[Candidate] = []
+        self._operator_candidates = 0
         self.reset()
 
     # -- the hunt protocol ----------------------------------------------------------------------
@@ -123,6 +127,7 @@ class HybridPolicy:
 
     def begin_episode(self, info: dict) -> None:
         self.stats["episodes"] += 1
+        self.invariants.begin_episode()
         self.target = self.planner.choose_cell(self.offered) if len(self.archive) else None
         self.replay = list(self.target.trace) if self.target is not None else []
         self.phase = "return" if self.replay else "operate"
@@ -167,10 +172,17 @@ class HybridPolicy:
         before: dict,
         action: int,
         reward: float,
-        after: dict,  # noqa: ARG002
+        after: dict,
         terminated: bool,
         done: bool,
     ) -> None:
+        before_view, after_view = self._view(before), self._view(after)
+        spec = next((s for s in before_view.specs if s.index == action), None)
+        if spec is not None:
+            for candidate in self.invariants.check(before_view, spec, after_view, self.global_step):
+                candidate.trace = list(self.trace)
+                self.candidates.append(candidate)
+                self._operator_candidates += 1
         # An episode that ends mid-operator still reports the operator's outcome.
         if self.operator is not None and (terminated or done):
             self._finish_operator(self._view(after))
@@ -180,6 +192,7 @@ class HybridPolicy:
             "policy": "hybrid",
             "archive": self.archive.summary(),
             **self.stats,
+            "invariant_candidates": [c.to_dict() for c in self.candidates],
             "labeller": self.labeller.stats.to_dict() if self.labeller is not None else None,
         }
 
@@ -247,10 +260,12 @@ class HybridPolicy:
 
     def _finish_operator(self, view: PageView) -> None:
         new_cells = len(self.archive) - self.cells_before
-        outcome = 1.0 if view.alert else min(new_cells, 2) / 2.0
+        found = self._operator_candidates or view.alert
+        outcome = 1.0 if found else min(new_cells, 2) / 2.0
         if self.operator_cell is not None and self.decision is not None:
             self.planner.feedback(self.operator_cell, self.decision, view, outcome)
         self.operator = None
+        self._operator_candidates = 0
         self.phase = "explore"
 
     def _view(self, info: dict) -> PageView:

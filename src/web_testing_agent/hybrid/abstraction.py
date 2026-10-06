@@ -224,6 +224,7 @@ class PageView:
     alert: bool
     specs: list[ActionSpec] = field(default_factory=list)
     heading: str = ""
+    html: str = ""
 
     @property
     def cell(self) -> str:
@@ -273,4 +274,5 @@ def observe(info: dict, labeller=None, *, context: str = "") -> PageView:
         shows_alert(html),
         specs=specs,
         heading=main_heading(html),
+        html=html,
     )

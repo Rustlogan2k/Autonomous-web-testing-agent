@@ -1,0 +1,1718 @@
+{
+  "git": {
+    "commit": "d32e535cd71abef423e1ac05ef597d4174048cbd",
+    "dirty": false,
+    "source": "git"
+  },
+  "page_kind_accuracy": 0.6086956521739131,
+  "role_accuracy": 0.75,
+  "field_accuracy": 0.944954128440367,
+  "pages": 69,
+  "controls_scored": 732,
+  "fields_scored": 109,
+  "labeller": {
+    "lookups": 69,
+    "cache_hits": 0,
+    "llm_calls": 69,
+    "failures": 0,
+    "llm_seconds": 514.89
+  },
+  "label_config": {
+    "model": "qwen2.5:7b-instruct",
+    "label_version": "labels-v3",
+    "seed": 7,
+    "temperature": 0.0,
+    "max_controls": 40
+  },
+  "rows": [
+    {
+      "page_id": "account_hub:387f90871e989c93",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "account_hub:88924f8ce2f09583",
+      "kind": "info",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"card-billing\"]": {
+          "got": "submit",
+          "want": [
+            "edit",
+            "navigate",
+            "open"
+          ]
+        },
+        "[id=\"card-team\"]": {
+          "got": "submit",
+          "want": [
+            "edit",
+            "navigate",
+            "open"
+          ]
+        },
+        "[id=\"card-security\"]": {
+          "got": "submit",
+          "want": [
+            "edit",
+            "navigate",
+            "open"
+          ]
+        },
+        "[id=\"card-notifications\"]": {
+          "got": "submit",
+          "want": [
+            "edit",
+            "navigate",
+            "open"
+          ]
+        },
+        "[id=\"card-privacy\"]": {
+          "got": "submit",
+          "want": [
+            "edit",
+            "navigate",
+            "open"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "account_hub:15316c025c34daa3",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"email-edit\"]": {
+          "got": "submit",
+          "want": [
+            "edit",
+            "open"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "account_hub:4451a1002bdd7f07",
+      "kind": "info",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"nav-privacy\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"open-plan-editor\"]": {
+          "got": "submit",
+          "want": [
+            "edit",
+            "open"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "account_hub:3bcfce94ac7a2b4a",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-profile\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "account_hub:56650d2071ec4e20",
+      "kind": "form",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"nav-billing\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "account_hub:ce867c99e876f017",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"email-edit\"]": {
+          "got": "submit",
+          "want": [
+            "edit",
+            "open"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "account_hub:67fb9b320d8d9152",
+      "kind": "info",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"open-plan-editor\"]": {
+          "got": "submit",
+          "want": [
+            "edit",
+            "open"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "account_hub:ec235ae389c0d51c",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "account_hub:68b2f6c4fd4c3f9b",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "account_hub:fed4b39622846d48",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-profile\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "account_hub:6971724624c14802",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "admin_records:0d80682b07dd5993",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"f-custodian\"]": {
+          "got": "free_text",
+          "want": [
+            "name"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "admin_records:05e56e44e84cdd03",
+      "kind": "list",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-equipment\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"apply-filter\"]": {
+          "got": "submit",
+          "want": [
+            "search_or_filter"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "admin_records:c7e37c31026aec09",
+      "kind": "list",
+      "kind_ok": false,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "admin_records:0dbd32a4e566b65f",
+      "kind": "info",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"remove-record\"]": {
+          "got": "submit",
+          "want": [
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "admin_records:527687d93d089d08",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"f-custodian\"]": {
+          "got": "free_text",
+          "want": [
+            "name"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "admin_records:567f125de5c78afb",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"f-custodian\"]": {
+          "got": "free_text",
+          "want": [
+            "name"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "admin_records:9200a76e6f1b4de0",
+      "kind": "list",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-equipment\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"apply-filter\"]": {
+          "got": "submit",
+          "want": [
+            "search_or_filter"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "admin_records:282e2ad142aadfea",
+      "kind": "info",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"remove-record\"]": {
+          "got": "submit",
+          "want": [
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "admin_records:76304890aef0baf3",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"f-custodian\"]": {
+          "got": "free_text",
+          "want": [
+            "name"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "admin_records:b3ec4e242e851f8a",
+      "kind": "list",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-equipment\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"apply-filter\"]": {
+          "got": "submit",
+          "want": [
+            "search_or_filter"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "admin_records:2b0f29141bd57b79",
+      "kind": "info",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"nav-guide\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"edit-record\"]": {
+          "got": "submit",
+          "want": [
+            "edit"
+          ]
+        },
+        "[id=\"remove-record\"]": {
+          "got": "submit",
+          "want": [
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "admin_records:8755f3fe1a6c2e4e",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"f-custodian\"]": {
+          "got": "free_text",
+          "want": [
+            "name"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "booking_desk:0001e6afd3935cbd",
+      "kind": "detail",
+      "kind_ok": false,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "booking_desk:01e1014b40d3e0e9",
+      "kind": "info",
+      "kind_ok": false,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "booking_desk:067d0fdf3bdd2712",
+      "kind": "review",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"rail-session\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-extras\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-details\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-review\"]": {
+          "got": "submit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"save-later\"]": {
+          "got": "other",
+          "want": [
+            "submit"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "booking_desk:0fa74c397134b8b7",
+      "kind": "review",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"save-later\"]": {
+          "got": "other",
+          "want": [
+            "submit"
+          ]
+        },
+        "[id=\"nav-rooms\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-session\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-extras\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-details\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-review\"]": {
+          "got": "submit",
+          "want": [
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "booking_desk:1701e1ee3b0a6b22",
+      "kind": "info",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"release-MR-1001\"]": {
+          "got": "edit",
+          "want": [
+            "back",
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "booking_desk:3c45533567dcdf81",
+      "kind": "review",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"save-later\"]": {
+          "got": "other",
+          "want": [
+            "submit"
+          ]
+        },
+        "[id=\"nav-rooms\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-terms\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-location\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-access\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-session\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-extras\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-details\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-review\"]": {
+          "got": "submit",
+          "want": [
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "booking_desk:3cc091a3d2810cc6",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"rail-extras\"]": {
+          "got": "submit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"to-details\"]": {
+          "got": "edit",
+          "want": [
+            "submit"
+          ]
+        },
+        "[id=\"cancel-draft\"]": {
+          "got": "submit",
+          "want": [
+            "back",
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "booking_desk:5cab0e3e0b072059",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"rail-session\"]": {
+          "got": "submit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"to-extras\"]": {
+          "got": "navigate",
+          "want": [
+            "submit"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "booking_desk:627f8b3bd6b64a1b",
+      "kind": "review",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"save-later\"]": {
+          "got": "other",
+          "want": [
+            "submit"
+          ]
+        },
+        "[id=\"nav-rooms\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-session\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-extras\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-details\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-review\"]": {
+          "got": "submit",
+          "want": [
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "booking_desk:63b5e46aa7df9d54",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"rail-session\"]": {
+          "got": "submit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"to-extras\"]": {
+          "got": "navigate",
+          "want": [
+            "submit"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "booking_desk:7379188b5b97ab27",
+      "kind": "review",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"save-later\"]": {
+          "got": "other",
+          "want": [
+            "submit"
+          ]
+        },
+        "[id=\"nav-rooms\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-terms\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-location\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-access\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-session\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-extras\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-details\"]": {
+          "got": "edit",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"rail-review\"]": {
+          "got": "back",
+          "want": [
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "booking_desk:771ae01d529039d0",
+      "kind": "info",
+      "kind_ok": false,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "media_library:9d0eb3e8306e145b",
+      "kind": "info",
+      "kind_ok": false,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "media_library:022e4a57820bc99f",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"edit-discard\"]": {
+          "got": "edit",
+          "want": [
+            "back"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "media_library:b882613ac21a1103",
+      "kind": "info",
+      "kind_ok": false,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "media_library:143ff7c8a3399a1d",
+      "kind": "list",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"move-cancel\"]": {
+          "got": "edit",
+          "want": [
+            "back"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "media_library:1dae5f55ae5872ea",
+      "kind": "form",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"nav-brand\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-library\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-collections\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-help\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "media_library:1f78870a63ce685e",
+      "kind": "list",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"add-back-options\"]": {
+          "got": "navigate",
+          "want": [
+            "back"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "media_library:24ea6c19505d4a1c",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"add-to-options\"]": {
+          "got": "navigate",
+          "want": [
+            "submit"
+          ]
+        },
+        "[id=\"new-recorded-by\"]": {
+          "got": "choice",
+          "want": [
+            "name"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "media_library:2df1f1b29ac8bc12",
+      "kind": "list",
+      "kind_ok": false,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "media_library:328e46489a363f78",
+      "kind": "list",
+      "kind_ok": false,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "media_library:3a9130976bf9a367",
+      "kind": "list",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"detail-move\"]": {
+          "got": "other",
+          "want": [
+            "edit",
+            "open"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "media_library:45d8933e5e58c4dd",
+      "kind": "list",
+      "kind_ok": false,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "media_library:47a433d5347af33d",
+      "kind": "list",
+      "kind_ok": false,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "shop_catalog:599f5c3e06f6ce20",
+      "kind": "other",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"empty-the-basket\"]": {
+          "got": "edit",
+          "want": [
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "shop_catalog:40019a9655f3ef00",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "input, textarea, select, button, a[href] >> nth=0": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=1": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=2": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=3": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=11": {
+          "got": "other",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=12": {
+          "got": "other",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=13": {
+          "got": "other",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=14": {
+          "got": "other",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=15": {
+          "got": "other",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=16": {
+          "got": "other",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=17": {
+          "got": "other",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "shop_catalog:2cac443986ee2cc3",
+      "kind": "list",
+      "kind_ok": true,
+      "wrong_controls": {}
+    },
+    {
+      "page_id": "shop_catalog:24ed9c5a8e9b9d11",
+      "kind": "outcome",
+      "kind_ok": true,
+      "wrong_controls": {
+        "input, textarea, select, button, a[href] >> nth=0": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=1": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=2": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=3": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=7": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=8": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=9": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=10": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=11": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=12": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "shop_catalog:c0ca0498348acc7a",
+      "kind": "home",
+      "kind_ok": true,
+      "wrong_controls": {
+        "input, textarea, select, button, a[href] >> nth=0": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=1": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "shop_catalog:fb1c849141afdac9",
+      "kind": "list",
+      "kind_ok": false,
+      "wrong_controls": {
+        "input, textarea, select, button, a[href] >> nth=8": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=9": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=10": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=11": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=12": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=13": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=14": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "shop_catalog:f0a4a440414e5018",
+      "kind": "other",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"empty-the-basket\"]": {
+          "got": "edit",
+          "want": [
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "shop_catalog:5509966c3c31343d",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "input, textarea, select, button, a[href] >> nth=0": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=1": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=2": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=3": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=11": {
+          "got": "other",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=12": {
+          "got": "other",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=13": {
+          "got": "other",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=14": {
+          "got": "other",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=15": {
+          "got": "other",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=16": {
+          "got": "other",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=17": {
+          "got": "other",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "shop_catalog:9523625d1108e9e0",
+      "kind": "outcome",
+      "kind_ok": true,
+      "wrong_controls": {
+        "input, textarea, select, button, a[href] >> nth=0": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=1": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=2": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=3": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=7": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=8": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=9": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=10": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=11": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "input, textarea, select, button, a[href] >> nth=12": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "support_portal:217f6a51a9fa85ec",
+      "kind": "info",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"nav-home\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-track\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-help\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"start-track\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"start-help\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"foot-lights\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"foot-bill\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "support_portal:2bed7cde3f59a061",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-track\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-help\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"clear-step\"]": {
+          "got": "edit",
+          "want": [
+            "other",
+            "remove"
+          ]
+        },
+        "[id=\"discard-request\"]": {
+          "got": "edit",
+          "want": [
+            "back",
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "support_portal:068adfe39179ef43",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-track\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-help\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"clear-step\"]": {
+          "got": "edit",
+          "want": [
+            "other",
+            "remove"
+          ]
+        },
+        "[id=\"discard-request\"]": {
+          "got": "submit",
+          "want": [
+            "back",
+            "remove"
+          ]
+        },
+        "[id=\"foot-lights\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"foot-bill\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "support_portal:0c7b03cce22ffe26",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-track\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-help\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"save-draft\"]": {
+          "got": "edit",
+          "want": [
+            "submit"
+          ]
+        },
+        "[id=\"clear-step\"]": {
+          "got": "edit",
+          "want": [
+            "other",
+            "remove"
+          ]
+        },
+        "[id=\"discard-request\"]": {
+          "got": "submit",
+          "want": [
+            "back",
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "support_portal:9321334b36c688e4",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-track\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-help\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"discard-request\"]": {
+          "got": "other",
+          "want": [
+            "back",
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "support_portal:196c805f85a19c25",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-track\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-help\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"discard-request\"]": {
+          "got": "other",
+          "want": [
+            "back",
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "support_portal:7e33d84ac4e2b086",
+      "kind": "review",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-track\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-help\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"discard-request\"]": {
+          "got": "submit",
+          "want": [
+            "back",
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "support_portal:2de6dbad48deef0e",
+      "kind": "info",
+      "kind_ok": false,
+      "wrong_controls": {
+        "[id=\"nav-track\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-help\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"track-this\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"foot-lights\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"foot-bill\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "support_portal:75d0ce9bed45733a",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-home\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-track\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-help\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"clear-step\"]": {
+          "got": "edit",
+          "want": [
+            "other",
+            "remove"
+          ]
+        },
+        "[id=\"back-step\"]": {
+          "got": "navigate",
+          "want": [
+            "back"
+          ]
+        },
+        "[id=\"discard-request\"]": {
+          "got": "submit",
+          "want": [
+            "back",
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "support_portal:7a458777b671d6b1",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-track\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-help\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"clear-step\"]": {
+          "got": "edit",
+          "want": [
+            "other",
+            "remove"
+          ]
+        },
+        "[id=\"discard-request\"]": {
+          "got": "submit",
+          "want": [
+            "back",
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "support_portal:609991afbdbef4ce",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-track\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-help\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"clear-step\"]": {
+          "got": "edit",
+          "want": [
+            "other",
+            "remove"
+          ]
+        },
+        "[id=\"discard-request\"]": {
+          "got": "edit",
+          "want": [
+            "back",
+            "remove"
+          ]
+        }
+      }
+    },
+    {
+      "page_id": "support_portal:a19b79178d3ed1b8",
+      "kind": "form",
+      "kind_ok": true,
+      "wrong_controls": {
+        "[id=\"nav-track\"]": {
+          "got": "open",
+          "want": [
+            "navigate"
+          ]
+        },
+        "[id=\"nav-help\"]": {
+          "got": "open",
+          "want": [
+            "help",
+            "navigate"
+          ]
+        },
+        "[id=\"clear-step\"]": {
+          "got": "edit",
+          "want": [
+            "other",
+            "remove"
+          ]
+        },
+        "[id=\"discard-request\"]": {
+          "got": "submit",
+          "want": [
+            "back",
+            "remove"
+          ]
+        }
+      }
+    }
+  ]
+}
