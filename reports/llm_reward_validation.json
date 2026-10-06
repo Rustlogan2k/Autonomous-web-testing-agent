@@ -1,0 +1,809 @@
+{
+  "scorer": {
+    "model": "qwen2.5:7b-instruct",
+    "prompt_version": "progress-v3",
+    "votes": 1,
+    "seed": 7,
+    "temperature": 0.0,
+    "offline": false,
+    "cache_entries": 52978
+  },
+  "part_a_applications": {
+    "account_hub": {
+      "witnesses": [
+        {
+          "fault_id": "ACCT-01",
+          "phi_along_witness": [
+            0.0,
+            0.5,
+            0.5,
+            0.5,
+            0.7,
+            0.8,
+            0.7,
+            0.7,
+            0.5
+          ],
+          "spearman_position_vs_phi": 0.5851946942588245,
+          "phi_at_fault_observable_step": 0.5,
+          "phi_at_start": 0.0
+        },
+        {
+          "fault_id": "ACCT-02",
+          "phi_along_witness": [
+            0.0,
+            0.7,
+            0.5,
+            0.5,
+            0.7,
+            0.5,
+            0.7,
+            0.7
+          ],
+          "spearman_position_vs_phi": 0.5477225575051662,
+          "phi_at_fault_observable_step": 0.7,
+          "phi_at_start": 0.0
+        }
+      ],
+      "random_walk_states_scored": 64,
+      "random_walk_phi_mean": 0.578,
+      "fault_observable_phi_mean": 0.6,
+      "fault_observable_percentile_among_random_states": [
+        0.531,
+        0.984
+      ],
+      "auroc_fault_observable_vs_random_states": 0.5234375
+    },
+    "admin_records": {
+      "witnesses": [
+        {
+          "fault_id": "ADMIN-01",
+          "phi_along_witness": [
+            0.1,
+            0.2,
+            0.7,
+            0.7,
+            0.8,
+            0.3,
+            0.7,
+            0.7,
+            0.8,
+            0.5
+          ],
+          "spearman_position_vs_phi": 0.4579525984726532,
+          "phi_at_fault_observable_step": 0.5,
+          "phi_at_start": 0.1
+        },
+        {
+          "fault_id": "ADMIN-02",
+          "phi_along_witness": [
+            0.1,
+            0.2,
+            0.2,
+            0.2,
+            0.7,
+            0.7,
+            0.8,
+            0.3
+          ],
+          "spearman_position_vs_phi": 0.8224729320348959,
+          "phi_at_fault_observable_step": 0.3,
+          "phi_at_start": 0.1
+        }
+      ],
+      "random_walk_states_scored": 36,
+      "random_walk_phi_mean": 0.497,
+      "fault_observable_phi_mean": 0.4,
+      "fault_observable_percentile_among_random_states": [
+        0.583,
+        0.361
+      ],
+      "auroc_fault_observable_vs_random_states": 0.375
+    },
+    "booking_desk": {
+      "witnesses": [
+        {
+          "fault_id": "BOOK-01",
+          "phi_along_witness": [
+            0.2,
+            0.5,
+            0.5,
+            0.5,
+            0.7,
+            0.5,
+            0.5,
+            0.7,
+            0.7,
+            0.8,
+            0.8
+          ],
+          "spearman_position_vs_phi": 0.8642201437576291,
+          "phi_at_fault_observable_step": 0.8,
+          "phi_at_start": 0.2
+        },
+        {
+          "fault_id": "BOOK-02",
+          "phi_along_witness": [
+            0.2,
+            0.5,
+            0.5,
+            0.5,
+            0.7,
+            0.7,
+            0.5,
+            0.7,
+            0.7,
+            0.8,
+            1.0
+          ],
+          "spearman_position_vs_phi": 0.877185582105945,
+          "phi_at_fault_observable_step": 1.0,
+          "phi_at_start": 0.2
+        }
+      ],
+      "random_walk_states_scored": 18,
+      "random_walk_phi_mean": 0.306,
+      "fault_observable_phi_mean": 0.9,
+      "fault_observable_percentile_among_random_states": [
+        1.0,
+        1.0
+      ],
+      "auroc_fault_observable_vs_random_states": 1.0
+    },
+    "media_library": {
+      "witnesses": [
+        {
+          "fault_id": "MEDIA-01",
+          "phi_along_witness": [
+            0.2,
+            0.2,
+            0.2,
+            0.7,
+            0.5,
+            0.2,
+            0.2
+          ],
+          "spearman_position_vs_phi": 0.13363062095621223,
+          "phi_at_fault_observable_step": 0.2,
+          "phi_at_start": 0.2
+        },
+        {
+          "fault_id": "MEDIA-02",
+          "phi_along_witness": [
+            0.2,
+            0.2,
+            0.2,
+            0.2,
+            0.2,
+            0.0,
+            0.2
+          ],
+          "spearman_position_vs_phi": -0.408248290463863,
+          "phi_at_fault_observable_step": 0.2,
+          "phi_at_start": 0.2
+        }
+      ],
+      "random_walk_states_scored": 45,
+      "random_walk_phi_mean": 0.216,
+      "fault_observable_phi_mean": 0.2,
+      "fault_observable_percentile_among_random_states": [
+        0.889,
+        0.889
+      ],
+      "auroc_fault_observable_vs_random_states": 0.4666666666666667
+    },
+    "shop_catalog": {
+      "witnesses": [
+        {
+          "fault_id": "SHOP-01",
+          "phi_along_witness": [
+            0.0,
+            0.0,
+            0.7,
+            0.7,
+            0.8,
+            0.7,
+            0.7,
+            0.8,
+            1.0
+          ],
+          "spearman_position_vs_phi": 0.8432740427115678,
+          "phi_at_fault_observable_step": 1.0,
+          "phi_at_start": 0.0
+        },
+        {
+          "fault_id": "SHOP-02",
+          "phi_along_witness": [
+            0.0,
+            0.0,
+            0.7,
+            0.7,
+            0.8,
+            0.7,
+            0.7,
+            1.0
+          ],
+          "spearman_position_vs_phi": 0.8045248746761052,
+          "phi_at_fault_observable_step": 1.0,
+          "phi_at_start": 0.0
+        }
+      ],
+      "random_walk_states_scored": 14,
+      "random_walk_phi_mean": 0.229,
+      "fault_observable_phi_mean": 1.0,
+      "fault_observable_percentile_among_random_states": [
+        1.0,
+        1.0
+      ],
+      "auroc_fault_observable_vs_random_states": 1.0
+    },
+    "support_portal": {
+      "witnesses": [
+        {
+          "fault_id": "SUPP-01",
+          "phi_along_witness": [
+            0.0,
+            0.3,
+            0.3,
+            0.7,
+            0.7,
+            0.5,
+            0.7,
+            0.3,
+            0.3,
+            0.5
+          ],
+          "spearman_position_vs_phi": 0.29875161129695227,
+          "phi_at_fault_observable_step": 0.5,
+          "phi_at_start": 0.0
+        },
+        {
+          "fault_id": "SUPP-02",
+          "phi_along_witness": [
+            0.0,
+            0.3,
+            0.3,
+            0.7,
+            0.7,
+            0.5,
+            0.7,
+            0.5
+          ],
+          "spearman_position_vs_phi": 0.6547702297173061,
+          "phi_at_fault_observable_step": 0.5,
+          "phi_at_start": 0.0
+        }
+      ],
+      "random_walk_states_scored": 13,
+      "random_walk_phi_mean": 0.285,
+      "fault_observable_phi_mean": 0.5,
+      "fault_observable_percentile_among_random_states": [
+        0.769,
+        0.769
+      ],
+      "auroc_fault_observable_vs_random_states": 0.7307692307692307
+    }
+  },
+  "part_b_experiment_logs": {
+    "per_step_shaping_by_condition": {
+      "novel_state": {
+        "mean_when_true": 0.0754,
+        "mean_when_false": 0.0016,
+        "n_true": 50917,
+        "n_false": 69083
+      },
+      "repeated_action": {
+        "mean_when_true": 0.0156,
+        "mean_when_false": 0.0402,
+        "n_true": 35514,
+        "n_false": 84486
+      },
+      "page_changed": {
+        "mean_when_true": 0.0437,
+        "mean_when_false": 0.0015,
+        "n_true": 89314,
+        "n_false": 30686
+      },
+      "action_failed": {
+        "mean_when_true": 0.1149,
+        "mean_when_false": 0.0278,
+        "n_true": 7048,
+        "n_false": 112952
+      }
+    },
+    "runs": 60,
+    "max_phi_auroc_verified_vs_censored": 0.6759259259259259,
+    "spearman_total_shaping_vs_time_to_fault": -0.3967372218370305,
+    "per_run": [
+      {
+        "job": "hunt__dqn_pretrained__fold-account_hub__seed-0",
+        "arm": "dqn_pretrained",
+        "total_shaping": 37.90000000000002,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-account_hub__seed-0__clean",
+        "arm": "dqn_pretrained",
+        "total_shaping": 37.90000000000002,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-account_hub__seed-1",
+        "arm": "dqn_pretrained",
+        "total_shaping": 37.40000000000002,
+        "max_phi": 0.8,
+        "verified": true,
+        "time": 255
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-account_hub__seed-2",
+        "arm": "dqn_pretrained",
+        "total_shaping": 38.50000000000003,
+        "max_phi": 0.8,
+        "verified": true,
+        "time": 302
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-admin_records__seed-0",
+        "arm": "dqn_pretrained",
+        "total_shaping": 59.500000000000135,
+        "max_phi": 1.0,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-admin_records__seed-0__clean",
+        "arm": "dqn_pretrained",
+        "total_shaping": 59.500000000000135,
+        "max_phi": 1.0,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-admin_records__seed-1",
+        "arm": "dqn_pretrained",
+        "total_shaping": 62.500000000000156,
+        "max_phi": 1.0,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-admin_records__seed-2",
+        "arm": "dqn_pretrained",
+        "total_shaping": 44.70000000000002,
+        "max_phi": 1.0,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-admin_records__seed-3",
+        "arm": "dqn_pretrained",
+        "total_shaping": 277.2999999999999,
+        "max_phi": 1.0,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-admin_records__seed-4",
+        "arm": "dqn_pretrained",
+        "total_shaping": 143.79999999999987,
+        "max_phi": 1.0,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-admin_records__seed-5",
+        "arm": "dqn_pretrained",
+        "total_shaping": 124.39999999999992,
+        "max_phi": 1.0,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-booking_desk__seed-0",
+        "arm": "dqn_pretrained",
+        "total_shaping": 24.500000000000004,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-booking_desk__seed-0__clean",
+        "arm": "dqn_pretrained",
+        "total_shaping": 24.500000000000004,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-booking_desk__seed-1",
+        "arm": "dqn_pretrained",
+        "total_shaping": 24.8,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-booking_desk__seed-2",
+        "arm": "dqn_pretrained",
+        "total_shaping": 24.500000000000007,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-booking_desk__seed-3",
+        "arm": "dqn_pretrained",
+        "total_shaping": 23.800000000000008,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-booking_desk__seed-4",
+        "arm": "dqn_pretrained",
+        "total_shaping": 24.800000000000004,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-booking_desk__seed-5",
+        "arm": "dqn_pretrained",
+        "total_shaping": 24.699999999999996,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-media_library__seed-0",
+        "arm": "dqn_pretrained",
+        "total_shaping": 4.2,
+        "max_phi": 0.7,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-media_library__seed-0__clean",
+        "arm": "dqn_pretrained",
+        "total_shaping": 4.2,
+        "max_phi": 0.7,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-media_library__seed-1",
+        "arm": "dqn_pretrained",
+        "total_shaping": 4.2,
+        "max_phi": 0.7,
+        "verified": true,
+        "time": 143
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-media_library__seed-2",
+        "arm": "dqn_pretrained",
+        "total_shaping": 7.6999999999999975,
+        "max_phi": 0.7,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-shop_catalog__seed-0",
+        "arm": "dqn_pretrained",
+        "total_shaping": 115.30000000000007,
+        "max_phi": 1.0,
+        "verified": true,
+        "time": 1014
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-shop_catalog__seed-0__clean",
+        "arm": "dqn_pretrained",
+        "total_shaping": 56.60000000000009,
+        "max_phi": 1.0,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-shop_catalog__seed-1",
+        "arm": "dqn_pretrained",
+        "total_shaping": 141.89999999999998,
+        "max_phi": 1.0,
+        "verified": true,
+        "time": 305
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-shop_catalog__seed-2",
+        "arm": "dqn_pretrained",
+        "total_shaping": 148.1999999999999,
+        "max_phi": 1.0,
+        "verified": true,
+        "time": 550
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-shop_catalog__seed-3",
+        "arm": "dqn_pretrained",
+        "total_shaping": 151.49999999999991,
+        "max_phi": 1.0,
+        "verified": true,
+        "time": 597
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-shop_catalog__seed-4",
+        "arm": "dqn_pretrained",
+        "total_shaping": 84.50000000000007,
+        "max_phi": 1.0,
+        "verified": true,
+        "time": 816
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-shop_catalog__seed-5",
+        "arm": "dqn_pretrained",
+        "total_shaping": 120.6,
+        "max_phi": 1.0,
+        "verified": true,
+        "time": 1061
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-support_portal__seed-0",
+        "arm": "dqn_pretrained",
+        "total_shaping": 38.70000000000001,
+        "max_phi": 0.9,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-support_portal__seed-0__clean",
+        "arm": "dqn_pretrained",
+        "total_shaping": 38.70000000000001,
+        "max_phi": 0.9,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-support_portal__seed-1",
+        "arm": "dqn_pretrained",
+        "total_shaping": 43.59999999999999,
+        "max_phi": 0.9,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_pretrained__fold-support_portal__seed-2",
+        "arm": "dqn_pretrained",
+        "total_shaping": 40.59999999999999,
+        "max_phi": 0.9,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-account_hub__seed-0",
+        "arm": "dqn_scratch",
+        "total_shaping": 38.10000000000002,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-account_hub__seed-1",
+        "arm": "dqn_scratch",
+        "total_shaping": 38.00000000000002,
+        "max_phi": 0.8,
+        "verified": true,
+        "time": 1539
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-account_hub__seed-2",
+        "arm": "dqn_scratch",
+        "total_shaping": 37.90000000000003,
+        "max_phi": 0.8,
+        "verified": true,
+        "time": 1655
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-admin_records__seed-0",
+        "arm": "dqn_scratch",
+        "total_shaping": 249.59999999999997,
+        "max_phi": 1.0,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-admin_records__seed-1",
+        "arm": "dqn_scratch",
+        "total_shaping": 145.29999999999995,
+        "max_phi": 1.0,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-admin_records__seed-2",
+        "arm": "dqn_scratch",
+        "total_shaping": 50.70000000000011,
+        "max_phi": 1.0,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-admin_records__seed-3",
+        "arm": "dqn_scratch",
+        "total_shaping": 36.300000000000026,
+        "max_phi": 0.9,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-admin_records__seed-4",
+        "arm": "dqn_scratch",
+        "total_shaping": 53.00000000000003,
+        "max_phi": 1.0,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-admin_records__seed-5",
+        "arm": "dqn_scratch",
+        "total_shaping": 74.70000000000009,
+        "max_phi": 1.0,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-booking_desk__seed-0",
+        "arm": "dqn_scratch",
+        "total_shaping": 24.200000000000003,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-booking_desk__seed-1",
+        "arm": "dqn_scratch",
+        "total_shaping": 24.40000000000001,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-booking_desk__seed-2",
+        "arm": "dqn_scratch",
+        "total_shaping": 22.6,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-booking_desk__seed-3",
+        "arm": "dqn_scratch",
+        "total_shaping": 25.500000000000007,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-booking_desk__seed-4",
+        "arm": "dqn_scratch",
+        "total_shaping": 24.6,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-booking_desk__seed-5",
+        "arm": "dqn_scratch",
+        "total_shaping": 22.500000000000004,
+        "max_phi": 0.8,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-media_library__seed-0",
+        "arm": "dqn_scratch",
+        "total_shaping": 3.7000000000000015,
+        "max_phi": 0.5,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-media_library__seed-1",
+        "arm": "dqn_scratch",
+        "total_shaping": 6.299999999999997,
+        "max_phi": 0.7,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-media_library__seed-2",
+        "arm": "dqn_scratch",
+        "total_shaping": 9.299999999999995,
+        "max_phi": 0.7,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-shop_catalog__seed-0",
+        "arm": "dqn_scratch",
+        "total_shaping": 90.10000000000005,
+        "max_phi": 1.0,
+        "verified": true,
+        "time": 750
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-shop_catalog__seed-1",
+        "arm": "dqn_scratch",
+        "total_shaping": 135.4,
+        "max_phi": 1.0,
+        "verified": true,
+        "time": 596
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-shop_catalog__seed-2",
+        "arm": "dqn_scratch",
+        "total_shaping": 161.59999999999982,
+        "max_phi": 1.0,
+        "verified": true,
+        "time": 572
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-shop_catalog__seed-3",
+        "arm": "dqn_scratch",
+        "total_shaping": 137.79999999999998,
+        "max_phi": 1.0,
+        "verified": true,
+        "time": 873
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-shop_catalog__seed-4",
+        "arm": "dqn_scratch",
+        "total_shaping": 170.19999999999973,
+        "max_phi": 1.0,
+        "verified": true,
+        "time": 303
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-shop_catalog__seed-5",
+        "arm": "dqn_scratch",
+        "total_shaping": 148.1999999999999,
+        "max_phi": 1.0,
+        "verified": true,
+        "time": 577
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-support_portal__seed-0",
+        "arm": "dqn_scratch",
+        "total_shaping": 40.599999999999994,
+        "max_phi": 0.9,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-support_portal__seed-1",
+        "arm": "dqn_scratch",
+        "total_shaping": 41.50000000000004,
+        "max_phi": 0.9,
+        "verified": false,
+        "time": 2000
+      },
+      {
+        "job": "hunt__dqn_scratch__fold-support_portal__seed-2",
+        "arm": "dqn_scratch",
+        "total_shaping": 40.60000000000003,
+        "max_phi": 0.9,
+        "verified": true,
+        "time": 593
+      }
+    ]
+  },
+  "scorer_stats": {
+    "lookups": 296,
+    "cache_hits": 255,
+    "llm_calls": 41,
+    "failures": 0,
+    "offline_misses": 0,
+    "llm_seconds": 106.16,
+    "hit_rate": 0.8615
+  }
+}
