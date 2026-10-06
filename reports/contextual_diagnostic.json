@@ -1,0 +1,1990 @@
+{
+  "probe_sets": {
+    "ctx_v0_s1_d0": {
+      "sha256": "c73c1e554ea43ae325fb1e34507330c432db222ca2260508f3d3aaee1c7724d3",
+      "states": 28
+    },
+    "ctx_v0_s2_d0": {
+      "sha256": "35045d272245e275324f841761c6b70e286dadc5efd583c0a7e3e8ab3ccfa35a",
+      "states": 34
+    },
+    "ctx_v1_s1_d0": {
+      "sha256": "0574759fedb71700e0f31f238df39721c13eac1c62fad3b70932b3dac3eca93c",
+      "states": 28
+    },
+    "ctx_v1_s2_d0": {
+      "sha256": "216bf496a7a79cf74604bcea05325fad25943aabac541187bd49d5db343052c2",
+      "states": 34
+    },
+    "ctx_vs_s1_d0": {
+      "sha256": "d4ff56b45d12a0cad3f23eda55df653198bfbcbee0deaf3d87ef88f6f5c2fc36",
+      "states": 28
+    },
+    "ctx_vu1_s1_d0": {
+      "sha256": "d27e3d3cd2254b28908dee790e2bd624167316b9fc904d2d29170794592ed6e8",
+      "states": 28
+    },
+    "ctx_vu2_s1_d0": {
+      "sha256": "95e13592220edc26a99c18c731c756b6cf5a8c49415d6b83b3147faa462b9bd5",
+      "states": 28
+    },
+    "ctx_v0_s3_d0": {
+      "sha256": "64723aae6e1e4d887e5250fff12d67457a8073317bacfcdd6f145c8a0981886a",
+      "states": 28
+    },
+    "ctx_v0_s4_d0": {
+      "sha256": "7828fa540a9e77fc397011f031f5423d24ae0d53848f6d67e25e57fa9a1dab4a",
+      "states": 28
+    },
+    "ctx_v0_s5_d0": {
+      "sha256": "14fa1b7613d2e794ca38b4900b2c238034352d0e2b0d3a7dd6f9ac17b095ed1b",
+      "states": 25
+    },
+    "ctx_v0_s1_d1": {
+      "sha256": "841d6a5c421d1c70d118a613f26a4d4177f8e2d104de56c80ec5f8e38348426d",
+      "states": 28
+    },
+    "ctx_vu1_s5_d1": {
+      "sha256": "3911fb9a48667c3d79435b20142097cf08f03f9c3b114153fdb4db9feb85754a",
+      "states": 25
+    }
+  },
+  "permutation": {
+    "arms": {
+      "action_only|0": {
+        "greedy_mismatches": 0,
+        "max_abs_difference": 4.76837158203125e-07,
+        "passed": true,
+        "positional_tie_breaks_differing": 57
+      },
+      "action_only|1": {
+        "greedy_mismatches": 0,
+        "max_abs_difference": 4.76837158203125e-07,
+        "passed": true,
+        "positional_tie_breaks_differing": 186
+      },
+      "action_only|2": {
+        "greedy_mismatches": 0,
+        "max_abs_difference": 4.76837158203125e-07,
+        "passed": true,
+        "positional_tie_breaks_differing": 93
+      },
+      "ctx_full|0": {
+        "greedy_mismatches": 0,
+        "max_abs_difference": 1.9073486328125e-06,
+        "passed": true,
+        "positional_tie_breaks_differing": 47
+      },
+      "ctx_full|1": {
+        "greedy_mismatches": 0,
+        "max_abs_difference": 1.430511474609375e-06,
+        "passed": true,
+        "positional_tie_breaks_differing": 13
+      },
+      "ctx_full|2": {
+        "greedy_mismatches": 0,
+        "max_abs_difference": 9.5367431640625e-07,
+        "passed": true,
+        "positional_tie_breaks_differing": 80
+      },
+      "label_blind|0": {
+        "greedy_mismatches": 0,
+        "max_abs_difference": 1.9073486328125e-06,
+        "passed": true,
+        "positional_tie_breaks_differing": 224
+      },
+      "label_blind|1": {
+        "greedy_mismatches": 0,
+        "max_abs_difference": 9.5367431640625e-07,
+        "passed": true,
+        "positional_tie_breaks_differing": 188
+      },
+      "label_blind|2": {
+        "greedy_mismatches": 0,
+        "max_abs_difference": 4.76837158203125e-07,
+        "passed": true,
+        "positional_tie_breaks_differing": 394
+      },
+      "lexical_only|0": {
+        "greedy_mismatches": 0,
+        "max_abs_difference": 3.5762786865234375e-07,
+        "passed": true,
+        "positional_tie_breaks_differing": 1058
+      },
+      "lexical_only|1": {
+        "greedy_mismatches": 0,
+        "max_abs_difference": 4.76837158203125e-07,
+        "passed": true,
+        "positional_tie_breaks_differing": 1087
+      },
+      "lexical_only|2": {
+        "greedy_mismatches": 0,
+        "max_abs_difference": 4.76837158203125e-07,
+        "passed": true,
+        "positional_tie_breaks_differing": 1282
+      }
+    },
+    "passed": true,
+    "permutations": 20,
+    "states": 100,
+    "tolerance": 1e-05
+  },
+  "resamples": 10000,
+  "probe": {
+    "ctx_full": {
+      "top1": {
+        "ctx_v0_s1_d0": 0.5769,
+        "ctx_v0_s2_d0": 0.6092,
+        "ctx_v1_s1_d0": 0.5769,
+        "ctx_v1_s2_d0": 0.4598,
+        "ctx_vs_s1_d0": 0.6026,
+        "ctx_vu1_s1_d0": 0.4872,
+        "ctx_vu2_s1_d0": 0.5256,
+        "ctx_v0_s3_d0": 0.1923,
+        "ctx_v0_s4_d0": 0.3205,
+        "ctx_v0_s5_d0": 0.5362,
+        "ctx_v0_s1_d1": 0.4487,
+        "ctx_vu1_s5_d1": 0.3043
+      },
+      "auroc": {
+        "ctx_v0_s1_d0": 0.7302,
+        "ctx_v0_s2_d0": 0.6902,
+        "ctx_v1_s1_d0": 0.7481,
+        "ctx_v1_s2_d0": 0.7014,
+        "ctx_vs_s1_d0": 0.7451,
+        "ctx_vu1_s1_d0": 0.7258,
+        "ctx_vu2_s1_d0": 0.722,
+        "ctx_v0_s3_d0": 0.6624,
+        "ctx_v0_s4_d0": 0.6642,
+        "ctx_v0_s5_d0": 0.7262,
+        "ctx_v0_s1_d1": 0.695,
+        "ctx_vu1_s5_d1": 0.6779
+      },
+      "variance_shares": {
+        "ctx_v0_s1_d0": {
+          "label": 0.47530395933249125,
+          "state": 0.4591204176243228,
+          "label_x_state": 0.0838247238499914
+        },
+        "ctx_v0_s2_d0": {
+          "label": 0.4777711589380329,
+          "state": 0.4835175919225609,
+          "label_x_state": 0.06800224318032744
+        },
+        "ctx_v1_s1_d0": {
+          "label": 0.4246967317406991,
+          "state": 0.4691672777483065,
+          "label_x_state": 0.10613599051099441
+        },
+        "ctx_v1_s2_d0": {
+          "label": 0.4193932131232605,
+          "state": 0.5005525912262692,
+          "label_x_state": 0.08539926551136763
+        },
+        "ctx_vs_s1_d0": {
+          "label": 0.45649217171895246,
+          "state": 0.4710516506829281,
+          "label_x_state": 0.07900541023093084
+        },
+        "ctx_vu1_s1_d0": {
+          "label": 0.4819055240767472,
+          "state": 0.4410833879142631,
+          "label_x_state": 0.07879603152045829
+        },
+        "ctx_vu2_s1_d0": {
+          "label": 0.4102739344297668,
+          "state": 0.4871392187441939,
+          "label_x_state": 0.10900637271729592
+        },
+        "ctx_v0_s3_d0": {
+          "label": 0.5067931649101286,
+          "state": 0.4806444433742311,
+          "label_x_state": 0.04739223150398927
+        },
+        "ctx_v0_s4_d0": {
+          "label": 0.46356645648920775,
+          "state": 0.5504823803577382,
+          "label_x_state": 0.034564984825184074
+        },
+        "ctx_v0_s5_d0": {
+          "label": 0.47504202680477986,
+          "state": 0.4929580979926942,
+          "label_x_state": 0.05786073355870113
+        },
+        "ctx_v0_s1_d1": {
+          "label": 0.4936388036694959,
+          "state": 0.4423321361971639,
+          "label_x_state": 0.07823456895296528
+        },
+        "ctx_vu1_s5_d1": {
+          "label": 0.4843617357283456,
+          "state": 0.4614401435131086,
+          "label_x_state": 0.06416741614359686
+        }
+      },
+      "train_top1": 0.5557,
+      "within_label_auroc": {
+        "point": 0.5148,
+        "interval": [
+          0.4446,
+          0.5852
+        ]
+      },
+      "tau_differ": {
+        "point": 0.6663,
+        "interval": [
+          0.5121,
+          0.8118
+        ]
+      },
+      "tau_agree": {
+        "point": 0.804,
+        "interval": [
+          0.6587,
+          0.921
+        ]
+      },
+      "tau_contrast": {
+        "point": 0.1377,
+        "interval": [
+          0.0997,
+          0.183
+        ]
+      },
+      "decoy_rate": {
+        "point": 0.3089,
+        "interval": [
+          0.0,
+          0.9131
+        ]
+      },
+      "context_sensitive_tau": false,
+      "transfer_ratio": {
+        "ctx_vs_s1_d0": 1.0843,
+        "ctx_vu1_s1_d0": 0.8767,
+        "ctx_vu2_s1_d0": 0.9459,
+        "ctx_v0_s3_d0": 0.3461,
+        "ctx_v0_s4_d0": 0.5768,
+        "ctx_v0_s5_d0": 0.965,
+        "ctx_v0_s1_d1": 0.8075,
+        "ctx_vu1_s5_d1": 0.5477
+      }
+    },
+    "action_only": {
+      "top1": {
+        "ctx_v0_s1_d0": 0.3462,
+        "ctx_v0_s2_d0": 0.5517,
+        "ctx_v1_s1_d0": 0.5256,
+        "ctx_v1_s2_d0": 0.5517,
+        "ctx_vs_s1_d0": 0.3462,
+        "ctx_vu1_s1_d0": 0.4359,
+        "ctx_vu2_s1_d0": 0.5641,
+        "ctx_v0_s3_d0": 0.3718,
+        "ctx_v0_s4_d0": 0.3462,
+        "ctx_v0_s5_d0": 0.3768,
+        "ctx_v0_s1_d1": 0.4231,
+        "ctx_vu1_s5_d1": 0.4348
+      },
+      "auroc": {
+        "ctx_v0_s1_d0": 0.7053,
+        "ctx_v0_s2_d0": 0.7815,
+        "ctx_v1_s1_d0": 0.7492,
+        "ctx_v1_s2_d0": 0.7815,
+        "ctx_vs_s1_d0": 0.6549,
+        "ctx_vu1_s1_d0": 0.6763,
+        "ctx_vu2_s1_d0": 0.745,
+        "ctx_v0_s3_d0": 0.7099,
+        "ctx_v0_s4_d0": 0.6923,
+        "ctx_v0_s5_d0": 0.7112,
+        "ctx_v0_s1_d1": 0.7476,
+        "ctx_vu1_s5_d1": 0.6824
+      },
+      "variance_shares": {
+        "ctx_v0_s1_d0": {
+          "label": 0.8202661400197333,
+          "state": 8.16969587656206e-15,
+          "label_x_state": 0.17973385998025862
+        },
+        "ctx_v0_s2_d0": {
+          "label": 0.803744703917304,
+          "state": 1.0244110209495583e-14,
+          "label_x_state": 0.19625529608268574
+        },
+        "ctx_v1_s1_d0": {
+          "label": 0.8068269415563339,
+          "state": 4.206667516335361e-15,
+          "label_x_state": 0.19317305844366187
+        },
+        "ctx_v1_s2_d0": {
+          "label": 0.7687763176067226,
+          "state": 4.6297989438053126e-15,
+          "label_x_state": 0.23122368239327273
+        },
+        "ctx_vs_s1_d0": {
+          "label": 0.8477109239013627,
+          "state": 5.137123960000625e-15,
+          "label_x_state": 0.1522890760986322
+        },
+        "ctx_vu1_s1_d0": {
+          "label": 0.867318079558243,
+          "state": 3.010366413281292e-15,
+          "label_x_state": 0.132681920441754
+        },
+        "ctx_vu2_s1_d0": {
+          "label": 0.9077880830601384,
+          "state": 4.457802694023577e-15,
+          "label_x_state": 0.09221191693985727
+        },
+        "ctx_v0_s3_d0": {
+          "label": 0.8405376472993735,
+          "state": 5.387465985803038e-15,
+          "label_x_state": 0.15946235270062117
+        },
+        "ctx_v0_s4_d0": {
+          "label": 0.8448962113939804,
+          "state": 8.602199324247473e-15,
+          "label_x_state": 0.155103788606011
+        },
+        "ctx_v0_s5_d0": {
+          "label": 0.8186342637710879,
+          "state": 8.380119628267769e-15,
+          "label_x_state": 0.18136573622890362
+        },
+        "ctx_v0_s1_d1": {
+          "label": 0.8337694668405532,
+          "state": 7.789693105624541e-15,
+          "label_x_state": 0.16623053315943892
+        },
+        "ctx_vu1_s5_d1": {
+          "label": 0.870957678036483,
+          "state": 2.851144123651919e-15,
+          "label_x_state": 0.1290423219635141
+        }
+      },
+      "train_top1": 0.4938,
+      "within_label_auroc": {
+        "point": 0.4916,
+        "interval": [
+          0.4171,
+          0.5727
+        ]
+      },
+      "tau_differ": {
+        "point": 1.0,
+        "interval": [
+          1.0,
+          1.0
+        ]
+      },
+      "tau_agree": {
+        "point": 1.0,
+        "interval": [
+          1.0,
+          1.0
+        ]
+      },
+      "tau_contrast": {
+        "point": 0.0,
+        "interval": [
+          0.0,
+          0.0
+        ]
+      },
+      "decoy_rate": {
+        "point": 0.0,
+        "interval": [
+          0.0,
+          0.0
+        ]
+      },
+      "context_sensitive_tau": false,
+      "transfer_ratio": {
+        "ctx_vs_s1_d0": 0.701,
+        "ctx_vu1_s1_d0": 0.8827,
+        "ctx_vu2_s1_d0": 1.1423,
+        "ctx_v0_s3_d0": 0.7529,
+        "ctx_v0_s4_d0": 0.701,
+        "ctx_v0_s5_d0": 0.7631,
+        "ctx_v0_s1_d1": 0.8568,
+        "ctx_vu1_s5_d1": 0.8805
+      }
+    },
+    "lexical_only": {
+      "top1": {
+        "ctx_v0_s1_d0": 0.3513,
+        "ctx_v0_s2_d0": 0.5448,
+        "ctx_v1_s1_d0": 0.359,
+        "ctx_v1_s2_d0": 0.5264,
+        "ctx_vs_s1_d0": 0.3564,
+        "ctx_vu1_s1_d0": 0.3641,
+        "ctx_vu2_s1_d0": 0.3615,
+        "ctx_v0_s3_d0": 0.2872,
+        "ctx_v0_s4_d0": 0.3,
+        "ctx_v0_s5_d0": 0.3884,
+        "ctx_v0_s1_d1": 0.3513,
+        "ctx_vu1_s5_d1": 0.3768
+      },
+      "auroc": {
+        "ctx_v0_s1_d0": 0.7527,
+        "ctx_v0_s2_d0": 0.8074,
+        "ctx_v1_s1_d0": 0.7689,
+        "ctx_v1_s2_d0": 0.7871,
+        "ctx_vs_s1_d0": 0.6075,
+        "ctx_vu1_s1_d0": 0.6809,
+        "ctx_vu2_s1_d0": 0.7457,
+        "ctx_v0_s3_d0": 0.7465,
+        "ctx_v0_s4_d0": 0.7267,
+        "ctx_v0_s5_d0": 0.7654,
+        "ctx_v0_s1_d1": 0.7075,
+        "ctx_vu1_s5_d1": 0.6735
+      },
+      "variance_shares": {
+        "ctx_v0_s1_d0": {
+          "label": 0.8769248596808836,
+          "state": 5.6512176370832515e-15,
+          "label_x_state": 0.12307514031911064
+        },
+        "ctx_v0_s2_d0": {
+          "label": 0.8712171835089705,
+          "state": 8.391825923581524e-15,
+          "label_x_state": 0.1287828164910211
+        },
+        "ctx_v1_s1_d0": {
+          "label": 0.8266656869368206,
+          "state": 3.873805456096353e-15,
+          "label_x_state": 0.1733343130631754
+        },
+        "ctx_v1_s2_d0": {
+          "label": 0.7959358182266966,
+          "state": 5.411946730505086e-15,
+          "label_x_state": 0.20406418177329802
+        },
+        "ctx_vs_s1_d0": {
+          "label": 0.8262373693551387,
+          "state": 4.21857618980192e-15,
+          "label_x_state": 0.1737626306448572
+        },
+        "ctx_vu1_s1_d0": {
+          "label": 0.8705977080061165,
+          "state": 1.0677056245186924e-14,
+          "label_x_state": 0.12940229199387293
+        },
+        "ctx_vu2_s1_d0": {
+          "label": 0.9552736694602085,
+          "state": 3.9352503762333155e-14,
+          "label_x_state": 0.044726330539752196
+        },
+        "ctx_v0_s3_d0": {
+          "label": 0.893313848718854,
+          "state": 3.662084896006383e-15,
+          "label_x_state": 0.10668615128114232
+        },
+        "ctx_v0_s4_d0": {
+          "label": 0.8880596888494822,
+          "state": 4.322063308805396e-15,
+          "label_x_state": 0.1119403111505135
+        },
+        "ctx_v0_s5_d0": {
+          "label": 0.8772333321965163,
+          "state": 5.470910875043384e-15,
+          "label_x_state": 0.12276666780347821
+        },
+        "ctx_v0_s1_d1": {
+          "label": 0.877914565407062,
+          "state": 6.261448411002156e-15,
+          "label_x_state": 0.1220854345929318
+        },
+        "ctx_vu1_s5_d1": {
+          "label": 0.8716983312104216,
+          "state": 1.1823457875639708e-14,
+          "label_x_state": 0.12830166878956656
+        }
+      },
+      "train_top1": 0.4454,
+      "within_label_auroc": {
+        "point": 0.5045,
+        "interval": [
+          0.4068,
+          0.6003
+        ]
+      },
+      "tau_differ": {
+        "point": 0.9999,
+        "interval": [
+          0.9997,
+          1.0
+        ]
+      },
+      "tau_agree": {
+        "point": 0.9999,
+        "interval": [
+          0.9997,
+          1.0
+        ]
+      },
+      "tau_contrast": {
+        "point": 0.0,
+        "interval": [
+          -0.0001,
+          0.0002
+        ]
+      },
+      "decoy_rate": {
+        "point": 0.0,
+        "interval": [
+          0.0,
+          0.0
+        ]
+      },
+      "context_sensitive_tau": false,
+      "transfer_ratio": {
+        "ctx_vs_s1_d0": 0.8002,
+        "ctx_vu1_s1_d0": 0.8175,
+        "ctx_vu2_s1_d0": 0.8118,
+        "ctx_v0_s3_d0": 0.6448,
+        "ctx_v0_s4_d0": 0.6736,
+        "ctx_v0_s5_d0": 0.8721,
+        "ctx_v0_s1_d1": 0.7887,
+        "ctx_vu1_s5_d1": 0.846
+      }
+    },
+    "label_blind": {
+      "top1": {
+        "ctx_v0_s1_d0": 0.4329,
+        "ctx_v0_s2_d0": 0.3674,
+        "ctx_v1_s1_d0": 0.4329,
+        "ctx_v1_s2_d0": 0.3674,
+        "ctx_vs_s1_d0": 0.4329,
+        "ctx_vu1_s1_d0": 0.4329,
+        "ctx_vu2_s1_d0": 0.4329,
+        "ctx_v0_s3_d0": 0.3915,
+        "ctx_v0_s4_d0": 0.4286,
+        "ctx_v0_s5_d0": 0.4314,
+        "ctx_v0_s1_d1": 0.3312,
+        "ctx_vu1_s5_d1": 0.3092
+      },
+      "auroc": {
+        "ctx_v0_s1_d0": 0.7095,
+        "ctx_v0_s2_d0": 0.6887,
+        "ctx_v1_s1_d0": 0.7095,
+        "ctx_v1_s2_d0": 0.6887,
+        "ctx_vs_s1_d0": 0.7095,
+        "ctx_vu1_s1_d0": 0.7095,
+        "ctx_vu2_s1_d0": 0.7095,
+        "ctx_v0_s3_d0": 0.6456,
+        "ctx_v0_s4_d0": 0.6779,
+        "ctx_v0_s5_d0": 0.6961,
+        "ctx_v0_s1_d1": 0.685,
+        "ctx_vu1_s5_d1": 0.6696
+      },
+      "variance_shares": {
+        "ctx_v0_s1_d0": {
+          "label": 0.2863125608051007,
+          "state": 0.6531645476816962,
+          "label_x_state": 0.0612508668133395
+        },
+        "ctx_v0_s2_d0": {
+          "label": 0.26892189608933853,
+          "state": 0.7158249965671223,
+          "label_x_state": 0.03536112386312016
+        },
+        "ctx_v1_s1_d0": {
+          "label": 0.2863125608051007,
+          "state": 0.6531645476816962,
+          "label_x_state": 0.0612508668133395
+        },
+        "ctx_v1_s2_d0": {
+          "label": 0.2689218960893385,
+          "state": 0.7158249965671223,
+          "label_x_state": 0.035361123863120236
+        },
+        "ctx_vs_s1_d0": {
+          "label": 0.28631256080510076,
+          "state": 0.6531645476816962,
+          "label_x_state": 0.061250866813339466
+        },
+        "ctx_vu1_s1_d0": {
+          "label": 0.28631256080510076,
+          "state": 0.6531645476816962,
+          "label_x_state": 0.06125086681333943
+        },
+        "ctx_vu2_s1_d0": {
+          "label": 0.28631256080510076,
+          "state": 0.6531645476816962,
+          "label_x_state": 0.06125086681333943
+        },
+        "ctx_v0_s3_d0": {
+          "label": 0.2739498775714532,
+          "state": 0.7871793975217534,
+          "label_x_state": 0.0
+        },
+        "ctx_v0_s4_d0": {
+          "label": 0.24329137770813825,
+          "state": 0.7914928651269766,
+          "label_x_state": 0.011326323683258708
+        },
+        "ctx_v0_s5_d0": {
+          "label": 0.2812368807569892,
+          "state": 0.6724424420342379,
+          "label_x_state": 0.05281107446876888
+        },
+        "ctx_v0_s1_d1": {
+          "label": 0.28245297782534257,
+          "state": 0.6426403104401069,
+          "label_x_state": 0.07490671173455049
+        },
+        "ctx_vu1_s5_d1": {
+          "label": 0.27918576894379765,
+          "state": 0.661961930432119,
+          "label_x_state": 0.05885230062408342
+        }
+      },
+      "train_top1": 0.4002,
+      "within_label_auroc": {
+        "point": 0.5629,
+        "interval": [
+          0.4992,
+          0.624
+        ]
+      },
+      "tau_differ": {
+        "point": 0.467,
+        "interval": [
+          0.3476,
+          0.6363
+        ]
+      },
+      "tau_agree": {
+        "point": 0.5869,
+        "interval": [
+          0.4427,
+          0.7838
+        ]
+      },
+      "tau_contrast": {
+        "point": 0.1198,
+        "interval": [
+          0.0334,
+          0.1927
+        ]
+      },
+      "decoy_rate": {
+        "point": 0.2304,
+        "interval": [
+          0.0541,
+          0.4059
+        ]
+      },
+      "context_sensitive_tau": false,
+      "transfer_ratio": {
+        "ctx_vs_s1_d0": 1.0818,
+        "ctx_vu1_s1_d0": 1.0818,
+        "ctx_vu2_s1_d0": 1.0818,
+        "ctx_v0_s3_d0": 0.9782,
+        "ctx_v0_s4_d0": 1.0711,
+        "ctx_v0_s5_d0": 1.078,
+        "ctx_v0_s1_d1": 0.8276,
+        "ctx_vu1_s5_d1": 0.7726
+      }
+    },
+    "search_S": {
+      "top1": {
+        "ctx_v0_s1_d0": 0.3462,
+        "ctx_v0_s2_d0": 0.2759,
+        "ctx_v1_s1_d0": 0.2692,
+        "ctx_v1_s2_d0": 0.3448,
+        "ctx_vs_s1_d0": 0.3077,
+        "ctx_vu1_s1_d0": 0.2692,
+        "ctx_vu2_s1_d0": 0.3077,
+        "ctx_v0_s3_d0": 0.6923,
+        "ctx_v0_s4_d0": 0.5385,
+        "ctx_v0_s5_d0": 0.3043,
+        "ctx_v0_s1_d1": 0.3077,
+        "ctx_vu1_s5_d1": 0.2174
+      },
+      "auroc": {
+        "ctx_v0_s1_d0": 0.8594,
+        "ctx_v0_s2_d0": 0.8442,
+        "ctx_v1_s1_d0": 0.8427,
+        "ctx_v1_s2_d0": 0.8447,
+        "ctx_vs_s1_d0": 0.8465,
+        "ctx_vu1_s1_d0": 0.8189,
+        "ctx_vu2_s1_d0": 0.8264,
+        "ctx_v0_s3_d0": 0.8582,
+        "ctx_v0_s4_d0": 0.8472,
+        "ctx_v0_s5_d0": 0.8465,
+        "ctx_v0_s1_d1": 0.8147,
+        "ctx_vu1_s5_d1": 0.7688
+      },
+      "variance_shares": {
+        "ctx_v0_s1_d0": {
+          "label": 0.673453501096398,
+          "state": 0.07327434655603632,
+          "label_x_state": 0.25327215234756567
+        },
+        "ctx_v0_s2_d0": {
+          "label": 0.6974562609678658,
+          "state": 0.07345963378470692,
+          "label_x_state": 0.2290841052474272
+        },
+        "ctx_v1_s1_d0": {
+          "label": 0.6570017143612329,
+          "state": 0.06795131123119476,
+          "label_x_state": 0.2750469744075724
+        },
+        "ctx_v1_s2_d0": {
+          "label": 0.6850873664133929,
+          "state": 0.06650295459563783,
+          "label_x_state": 0.24840967899096925
+        },
+        "ctx_vs_s1_d0": {
+          "label": 0.6614436443368685,
+          "state": 0.06910311423077574,
+          "label_x_state": 0.2694532414323557
+        },
+        "ctx_vu1_s1_d0": {
+          "label": 0.6707199194725599,
+          "state": 0.06889118140908403,
+          "label_x_state": 0.26038889911835605
+        },
+        "ctx_vu2_s1_d0": {
+          "label": 0.6454475387916734,
+          "state": 0.06798204318367404,
+          "label_x_state": 0.28657041802465255
+        },
+        "ctx_v0_s3_d0": {
+          "label": 0.6956227638091769,
+          "state": 0.05623876865753991,
+          "label_x_state": 0.24813846753328325
+        },
+        "ctx_v0_s4_d0": {
+          "label": 0.6825547174710987,
+          "state": 0.06291194425356052,
+          "label_x_state": 0.2545333382753407
+        },
+        "ctx_v0_s5_d0": {
+          "label": 0.6699228799028526,
+          "state": 0.0800182511621647,
+          "label_x_state": 0.25005886893498275
+        },
+        "ctx_v0_s1_d1": {
+          "label": 0.6974242355542145,
+          "state": 0.06919673014840337,
+          "label_x_state": 0.23337903429738213
+        },
+        "ctx_vu1_s5_d1": {
+          "label": 0.6946280832518372,
+          "state": 0.07044482926556,
+          "label_x_state": 0.23492708748260274
+        }
+      },
+      "train_top1": 0.309,
+      "within_label_auroc": {
+        "point": 0.6213,
+        "interval": [
+          0.5774,
+          0.6627
+        ]
+      },
+      "tau_differ": {
+        "point": 0.8659,
+        "interval": [
+          0.842,
+          0.8887
+        ]
+      },
+      "tau_agree": {
+        "point": 0.9886,
+        "interval": [
+          0.9841,
+          0.9921
+        ]
+      },
+      "tau_contrast": {
+        "point": 0.1226,
+        "interval": [
+          0.0995,
+          0.1469
+        ]
+      },
+      "decoy_rate": {
+        "point": 0.3171,
+        "interval": [
+          0.1951,
+          0.4359
+        ]
+      },
+      "context_sensitive_tau": false,
+      "transfer_ratio": {
+        "ctx_vs_s1_d0": 0.9957,
+        "ctx_vu1_s1_d0": 0.8712,
+        "ctx_vu2_s1_d0": 0.9957,
+        "ctx_v0_s3_d0": 2.2403,
+        "ctx_v0_s4_d0": 1.7425,
+        "ctx_v0_s5_d0": 0.9849,
+        "ctx_v0_s1_d1": 0.9957,
+        "ctx_vu1_s5_d1": 0.7035
+      }
+    },
+    "random": {
+      "top1": {
+        "ctx_v0_s1_d0": 0.1795,
+        "ctx_v0_s2_d0": 0.1724,
+        "ctx_v1_s1_d0": 0.1667,
+        "ctx_v1_s2_d0": 0.2184,
+        "ctx_vs_s1_d0": 0.1154,
+        "ctx_vu1_s1_d0": 0.1282,
+        "ctx_vu2_s1_d0": 0.1538,
+        "ctx_v0_s3_d0": 0.0769,
+        "ctx_v0_s4_d0": 0.1282,
+        "ctx_v0_s5_d0": 0.2029,
+        "ctx_v0_s1_d1": 0.1026,
+        "ctx_vu1_s5_d1": 0.1159
+      },
+      "auroc": {
+        "ctx_v0_s1_d0": 0.4838,
+        "ctx_v0_s2_d0": 0.4914,
+        "ctx_v1_s1_d0": 0.5032,
+        "ctx_v1_s2_d0": 0.5089,
+        "ctx_vs_s1_d0": 0.5366,
+        "ctx_vu1_s1_d0": 0.4802,
+        "ctx_vu2_s1_d0": 0.4822,
+        "ctx_v0_s3_d0": 0.4474,
+        "ctx_v0_s4_d0": 0.4929,
+        "ctx_v0_s5_d0": 0.5216,
+        "ctx_v0_s1_d1": 0.4805,
+        "ctx_vu1_s5_d1": 0.4884
+      },
+      "variance_shares": {
+        "ctx_v0_s1_d0": {
+          "label": 0.08909042537069867,
+          "state": 0.05082661508920511,
+          "label_x_state": 0.8600829595400962
+        },
+        "ctx_v0_s2_d0": {
+          "label": 0.07148448856649782,
+          "state": 0.05416299481664107,
+          "label_x_state": 0.8743525166168612
+        },
+        "ctx_v1_s1_d0": {
+          "label": 0.08200287284720777,
+          "state": 0.05208016257496904,
+          "label_x_state": 0.8659169645778232
+        },
+        "ctx_v1_s2_d0": {
+          "label": 0.07120042403732996,
+          "state": 0.04942387246097635,
+          "label_x_state": 0.8793757035016937
+        },
+        "ctx_vs_s1_d0": {
+          "label": 0.09608749988373322,
+          "state": 0.05478851332721261,
+          "label_x_state": 0.8491239867890542
+        },
+        "ctx_vu1_s1_d0": {
+          "label": 0.06399432781116801,
+          "state": 0.0553904170430678,
+          "label_x_state": 0.8806152551457642
+        },
+        "ctx_vu2_s1_d0": {
+          "label": 0.07230639292541147,
+          "state": 0.03819919665919722,
+          "label_x_state": 0.8894944104153911
+        },
+        "ctx_v0_s3_d0": {
+          "label": 0.08105075131323299,
+          "state": 0.045600758880328,
+          "label_x_state": 0.873348489806439
+        },
+        "ctx_v0_s4_d0": {
+          "label": 0.08787264094511978,
+          "state": 0.03731374645428831,
+          "label_x_state": 0.8748136126005918
+        },
+        "ctx_v0_s5_d0": {
+          "label": 0.07474734449964109,
+          "state": 0.050667396570576895,
+          "label_x_state": 0.8745852589297821
+        },
+        "ctx_v0_s1_d1": {
+          "label": 0.06165469926825887,
+          "state": 0.038533199803399615,
+          "label_x_state": 0.8998121009283415
+        },
+        "ctx_vu1_s5_d1": {
+          "label": 0.07835329873189784,
+          "state": 0.050459444832366286,
+          "label_x_state": 0.8711872564357358
+        }
+      },
+      "train_top1": 0.1842,
+      "within_label_auroc": {
+        "point": 0.4986,
+        "interval": [
+          0.4663,
+          0.5312
+        ]
+      },
+      "tau_differ": {
+        "point": 0.0023,
+        "interval": [
+          -0.0117,
+          0.0165
+        ]
+      },
+      "tau_agree": {
+        "point": -0.0056,
+        "interval": [
+          -0.0199,
+          0.0091
+        ]
+      },
+      "tau_contrast": {
+        "point": -0.0079,
+        "interval": [
+          -0.0276,
+          0.0118
+        ]
+      },
+      "decoy_rate": {
+        "point": 0.1301,
+        "interval": [
+          0.0541,
+          0.2222
+        ]
+      },
+      "context_sensitive_tau": false,
+      "transfer_ratio": {
+        "ctx_vs_s1_d0": 0.6263,
+        "ctx_vu1_s1_d0": 0.6959,
+        "ctx_vu2_s1_d0": 0.835,
+        "ctx_v0_s3_d0": 0.4175,
+        "ctx_v0_s4_d0": 0.6959,
+        "ctx_v0_s5_d0": 1.1013,
+        "ctx_v0_s1_d1": 0.5567,
+        "ctx_vu1_s5_d1": 0.6293
+      }
+    }
+  },
+  "hypotheses": {
+    "H-act": {
+      "verdict": "inconclusive",
+      "branches": [
+        [
+          {
+            "condition": "decoy probe rate >= 0.50",
+            "point": 0.3089,
+            "interval": [
+              0.0,
+              0.9131
+            ],
+            "threshold": 0.5,
+            "direction": ">=",
+            "holds": false,
+            "clearly_fails": false
+          },
+          {
+            "condition": "within-label AUROC interval includes 0.50",
+            "point": 0.5148,
+            "interval": [
+              0.4446,
+              0.5852
+            ],
+            "threshold": 0.5,
+            "direction": "includes",
+            "holds": true,
+            "clearly_fails": false
+          }
+        ]
+      ]
+    },
+    "H-lex": {
+      "verdict": "inconclusive",
+      "branches": [
+        [
+          {
+            "condition": "min(top-1 VU1, VU2) / training < 0.50",
+            "point": 0.8767,
+            "interval": [
+              0.3454,
+              1.1785
+            ],
+            "threshold": 0.5,
+            "direction": "<",
+            "holds": false,
+            "clearly_fails": false
+          },
+          {
+            "condition": "top-1 ctx_v0_s3_d0 / training >= 0.70",
+            "point": 0.3461,
+            "interval": [
+              0.0501,
+              0.7533
+            ],
+            "threshold": 0.7,
+            "direction": ">=",
+            "holds": false,
+            "clearly_fails": false
+          },
+          {
+            "condition": "top-1 ctx_v0_s4_d0 / training >= 0.70",
+            "point": 0.5768,
+            "interval": [
+              0.2669,
+              0.8902
+            ],
+            "threshold": 0.7,
+            "direction": ">=",
+            "holds": false,
+            "clearly_fails": false
+          },
+          {
+            "condition": "top-1 ctx_v0_s5_d0 / training >= 0.70",
+            "point": 0.965,
+            "interval": [
+              0.5656,
+              1.4853
+            ],
+            "threshold": 0.7,
+            "direction": ">=",
+            "holds": true,
+            "clearly_fails": false
+          }
+        ],
+        [
+          {
+            "condition": "ctx_full - lexical_only training top-1: interval includes 0",
+            "point": 0.1103,
+            "interval": [
+              -0.0794,
+              0.3117
+            ],
+            "threshold": 0.0,
+            "direction": "includes",
+            "holds": true,
+            "clearly_fails": false
+          },
+          {
+            "condition": "ctx_full - lexical_only top-1 on VU2 <= 0",
+            "point": 0.1641,
+            "interval": [
+              -0.1253,
+              0.4615
+            ],
+            "threshold": 0.0,
+            "direction": "<=",
+            "holds": false,
+            "clearly_fails": false
+          }
+        ]
+      ]
+    },
+    "H-app": {
+      "verdict": "inconclusive",
+      "branches": [
+        [
+          {
+            "condition": "mean top-1 S3-S5 / training < 0.50",
+            "point": 0.6293,
+            "interval": [
+              0.443,
+              0.8786
+            ],
+            "threshold": 0.5,
+            "direction": "<",
+            "holds": false,
+            "clearly_fails": false
+          },
+          {
+            "condition": "top-1 VS / training >= 0.70",
+            "point": 1.0843,
+            "interval": [
+              0.704,
+              1.6115
+            ],
+            "threshold": 0.7,
+            "direction": ">=",
+            "holds": true,
+            "clearly_fails": false
+          }
+        ]
+      ]
+    },
+    "H-ctx": {
+      "verdict": "not supported",
+      "branches": [
+        [
+          {
+            "condition": "within-label AUROC >= 0.70",
+            "point": 0.5148,
+            "interval": [
+              0.4446,
+              0.5852
+            ],
+            "threshold": 0.7,
+            "direction": ">=",
+            "holds": false,
+            "clearly_fails": true
+          },
+          {
+            "condition": "within-label AUROC interval lower bound > 0.50",
+            "point": 0.5148,
+            "interval": [
+              0.4446,
+              0.5852
+            ],
+            "threshold": 0.5,
+            "direction": ">",
+            "holds": false,
+            "clearly_fails": false
+          },
+          {
+            "condition": "decoy probe rate <= 0.25",
+            "point": 0.3089,
+            "interval": [
+              0.0,
+              0.9131
+            ],
+            "threshold": 0.25,
+            "direction": "<=",
+            "holds": false,
+            "clearly_fails": false
+          },
+          {
+            "condition": "lexical_only decoy rate - ctx_full decoy rate >= 0.25",
+            "point": -0.3089,
+            "interval": [
+              -0.9131,
+              0.0
+            ],
+            "threshold": 0.25,
+            "direction": ">=",
+            "holds": false,
+            "clearly_fails": true
+          },
+          {
+            "condition": "top-1 VS / training >= 0.70",
+            "point": 1.0843,
+            "interval": [
+              0.704,
+              1.6115
+            ],
+            "threshold": 0.7,
+            "direction": ">=",
+            "holds": true,
+            "clearly_fails": false
+          },
+          {
+            "condition": "top-1 ctx_v0_s3_d0 / training >= 0.70",
+            "point": 0.3461,
+            "interval": [
+              0.0501,
+              0.7533
+            ],
+            "threshold": 0.7,
+            "direction": ">=",
+            "holds": false,
+            "clearly_fails": false
+          },
+          {
+            "condition": "top-1 ctx_v0_s4_d0 / training >= 0.70",
+            "point": 0.5768,
+            "interval": [
+              0.2669,
+              0.8902
+            ],
+            "threshold": 0.7,
+            "direction": ">=",
+            "holds": false,
+            "clearly_fails": false
+          },
+          {
+            "condition": "top-1 ctx_v0_s5_d0 / training >= 0.70",
+            "point": 0.965,
+            "interval": [
+              0.5656,
+              1.4853
+            ],
+            "threshold": 0.7,
+            "direction": ">=",
+            "holds": true,
+            "clearly_fails": false
+          },
+          {
+            "condition": "action_only decoy rate - ctx_full decoy rate > 0 (interval)",
+            "point": -0.3089,
+            "interval": [
+              -0.9131,
+              0.0
+            ],
+            "threshold": 0.0,
+            "direction": ">",
+            "holds": false,
+            "clearly_fails": true
+          },
+          {
+            "condition": "ctx_full - action_only within-label AUROC > 0 (interval)",
+            "point": 0.0232,
+            "interval": [
+              -0.0924,
+              0.147
+            ],
+            "threshold": 0.0,
+            "direction": ">",
+            "holds": false,
+            "clearly_fails": false
+          },
+          {
+            "condition": "lexical_only decoy rate - ctx_full decoy rate > 0 (interval)",
+            "point": -0.3089,
+            "interval": [
+              -0.9131,
+              0.0
+            ],
+            "threshold": 0.0,
+            "direction": ">",
+            "holds": false,
+            "clearly_fails": true
+          },
+          {
+            "condition": "ctx_full - lexical_only within-label AUROC > 0 (interval)",
+            "point": 0.0103,
+            "interval": [
+              -0.1176,
+              0.156
+            ],
+            "threshold": 0.0,
+            "direction": ">",
+            "holds": false,
+            "clearly_fails": false
+          }
+        ]
+      ]
+    }
+  },
+  "hunts": {
+    "failures": [],
+    "apps": {
+      "account_hub": {
+        "action_only": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.425,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "ctx_full": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 522.0,
+          "discovered": 3,
+          "verified_faults_total": 3,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.372,
+          "rmst_ratio_vs_random": 0.261
+        },
+        "label_blind": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.425,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "lexical_only": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 1582.7,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.127,
+          "rmst_ratio_vs_random": 0.791
+        },
+        "random": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.425
+        },
+        "search_S": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 1404.0,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_random": 0.702
+        }
+      },
+      "admin_records": {
+        "action_only": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "ctx_full": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 1444.7,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.722,
+          "rmst_ratio_vs_random": 0.722
+        },
+        "label_blind": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "lexical_only": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "random": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0
+        },
+        "search_S": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_random": 1.0
+        }
+      },
+      "ctx_v0_s1_d1": {
+        "action_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 3.24,
+          "rmst_ratio_vs_search_S": 1.0,
+          "rmst_ratio_vs_random": 1.399
+        },
+        "ctx_full": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 382.7,
+          "discovered": 2,
+          "verified_faults_total": 2,
+          "decoys_per_episode": 2.6133,
+          "rmst_ratio_vs_search_S": 0.383,
+          "rmst_ratio_vs_random": 0.535
+        },
+        "label_blind": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 94.3,
+          "discovered": 3,
+          "verified_faults_total": 3,
+          "decoys_per_episode": 3.32,
+          "rmst_ratio_vs_search_S": 0.094,
+          "rmst_ratio_vs_random": 0.132
+        },
+        "lexical_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 365.3,
+          "discovered": 2,
+          "verified_faults_total": 2,
+          "decoys_per_episode": 2.1067,
+          "rmst_ratio_vs_search_S": 0.365,
+          "rmst_ratio_vs_random": 0.511
+        },
+        "random": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 714.7,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 1.4533,
+          "rmst_ratio_vs_search_S": 0.715
+        },
+        "search_S": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 2.7333,
+          "rmst_ratio_vs_random": 1.399
+        }
+      },
+      "ctx_v0_s3_d0": {
+        "action_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 719.3,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.949,
+          "rmst_ratio_vs_random": 1.042
+        },
+        "ctx_full": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 381.3,
+          "discovered": 3,
+          "verified_faults_total": 4,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.503,
+          "rmst_ratio_vs_random": 0.553
+        },
+        "label_blind": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 928.7,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.225,
+          "rmst_ratio_vs_random": 1.346
+        },
+        "lexical_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.319,
+          "rmst_ratio_vs_random": 1.449
+        },
+        "random": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 690.0,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.91
+        },
+        "search_S": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 758.0,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_random": 1.099
+        }
+      },
+      "ctx_v0_s4_d0": {
+        "action_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "ctx_full": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 335.7,
+          "discovered": 3,
+          "verified_faults_total": 3,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.336,
+          "rmst_ratio_vs_random": 0.336
+        },
+        "label_blind": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 108.7,
+          "discovered": 3,
+          "verified_faults_total": 3,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.109,
+          "rmst_ratio_vs_random": 0.109
+        },
+        "lexical_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 679.3,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.679,
+          "rmst_ratio_vs_random": 0.679
+        },
+        "random": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0
+        },
+        "search_S": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_random": 1.0
+        }
+      },
+      "ctx_v0_s5_d0": {
+        "action_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "ctx_full": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 767.3,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.767,
+          "rmst_ratio_vs_random": 0.767
+        },
+        "label_blind": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 147.3,
+          "discovered": 3,
+          "verified_faults_total": 3,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.147,
+          "rmst_ratio_vs_random": 0.147
+        },
+        "lexical_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "random": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0
+        },
+        "search_S": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_random": 1.0
+        }
+      },
+      "ctx_vs_s1_d0": {
+        "action_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 678.7,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.679,
+          "rmst_ratio_vs_random": 0.679
+        },
+        "ctx_full": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 355.7,
+          "discovered": 3,
+          "verified_faults_total": 3,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.356,
+          "rmst_ratio_vs_random": 0.356
+        },
+        "label_blind": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 114.3,
+          "discovered": 3,
+          "verified_faults_total": 3,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.114,
+          "rmst_ratio_vs_random": 0.114
+        },
+        "lexical_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "random": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0
+        },
+        "search_S": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_random": 1.0
+        }
+      },
+      "ctx_vu1_s1_d0": {
+        "action_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 742.7,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.743,
+          "rmst_ratio_vs_random": 0.743
+        },
+        "ctx_full": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 540.7,
+          "discovered": 2,
+          "verified_faults_total": 2,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.541,
+          "rmst_ratio_vs_random": 0.541
+        },
+        "label_blind": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 393.3,
+          "discovered": 2,
+          "verified_faults_total": 2,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.393,
+          "rmst_ratio_vs_random": 0.393
+        },
+        "lexical_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 742.7,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.743,
+          "rmst_ratio_vs_random": 0.743
+        },
+        "random": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0
+        },
+        "search_S": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_random": 1.0
+        }
+      },
+      "ctx_vu1_s5_d1": {
+        "action_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 2.4133,
+          "rmst_ratio_vs_search_S": 1.316,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "ctx_full": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 320.0,
+          "discovered": 3,
+          "verified_faults_total": 3,
+          "decoys_per_episode": 2.3467,
+          "rmst_ratio_vs_search_S": 0.421,
+          "rmst_ratio_vs_random": 0.32
+        },
+        "label_blind": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 111.7,
+          "discovered": 3,
+          "verified_faults_total": 3,
+          "decoys_per_episode": 1.96,
+          "rmst_ratio_vs_search_S": 0.147,
+          "rmst_ratio_vs_random": 0.112
+        },
+        "lexical_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 3.2,
+          "rmst_ratio_vs_search_S": 1.316,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "random": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 1.3067,
+          "rmst_ratio_vs_search_S": 1.316
+        },
+        "search_S": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 760.0,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 2.44,
+          "rmst_ratio_vs_random": 0.76
+        }
+      },
+      "ctx_vu2_s1_d0": {
+        "action_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 716.7,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.717,
+          "rmst_ratio_vs_random": 0.717
+        },
+        "ctx_full": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 546.3,
+          "discovered": 2,
+          "verified_faults_total": 2,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.546,
+          "rmst_ratio_vs_random": 0.546
+        },
+        "label_blind": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 417.3,
+          "discovered": 2,
+          "verified_faults_total": 2,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.417,
+          "rmst_ratio_vs_random": 0.417
+        },
+        "lexical_only": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "random": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0
+        },
+        "search_S": {
+          "runs": 3,
+          "budget": 1000,
+          "restricted_mean_time": 1000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_random": 1.0
+        }
+      },
+      "media_library": {
+        "action_only": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.246,
+          "rmst_ratio_vs_random": 1.188
+        },
+        "ctx_full": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.246,
+          "rmst_ratio_vs_random": 1.188
+        },
+        "label_blind": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 1443.7,
+          "discovered": 1,
+          "verified_faults_total": 1,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 0.899,
+          "rmst_ratio_vs_random": 0.858
+        },
+        "lexical_only": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.246,
+          "rmst_ratio_vs_random": 1.188
+        },
+        "random": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 1683.3,
+          "discovered": 2,
+          "verified_faults_total": 2,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.049
+        },
+        "search_S": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 1605.3,
+          "discovered": 2,
+          "verified_faults_total": 2,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_random": 0.954
+        }
+      },
+      "support_portal": {
+        "action_only": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "ctx_full": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "label_blind": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "lexical_only": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0,
+          "rmst_ratio_vs_random": 1.0
+        },
+        "random": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_search_S": 1.0
+        },
+        "search_S": {
+          "runs": 3,
+          "budget": 2000,
+          "restricted_mean_time": 2000.0,
+          "discovered": 0,
+          "verified_faults_total": 0,
+          "decoys_per_episode": 0.0,
+          "rmst_ratio_vs_random": 1.0
+        }
+      }
+    }
+  }
+}
