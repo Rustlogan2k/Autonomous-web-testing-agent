@@ -142,3 +142,13 @@ to revise the labeller once and re-test it, under these terms fixed before the r
   (booking_desk) where a single-page application puts its review, outcome and list views on
   one URL and the cells could not tell them apart. Headings identify cells within one
   application only; the learner's keys never contain them.
+
+## 10. Addendum 2026-10-06 (late): the pre-declared suite infrastructure test
+
+Declared before it runs. The only contact with the held-out suite before the freeze is
+`hybrid/suite_smoke.py`: for every suite application it builds the variants privately, starts
+the servers, and replays **the admission's own benign walks and fault witnesses** (already
+public in each manifest) through the v2 runner's serving and monitor path
+(`hybrid/suite.py`), with a scripted policy. It passes when every witness is confirmed by
+the monitor and no benign walk raises a confirmed finding. No agent, operator, learner or
+labeller runs on a suite application; nothing about the agent is changed in response to it.

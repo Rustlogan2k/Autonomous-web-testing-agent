@@ -111,36 +111,82 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
     return policy, labeller
 
 
+def _runner_factory(urls: dict[str, str], settings):
+    from ..benchmark import make_env
+    from ..oracle import PlaywrightTrajectoryRunner
+
+    def runner(build: str) -> PlaywrightTrajectoryRunner:
+        return PlaywrightTrajectoryRunner(
+            lambda: make_env(urls[build], settings, max_steps=120), max_steps=120
+        )
+
+    return runner
+
+
 def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
+    """One hunt on a development (benchmark) application or a suite application."""
     from ..benchmark import FaultMonitor, control_key, load_app, make_env, run_hunt, serve_app
-    from ..oracle import PlaywrightTrajectoryRunner, VerificationPipeline
+    from ..oracle import VerificationPipeline
     from .invariants import verify
 
-    app = load_app(job.app, BENCHMARK_ROOT)
     settings = _settings(config)
-    policy, labeller = _policy(job, app.manifest.name, config)
-    with serve_app(app, controls=True) as urls:
+    suite = job.app not in DEVELOPMENT_APPS
+    if suite:
+        from e2e_suite.harness.variants import control_key as suite_control_key
 
-        def runner(build: str) -> PlaywrightTrajectoryRunner:
-            return PlaywrightTrajectoryRunner(
-                lambda: make_env(urls[build], settings, max_steps=120), max_steps=120
+        from .suite import ExtensionMonitor, SuiteMonitor, load_suite_app, serve_suite_app
+
+        key_for = suite_control_key  # the suite names its control builds "without-<id>"
+        suite_app = load_suite_app(job.app)
+        manifest = suite_app.oracle_app()
+        name = suite_app.data.get("name", job.app)
+        serving = serve_suite_app(suite_app, controls=job.build == "buggy")
+    else:
+        key_for = control_key  # the benchmark names them "without:<id>"
+        app = load_app(job.app, BENCHMARK_ROOT)
+        manifest, name = app.manifest, app.manifest.name
+        serving = serve_app(app, controls=True)
+    policy, labeller = _policy(job, name, config)
+
+    with serving as urls:
+        runner = _runner_factory(urls, settings)
+        if job.build == "buggy":
+            controls = {f.fault_id: runner(key_for(f.fault_id)) for f in manifest.faults}
+        else:
+            controls = {}
+        primary = None
+        if manifest.faults:
+            primary = FaultMonitor(
+                VerificationPipeline(
+                    manifest,
+                    runner(job.build),
+                    control_runner=runner("clean"),
+                    control_runners=controls,
+                    max_minimization_trials=config.max_minimization_trials,
+                )
             )
-
-        controls = (
-            {f.fault_id: runner(control_key(f.fault_id)) for f in app.manifest.faults}
-            if job.build == "buggy"
-            else {}
-        )
-        pipeline = VerificationPipeline(
-            app.manifest,
-            runner(job.build),
-            control_runner=runner("clean"),
-            control_runners=controls,
-            max_minimization_trials=config.max_minimization_trials,
-        )
+        if suite:
+            # On a clean-build control job there is no per-fault build; every candidate is
+            # checked against the clean build, as for the primary oracle.
+            ext_controls = {
+                f["fault_id"]: runner(key_for(f["fault_id"]) if job.build == "buggy" else "clean")
+                for f in suite_app.faults_by_oracle("extension")
+            }
+            monitor = SuiteMonitor(
+                primary,
+                ExtensionMonitor(
+                    suite_app,
+                    faulty=runner(job.build),
+                    clean=runner("clean"),
+                    controls=ext_controls,
+                    max_trials=config.max_minimization_trials,
+                ),
+            )
+        else:
+            monitor = primary
         env = make_env(urls[job.build], settings)
         try:
-            result = run_hunt(env, policy, FaultMonitor(pipeline), budget=config.budget)
+            result = run_hunt(env, policy, monitor, budget=config.budget)
         finally:
             env.close()
         candidates = getattr(policy, "candidates", [])
@@ -151,12 +197,13 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
             replays=config.invariant_replays,
             limit=config.invariant_verify_limit,
             labeller=labeller,
-            context=app.manifest.name,
+            context=name,
         )
         verify_seconds = time.monotonic() - verify_started
     payload = {
         "hunt": result.to_dict(),
         "arm": {"name": job.arm, **ARMS[job.arm]},
+        "suite": suite,
         "invariants": {
             "candidates": [c.to_dict() for c in candidates],
             "verify_seconds": round(verify_seconds, 1),
