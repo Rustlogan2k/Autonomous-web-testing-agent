@@ -1,0 +1,3355 @@
+{
+ "label_version": "labels-v3",
+ "note": "rules in make_ground_truth.py; toggles excluded from role scoring",
+ "pages": {
+  "account_hub:15316c025c34daa3": {
+   "controls": {
+    "[id=\"email-edit\"]": [
+     "edit",
+     "open"
+    ],
+    "[id=\"language\"]": [
+     "choice"
+    ],
+    "[id=\"name-edit\"]": [
+     "edit",
+     "open"
+    ],
+    "[id=\"nav-billing\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-notifications\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-privacy\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-profile\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-security\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-team\"]": [
+     "navigate"
+    ],
+    "[id=\"time-zone\"]": [
+     "choice"
+    ]
+   },
+   "kind": [
+    "detail",
+    "form"
+   ]
+  },
+  "account_hub:387f90871e989c93": {
+   "controls": {
+    "[id=\"billing-period\"]": [
+     "choice"
+    ],
+    "[id=\"details-edit\"]": [
+     "edit",
+     "open"
+    ],
+    "[id=\"nav-billing\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-notifications\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-privacy\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-profile\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-security\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-team\"]": [
+     "navigate"
+    ],
+    "[id=\"plan-close\"]": [
+     "back"
+    ],
+    "[id=\"plan-review\"]": [
+     "submit"
+    ],
+    "[id=\"plan-seats\"]": [
+     "number"
+    ]
+   },
+   "kind": [
+    "detail",
+    "form"
+   ]
+  },
+  "account_hub:3bcfce94ac7a2b4a": {
+   "controls": {
+    "[id=\"email-back\"]": [
+     "back"
+    ],
+    "[id=\"email-switch\"]": [
+     "submit"
+    ],
+    "[id=\"language\"]": [
+     "choice"
+    ],
+    "[id=\"name-edit\"]": [
+     "edit",
+     "open"
+    ],
+    "[id=\"nav-billing\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-notifications\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-privacy\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-profile\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-security\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-team\"]": [
+     "navigate"
+    ],
+    "[id=\"time-zone\"]": [
+     "choice"
+    ]
+   },
+   "kind": [
+    "detail",
+    "form"
+   ]
+  },
+  "account_hub:4451a1002bdd7f07": {
+   "controls": {
+    "[id=\"details-edit\"]": [
+     "edit",
+     "open"
+    ],
+    "[id=\"nav-billing\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-notifications\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-privacy\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-profile\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-security\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-team\"]": [
+     "navigate"
+    ],
+    "[id=\"open-plan-editor\"]": [
+     "edit",
+     "open"
+    ]
+   },
+   "kind": [
+    "detail",
+    "outcome"
+   ]
+  },
+  "account_hub:56650d2071ec4e20": {
+   "controls": {
+    "[id=\"details-edit\"]": [
+     "edit",
+     "open"
+    ],
+    "[id=\"nav-billing\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-notifications\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-privacy\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-profile\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-security\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-team\"]": [
+     "navigate"
+    ],
+    "[id=\"plan-apply\"]": [
+     "submit"
+    ],
+    "[id=\"plan-back\"]": [
+     "back"
+    ]
+   },
+   "kind": [
+    "review"
+   ]
+  },
+  "account_hub:67fb9b320d8d9152": {
+   "controls": {
+    "[id=\"details-edit\"]": [
+     "edit",
+     "open"
+    ],
+    "[id=\"nav-billing\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-notifications\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-privacy\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-profile\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-security\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-team\"]": [
+     "navigate"
+    ],
+    "[id=\"open-plan-editor\"]": [
+     "edit",
+     "open"
+    ]
+   },
+   "kind": [
+    "detail",
+    "outcome"
+   ]
+  },
+  "account_hub:68b2f6c4fd4c3f9b": {
+   "controls": {
+    "[id=\"billing-period\"]": [
+     "choice"
+    ],
+    "[id=\"details-edit\"]": [
+     "edit",
+     "open"
+    ],
+    "[id=\"nav-billing\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-notifications\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-privacy\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-profile\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-security\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-team\"]": [
+     "navigate"
+    ],
+    "[id=\"plan-close\"]": [
+     "back"
+    ],
+    "[id=\"plan-review\"]": [
+     "submit"
+    ],
+    "[id=\"plan-seats\"]": [
+     "number"
+    ]
+   },
+   "kind": [
+    "detail",
+    "form"
+   ]
+  },
+  "account_hub:6971724624c14802": {
+   "controls": {
+    "[id=\"billing-period\"]": [
+     "choice"
+    ],
+    "[id=\"details-edit\"]": [
+     "edit",
+     "open"
+    ],
+    "[id=\"nav-billing\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-notifications\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-privacy\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-profile\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-security\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-team\"]": [
+     "navigate"
+    ],
+    "[id=\"plan-close\"]": [
+     "back"
+    ],
+    "[id=\"plan-review\"]": [
+     "submit"
+    ],
+    "[id=\"plan-seats\"]": [
+     "number"
+    ]
+   },
+   "kind": [
+    "detail",
+    "form"
+   ]
+  },
+  "account_hub:88924f8ce2f09583": {
+   "controls": {
+    "[id=\"card-billing\"]": [
+     "edit",
+     "navigate",
+     "open"
+    ],
+    "[id=\"card-notifications\"]": [
+     "edit",
+     "navigate",
+     "open"
+    ],
+    "[id=\"card-privacy\"]": [
+     "edit",
+     "navigate",
+     "open"
+    ],
+    "[id=\"card-profile\"]": [
+     "edit",
+     "navigate",
+     "open"
+    ],
+    "[id=\"card-security\"]": [
+     "edit",
+     "navigate",
+     "open"
+    ],
+    "[id=\"card-team\"]": [
+     "edit",
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-billing\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-notifications\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-privacy\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-profile\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-security\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-team\"]": [
+     "navigate"
+    ],
+    "[id=\"tip-dismiss\"]": [
+     "back"
+    ]
+   },
+   "kind": [
+    "home"
+   ]
+  },
+  "account_hub:ce867c99e876f017": {
+   "controls": {
+    "[id=\"email-edit\"]": [
+     "edit",
+     "open"
+    ],
+    "[id=\"language\"]": [
+     "choice"
+    ],
+    "[id=\"name-edit\"]": [
+     "edit",
+     "open"
+    ],
+    "[id=\"nav-billing\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-notifications\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-privacy\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-profile\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-security\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-team\"]": [
+     "navigate"
+    ],
+    "[id=\"time-zone\"]": [
+     "choice"
+    ]
+   },
+   "kind": [
+    "detail",
+    "form"
+   ]
+  },
+  "account_hub:ec235ae389c0d51c": {
+   "controls": {
+    "[id=\"email-discard\"]": [
+     "back"
+    ],
+    "[id=\"email-review\"]": [
+     "submit"
+    ],
+    "[id=\"language\"]": [
+     "choice"
+    ],
+    "[id=\"name-edit\"]": [
+     "edit",
+     "open"
+    ],
+    "[id=\"nav-billing\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-notifications\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-privacy\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-profile\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-security\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-team\"]": [
+     "navigate"
+    ],
+    "[id=\"new-email\"]": [
+     "email"
+    ],
+    "[id=\"repeat-email\"]": [
+     "email"
+    ],
+    "[id=\"time-zone\"]": [
+     "choice"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "account_hub:fed4b39622846d48": {
+   "controls": {
+    "[id=\"email-discard\"]": [
+     "back"
+    ],
+    "[id=\"email-review\"]": [
+     "submit"
+    ],
+    "[id=\"language\"]": [
+     "choice"
+    ],
+    "[id=\"name-edit\"]": [
+     "edit",
+     "open"
+    ],
+    "[id=\"nav-billing\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-notifications\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-privacy\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-profile\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-security\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-team\"]": [
+     "navigate"
+    ],
+    "[id=\"new-email\"]": [
+     "email"
+    ],
+    "[id=\"repeat-email\"]": [
+     "email"
+    ],
+    "[id=\"time-zone\"]": [
+     "choice"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "admin_records:05e56e44e84cdd03": {
+   "controls": {
+    "[id=\"add-equipment\"]": [
+     "add",
+     "navigate",
+     "open"
+    ],
+    "[id=\"apply-filter\"]": [
+     "search_or_filter"
+    ],
+    "[id=\"edit-1\"]": [
+     "edit"
+    ],
+    "[id=\"edit-2\"]": [
+     "edit"
+    ],
+    "[id=\"edit-3\"]": [
+     "edit"
+    ],
+    "[id=\"edit-4\"]": [
+     "edit"
+    ],
+    "[id=\"edit-6\"]": [
+     "edit"
+    ],
+    "[id=\"f-show-status\"]": [
+     "choice"
+    ],
+    "[id=\"nav-changes\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-equipment\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-guide\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-locations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-preferences\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-register\"]": [
+     "add",
+     "navigate",
+     "open"
+    ],
+    "[id=\"remove-1\"]": [
+     "remove"
+    ],
+    "[id=\"remove-2\"]": [
+     "remove"
+    ],
+    "[id=\"remove-3\"]": [
+     "remove"
+    ],
+    "[id=\"remove-4\"]": [
+     "remove"
+    ],
+    "[id=\"remove-6\"]": [
+     "remove"
+    ],
+    "[id=\"view-1\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"view-2\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"view-3\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"view-4\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"view-6\"]": [
+     "navigate",
+     "open"
+    ]
+   },
+   "kind": [
+    "list"
+   ]
+  },
+  "admin_records:0d80682b07dd5993": {
+   "controls": {
+    "[id=\"discard-edits\"]": [
+     "back"
+    ],
+    "[id=\"f-asset-name\"]": [
+     "free_text",
+     "name",
+     "other"
+    ],
+    "[id=\"f-category\"]": [
+     "choice"
+    ],
+    "[id=\"f-change-reason\"]": [
+     "free_text"
+    ],
+    "[id=\"f-custodian\"]": [
+     "name"
+    ],
+    "[id=\"f-location\"]": [
+     "address",
+     "choice"
+    ],
+    "[id=\"f-notes\"]": [
+     "free_text"
+    ],
+    "[id=\"f-status\"]": [
+     "choice"
+    ],
+    "[id=\"f-units\"]": [
+     "number"
+    ],
+    "[id=\"nav-changes\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-equipment\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-guide\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-locations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-preferences\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-register\"]": [
+     "add",
+     "navigate",
+     "open"
+    ],
+    "[id=\"save-changes\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "admin_records:0dbd32a4e566b65f": {
+   "controls": {
+    "[id=\"back-to-register\"]": [
+     "back",
+     "navigate"
+    ],
+    "[id=\"edit-record\"]": [
+     "edit"
+    ],
+    "[id=\"nav-changes\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-equipment\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-guide\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-locations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-preferences\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-register\"]": [
+     "add",
+     "navigate",
+     "open"
+    ],
+    "[id=\"remove-record\"]": [
+     "remove"
+    ]
+   },
+   "kind": [
+    "detail",
+    "outcome"
+   ]
+  },
+  "admin_records:282e2ad142aadfea": {
+   "controls": {
+    "[id=\"back-to-register\"]": [
+     "back",
+     "navigate"
+    ],
+    "[id=\"edit-record\"]": [
+     "edit"
+    ],
+    "[id=\"nav-changes\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-equipment\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-guide\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-locations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-preferences\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-register\"]": [
+     "add",
+     "navigate",
+     "open"
+    ],
+    "[id=\"remove-record\"]": [
+     "remove"
+    ]
+   },
+   "kind": [
+    "detail",
+    "outcome"
+   ]
+  },
+  "admin_records:2b0f29141bd57b79": {
+   "controls": {
+    "[id=\"back-to-register\"]": [
+     "back",
+     "navigate"
+    ],
+    "[id=\"edit-record\"]": [
+     "edit"
+    ],
+    "[id=\"nav-changes\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-equipment\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-guide\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-locations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-preferences\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-register\"]": [
+     "add",
+     "navigate",
+     "open"
+    ],
+    "[id=\"remove-record\"]": [
+     "remove"
+    ]
+   },
+   "kind": [
+    "detail",
+    "outcome"
+   ]
+  },
+  "admin_records:527687d93d089d08": {
+   "controls": {
+    "[id=\"create-record\"]": [
+     "submit"
+    ],
+    "[id=\"discard-draft\"]": [
+     "back"
+    ],
+    "[id=\"f-asset-name\"]": [
+     "free_text",
+     "name",
+     "other"
+    ],
+    "[id=\"f-category\"]": [
+     "choice"
+    ],
+    "[id=\"f-custodian\"]": [
+     "name"
+    ],
+    "[id=\"f-location\"]": [
+     "address",
+     "choice"
+    ],
+    "[id=\"f-notes\"]": [
+     "free_text"
+    ],
+    "[id=\"f-status\"]": [
+     "choice"
+    ],
+    "[id=\"f-units\"]": [
+     "number"
+    ],
+    "[id=\"nav-changes\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-equipment\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-guide\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-locations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-preferences\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-register\"]": [
+     "add",
+     "navigate",
+     "open"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "admin_records:567f125de5c78afb": {
+   "controls": {
+    "[id=\"discard-edits\"]": [
+     "back"
+    ],
+    "[id=\"f-asset-name\"]": [
+     "free_text",
+     "name",
+     "other"
+    ],
+    "[id=\"f-category\"]": [
+     "choice"
+    ],
+    "[id=\"f-change-reason\"]": [
+     "free_text"
+    ],
+    "[id=\"f-custodian\"]": [
+     "name"
+    ],
+    "[id=\"f-location\"]": [
+     "address",
+     "choice"
+    ],
+    "[id=\"f-notes\"]": [
+     "free_text"
+    ],
+    "[id=\"f-status\"]": [
+     "choice"
+    ],
+    "[id=\"f-units\"]": [
+     "number"
+    ],
+    "[id=\"nav-changes\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-equipment\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-guide\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-locations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-preferences\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-register\"]": [
+     "add",
+     "navigate",
+     "open"
+    ],
+    "[id=\"save-changes\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "admin_records:76304890aef0baf3": {
+   "controls": {
+    "[id=\"discard-edits\"]": [
+     "back"
+    ],
+    "[id=\"f-asset-name\"]": [
+     "free_text",
+     "name",
+     "other"
+    ],
+    "[id=\"f-category\"]": [
+     "choice"
+    ],
+    "[id=\"f-change-reason\"]": [
+     "free_text"
+    ],
+    "[id=\"f-custodian\"]": [
+     "name"
+    ],
+    "[id=\"f-location\"]": [
+     "address",
+     "choice"
+    ],
+    "[id=\"f-notes\"]": [
+     "free_text"
+    ],
+    "[id=\"f-status\"]": [
+     "choice"
+    ],
+    "[id=\"f-units\"]": [
+     "number"
+    ],
+    "[id=\"nav-changes\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-equipment\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-guide\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-locations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-preferences\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-register\"]": [
+     "add",
+     "navigate",
+     "open"
+    ],
+    "[id=\"save-changes\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "admin_records:8755f3fe1a6c2e4e": {
+   "controls": {
+    "[id=\"discard-edits\"]": [
+     "back"
+    ],
+    "[id=\"f-asset-name\"]": [
+     "free_text",
+     "name",
+     "other"
+    ],
+    "[id=\"f-category\"]": [
+     "choice"
+    ],
+    "[id=\"f-change-reason\"]": [
+     "free_text"
+    ],
+    "[id=\"f-custodian\"]": [
+     "name"
+    ],
+    "[id=\"f-location\"]": [
+     "address",
+     "choice"
+    ],
+    "[id=\"f-notes\"]": [
+     "free_text"
+    ],
+    "[id=\"f-status\"]": [
+     "choice"
+    ],
+    "[id=\"f-units\"]": [
+     "number"
+    ],
+    "[id=\"nav-changes\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-equipment\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-guide\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-locations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-preferences\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-register\"]": [
+     "add",
+     "navigate",
+     "open"
+    ],
+    "[id=\"save-changes\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "admin_records:9200a76e6f1b4de0": {
+   "controls": {
+    "[id=\"add-equipment\"]": [
+     "add",
+     "navigate",
+     "open"
+    ],
+    "[id=\"apply-filter\"]": [
+     "search_or_filter"
+    ],
+    "[id=\"edit-1\"]": [
+     "edit"
+    ],
+    "[id=\"edit-3\"]": [
+     "edit"
+    ],
+    "[id=\"edit-4\"]": [
+     "edit"
+    ],
+    "[id=\"edit-5\"]": [
+     "edit"
+    ],
+    "[id=\"edit-6\"]": [
+     "edit"
+    ],
+    "[id=\"f-show-status\"]": [
+     "choice"
+    ],
+    "[id=\"nav-changes\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-equipment\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-guide\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-locations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-preferences\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-register\"]": [
+     "add",
+     "navigate",
+     "open"
+    ],
+    "[id=\"remove-1\"]": [
+     "remove"
+    ],
+    "[id=\"remove-3\"]": [
+     "remove"
+    ],
+    "[id=\"remove-4\"]": [
+     "remove"
+    ],
+    "[id=\"remove-5\"]": [
+     "remove"
+    ],
+    "[id=\"remove-6\"]": [
+     "remove"
+    ],
+    "[id=\"view-1\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"view-3\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"view-4\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"view-5\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"view-6\"]": [
+     "navigate",
+     "open"
+    ]
+   },
+   "kind": [
+    "list"
+   ]
+  },
+  "admin_records:b3ec4e242e851f8a": {
+   "controls": {
+    "[id=\"add-equipment\"]": [
+     "add",
+     "navigate",
+     "open"
+    ],
+    "[id=\"apply-filter\"]": [
+     "search_or_filter"
+    ],
+    "[id=\"edit-1\"]": [
+     "edit"
+    ],
+    "[id=\"edit-2\"]": [
+     "edit"
+    ],
+    "[id=\"edit-3\"]": [
+     "edit"
+    ],
+    "[id=\"edit-4\"]": [
+     "edit"
+    ],
+    "[id=\"edit-5\"]": [
+     "edit"
+    ],
+    "[id=\"edit-6\"]": [
+     "edit"
+    ],
+    "[id=\"f-show-status\"]": [
+     "choice"
+    ],
+    "[id=\"nav-changes\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-equipment\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-guide\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-locations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-preferences\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-register\"]": [
+     "add",
+     "navigate",
+     "open"
+    ],
+    "[id=\"remove-1\"]": [
+     "remove"
+    ],
+    "[id=\"remove-2\"]": [
+     "remove"
+    ],
+    "[id=\"remove-3\"]": [
+     "remove"
+    ],
+    "[id=\"remove-4\"]": [
+     "remove"
+    ],
+    "[id=\"remove-5\"]": [
+     "remove"
+    ],
+    "[id=\"remove-6\"]": [
+     "remove"
+    ],
+    "[id=\"view-1\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"view-2\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"view-3\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"view-4\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"view-5\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"view-6\"]": [
+     "navigate",
+     "open"
+    ]
+   },
+   "kind": [
+    "list"
+   ]
+  },
+  "admin_records:c7e37c31026aec09": {
+   "controls": {
+    "[id=\"attention-3\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"attention-4\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"go-equipment\"]": [
+     "navigate"
+    ],
+    "[id=\"go-register\"]": [
+     "add",
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-changes\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-equipment\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-guide\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-locations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-overview\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-preferences\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-register\"]": [
+     "add",
+     "navigate",
+     "open"
+    ]
+   },
+   "kind": [
+    "home"
+   ]
+  },
+  "booking_desk:0001e6afd3935cbd": {
+   "controls": {
+    "[id=\"another-room\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-access\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-location\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-reservations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-rooms\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-terms\"]": [
+     "navigate"
+    ],
+    "[id=\"see-reservations\"]": [
+     "navigate",
+     "open"
+    ]
+   },
+   "kind": [
+    "outcome"
+   ]
+  },
+  "booking_desk:01e1014b40d3e0e9": {
+   "controls": {
+    "[id=\"another-room\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-access\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-location\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-reservations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-rooms\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-terms\"]": [
+     "navigate"
+    ],
+    "[id=\"see-reservations\"]": [
+     "navigate",
+     "open"
+    ]
+   },
+   "kind": [
+    "outcome"
+   ]
+  },
+  "booking_desk:067d0fdf3bdd2712": {
+   "controls": {
+    "[id=\"amend-details\"]": [
+     "edit"
+    ],
+    "[id=\"amend-extras\"]": [
+     "edit"
+    ],
+    "[id=\"amend-session\"]": [
+     "edit"
+    ],
+    "[id=\"cancel-draft\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"finalise\"]": [
+     "submit"
+    ],
+    "[id=\"nav-access\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-location\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-reservations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-rooms\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-terms\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-details\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-extras\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-review\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-session\"]": [
+     "navigate"
+    ],
+    "[id=\"save-later\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "review"
+   ]
+  },
+  "booking_desk:0fa74c397134b8b7": {
+   "controls": {
+    "[id=\"amend-details\"]": [
+     "edit"
+    ],
+    "[id=\"amend-extras\"]": [
+     "edit"
+    ],
+    "[id=\"amend-session\"]": [
+     "edit"
+    ],
+    "[id=\"cancel-draft\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"finalise\"]": [
+     "submit"
+    ],
+    "[id=\"nav-access\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-location\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-reservations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-rooms\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-terms\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-details\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-extras\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-review\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-session\"]": [
+     "navigate"
+    ],
+    "[id=\"save-later\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "review"
+   ]
+  },
+  "booking_desk:1701e1ee3b0a6b22": {
+   "controls": {
+    "[id=\"browse-rooms\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-access\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-location\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-reservations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-rooms\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-terms\"]": [
+     "navigate"
+    ],
+    "[id=\"release-MR-1001\"]": [
+     "back",
+     "remove"
+    ]
+   },
+   "kind": [
+    "list"
+   ]
+  },
+  "booking_desk:3c45533567dcdf81": {
+   "controls": {
+    "[id=\"amend-details\"]": [
+     "edit"
+    ],
+    "[id=\"amend-extras\"]": [
+     "edit"
+    ],
+    "[id=\"amend-session\"]": [
+     "edit"
+    ],
+    "[id=\"cancel-draft\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"finalise\"]": [
+     "submit"
+    ],
+    "[id=\"nav-access\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-location\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-reservations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-rooms\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-terms\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-details\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-extras\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-review\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-session\"]": [
+     "navigate"
+    ],
+    "[id=\"save-later\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "review"
+   ]
+  },
+  "booking_desk:3cc091a3d2810cc6": {
+   "controls": {
+    "[id=\"back-session\"]": [
+     "back"
+    ],
+    "[id=\"cancel-draft\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"catering\"]": [
+     "choice",
+     "number"
+    ],
+    "[id=\"clear-extras\"]": [
+     "other",
+     "remove"
+    ],
+    "[id=\"nav-access\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-location\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-reservations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-rooms\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-terms\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-extras\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-session\"]": [
+     "navigate"
+    ],
+    "[id=\"save-later\"]": [
+     "submit"
+    ],
+    "[id=\"to-details\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "booking_desk:5cab0e3e0b072059": {
+   "controls": {
+    "[id=\"arrival\"]": [
+     "choice",
+     "date"
+    ],
+    "[id=\"cancel-draft\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"change-room\"]": [
+     "back",
+     "edit",
+     "navigate"
+    ],
+    "[id=\"clear-session\"]": [
+     "other",
+     "remove"
+    ],
+    "[id=\"guests\"]": [
+     "number"
+    ],
+    "[id=\"hours\"]": [
+     "choice",
+     "number"
+    ],
+    "[id=\"layout\"]": [
+     "choice"
+    ],
+    "[id=\"nav-access\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-location\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-reservations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-rooms\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-terms\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-session\"]": [
+     "navigate"
+    ],
+    "[id=\"save-later\"]": [
+     "submit"
+    ],
+    "[id=\"session-date\"]": [
+     "date"
+    ],
+    "[id=\"to-extras\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "booking_desk:627f8b3bd6b64a1b": {
+   "controls": {
+    "[id=\"amend-details\"]": [
+     "edit"
+    ],
+    "[id=\"amend-extras\"]": [
+     "edit"
+    ],
+    "[id=\"amend-session\"]": [
+     "edit"
+    ],
+    "[id=\"cancel-draft\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"finalise\"]": [
+     "submit"
+    ],
+    "[id=\"nav-access\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-location\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-reservations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-rooms\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-terms\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-details\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-extras\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-review\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-session\"]": [
+     "navigate"
+    ],
+    "[id=\"save-later\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "review"
+   ]
+  },
+  "booking_desk:63b5e46aa7df9d54": {
+   "controls": {
+    "[id=\"arrival\"]": [
+     "choice",
+     "date"
+    ],
+    "[id=\"cancel-draft\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"change-room\"]": [
+     "back",
+     "edit",
+     "navigate"
+    ],
+    "[id=\"clear-session\"]": [
+     "other",
+     "remove"
+    ],
+    "[id=\"guests\"]": [
+     "number"
+    ],
+    "[id=\"hours\"]": [
+     "choice",
+     "number"
+    ],
+    "[id=\"layout\"]": [
+     "choice"
+    ],
+    "[id=\"nav-access\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-location\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-reservations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-rooms\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-terms\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-session\"]": [
+     "navigate"
+    ],
+    "[id=\"save-later\"]": [
+     "submit"
+    ],
+    "[id=\"session-date\"]": [
+     "date"
+    ],
+    "[id=\"to-extras\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "booking_desk:7379188b5b97ab27": {
+   "controls": {
+    "[id=\"amend-details\"]": [
+     "edit"
+    ],
+    "[id=\"amend-extras\"]": [
+     "edit"
+    ],
+    "[id=\"amend-session\"]": [
+     "edit"
+    ],
+    "[id=\"cancel-draft\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"finalise\"]": [
+     "submit"
+    ],
+    "[id=\"nav-access\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-location\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-reservations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-rooms\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-terms\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-details\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-extras\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-review\"]": [
+     "navigate"
+    ],
+    "[id=\"rail-session\"]": [
+     "navigate"
+    ],
+    "[id=\"save-later\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "review"
+   ]
+  },
+  "booking_desk:771ae01d529039d0": {
+   "controls": {
+    "[id=\"another-room\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-access\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-location\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-reservations\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-rooms\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-terms\"]": [
+     "navigate"
+    ],
+    "[id=\"see-reservations\"]": [
+     "navigate",
+     "open"
+    ]
+   },
+   "kind": [
+    "outcome"
+   ]
+  },
+  "media_library:022e4a57820bc99f": {
+   "controls": {
+    "[id=\"edit-discard\"]": [
+     "back"
+    ],
+    "[id=\"edit-review\"]": [
+     "submit"
+    ],
+    "[id=\"item-clearance\"]": [
+     "choice"
+    ],
+    "[id=\"item-programme\"]": [
+     "choice"
+    ],
+    "[id=\"item-recorded-by\"]": [
+     "name"
+    ],
+    "[id=\"item-summary\"]": [
+     "free_text"
+    ],
+    "[id=\"item-title\"]": [
+     "free_text",
+     "name",
+     "other"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "media_library:143ff7c8a3399a1d": {
+   "controls": {
+    "[id=\"move-apply\"]": [
+     "submit"
+    ],
+    "[id=\"move-cancel\"]": [
+     "back"
+    ],
+    "[id=\"move-to\"]": [
+     "choice"
+    ]
+   },
+   "kind": [
+    "detail",
+    "form"
+   ]
+  },
+  "media_library:1dae5f55ae5872ea": {
+   "controls": {
+    "[id=\"add-recording\"]": [
+     "add",
+     "open"
+    ],
+    "[id=\"archive-notes\"]": [
+     "navigate",
+     "open",
+     "other"
+    ],
+    "[id=\"arrange-by\"]": [
+     "choice"
+    ],
+    "[id=\"find-text\"]": [
+     "free_text",
+     "other"
+    ],
+    "[id=\"nav-brand\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-collections\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-library\"]": [
+     "navigate"
+    ],
+    "[id=\"open-item-1\"]": [
+     "open"
+    ],
+    "[id=\"open-item-2\"]": [
+     "open"
+    ],
+    "[id=\"open-item-3\"]": [
+     "open"
+    ],
+    "[id=\"open-item-4\"]": [
+     "open"
+    ],
+    "[id=\"open-item-5\"]": [
+     "open"
+    ],
+    "[id=\"open-item-6\"]": [
+     "open"
+    ],
+    "[id=\"open-item-7\"]": [
+     "open"
+    ],
+    "[id=\"show-programme\"]": [
+     "choice"
+    ]
+   },
+   "kind": [
+    "list"
+   ]
+  },
+  "media_library:1f78870a63ce685e": {
+   "controls": {
+    "[id=\"add-abandon\"]": [
+     "back"
+    ],
+    "[id=\"add-back-options\"]": [
+     "back"
+    ],
+    "[id=\"add-file\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form",
+    "review"
+   ]
+  },
+  "media_library:24ea6c19505d4a1c": {
+   "controls": {
+    "[id=\"add-abandon\"]": [
+     "back"
+    ],
+    "[id=\"add-to-options\"]": [
+     "submit"
+    ],
+    "[id=\"new-recorded-by\"]": [
+     "name"
+    ],
+    "[id=\"new-summary\"]": [
+     "free_text"
+    ],
+    "[id=\"new-title\"]": [
+     "free_text",
+     "name",
+     "other"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "media_library:2df1f1b29ac8bc12": {
+   "controls": {
+    "[id=\"review-apply\"]": [
+     "submit"
+    ],
+    "[id=\"review-back\"]": [
+     "back",
+     "edit"
+    ]
+   },
+   "kind": [
+    "review"
+   ]
+  },
+  "media_library:328e46489a363f78": {
+   "controls": {
+    "[id=\"receipt-finish\"]": [
+     "back",
+     "navigate"
+    ]
+   },
+   "kind": [
+    "outcome"
+   ]
+  },
+  "media_library:3a9130976bf9a367": {
+   "controls": {
+    "[id=\"detail-close\"]": [
+     "back"
+    ],
+    "[id=\"detail-earlier\"]": [
+     "navigate"
+    ],
+    "[id=\"detail-edit\"]": [
+     "edit"
+    ],
+    "[id=\"detail-later\"]": [
+     "navigate"
+    ],
+    "[id=\"detail-move\"]": [
+     "edit",
+     "open"
+    ],
+    "[id=\"detail-remove\"]": [
+     "remove"
+    ]
+   },
+   "kind": [
+    "detail"
+   ]
+  },
+  "media_library:45d8933e5e58c4dd": {
+   "controls": {
+    "[id=\"receipt-finish\"]": [
+     "back",
+     "navigate"
+    ]
+   },
+   "kind": [
+    "outcome"
+   ]
+  },
+  "media_library:47a433d5347af33d": {
+   "controls": {
+    "[id=\"added-finish\"]": [
+     "back",
+     "navigate"
+    ]
+   },
+   "kind": [
+    "outcome"
+   ]
+  },
+  "media_library:9d0eb3e8306e145b": {
+   "controls": {
+    "[id=\"list-council\"]": [
+     "navigate",
+     "open",
+     "search_or_filter"
+    ],
+    "[id=\"list-harbour\"]": [
+     "navigate",
+     "open",
+     "search_or_filter"
+    ],
+    "[id=\"list-sessions\"]": [
+     "navigate",
+     "open",
+     "search_or_filter"
+    ],
+    "[id=\"list-unsorted\"]": [
+     "navigate",
+     "open",
+     "search_or_filter"
+    ],
+    "[id=\"nav-brand\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-collections\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-library\"]": [
+     "navigate"
+    ]
+   },
+   "kind": [
+    "list"
+   ]
+  },
+  "media_library:b882613ac21a1103": {
+   "controls": {
+    "[id=\"list-council\"]": [
+     "navigate",
+     "open",
+     "search_or_filter"
+    ],
+    "[id=\"list-harbour\"]": [
+     "navigate",
+     "open",
+     "search_or_filter"
+    ],
+    "[id=\"list-sessions\"]": [
+     "navigate",
+     "open",
+     "search_or_filter"
+    ],
+    "[id=\"list-unsorted\"]": [
+     "navigate",
+     "open",
+     "search_or_filter"
+    ],
+    "[id=\"nav-brand\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-collections\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-library\"]": [
+     "navigate"
+    ]
+   },
+   "kind": [
+    "list"
+   ]
+  },
+  "shop_catalog:24ed9c5a8e9b9d11": {
+   "controls": {
+    "[id=\"basket-link\"]": [
+     "navigate",
+     "open"
+    ],
+    "input, textarea, select, button, a[href] >> nth=0": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=1": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=10": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=11": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=12": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=2": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=3": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=6": [
+     "back",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=7": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=8": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=9": [
+     "help",
+     "navigate"
+    ]
+   },
+   "kind": [
+    "outcome"
+   ]
+  },
+  "shop_catalog:2cac443986ee2cc3": {
+   "controls": {
+    "[id=\"basket-link\"]": [
+     "navigate",
+     "open"
+    ],
+    "input, textarea, select, button, a[href] >> nth=0": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=1": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=10": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=11": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=12": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=2": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=3": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=5": [
+     "navigate",
+     "open"
+    ],
+    "input, textarea, select, button, a[href] >> nth=6": [
+     "navigate",
+     "open"
+    ],
+    "input, textarea, select, button, a[href] >> nth=7": [
+     "navigate",
+     "open"
+    ],
+    "input, textarea, select, button, a[href] >> nth=8": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=9": [
+     "help",
+     "navigate"
+    ]
+   },
+   "kind": [
+    "list"
+   ]
+  },
+  "shop_catalog:40019a9655f3ef00": {
+   "controls": {
+    "[id=\"basket-link\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"confirm-order\"]": [
+     "submit"
+    ],
+    "[id=\"contact\"]": [
+     "email"
+    ],
+    "[id=\"dispatch\"]": [
+     "choice"
+    ],
+    "[id=\"postcode\"]": [
+     "address"
+    ],
+    "input, textarea, select, button, a[href] >> nth=0": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=1": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=10": [
+     "back",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=11": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=12": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=13": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=14": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=15": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=16": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=17": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=2": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=3": [
+     "navigate"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "shop_catalog:5509966c3c31343d": {
+   "controls": {
+    "[id=\"basket-link\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"confirm-order\"]": [
+     "submit"
+    ],
+    "[id=\"contact\"]": [
+     "email"
+    ],
+    "[id=\"dispatch\"]": [
+     "choice"
+    ],
+    "[id=\"postcode\"]": [
+     "address"
+    ],
+    "input, textarea, select, button, a[href] >> nth=0": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=1": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=10": [
+     "back",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=11": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=12": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=13": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=14": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=15": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=16": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=17": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=2": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=3": [
+     "navigate"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "shop_catalog:599f5c3e06f6ce20": {
+   "controls": {
+    "[id=\"basket-link\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"empty-the-basket\"]": [
+     "remove"
+    ],
+    "[id=\"go-to-checkout\"]": [
+     "navigate",
+     "submit"
+    ],
+    "input, textarea, select, button, a[href] >> nth=0": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=1": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=10": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=11": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=12": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=13": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=14": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=2": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=3": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=8": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=9": [
+     "help",
+     "navigate"
+    ]
+   },
+   "kind": [
+    "list",
+    "review"
+   ]
+  },
+  "shop_catalog:9523625d1108e9e0": {
+   "controls": {
+    "[id=\"basket-link\"]": [
+     "navigate",
+     "open"
+    ],
+    "input, textarea, select, button, a[href] >> nth=0": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=1": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=10": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=11": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=12": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=2": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=3": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=6": [
+     "back",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=7": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=8": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=9": [
+     "help",
+     "navigate"
+    ]
+   },
+   "kind": [
+    "outcome"
+   ]
+  },
+  "shop_catalog:c0ca0498348acc7a": {
+   "controls": {
+    "[id=\"basket-link\"]": [
+     "navigate",
+     "open"
+    ],
+    "input, textarea, select, button, a[href] >> nth=0": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=1": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=10": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=11": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=12": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=13": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=14": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=15": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=2": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=3": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=5": [
+     "navigate",
+     "open"
+    ],
+    "input, textarea, select, button, a[href] >> nth=6": [
+     "navigate",
+     "open"
+    ],
+    "input, textarea, select, button, a[href] >> nth=7": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=8": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=9": [
+     "help",
+     "navigate"
+    ]
+   },
+   "kind": [
+    "home"
+   ]
+  },
+  "shop_catalog:f0a4a440414e5018": {
+   "controls": {
+    "[id=\"basket-link\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"empty-the-basket\"]": [
+     "remove"
+    ],
+    "[id=\"go-to-checkout\"]": [
+     "navigate",
+     "submit"
+    ],
+    "input, textarea, select, button, a[href] >> nth=0": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=1": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=10": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=11": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=12": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=13": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=14": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=2": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=3": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=8": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=9": [
+     "help",
+     "navigate"
+    ]
+   },
+   "kind": [
+    "list",
+    "review"
+   ]
+  },
+  "shop_catalog:fb1c849141afdac9": {
+   "controls": {
+    "[id=\"add-to-basket\"]": [
+     "add"
+    ],
+    "[id=\"basket-link\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"qty\"]": [
+     "number"
+    ],
+    "input, textarea, select, button, a[href] >> nth=0": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=1": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=10": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=11": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=12": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=13": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=14": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=2": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=3": [
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=7": [
+     "back",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=8": [
+     "help",
+     "navigate"
+    ],
+    "input, textarea, select, button, a[href] >> nth=9": [
+     "help",
+     "navigate"
+    ]
+   },
+   "kind": [
+    "detail",
+    "form"
+   ]
+  },
+  "support_portal:068adfe39179ef43": {
+   "controls": {
+    "[id=\"back-step\"]": [
+     "back"
+    ],
+    "[id=\"check-answers\"]": [
+     "submit"
+    ],
+    "[id=\"clear-step\"]": [
+     "other",
+     "remove"
+    ],
+    "[id=\"discard-request\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"foot-bill\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"foot-lights\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-home\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-raise\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-track\"]": [
+     "navigate"
+    ],
+    "[id=\"save-draft\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "support_portal:0c7b03cce22ffe26": {
+   "controls": {
+    "[id=\"back-step\"]": [
+     "back"
+    ],
+    "[id=\"best_time\"]": [
+     "choice",
+     "date"
+    ],
+    "[id=\"clear-step\"]": [
+     "other",
+     "remove"
+    ],
+    "[id=\"discard-request\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"email\"]": [
+     "email"
+    ],
+    "[id=\"foot-bill\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"foot-lights\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"full_name\"]": [
+     "name"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-home\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-raise\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-track\"]": [
+     "navigate"
+    ],
+    "[id=\"phone\"]": [
+     "phone"
+    ],
+    "[id=\"save-contact\"]": [
+     "submit"
+    ],
+    "[id=\"save-draft\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "support_portal:196c805f85a19c25": {
+   "controls": {
+    "[id=\"back-step\"]": [
+     "back"
+    ],
+    "[id=\"clear-step\"]": [
+     "other",
+     "remove"
+    ],
+    "[id=\"devices_affected\"]": [
+     "choice"
+    ],
+    "[id=\"discard-request\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"foot-bill\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"foot-lights\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-home\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-raise\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-track\"]": [
+     "navigate"
+    ],
+    "[id=\"router_lights\"]": [
+     "choice"
+    ],
+    "[id=\"save-draft\"]": [
+     "submit"
+    ],
+    "[id=\"save-line\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "support_portal:217f6a51a9fa85ec": {
+   "controls": {
+    "[id=\"foot-bill\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"foot-lights\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-home\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-raise\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-track\"]": [
+     "navigate"
+    ],
+    "[id=\"start-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"start-request\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"start-track\"]": [
+     "navigate"
+    ]
+   },
+   "kind": [
+    "home"
+   ]
+  },
+  "support_portal:2bed7cde3f59a061": {
+   "controls": {
+    "[id=\"back-step\"]": [
+     "back"
+    ],
+    "[id=\"charge_kind\"]": [
+     "choice"
+    ],
+    "[id=\"clear-step\"]": [
+     "other",
+     "remove"
+    ],
+    "[id=\"discard-request\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"disputed_amount\"]": [
+     "money",
+     "number"
+    ],
+    "[id=\"foot-bill\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"foot-lights\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"invoice_ref\"]": [
+     "free_text",
+     "number",
+     "other"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-home\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-raise\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-track\"]": [
+     "navigate"
+    ],
+    "[id=\"save-bill\"]": [
+     "submit"
+    ],
+    "[id=\"save-draft\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "support_portal:2de6dbad48deef0e": {
+   "controls": {
+    "[id=\"foot-bill\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"foot-lights\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-home\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-raise\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-track\"]": [
+     "navigate"
+    ],
+    "[id=\"raise-another\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"track-this\"]": [
+     "navigate"
+    ]
+   },
+   "kind": [
+    "outcome"
+   ]
+  },
+  "support_portal:609991afbdbef4ce": {
+   "controls": {
+    "[id=\"back-step\"]": [
+     "back"
+    ],
+    "[id=\"charge_kind\"]": [
+     "choice"
+    ],
+    "[id=\"clear-step\"]": [
+     "other",
+     "remove"
+    ],
+    "[id=\"discard-request\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"disputed_amount\"]": [
+     "money",
+     "number"
+    ],
+    "[id=\"foot-bill\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"foot-lights\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"invoice_ref\"]": [
+     "free_text",
+     "number",
+     "other"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-home\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-raise\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-track\"]": [
+     "navigate"
+    ],
+    "[id=\"save-bill\"]": [
+     "submit"
+    ],
+    "[id=\"save-draft\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "support_portal:75d0ce9bed45733a": {
+   "controls": {
+    "[id=\"back-step\"]": [
+     "back"
+    ],
+    "[id=\"clear-step\"]": [
+     "other",
+     "remove"
+    ],
+    "[id=\"discard-request\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"foot-bill\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"foot-lights\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-home\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-raise\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-track\"]": [
+     "navigate"
+    ],
+    "[id=\"save-draft\"]": [
+     "submit"
+    ],
+    "[id=\"use-topic\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "support_portal:7a458777b671d6b1": {
+   "controls": {
+    "[id=\"access_notes\"]": [
+     "free_text"
+    ],
+    "[id=\"back-step\"]": [
+     "back"
+    ],
+    "[id=\"clear-step\"]": [
+     "other",
+     "remove"
+    ],
+    "[id=\"discard-request\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"foot-bill\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"foot-lights\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-home\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-raise\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-track\"]": [
+     "navigate"
+    ],
+    "[id=\"save-draft\"]": [
+     "submit"
+    ],
+    "[id=\"save-visit\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "support_portal:7e33d84ac4e2b086": {
+   "controls": {
+    "[id=\"amend-bill\"]": [
+     "edit"
+    ],
+    "[id=\"amend-consent\"]": [
+     "edit"
+    ],
+    "[id=\"amend-contact\"]": [
+     "edit"
+    ],
+    "[id=\"amend-details\"]": [
+     "edit"
+    ],
+    "[id=\"amend-topic\"]": [
+     "edit"
+    ],
+    "[id=\"back-step\"]": [
+     "back"
+    ],
+    "[id=\"discard-request\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"foot-bill\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"foot-lights\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-home\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-raise\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-track\"]": [
+     "navigate"
+    ],
+    "[id=\"send-request\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "review"
+   ]
+  },
+  "support_portal:9321334b36c688e4": {
+   "controls": {
+    "[id=\"back-step\"]": [
+     "back"
+    ],
+    "[id=\"clear-step\"]": [
+     "other",
+     "remove"
+    ],
+    "[id=\"description\"]": [
+     "free_text"
+    ],
+    "[id=\"discard-request\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"foot-bill\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"foot-lights\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-home\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-raise\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-track\"]": [
+     "navigate"
+    ],
+    "[id=\"save-details\"]": [
+     "submit"
+    ],
+    "[id=\"save-draft\"]": [
+     "submit"
+    ],
+    "[id=\"since\"]": [
+     "choice",
+     "date"
+    ],
+    "[id=\"summary\"]": [
+     "free_text"
+    ],
+    "[id=\"urgency\"]": [
+     "choice"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  },
+  "support_portal:a19b79178d3ed1b8": {
+   "controls": {
+    "[id=\"back-step\"]": [
+     "back"
+    ],
+    "[id=\"check-answers\"]": [
+     "submit"
+    ],
+    "[id=\"clear-step\"]": [
+     "other",
+     "remove"
+    ],
+    "[id=\"discard-request\"]": [
+     "back",
+     "remove"
+    ],
+    "[id=\"foot-bill\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"foot-lights\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-help\"]": [
+     "help",
+     "navigate"
+    ],
+    "[id=\"nav-home\"]": [
+     "navigate"
+    ],
+    "[id=\"nav-raise\"]": [
+     "navigate",
+     "open"
+    ],
+    "[id=\"nav-track\"]": [
+     "navigate"
+    ],
+    "[id=\"save-draft\"]": [
+     "submit"
+    ]
+   },
+   "kind": [
+    "form"
+   ]
+  }
+ }
+}

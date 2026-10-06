@@ -105,3 +105,24 @@ minimization.
 | 14–17 Oct | Held-out runs (5 arms × 8 apps × 5 seeds, 2,000 interactions) | — |
 | 18 Oct | Frozen analysis | — |
 | 19–27 Oct | Final report, presentation, demo; buffer | — |
+
+## 8. Addendum 2026-10-06 (evening): Stage 0 result and the labeller re-test (option A)
+
+The Stage 0 gate failed (`reports/v2_stage0.md`; page kind 0.68, role 0.78, cross-vocabulary
+agreement 0.74), so by the pre-set rule the tester uses deterministic labels. The owner chose
+to revise the labeller once and re-test it, under these terms fixed before the revision ran:
+
+- **Labeller v3** changes only what the Stage 0 errors motivate: (1) save / advance / commit
+  merge into one role, `submit`; (2) the markup decides what it states — a page with two or
+  more visible input fields that are not search or filter fields is a `form`, a page with a
+  password field is `login`; radio buttons and checkboxes are choice fields, not buttons;
+  (3) the prompt tells the model to judge a page by what it contains, not by words in its title.
+- **Fresh validation set**: 69 pages from the six benchmark applications (development data),
+  never labelled by any labeller version, with hand-written ground truth committed before v3
+  ran (`tests/fixtures/v2_label_validation/`).
+- **Gate for v3** (thresholds unchanged): page-kind accuracy ≥ 0.85 and control-role accuracy
+  ≥ 0.80 on the fresh set, **and** cross-vocabulary agreement ≥ 0.80 on the ctxbench probes
+  (the only place it can be measured; v3 was revised from that data's errors, so this
+  condition is conservative only in the sense of being an extra requirement).
+- Pass: LLM labels become the main arm, deterministic labels the ablation. Fail: deterministic
+  labels stay, and the result is reported as a negative finding. No further revision.
