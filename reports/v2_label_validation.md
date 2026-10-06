@@ -25,8 +25,8 @@ revision.** The cross-vocabulary condition (ctxbench rerun) is reported for comp
   receipt is labelled instead of the dialog (7 of 10 errors there).
 - **Controls**: one distinction dominates — ordinary navigation links labelled `open`
   (93 of 183 role errors). Next: `edit` for plain navigation (16), `other` for help links (14).
-- **Fields**: 0.94; the main error is item names (equipment, recording titles) called
-  `free_text` rather than `name` where both were not accepted (5).
+- **Fields**: 0.94; the main error is person-name fields ("Custodian", "Recorded by")
+  labelled `free_text` rather than `name` (5).
 
 ## Reading
 
