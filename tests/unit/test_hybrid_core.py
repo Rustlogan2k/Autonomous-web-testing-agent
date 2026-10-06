@@ -167,3 +167,19 @@ def test_prior_pools_runs_and_caps_each_key():
     s, f = prior["form|invalid_input|email:type_mismatch"]
     assert abs(s + f - 5.0) < 1e-6 and abs(s / (s + f) - 0.8) < 1e-6  # mean kept, weight capped
     assert prior["*|reload_and_resume|"] == [0.0, 1.0]  # light evidence untouched
+
+
+def test_attribution_follows_the_per_fault_control_rule(monkeypatch):
+    from web_testing_agent.hybrid import invariants
+
+    builds = {"clean": False, "A": True, "B": False}  # reproduces without A's patch only
+
+    def fake_reproduce(factory, candidate, **_):
+        return builds[factory()]
+
+    monkeypatch.setattr(invariants, "reproduce", fake_reproduce)
+    candidate = invariants.Candidate("round_trip", 3, "u", "d")
+    out = invariants.attribute(candidate, lambda: "clean", {"A": lambda: "A", "B": lambda: "B"})
+    assert out == {"on_clean": False, "faults": ["B"]}  # silenced when B's patch is removed
+    builds["clean"] = True
+    assert invariants.attribute(candidate, lambda: "clean", {})["on_clean"] is True

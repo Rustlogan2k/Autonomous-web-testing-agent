@@ -166,7 +166,7 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
     """One hunt on a development (benchmark) application or a suite application."""
     from ..benchmark import FaultMonitor, control_key, load_app, make_env, run_hunt, serve_app
     from ..oracle import VerificationPipeline
-    from .invariants import verify
+    from .invariants import attribute, verify
 
     settings = _settings(config)
     suite = job.app not in DEVELOPMENT_APPS
@@ -238,6 +238,30 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
             labeller=labeller,
             context=name,
         )
+        if job.build == "buggy":
+            # Spec-less detection: attribute each fully reproduced candidate to the seeded
+            # fault it depends on, by the oracle's own per-fault control rule.
+            fault_ids = (
+                [f["fault_id"] for f in suite_app.faults]
+                if suite
+                else [f.fault_id for f in manifest.faults]
+            )
+            for candidate in candidates[: config.invariant_verify_limit]:
+                if candidate.reproduced == config.invariant_replays:
+                    attribute(
+                        candidate,
+                        lambda: make_env(urls["clean"], settings, max_steps=120),
+                        {
+                            fid: (
+                                lambda fid=fid: make_env(
+                                    urls[key_for(fid)], settings, max_steps=120
+                                )
+                            )
+                            for fid in fault_ids
+                        },
+                        labeller=labeller,
+                        context=name,
+                    )
         verify_seconds = time.monotonic() - verify_started
     payload = {
         "hunt": result.to_dict(),

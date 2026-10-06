@@ -84,6 +84,8 @@ class Candidate:
     #: for validation_consistency: the walk on which the same value class was rejected
     context_trace: list[dict] = field(default_factory=list)
     reproduced: int | None = None
+    #: on a faulty build: {'on_clean': bool, 'faults': [ids whose control build silences it]}
+    attribution: dict | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -94,6 +96,7 @@ class Candidate:
             "trace_length": len(self.trace),
             "context_trace_length": len(self.context_trace),
             "reproduced": self.reproduced,
+            "attribution": self.attribution,
         }
 
 
@@ -293,3 +296,30 @@ def verify(
             for _ in range(replays)
         )
     return candidates
+
+
+def attribute(
+    candidate: Candidate,
+    clean_factory,
+    control_factories: dict,
+    *,
+    labeller=None,
+    context: str = "",
+) -> dict:
+    """Which seeded fault, if any, a reproduced candidate on a faulty build depends on.
+
+    The seeded-fault oracle's own rule, applied to a generic finding: a candidate that also
+    reproduces on the clean build is not caused by any seeded fault (a false alarm, or a
+    genuine unseeded bug to inspect by hand); otherwise it is attributed to every fault
+    whose control build (the faulty build without that fault's patch) does not reproduce it.
+    """
+    if reproduce(clean_factory, candidate, labeller=labeller, context=context):
+        candidate.attribution = {"on_clean": True, "faults": []}
+    else:
+        faults = [
+            fault_id
+            for fault_id, factory in control_factories.items()
+            if not reproduce(factory, candidate, labeller=labeller, context=context)
+        ]
+        candidate.attribution = {"on_clean": False, "faults": sorted(faults)}
+    return candidate.attribution
