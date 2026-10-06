@@ -123,6 +123,7 @@ class HybridPolicy:
         self.operator_cell: Cell | None = None
         self.cells_before = len(self.archive)
         self._last_page = ""
+        self._last_cell = ""
         self._last_prunable = False
 
     def begin_episode(self, info: dict) -> None:
@@ -141,7 +142,10 @@ class HybridPolicy:
         # A step after which the page did not change at all is dropped from the walk the
         # archive stores, so returns spend the budget on steps that matter. Entered values
         # are always kept: they can matter without changing the page.
-        if self._last_prunable and page == self._last_page and self.trace:
+        # The abstract state must be unchanged too: a step that only raised a notice leaves
+        # the page fingerprint alone but changes the cell, and replay must reproduce it.
+        same = page == self._last_page and view.cell == self._last_cell
+        if self._last_prunable and same and self.trace:
             self.trace.pop()
             self.stats["pruned_steps"] += 1
         cell, created = self.archive.visit(
@@ -163,6 +167,7 @@ class HybridPolicy:
             spec = self._explore_step(view, cell)
         self.trace.append(step_for(spec))
         self._last_page = page
+        self._last_cell = view.cell
         self._last_prunable = spec.action_type not in (ActionType.TYPE, ActionType.SELECT)
         self.global_step += 1
         return spec.index
@@ -205,6 +210,7 @@ class HybridPolicy:
             if self.target is not None and cell.key != self.target.key:
                 self.target.failed_returns += 1
                 self.stats["failed_returns"] += 1
+                self._log_failure("arrived elsewhere", reached=cell.key)
             self.phase = "operate"
             return None
         step = self.replay[0]
@@ -213,11 +219,27 @@ class HybridPolicy:
             if self.target is not None:
                 self.target.failed_returns += 1
             self.stats["failed_returns"] += 1
+            self._log_failure("step did not resolve", reached=cell.key, step=step)
             self.replay = []
             self.phase = "operate"
             return None
         self.replay.pop(0)
         return next(s for s in view.specs if s.index == index)
+
+    def _log_failure(self, reason: str, *, reached: str, step: dict | None = None) -> None:
+        """Keep the first few failed returns whole, for diagnosis."""
+        log = self.stats.setdefault("return_failures", [])
+        if len(log) < 25 and self.target is not None:
+            log.append(
+                {
+                    "reason": reason,
+                    "target": self.target.key,
+                    "reached": reached,
+                    "step": step,
+                    "trace_length": len(self.target.trace),
+                    "remaining": len(self.replay),
+                }
+            )
 
     def _operator_step(self, view: PageView, cell: Cell) -> ActionSpec | None:
         if self.operator is None:
