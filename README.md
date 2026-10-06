@@ -13,11 +13,11 @@ readable report.
 
 Final-year B.Tech project. Security testing is out of scope; this is functional testing.
 
-> **Status (2026-10-04).**
+> **Status (2026-10-06).** Both frozen evaluations are complete.
 >
-> - **Experiment:** the frozen leave-one-application-out transfer experiment is running and has no results yet. Half runs on four AWS CPU spot instances, two of them finished. The LLM half runs on the local GPU and resumes from checkpoints.
-> - **Diagnostic:** a secondary contextual-generalization diagnostic is pre-registered.
-> - **Application suite:** an isolated eight-application end-to-end suite is being built on the `e2e-suite` branch.
+> - **Transfer experiment** (291 jobs): learned agents find planted faults in more runs than non-learning baselines, but pretraining on other applications does not speed up fault discovery, and the LLM reward shows no detectable benefit. The oracle produced no false positives.
+> - **Contextual diagnostic** (228 jobs): the agent's preference for an action does not depend on whether that action is useful in the current state (contextual learning not supported); the memorization hypotheses are inconclusive.
+> - **Application suite**: eight apps admitted with 23/23 faults on the `e2e-suite` branch; Docker checks pending.
 >
 > `PROJECT_CONTEXT.md` §0 is the authoritative state of the project.
 
@@ -61,6 +61,7 @@ becomes reward, caching, failure behaviour and validation.
 | Seeded-fault oracle | `src/web_testing_agent/oracle/` | 8 assertion kinds, per-fault controls, replay, ddmin |
 | Six-application benchmark + admission validator | `tests/fixtures/benchmark/`, `src/web_testing_agent/benchmark/` | 12 faults, 5 classes; `reports/benchmark_suite.md` |
 | Transfer experiment (resumable, parallel, top-up rule) | `src/web_testing_agent/experiments/transfer.py` | `scripts/run_transfer.py`, `scripts/analyze_transfer.py` |
+| Contextual diagnostic (generated app family, probes, masked arms) | `src/web_testing_agent/ctxbench/`, `tests/fixtures/ctxbench/` | `python -m web_testing_agent.ctxbench.runner`, `.probe_eval`, `.analyze` |
 | Product tester | `src/web_testing_agent/tester/` | URL / site / repo / benchmark → `report.md` + `report.html` + evidence |
 | Web UI | `src/web_testing_agent/app/` | sessions, uploads, live progress, reports |
 | Repository intake (sandboxed build and run) | `src/web_testing_agent/intake/` | Dockerfile repos; Compose refused by policy |
@@ -124,34 +125,55 @@ docker run --rm -p 8000:8000 -e OLLAMA_HOST=http://host.docker.internal:11434 we
 
 CPU-only torch is pinned in the image; dependency versions match `docker/requirements-runtime.txt`.
 
-## The experiment (frozen)
+## Results
+
+### Transfer experiment (pre-registered, complete)
 
 **Question:** does pretraining on five applications make verified-fault discovery on a
 held-out sixth faster than learning from scratch, against information-matched non-learning
 baselines, and with or without the dynamic LLM reward?
 
-- **Pre-registration:**
-  - `docs/methodology/2026-09-18-transfer-preregistration.md`
-  - amendments `2026-10-01-transfer-amendment.md` and `2026-10-03-transfer-amendment-2.md`
-  - Every change was made before the run and states its reason. §7 of amendment 2 is the frozen run specification.
-- **Arms:** random, search_A0, search_S, bandit_scratch, bandit_pretrained, dqn_scratch, dqn_scratch_nollm, dqn_pretrained, dqn_zeroshot, dqn_pretrained_nollm.
-- **Budget, seeds and statistics:**
-  - 2,000 interactions per hunt; seeds 0–2, plus a mechanical top-up to seeds 3–5 when a fold's difference is under 200 interactions.
-  - Primary statistic: per-fold paired difference in time to first verified fault, median across folds, with a fold bootstrap.
-  - Secondary: stratified log-rank.
-- **Folds reported:** every comparison is reported over all six folds **and** over the four pristine folds. `shop_catalog` and `booking_desk` were used for development.
-- **Secondary diagnostic:** `docs/methodology/2026-10-04-contextual-diagnostic-preregistration.md` tests whether the policy uses state context or memorizes actions, words or applications. It runs only after the primary experiment and is reported separately.
+- **Method:** `docs/methodology/2026-09-18-transfer-preregistration.md` and amendments
+  `2026-10-01` and `2026-10-03` (all before the run). Ten arms; 2,000 interactions per hunt;
+  seeds 0–2 with a mechanical top-up; per-fold paired difference in time to first verified
+  fault (median across folds, fold bootstrap) and stratified log-rank; all six folds and the
+  four pristine folds reported.
+- **Run:** 291 jobs, 0 failures; LLM arms on a local RTX 4050, non-LLM arms on four AWS spot
+  instances (≈ $1.6 of the $20 cap).
 
-Results will be reported exactly as the frozen analysis produces them, including negative
-or inconclusive results.
+| Comparison | All folds | Pristine folds |
+|---|---|---|
+| Pretrained vs scratch DQN (primary) | median Δ +0 [−749, +290], p = 0.53 | −310, p = 0.66 |
+| Pretrained vs scratch bandit | −280 [−732, +188], p = 0.086 | −280, p = 0.11 |
+| With vs without LLM reward | +17 (p = 0.75); −57 (p = 0.62) | — |
+| Pretrained DQN vs search_A0 / random | p = 0.006 / 0.02 | p = 0.23 / 0.53 |
+
+Faults found per run: pretrained bandit 42%, both DQN arms 33%, feature search 17%, random
+11%, hand-priority search 6%. No verified finding on any fault-free build. Full output:
+`reports/transfer_final.md` and `reports/transfer_final_addendum.md`.
+
+### Contextual diagnostic (pre-registered, complete, reported separately)
+
+Does the policy rank an action by the state it is in, or has it memorized actions, words or
+layouts? Twelve generated variants of one workflow vary vocabulary (including pseudo-words),
+workflow structure and decoys; four agent arms differ only in which inputs the network sees.
+
+| Hypothesis | Verdict |
+|---|---|
+| Genuine state–action contextual learning | **not supported** (within-label AUROC 0.51, needed ≥ 0.70) |
+| Action / lexical / application memorization | inconclusive (three seeds; wide intervals) |
+
+The learned arms that see the state find the faults on held-out variants in 19–20 of 24
+runs, against 2 of 24 for search and random; the arm that never sees labels does as well as
+the full one. Full output: `reports/contextual_diagnostic.md`.
 
 ## Claim limits
 
 These are stated up front:
 
-- **Context:** the agent's state has no page semantics (no heading, text or URL). It can learn form and interaction-state context, not page meaning. Claims of contextual learning are limited to what the diagnostic shows.
-- **Generalization:** six applications from one design contract support at most within-family adaptation. There is no zero-shot or real-world generalization claim.
-- **LLM reward:** its contribution comes only from the frozen LLM-vs-no-LLM ablations.
+- **Context:** the agent's state has no page semantics (no heading, text or URL). The diagnostic found no state–action contextual learning; claims are limited to in-application, state-driven learning.
+- **Generalization:** six applications from one design contract support at most within-family results, and pretraining showed no transfer benefit. There is no zero-shot or real-world generalization claim.
+- **LLM reward:** its contribution comes only from the frozen LLM-vs-no-LLM ablations, which show no detectable benefit.
 - **Product:** repository intake requires a Dockerfile. Without a specification, findings on arbitrary applications rest on generic triggers and an LLM review marked unverified. The seeded-fault oracle verifies only declared faults.
 - **Disclosures:** representation leakage paths and pre-run exposure of the held-out applications are recorded in `PROJECT_CONTEXT.md` §0.4.
 
@@ -165,17 +187,19 @@ Dockerfile by design).
 
 They have zero dependencies, run offline and are deterministic. Each ships seeded faults
 that must pass mechanical admission: witness, per-fault control, replay, minimization,
-benign traces, and a clean random walk. The suite is a testbed for the product and is kept
-separate from the frozen experiment. See `e2e_suite/CONVENTIONS.md` on that branch.
+benign traces, and a clean random walk. All eight are admitted (23/23 faults); the Docker
+checks are pending. The suite is a testbed for the product and is kept separate from the
+frozen experiment. See `e2e_suite/CONVENTIONS.md` and `e2e_suite/admission/suite.md` on
+that branch.
 
 ## Repository map
 
 ```
-src/web_testing_agent/   envs, rl, reward, oracle, benchmark, experiments, tester, app, intake
+src/web_testing_agent/   envs, rl, reward, oracle, benchmark, experiments, ctxbench, tester, app, intake
 scripts/                 test_app, run_transfer, analyze_transfer, validate_benchmark, warm_caches, ...
-tests/                   unit tests; fixtures (benchmark apps, demo sites)
+tests/                   unit tests; fixtures (benchmark apps, ctxbench variants and probes, demo sites)
 docs/                    methodology (pre-registrations), llm_reward, literature_review, benchmark contract
-reports/                 benchmark validation and suite, development evidence, session reports
+reports/                 experiment and diagnostic results, benchmark validation, development evidence
 cloud/aws/               launcher, IAM policies, setup guide
 PROJECT_CONTEXT.md       authoritative project state and full decision history
 ```

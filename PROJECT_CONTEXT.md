@@ -5,11 +5,11 @@ describe the system, §5 is the dated history of how every decision was reached 
 full, including negative results and retractions), §6–§7 record scoping and design
 decisions, §8 the current risks, §9 the ordered next steps, §10 the environment.
 
-Last updated: 2026-10-04.
+Last updated: 2026-10-06.
 
 ---
 
-## 0. Read this first — where the project stands (2026-10-04)
+## 0. Read this first — where the project stands (2026-10-06)
 
 ### 0.1 What the project is now
 
@@ -22,83 +22,112 @@ any URL / static site / Dockerfile repository into an exploration session with e
 a readable report. **Security testing is out of scope** (the title's "security" half,
 Agent A, was dropped); the project is functional testing only.
 
+**Both frozen evaluations are complete** (primary transfer experiment 2026-10-05, contextual
+diagnostic 2026-10-06). Their results are in §0.2 and §0.3 and are final; nothing about
+either may be changed now. What remains is reporting, the suite's Docker checks, and
+agent or product work that the owner has not yet approved (§9).
+
 | Component | Where | State |
 |---|---|---|
 | Browser environment, action registry, triggers | `src/web_testing_agent/envs/` | built; extended registry used by benchmark and product |
-| Learner: action-conditioned dueling Double DQN, shared per-action scorer, zero-initialised residual head for adaptation, prioritized n-step replay, search-guided ε-exploration; bandit variant | `rl/agent.py`, `rl/network.py`, `rl/replay.py` | built, frozen for the primary run (features v3.1) |
+| Learner: action-conditioned dueling Double DQN, shared per-action scorer, zero-initialised residual head for adaptation, prioritized n-step replay, search-guided ε-exploration; bandit variant; opt-in input masks (diagnostic only) | `rl/agent.py`, `rl/network.py`, `rl/replay.py`, `rl/masks.py` | built, frozen (features v3.1); masks off by default |
 | Dynamic LLM progress reward (`qwen2.5:7b-instruct`, digest `845dbda0ea48`, prompt `progress-v3`, live judgments + content-addressed cache) | `reward/progress.py`, `rl/reward.py`, spec `docs/llm_reward.md` | built, frozen |
 | Seeded-fault oracle (assertion grammar, per-fault controls, replay, ddmin) | `oracle/` | built, frozen |
-| Six-application benchmark, admission validator | `tests/fixtures/benchmark/`, `benchmark/`, `scripts/validate_benchmark.py`, `reports/benchmark_validation.json` | 6/6 admitted, 12 faults, 5 classes |
-| Transfer experiment runner + analysis (resumable, top-up rule) | `experiments/transfer.py`, `scripts/run_transfer.py`, `scripts/analyze_transfer.py` | built; **frozen primary run in progress** |
-| Product tester (URL / site / repo / benchmark → report) | `tester/`, `scripts/test_app.py` | works end to end on fixtures (Harbor demo); repo path requires a Dockerfile |
+| Six-application benchmark, admission validator | `tests/fixtures/benchmark/`, `benchmark/`, `scripts/validate_benchmark.py` | 6/6 admitted, 12 faults, 5 classes |
+| Transfer experiment runner + analysis | `experiments/transfer.py`, `scripts/run_transfer.py`, `scripts/analyze_transfer.py` | **run complete**: `reports/transfer_final.{md,json}`, `reports/transfer_final_addendum.md` |
+| Contextual diagnostic: generator, 12 variants, probe sets, runner, evaluator, analysis | `ctxbench/`, `tests/fixtures/ctxbench/` | **run complete**: `reports/contextual_diagnostic.md` (+ `_numbers.md`, `.json`) |
+| Product tester (URL / site / repo / benchmark → report) | `tester/`, `scripts/test_app.py` | works end to end on fixtures; repo path requires a Dockerfile |
 | Web UI | `app/` (`python -m web_testing_agent.app`) | works; static-site upload and URL sessions verified |
-| Cloud launcher (restricted IAM, spot, self-terminating, S3 sync) | `cloud/aws/` | used for the primary run |
-| End-to-end application suite (8 apps, isolated, **no RL**) | branch `e2e-suite`, worktree `../RL web tester-e2e/e2e_suite/` | 3 fully admitted, 3 static+API admitted, 2 in progress (§0.6) |
+| Cloud launcher (restricted IAM, spot, self-terminating, S3 sync) | `cloud/aws/` | used for the primary run's CPU half |
+| End-to-end application suite (8 apps, isolated, **no RL**) | branch `e2e-suite` (`70608b4`), worktree `../RL web tester-e2e/e2e_suite/` | all 8 admitted, 23/23 faults; Docker checks pending (§0.6) |
 
-### 0.2 The frozen primary experiment
+### 0.2 The primary experiment — complete
 
 **Question**: does pretraining on five applications speed up verified-fault discovery on a
 held-out sixth (leave-one-application-out), against scratch learners and information-matched
 non-learning baselines, with and without the dynamic LLM reward?
 
-- **Method is fixed by**: `docs/methodology/2026-09-18-transfer-preregistration.md`, amended
-  by `2026-10-01-transfer-amendment.md` and `2026-10-03-transfer-amendment-2.md` (all changes
-  before the run, each with its reason; §7 of amendment 2 is the frozen run spec).
-- **Arms (10)**: random, search_A0, search_S, bandit_scratch, bandit_pretrained, dqn_scratch,
-  dqn_scratch_nollm, dqn_pretrained, dqn_zeroshot, dqn_pretrained_nollm. Budget 2,000
-  interactions per hunt; seeds 0–2 plus the mechanical 3→6 top-up rule (|Δ| < 200);
-  primary statistic: per-fold paired difference, median across folds, fold bootstrap;
-  stratified log-rank secondary. Reported over all folds **and** over the four pristine folds
-  (`admin_records`, `support_portal`, `media_library`, `account_hub`); `shop_catalog` and
-  `booking_desk` are development applications.
-- **Compute split** (after AWS rejected the GPU quota and the account turned out to be on the
-  Free plan): LLM arms on the local RTX 4050 (live judgments, 0.78 judgments/s measured);
-  non-LLM arms on four AWS `m7i-flex.large` spot instances (2 vCPU each, folds split).
-- **Run status at 2026-10-04 18:45**:
-  - AWS `final-cpu-1` (account_hub) and `final-cpu-2` (media_library): **28/28 each, done,
-    self-terminated** (~4h50m, ~$0.24 each; top-up rule added 0 jobs).
-  - AWS `final-cpu-3` (booking_desk + shop_catalog) 42/56 and `final-cpu-4`
-    (admin_records + support_portal) 45/56, running, expected to finish the same evening.
-    Results sync to `s3://wta-runs-1b4341bb/runs/final-cpu-N/`.
-  - **Local LLM half (`runs/final-local/`): 12/78 jobs done**, all 12 with checkpoints
-    (pretraining for account_hub, admin_records, booking_desk, media_library × 3 seeds). It
-    **froze at 16:43** when Windows Modern Standby suspended the laptop ("Idle Timeout";
-    "never sleep on AC" does not prevent it). The six interrupted pretrainings restart from
-    scratch on resume; ~21k LLM judgments are cached.
-  - **Resume** (main checkout, Ollama running, screen-off timeout disabled, lid open, on AC):
-    `venv\Scripts\python.exe scripts/run_transfer.py --out-dir runs/final-local --arms
-    dqn_scratch dqn_pretrained dqn_zeroshot --clean-control-arms dqn_pretrained --top-up
-    --workers 6` — finished jobs are skipped. ~6–10 h remain.
-- **Provenance note**: jobs record the commit they ran at. Commits made during the run were
-  docs-only or provenance-only (`5ec9b3c` fixed empty commit hashes on cloud workers;
-  `c10699c` and later are documents); no computation changed.
-- **After it finishes**: download S3 results, merge `runs/final-local` with
-  `runs/final-cpu-*`, run `scripts/analyze_transfer.py` unchanged, report exactly what it
-  shows (§9).
+- **Method**: `docs/methodology/2026-09-18-transfer-preregistration.md`, amended by
+  `2026-10-01-transfer-amendment.md` and `2026-10-03-transfer-amendment-2.md` (all before the
+  run). Ten arms; 2,000 interactions per hunt; seeds 0–2 plus the mechanical top-up; primary
+  statistic the per-fold paired difference in time to first verified fault (median across
+  folds, fold bootstrap), stratified log-rank secondary; all six folds and the four pristine
+  folds (`admin_records`, `support_portal`, `media_library`, `account_hub`) reported.
+- **Execution**: 291 jobs, **0 failures**, identical configuration everywhere, clean trees.
+  LLM arms on the local RTX 4050 (`runs/final-local`, 105 jobs incl. 27 top-up); non-LLM arms
+  on four AWS `m7i-flex.large` spot instances (`runs/final-cpu-1..4`, 186 jobs); merged in
+  `runs/final-merged`. Commits recorded: `1fef49d`, `c10699c`, `811094a` (documents and the
+  cloud-provenance fix only; no computation differs). AWS: ≈ $1.6 estimated usage ($0.00
+  billed at last check), far under the $20 cap. The local half was suspended by Modern
+  Standby on 2026-10-04 and resumed on 2026-10-05; interrupted jobs restarted from scratch.
+- **Results** (frozen analysis, unchanged; `reports/transfer_final.md` + addendum):
 
-### 0.3 The frozen secondary diagnostic
+| Comparison | All folds | Pristine folds | Reading |
+|---|---|---|---|
+| **Primary**: `dqn_pretrained − dqn_scratch` | median Δ +0 [−749, +290], 2/6 folds, log-rank p = 0.53 | −310 [−879, +469], p = 0.66 | **no evidence that pretraining helps the DQN** |
+| Pre-registered C − B (`bandit_pretrained − bandit_scratch`) | −280 [−732, +188], 4/6, p = 0.086 | −280, p = 0.11 | inconclusive (direction favours pretraining) |
+| LLM reward (`dqn_pretrained − dqn_pretrained_nollm`; `dqn_scratch − dqn_scratch_nollm`) | +17, p = 0.75; −57, p = 0.62 | — | **no detectable benefit** |
+| Online adaptation (`dqn_pretrained − dqn_zeroshot`) | −84, p = 0.53 | — | not resolved |
+| Learned vs non-learning (`dqn_pretrained` vs search_A0 / random) | p = 0.006 / 0.02 | p = 0.23 / 0.53 | learners find more faults; clearest effect, carried largely by `shop_catalog` |
 
-`docs/methodology/2026-10-04-contextual-diagnostic-preregistration.md` (commit `c10699c`,
-written while zero primary results existed) fixes a separate evaluation of whether the
-learned policy uses **state context** or memorizes actions/words/applications: controlled
-vocabulary (incl. unseen words and pseudo-words), workflow-structure, decoy and
-state-dependent-usefulness factors; arms `ctx_full`, `action_only`, `lexical_only`,
-`label_blind`, `search_S`, `random`; within-label Q contextuality, ranking changes,
-permutation invariance, decoy rate, transfer by factor, genuinely held-out apps; every
-threshold and decision rule. **Nothing is built or run for it until the primary finishes**;
-it has its own report and is never pooled with primary statistics.
+  Discovery rates: bandit_pretrained 0.42, both DQN arms 0.33, search_S 0.17, random 0.11,
+  search_A0 0.06. `admin_records` and `booking_desk`: 0/6 for both DQN arms (difference 0 by
+  censoring). **0 verified findings on any clean build** (2 raw assertion firings, both
+  rejected by the per-fault control). The script's comparison table omitted the
+  pre-registered `dqn_scratch − dqn_scratch_nollm`; the addendum computes it with the same
+  functions.
+- **Post-hoc description (not a pre-registered test)**: in every learned arm about 84% of
+  hunt actions were the network's greedy choice, 12% the search guide's and 4% uniform. The
+  learned Q drives behaviour, yet pretrained and scratch DQN find faults in the same share
+  of runs (9/27 each): what helps is learned inside the application under test.
+
+### 0.3 The contextual diagnostic — complete
+
+Pre-registered in `docs/methodology/2026-10-04-contextual-diagnostic-preregistration.md`
+(`c10699c`, before any primary result). Separate applications, runs and report; **never
+pooled with primary statistics**.
+
+- **Build** (all committed before any arm ran): seeded generator and 12 variants of one
+  request workflow (`4002d39`; vocabulary V0/V1 training, VS synonyms / VU1 unseen words /
+  VU2 pseudo-words held out with zero token overlap; structures S1/S2 training, S3 tabs / S4
+  modal / S5 reordered held out; decoy D1); 12/12 admitted by the unchanged primary
+  validator (`reports/ctx_admission.json`); held-out label similarity in
+  `reports/ctx_vocabulary.json`; input masks (`d26b361`); probe sets with
+  execution-labelled action effects (`11cff61`); evaluator and analysis with every open
+  choice fixed in its docstring (`e308539`, `6bf7d86`).
+- **Run**: 228 jobs (12 pretrainings, 216 hunts), 0 failures, clean tree `6bf7d86`, local
+  GPU only (`runs/ctx-main`). Suspended 23:22–02:54 by a closed lid; budgets are in
+  interactions, so no result changed.
+- **Verdicts** (rules applied to `ctx_full`, the primary agent):
+
+| Hypothesis | Verdict | Deciding numbers |
+|---|---|---|
+| H-ctx: genuine state–action contextual learning | **not supported** | within-label AUROC 0.51 [0.44, 0.59] (needed ≥ 0.70); label × state is 7% of Q's variance |
+| H-act: action memorization | inconclusive | decoy probe rate 0.31 [0.00, 0.91]: seed 1 nearly always takes the decoy, seeds 0 and 2 never |
+| H-lex: lexical memorization | inconclusive | top-1 ratio on unseen vocabulary 0.88 [0.35, 1.18] |
+| H-app: application memorization | inconclusive | mean top-1 ratio on held-out structures 0.63 [0.44, 0.88]; tabs 0.35, modal 0.58 |
+
+  Permutation invariance passed. Probe top-1 progress accuracy: training 0.56 (search_S
+  0.31, random 0.18); vocabulary shifts cost little, the tab and modal structures cost a lot.
+  Hunts on the eight held-out variants: `label_blind` 20/24, `ctx_full` 19/24,
+  `lexical_only` 4/24, `action_only` 4/24, search_S 2/24, random 2/24 — the arms that see the
+  state find the faults, and the label channel is not what helps.
+- **Reading**: the agent learns useful, state-driven behaviour inside an application, but its
+  preference for an action does not depend on whether that action is useful in the current
+  state, and nothing shows it transfers knowledge of *which control matters where*. This is
+  claim limit A, now measured.
 
 ### 0.4 Claim limits (owner-mandated, apply to every report and presentation)
 
 - **A. Context**: the policy state (25 numbers: episode history, page-composition counts,
-  form fill, LLM history) has **no page semantics** — no heading, text or URL. The agent
-  can learn form-state/structural context, not semantic page context. Claim no more than
-  the diagnostic shows.
-- **B. Generalization**: six applications built from one designer's contract establish at
-  most **within-family** adaptation/transfer, not general web generalization; no zero-shot or
-  real-world claim without evidence.
+  form fill, LLM history) has **no page semantics** — no heading, text or URL. The
+  diagnostic found no state–action contextual learning (H-ctx not supported). Claim only
+  in-application, state-driven learning.
+- **B. Generalization**: six applications built from one designer's contract, and twelve
+  generated variants of one workflow, establish at most **within-family** results; no
+  zero-shot or real-world claim. The primary found no transfer benefit for the DQN.
 - **C. LLM reward**: its contribution is reported only through the frozen LLM vs no-LLM
-  comparisons; implemented ≠ useful.
+  comparisons, which show no detectable benefit; implemented ≠ useful.
 - **D. Warm-up exposure (disclose)**: amendment 1 says only the validator and uniform-random
   exploration touched the pristine apps before the run, but the LLM cache warm-up
   (`scripts/warm_caches.py`) also ran `search_S` on them (LLM judgments only, no oracle,
@@ -107,53 +136,53 @@ it has its own report and is never pooled with primary statistics.
   per-fault-control fix (instrument, not agent). Do not redefine "pristine".
 - **E. Representation leakage**: a control without a visible label falls back to its
   description (can embed a DOM field name or radio `name#value`); the 14 page-composition
-  counts can fingerprint pages within an app. No claim of perfect identity invariance.
-- **F. Product completeness** (after primary + diagnostic): make the uploaded-repository
-  tester genuinely usable end to end; investigate Dockerfile-less repositories and
-  spec-less functional verification.
+  counts can fingerprint pages within an app. The diagnostic does not test this (its
+  variants share DOM ids). No claim of perfect identity invariance.
+- **F. Product completeness**: the uploaded-repository tester is not yet usable end to end
+  for Dockerfile-less repositories or without a specification; this is the next product
+  work, pending the owner's approval.
 
 ### 0.5 Rules for anyone working on this repository now
 
-- The primary run's code, methodology, seeds, budgets, folds, representations, LLM reward,
-  oracle, benchmark discovery and fixtures are **frozen**; the contextual diagnostic is
-  frozen. Change nothing that affects them, and nothing because of a result.
-- During the run, commit only documents in the main checkout (uncommitted edits would mark
-  resumed jobs "dirty"); do suite work on the `e2e-suite` branch/worktree.
+- Both evaluations are **closed**. Their code, methodology, fixtures, probes, run outputs and
+  reports are evidence: do not edit them; any reanalysis is new, labelled post-hoc, and
+  reported beside — never in place of — the frozen output.
+- Any improvement to the agent (§9) is a **new, separately pre-registered** version with its
+  own held-out evaluation; it never reuses the frozen runs as its result.
 - AWS: restricted IAM user `wta-operator` (profile `wta`), never root; region `ap-south-1`;
-  hard cap **$20** total (spent so far ≈ $0.5–1); spot only; launcher enforces a hard cap,
-  idle watchdog, self-termination and EBS deletion. The account is on the **Free plan**:
-  only free-tier instance types (`m7i-flex.large`, `c7i-flex.large`, t-micro/small), GPU
-  quota rejected.
-- Never push to GitHub without asking; never start "M0/M1" without explicit approval.
+  hard cap **$20** total (≈ $1.6 used); spot only; launcher enforces a hard cap, idle
+  watchdog, self-termination and EBS deletion. Free plan: free-tier instance types only;
+  GPU quota rejected.
+- Never push to GitHub without asking; never start "M0/M1" or other new build work without
+  explicit approval.
 
 ### 0.6 The end-to-end application suite (isolated; no RL)
 
 Eight genuinely different small web applications with real backends, built as a testbed for
-the product (and, later and only by decision, for a future study). Branch `e2e-suite`,
-worktree `../RL web tester-e2e/e2e_suite/`; `CONVENTIONS.md` (incl. lessons from the
-pilots), `harness/` (variants, launcher, static/API/browser/Docker checks, isolated oracle
-extensions `region_stable_across_reload`, `input_absent`, `region_arithmetic`), admission
-reports in `admission/`. Invisible to the primary benchmark (no `faults.json`; an isolation
-test proves primary `discover()` still returns its six apps).
+the product. Branch `e2e-suite` (`70608b4`), worktree `../RL web tester-e2e/e2e_suite/`;
+`CONVENTIONS.md` (incl. lessons from the pilots), `harness/` (variants, launcher,
+static/API/browser/Docker checks, isolated oracle extensions `region_stable_across_reload`,
+`input_absent`, `region_arithmetic`), admission reports in `admission/`, diversity report
+`suite.md`. Invisible to the primary benchmark (no `faults.json`; an isolation test proves
+primary `discover()` still returns its six apps).
 
 | App | Domain | Architecture | Stack | Status |
 |---|---|---|---|---|
-| tidewater | banking | SPA, hash router, JSON API | Python stdlib + SQLite | **admitted 20/20** |
-| bagstreet | e-commerce | server-rendered pages, HTML forms (PRG) | Python stdlib + SQLite | **admitted 20/20** |
-| helpline | support desk | server-rendered + HTML fragment updates | Python stdlib + SQLite | **admitted 20/20** |
-| clinicflow | appointments | branching wizard, server drafts in URL, client conditionals | Python stdlib (WSGI) + SQLite per session | static+API admitted; browser validation pending |
-| orbit | kanban | modal-heavy SPA | Node built-ins, JSON per session | static+API admitted; builder's sequential browser checks + fault pipeline all passed |
-| wayfarer | trip planner | client drafts (localStorage) + server sealed versions, **no Dockerfile** | Node built-ins | static+API admitted; browser validation pending |
-| ledgerly | expense claims, multi-role | Node server-rendered + client form island | Node built-ins, event log | in progress (builder interrupted by API limit) |
-| stackroom | inventory admin | data grid, server-side paging/sort/filter, bulk ops | Python stdlib + SQLite | in progress (builder interrupted by API limit) |
+| tidewater | banking | SPA, hash router, JSON API | Python stdlib + SQLite | admitted 20/20 |
+| bagstreet | e-commerce | server-rendered pages, HTML forms (PRG) | Python stdlib + SQLite | admitted 20/20 |
+| helpline | support desk | server-rendered + HTML fragment updates | Python stdlib + SQLite | admitted 20/20 |
+| clinicflow | appointments | branching wizard, server drafts in URL, client conditionals | Python stdlib (WSGI) + SQLite per session | admitted 20/20 |
+| orbit | kanban | modal-heavy SPA | Node built-ins, JSON per session | admitted 20/20 |
+| wayfarer | trip planner | client drafts (localStorage) + server sealed versions, **no Dockerfile** | Node built-ins | admitted 19/19 |
+| ledgerly | expense claims, multi-role | Node server-rendered + client form island | Node built-ins, event log | admitted 20/20 |
+| stackroom | inventory admin | data grid, server-side paging/sort/filter, bulk ops | Python stdlib + SQLite | admitted 20/20 |
 
-23 seeded faults planned across 11 subtypes (16 in the primary grammar, 7 needing the
-isolated extensions); every fault must pass the 10 mechanical admission checks (patch
-applies once, buggy = clean + patch only, witness fires on buggy, silent on clean and on
-its per-fault control, replay ×2, ddmin preserves it, benign traces silent, clean random
-walk silent, trigger reachable with the tester's own actions).
+23/23 seeded faults confirmed (11 subtypes; 16 in the primary grammar, 7 needing the
+isolated extensions); diversity check passes (largest shared-source overlap 3.2%).
+**Pending: the `--docker` checks** for the seven apps with a Dockerfile (needs Docker
+Desktop running), then merging the branch.
 
-### 0.7 Known limitations of the tester found this month (product work after the primary)
+### 0.7 Known limitations of the tester (product work, pending approval)
 
 - The environment treats a page as settled after the DOM is quiet; it does not wait for
   in-flight requests, so slow async SPA transitions can be recorded early (the suite's
@@ -162,14 +191,17 @@ walk silent, trigger reachable with the tester's own actions).
   refused by design.
 - Without a specification, functional findings get only generic triggers and an unverified
   LLM review; the suite's extension kinds are candidates for spec-less invariants.
-- Long local runs need Modern Standby disabled (screen-off timeout), not just sleep.
+- The agent's state carries no page meaning (claim limit A); improving that is agent work,
+  not product work (§9).
 
 ### 0.8 Where to look
 
-`docs/methodology/` (all pre-registrations and amendments), `docs/llm_reward.md`,
-`docs/literature_review.md` + `docs/references/`, `docs/benchmark/CONTRACT.md`,
-`reports/benchmark_suite.md`, `reports/dev_tuning.md`, `cloud/aws/SETUP.md`,
-`e2e_suite/CONVENTIONS.md` (branch `e2e-suite`).
+`reports/transfer_final.md` + `transfer_final_addendum.md` (primary results),
+`reports/contextual_diagnostic.md` (diagnostic), `docs/methodology/` (all pre-registrations
+and amendments), `docs/llm_reward.md`, `docs/literature_review.md` + `docs/references/`,
+`docs/benchmark/CONTRACT.md`, `reports/benchmark_suite.md`, `reports/dev_tuning.md`,
+`cloud/aws/SETUP.md`, `e2e_suite/CONVENTIONS.md` and `e2e_suite/suite.md` (branch
+`e2e-suite`).
 
 ---
 
@@ -3501,6 +3533,56 @@ Recorded in full in `docs/methodology/2026-10-03-transfer-amendment-2.md`; the s
   `e2e_suite/CONVENTIONS.md` §8 (assertions silent on clean for every path; conjunctive
   one-time markers for scope; expectations on data not labels; the tester's settle window).
 
+### 2026-10-05 — the primary experiment completes, and the diagnostic is built
+
+- **Primary complete**: the local half resumed 07:18 and finished 17:17 (105/105 including
+  27 top-up jobs); the AWS half had finished overnight (186/186). Merged in
+  `runs/final-merged` (291 results, 0 failures, identical configuration). The frozen analysis
+  ran unchanged (`reports/transfer_final.{md,json}`); `reports/transfer_final_addendum.md`
+  records provenance, the pre-registered `dqn_scratch − dqn_scratch_nollm` comparison the
+  script's table had omitted, and the reading within the claim limits (`5031e09`). Results
+  are in §0.2.
+- **Application suite**: all eight apps admitted, 23/23 faults (`70608b4` on `e2e-suite`).
+  The harness now builds the primary verification pipeline only for apps with primary-grammar
+  faults (wayfarer has only extension faults and crashed it) and records a crashed validation
+  as a failed admission rather than leaving a stale "admitted".
+- **Diagnostic build** (approved by the owner after the primary results): generator and 12
+  variants (`4002d39`); LF pinned for its fixtures and templates; opt-in input masks in
+  `rl/masks.py`, applied at the entry of `TransferQNetwork.forward` as non-persistent buffers
+  so they cover the online, target and residual networks and leave the default agent
+  bit-for-bit unchanged (1,226 unit tests pass unchanged; `d26b361`); probe builder,
+  runner (reusing the primary's pretraining, hunt and verification code and its scheduler),
+  evaluator and analysis.
+- **Defects found and fixed before any arm ran**, each recorded in its commit:
+  - the probe builder recorded histories in short episodes, which changes episode-context
+    slot 0 (step fraction); probes now use the runs' 40-step episodes and 80 ms settle;
+  - CTX-2's witness ends with a submission the clean build correctly refuses, so the first
+    probe build failed on every variant; a walk now contributes only the prefixes it reaches
+    on the clean build, and the truncation is recorded;
+  - the ctxbench `eol=lf` rule also matched the binary probe archives and git altered four
+    of them; they are marked binary and re-stored byte-exact (verified blob by blob);
+  - the pipeline smoke test (tiny budgets, discarded) showed masked arms tie exactly on
+    actions their masks make identical, so `argmax` chose by list position; greedy metrics
+    are the expectation under uniform tie-breaking and the permutation check compares
+    tied-best sets (`6bf7d86`). Q itself was order-invariant.
+- **Admission**: 12/12 variants admitted by the unchanged primary validator (clean tree
+  `42206e5`; minimized witnesses 9–16 actions; 0 raw candidates on clean builds; a 600-step
+  random walk finds neither fault). Label similarity of held-out vocabularies reported
+  (`reports/ctx_vocabulary.json`). Probe sets committed (`11cff61`) before the run.
+
+### 2026-10-06 — the contextual diagnostic completes
+
+- 228 jobs, 0 failures, clean tree `6bf7d86`, finished 17:34. The host was suspended
+  23:22–02:54 when the charger was unplugged and the lid closed (Modern Standby, then
+  hibernate on the battery budget); the display-timeout setting does not cover the lid.
+- Frozen analysis and report: `reports/contextual_diagnostic.md` (`35af743`). H-ctx **not
+  supported**; H-act, H-lex, H-app **inconclusive** (§0.3). The state-aware arms find faults
+  on held-out variants in 19–20 of 24 runs against 2 of 24 for search_S and random; the
+  label-blind arm is as good as the full one.
+- Post-hoc description of the primary hunts (§0.2): ~84% of every learned arm's actions are
+  greedy, so the null transfer result is not the exploration guide masking the network.
+
+---
 
 ## 6. Scoping decisions
 
@@ -3548,57 +3630,55 @@ Two decisions that shape what the project can claim:
 
 ---
 
-## 8. Current risks (rewritten 2026-10-04)
+## 8. Current risks (rewritten 2026-10-06)
 
-The August-era risk register (reward hacking on the toy site, judge overfitting, perception
-latency, compose-gate bypasses, ...) is preserved in git (`PROJECT_CONTEXT.md` at commit
-`afa5045`) and in §5. The risks that matter for the final submission now:
+The August-era risk register is preserved in git (`PROJECT_CONTEXT.md` at commit `afa5045`)
+and in §5; the 2026-10-04 register (risks before the results) at `811094a`. Both evaluations
+have answered their questions, so the risks now are about what is claimed and what is built
+next:
 
 | # | Risk | Severity | Evidence | Addressed by |
 |---|---|---|---|---|
-| 1 | The state has no page semantics, capping contextual learning | major (fatal for a *strong* contextual claim) | `rl/features.py` STATE_FIELDS | measured by the frozen diagnostic; reported as a limitation; page-context encoding is future work |
-| 2 | Generalization rests on one designer-built family, 4 pristine folds | major | benchmark construction, §0.4 B | scoped claim ("within-family adaptation"); diagnostic isolates mechanism; external validity only via real-site demos |
-| 3 | The learner may not beat `search_S`/`random` | major | dev: scratch DQN verifies shop_catalog at 572–750; nobody solves booking_desk | the primary answers it; a negative result is reported as such |
-| 4 | No functional oracle for arbitrary uploaded apps | major for the product | generic triggers + unverified LLM review only | user-supplied `faults.json` assertions; spec-less invariants (suite extensions) as post-primary work |
-| 5 | Statistical power / censoring | major | 2,000-step budget, 3–6 seeds, 4–6 folds | mechanical top-up only; inconclusive results reported as inconclusive |
-| 6 | Operational: the local half needs ~6–10 h uninterrupted | operational | froze 16:43 on Modern Standby | disable screen-off timeout before resuming; jobs are resumable |
-
-Decision tree for weak or mixed results (frozen rules only, no new arms or tuning): RL
-transfers → report within scope; works on development folds only → overfitting to
-development apps, diagnostic explains; LLM helps but no transfer → two separate findings;
-baselines win → valid negative result with the pre-specified failure analysis (reach vs
-discover vs verify, coverage, reward decomposition); diagnostic shows memorization →
-report, fixes are future work; inconclusive → top-up rule only, then report.
+| 1 | Over-claiming: presenting the agent as contextual or as transferring across applications | major | H-ctx not supported; primary Δ +0 | claim limits A–C in every report; a claims table (shown / not shown) in the final report |
+| 2 | The headline positive result is narrow: learners beat search/random mainly on a development fold and on one generated family | major | pristine-fold p = 0.23 / 0.53; diagnostic is one workflow | state it with its fold breakdown; external validity only via real-site demos |
+| 3 | Statistical power: 3 seeds left the diagnostic's memorization hypotheses unresolved and the bandit result at p = 0.086 | moderate | decoy rate split 0 / 0.9 / 0 by seed | reported as inconclusive; any follow-up pre-registers more seeds |
+| 4 | No functional oracle for arbitrary uploaded apps | major for the product | generic triggers + unverified LLM review only | user-supplied `faults.json` assertions; spec-less invariants (suite extensions) as product work |
+| 5 | Repository intake requires a Dockerfile | moderate for the product | `wayfarer` | stack templates, pending approval |
+| 6 | Unattended local runs are suspended by Windows (screen timeout, lid, battery budget) | operational | 2026-10-04 and 2026-10-06 suspensions | screen-off timeout 0 on AC, lid open, charger in; every job resumable and step-budgeted |
 
 ---
 
-## 9. Next steps, in order (rewritten 2026-10-04)
+## 9. Next steps, in order (rewritten 2026-10-06)
 
-The August–September item list is preserved in git (`afa5045`) and §5.
+Items 1–2 need no new approval; items 3 onward are proposals that start only when the owner
+approves them (no "M0/M1" without explicit approval).
 
-1. **Finish the primary run**: disable the screen-off timeout (with the owner's OK), resume
-   the local half (§0.2), download the AWS results when `final-cpu-3/4` finish.
-2. **Merge and analyse, unchanged**: `runs/final-local` + `runs/final-cpu-*` →
-   `scripts/analyze_transfer.py`; list infrastructure failures and rerun them; commit raw
-   results and the report. Then commit the deferred documentation (this file is current).
-3. **Audit the results** against §0.4 (claim limits) before writing any conclusion.
-4. **Run the frozen contextual diagnostic** exactly as pre-registered (build its generator
-   and probes, then evaluate); its own report.
-5. **Finish the application suite**: browser-validate clinicflow, orbit, wayfarer; finish
-   ledgerly and stackroom; Docker checks for all Dockerfile apps; diversity report; merge
-   the `e2e-suite` branch when the primary no longer depends on this checkout.
-6. **Product completeness (F)**, decided after 2–5: uploaded-repo tester end to end through
-   the UI; Dockerfile-less repositories (stack templates, `wayfarer` as the test case);
-   spec-less functional verification (generic invariants measured against the suite's
-   ground truth); settle-on-in-flight-requests in the environment.
-7. **Before the demo**: three end-to-end runs (ZIP with assertions → verified findings; a
+1. **Application suite**: run the `--docker` checks for the seven Dockerfile apps (start
+   Docker Desktop), commit, then merge `e2e-suite`.
+2. **Final report and presentation**: methodology with every amendment and deviation;
+   primary results exactly as produced (all folds and pristine folds, plus the addendum);
+   the diagnostic in its own section; a claims table (shown / not shown) under limits A–F;
+   AWS cost; literature positioning (agent, curiosity bonus and LLM potential are not novel;
+   the contribution is the combination and the evaluation discipline).
+3. **Cheap analyses on existing data** (descriptive, labelled post-hoc): how well the LLM's
+   progress judgments agree with the ctxbench ground-truth progress counter (does the reward
+   carry the signal it is meant to?); for `admin_records` and `booking_desk`, how close the
+   agents got to each fault's trigger.
+4. **Agent v2 (new pre-registration)**, chosen in the light of the diagnostic:
+   - page semantics in the state and per-control context (title, headings, the section a
+     control belongs to), with vocabulary-randomised training to limit memorization;
+   - a broader training family (many generated variants of several workflows; the suite as
+     strictly held-out evaluation);
+   - archive-and-return exploration (Go-Explore style, using the oracle's deterministic
+     replay) for faults that need 9–16 contextual steps;
+   - more seeds and applications, sized by a power estimate from the frozen results.
+5. **Product completeness (F)**: uploaded-repo tester end to end through the UI;
+   Dockerfile-less repositories (stack templates, `wayfarer` as the test case); spec-less
+   functional verification (generic invariants measured against the suite's ground truth);
+   settle on in-flight requests.
+6. **Before the demo**: three end-to-end runs (ZIP with assertions → verified findings; a
    Dockerfile repo through the UI; a live URL with generic triggers and the unverified
-   review), with trained product weights (`scripts/train_tester.py`).
-8. **Final report and presentation**: methodology with every amendment and deviation,
-   results exactly as produced (all folds and pristine folds), the diagnostic in its own
-   section, a claims table (shown / not shown), AWS cost, literature positioning (agent,
-   curiosity bonus and LLM potential are not novel; the contribution is the combination and
-   the evaluation discipline).
+   review).
 
 ---
 
@@ -3645,3 +3725,11 @@ Two consequences worth knowing before relying on a clone: the Gitea corpora and 
 - **Python on Windows writes CRLF** through `Path.write_text`; the `e2e-suite` branch pins
   LF via `.gitattributes` because patch anchors contain newlines.
 - **Second worktree**: `../RL web tester-e2e` on branch `e2e-suite` (the application suite).
+- **Added 2026-10-06.** Modern Standby also starts when the lid closes or the charger is
+  unplugged, and then hibernates on the battery budget; the screen-off timeout does not
+  prevent that. For unattended runs: timeout 0 on AC, charger in, lid open (or set the
+  AC lid action to "do nothing", which the owner has not chosen). Restore the timeout with
+  `powercfg /change monitor-timeout-ac 5` afterwards (done after both runs).
+- **Binary fixtures under an `eol=lf` rule**: `tests/fixtures/ctxbench/probes/*.gz` is
+  marked `binary` in `.gitattributes`; any new binary file under a text-normalised path
+  needs the same, or git rewrites its CR LF bytes.
