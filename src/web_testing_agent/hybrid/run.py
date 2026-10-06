@@ -38,6 +38,13 @@ ARMS: dict[str, dict] = {
     "hybrid_nolearn": {"kind": "hybrid", "planner": "count", "labels": "deterministic"},
     "hybrid_bandit": {"kind": "hybrid", "planner": "bandit", "labels": "deterministic"},
     "hybrid_bandit_llm": {"kind": "hybrid", "planner": "bandit", "labels": "llm"},
+    # The bandit starting from the development applications' pooled evidence (hybrid/prior.py).
+    "hybrid_bandit_prior": {
+        "kind": "hybrid",
+        "planner": "bandit",
+        "labels": "deterministic",
+        "prior": "data/v2_prior.json",
+    },
 }
 
 
@@ -101,6 +108,12 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
 
         labeller = SemanticLabeller()
     planner = BanditPlanner if spec["planner"] == "bandit" else None
+    if spec.get("prior"):
+        import functools
+
+        from .prior import load_prior
+
+        planner = functools.partial(BanditPlanner, prior=load_prior(REPO_ROOT / spec["prior"]))
     policy = HybridPolicy(
         labeller=labeller,
         context=app_name,

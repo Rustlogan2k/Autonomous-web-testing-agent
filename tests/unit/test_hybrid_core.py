@@ -150,3 +150,20 @@ def test_round_trip_collapses_whitespace_like_a_page():
     assert checker._round_trip(shown, 1) == []
     altered = _view("<p>multi-line comment for testin</p>")
     assert [c.invariant for c in checker._round_trip(altered, 2) if c] == ["round_trip"]
+
+
+def test_prior_pools_runs_and_caps_each_key():
+    from web_testing_agent.hybrid.prior import pool
+
+    prior = pool(
+        [
+            {"form|invalid_input|email:type_mismatch": [6.0, 2.0]},
+            {
+                "form|invalid_input|email:type_mismatch": [2.0, 0.0],
+                "*|reload_and_resume|": [0.0, 1.0],
+            },
+        ]
+    )
+    s, f = prior["form|invalid_input|email:type_mismatch"]
+    assert abs(s + f - 5.0) < 1e-6 and abs(s / (s + f) - 0.8) < 1e-6  # mean kept, weight capped
+    assert prior["*|reload_and_resume|"] == [0.0, 1.0]  # light evidence untouched
