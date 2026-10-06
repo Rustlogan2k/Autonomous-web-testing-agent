@@ -42,7 +42,7 @@
       "detail": {
         "passed": true,
         "summary": [
-          "Ran 11 tests in 0.463s",
+          "Ran 11 tests in 0.557s",
           "OK"
         ],
         "pass_lines": null,
@@ -118,7 +118,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 133.8
+        "seconds": 128.7
       }
     },
     {
@@ -146,7 +146,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 108.5
+        "seconds": 105.0
       }
     },
     {
@@ -174,7 +174,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 83.3
+        "seconds": 81.5
       }
     },
     {
@@ -198,6 +198,83 @@
       "name": "no_external_network_at_runtime",
       "passed": true,
       "detail": []
+    },
+    {
+      "name": "docker_offline_build_and_health",
+      "passed": true,
+      "detail": {
+        "image": "e2e-suite/tidewater:clean",
+        "build_ok": true,
+        "build_seconds": 1.5,
+        "build_tail": [
+          "#10 naming to docker.io/e2e-suite/tidewater:clean done",
+          "#10 unpacking to docker.io/e2e-suite/tidewater:clean 0.1s done",
+          "#10 DONE 0.4s"
+        ],
+        "container_healthy": true,
+        "detail": "{'ok': True, 'app': 'tidewater'}",
+        "image_mb": 43.3,
+        "passed": true
+      }
+    },
+    {
+      "name": "product_intake_matches_expectation",
+      "passed": true,
+      "detail": {
+        "profile": {
+          "languages": [
+            {
+              "language": "JSON",
+              "files": 4,
+              "bytes": 24832,
+              "share": 0.3483
+            },
+            {
+              "language": "Python",
+              "files": 1,
+              "bytes": 22036,
+              "share": 0.3091
+            },
+            {
+              "language": "JavaScript",
+              "files": 1,
+              "bytes": 20386,
+              "share": 0.2859
+            },
+            {
+              "language": "CSS",
+              "files": 1,
+              "bytes": 2410,
+              "share": 0.0338
+            },
+            {
+              "language": "Markdown",
+              "files": 1,
+              "bytes": 1127,
+              "share": 0.0158
+            },
+            {
+              "language": "HTML",
+              "files": 1,
+              "bytes": 506,
+              "share": 0.0071
+            }
+          ],
+          "frameworks": [],
+          "build_definition": {
+            "value": "dockerfile",
+            "evidence": "Dockerfile",
+            "confidence": 1.0
+          }
+        },
+        "build_plan": {
+          "kind": "dockerfile",
+          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\tidewater\\clean\\Dockerfile"
+        },
+        "product_can_build": true,
+        "matches_expectation": true,
+        "expectation": "buildable by the current intake"
+      }
     }
   ],
   "sections": {
@@ -494,7 +571,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 133.8
+        "seconds": 128.7
       },
       {
         "fault_id": "TIDE-2",
@@ -550,7 +627,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 108.5
+        "seconds": 105.0
       },
       {
         "fault_id": "TIDE-3",
@@ -599,7 +676,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 83.3
+        "seconds": 81.5
       }
     ],
     "benign": [
@@ -653,12 +730,67 @@
       "errors": [],
       "foreign_requests": [],
       "passed": true
+    },
+    "product_intake": {
+      "profile": {
+        "languages": [
+          {
+            "language": "JSON",
+            "files": 4,
+            "bytes": 24832,
+            "share": 0.3483
+          },
+          {
+            "language": "Python",
+            "files": 1,
+            "bytes": 22036,
+            "share": 0.3091
+          },
+          {
+            "language": "JavaScript",
+            "files": 1,
+            "bytes": 20386,
+            "share": 0.2859
+          },
+          {
+            "language": "CSS",
+            "files": 1,
+            "bytes": 2410,
+            "share": 0.0338
+          },
+          {
+            "language": "Markdown",
+            "files": 1,
+            "bytes": 1127,
+            "share": 0.0158
+          },
+          {
+            "language": "HTML",
+            "files": 1,
+            "bytes": 506,
+            "share": 0.0071
+          }
+        ],
+        "frameworks": [],
+        "build_definition": {
+          "value": "dockerfile",
+          "evidence": "Dockerfile",
+          "confidence": 1.0
+        }
+      },
+      "build_plan": {
+        "kind": "dockerfile",
+        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\tidewater\\clean\\Dockerfile"
+      },
+      "product_can_build": true,
+      "matches_expectation": true,
+      "expectation": "buildable by the current intake"
     }
   },
   "admitted": true,
-  "checks_run": 20,
+  "checks_run": 22,
   "checks_failed": [],
   "browser_checks_run": true,
-  "docker_checks_run": false,
-  "wall_clock_s": 565.6
+  "docker_checks_run": true,
+  "wall_clock_s": 565.0
 }

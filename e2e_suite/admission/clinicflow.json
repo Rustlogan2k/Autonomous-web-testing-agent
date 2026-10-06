@@ -42,7 +42,7 @@
       "detail": {
         "passed": true,
         "summary": [
-          "Ran 11 tests in 3.219s",
+          "Ran 11 tests in 3.388s",
           "OK"
         ],
         "pass_lines": null,
@@ -118,7 +118,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 525.3
+        "seconds": 556.4
       }
     },
     {
@@ -148,7 +148,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 410.9
+        "seconds": 419.4
       }
     },
     {
@@ -176,7 +176,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 139.5
+        "seconds": 140.3
       }
     },
     {
@@ -200,6 +200,83 @@
       "name": "no_external_network_at_runtime",
       "passed": true,
       "detail": []
+    },
+    {
+      "name": "docker_offline_build_and_health",
+      "passed": true,
+      "detail": {
+        "image": "e2e-suite/clinicflow:clean",
+        "build_ok": true,
+        "build_seconds": 0.8,
+        "build_tail": [
+          "#10 naming to docker.io/e2e-suite/clinicflow:clean done",
+          "#10 unpacking to docker.io/e2e-suite/clinicflow:clean 0.1s done",
+          "#10 DONE 0.2s"
+        ],
+        "container_healthy": true,
+        "detail": "{'ok': True, 'app': 'clinicflow'}",
+        "image_mb": 43.3,
+        "passed": true
+      }
+    },
+    {
+      "name": "product_intake_matches_expectation",
+      "passed": true,
+      "detail": {
+        "profile": {
+          "languages": [
+            {
+              "language": "JSON",
+              "files": 4,
+              "bytes": 46105,
+              "share": 0.4169
+            },
+            {
+              "language": "Python",
+              "files": 4,
+              "bytes": 45404,
+              "share": 0.4105
+            },
+            {
+              "language": "HTML",
+              "files": 15,
+              "bytes": 9210,
+              "share": 0.0833
+            },
+            {
+              "language": "Markdown",
+              "files": 1,
+              "bytes": 3835,
+              "share": 0.0347
+            },
+            {
+              "language": "CSS",
+              "files": 1,
+              "bytes": 3717,
+              "share": 0.0336
+            },
+            {
+              "language": "JavaScript",
+              "files": 1,
+              "bytes": 2329,
+              "share": 0.0211
+            }
+          ],
+          "frameworks": [],
+          "build_definition": {
+            "value": "dockerfile",
+            "evidence": "Dockerfile",
+            "confidence": 1.0
+          }
+        },
+        "build_plan": {
+          "kind": "dockerfile",
+          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\clinicflow\\clean\\Dockerfile"
+        },
+        "product_can_build": true,
+        "matches_expectation": true,
+        "expectation": "buildable by the current intake"
+      }
     }
   ],
   "sections": {
@@ -585,7 +662,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 525.3
+        "seconds": 556.4
       },
       {
         "fault_id": "CLIN-2",
@@ -683,7 +760,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 410.9
+        "seconds": 419.4
       },
       {
         "fault_id": "CLIN-3",
@@ -747,7 +824,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 139.5
+        "seconds": 140.3
       }
     ],
     "benign": [
@@ -815,12 +892,67 @@
       "errors": [],
       "foreign_requests": [],
       "passed": true
+    },
+    "product_intake": {
+      "profile": {
+        "languages": [
+          {
+            "language": "JSON",
+            "files": 4,
+            "bytes": 46105,
+            "share": 0.4169
+          },
+          {
+            "language": "Python",
+            "files": 4,
+            "bytes": 45404,
+            "share": 0.4105
+          },
+          {
+            "language": "HTML",
+            "files": 15,
+            "bytes": 9210,
+            "share": 0.0833
+          },
+          {
+            "language": "Markdown",
+            "files": 1,
+            "bytes": 3835,
+            "share": 0.0347
+          },
+          {
+            "language": "CSS",
+            "files": 1,
+            "bytes": 3717,
+            "share": 0.0336
+          },
+          {
+            "language": "JavaScript",
+            "files": 1,
+            "bytes": 2329,
+            "share": 0.0211
+          }
+        ],
+        "frameworks": [],
+        "build_definition": {
+          "value": "dockerfile",
+          "evidence": "Dockerfile",
+          "confidence": 1.0
+        }
+      },
+      "build_plan": {
+        "kind": "dockerfile",
+        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\clinicflow\\clean\\Dockerfile"
+      },
+      "product_can_build": true,
+      "matches_expectation": true,
+      "expectation": "buildable by the current intake"
     }
   },
   "admitted": true,
-  "checks_run": 20,
+  "checks_run": 22,
   "checks_failed": [],
   "browser_checks_run": true,
-  "docker_checks_run": false,
-  "wall_clock_s": 1393.8
+  "docker_checks_run": true,
+  "wall_clock_s": 1457.2
 }

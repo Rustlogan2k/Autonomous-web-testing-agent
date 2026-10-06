@@ -2,50 +2,34 @@
   "apps": {
     "bagstreet": {
       "admitted": true,
-      "checks": 20,
-      "browser": true,
       "failed": []
     },
     "clinicflow": {
       "admitted": true,
-      "checks": 20,
-      "browser": true,
       "failed": []
     },
     "helpline": {
       "admitted": true,
-      "checks": 20,
-      "browser": true,
       "failed": []
     },
     "ledgerly": {
       "admitted": true,
-      "checks": 20,
-      "browser": true,
       "failed": []
     },
     "orbit": {
       "admitted": true,
-      "checks": 20,
-      "browser": true,
       "failed": []
     },
     "stackroom": {
       "admitted": true,
-      "checks": 20,
-      "browser": true,
       "failed": []
     },
     "tidewater": {
       "admitted": true,
-      "checks": 20,
-      "browser": true,
       "failed": []
     },
     "wayfarer": {
       "admitted": true,
-      "checks": 19,
-      "browser": true,
       "failed": []
     }
   },

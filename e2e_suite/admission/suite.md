@@ -2,14 +2,14 @@
 
 | app | admitted | checks | failed | browser | docker | seconds |
 |---|---|---|---|---|---|---|
-| bagstreet | yes | 20 | — | True | False | 819.3 |
-| clinicflow | yes | 20 | — | True | False | 1393.8 |
-| helpline | yes | 20 | — | True | False | 422.0 |
-| ledgerly | yes | 20 | — | True | False | 946.2 |
-| orbit | yes | 20 | — | True | False | 454.0 |
-| stackroom | yes | 20 | — | True | False | 316.0 |
-| tidewater | yes | 20 | — | True | False | 565.6 |
-| wayfarer | yes | 19 | — | True | False | 345.7 |
+| bagstreet | yes | 22 | — | True | True | 938.7 |
+| clinicflow | yes | 22 | — | True | True | 1457.2 |
+| helpline | yes | 22 | — | True | True | 384.7 |
+| ledgerly | yes | 22 | — | True | True | 861.3 |
+| orbit | yes | 22 | — | True | True | 447.4 |
+| stackroom | yes | 22 | — | True | True | 285.4 |
+| tidewater | yes | 22 | — | True | True | 565.0 |
+| wayfarer | yes | 20 | — | True | True | 391.3 |
 
 ## Seeded faults
 
