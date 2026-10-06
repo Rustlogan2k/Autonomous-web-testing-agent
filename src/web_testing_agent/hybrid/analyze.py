@@ -48,12 +48,22 @@ def load(run_dirs: list[Path]) -> list[dict]:
     return records
 
 
+def verdict(median: float, low: float, high: float) -> str:
+    """Pre-registered rule: lower time is better; the interval must exclude 0."""
+    if median < 0 and high < 0:
+        return "supported"
+    if median > 0 and low > 0:
+        return "refuted"
+    return "inconclusive"
+
+
 def _comparison(runs: list[Run], treatment: str, control: str, budget: int) -> dict:
     arms = {r.arm for r in runs}
     if treatment not in arms or control not in arms:
         return {"treatment": treatment, "control": control, "available": False}
     paired = paired_fold_difference(runs, treatment, control, budget)
     return {
+        "verdict": verdict(paired.median, paired.ci_low, paired.ci_high),
         "treatment": treatment,
         "control": control,
         "available": True,
@@ -173,8 +183,8 @@ def render(result: dict) -> str:
         lines.append("| " + " | ".join(str(c) for c in cells) + " |")
     lines += [
         "",
-        "| comparison | median Δ RMST | 95% CI | apps favouring | log-rank p |",
-        "|---|---|---|---|---|",
+        "| comparison | median Δ RMST | 95% CI | apps favouring | log-rank p | verdict |",
+        "|---|---|---|---|---|---|",
     ]
     for label, rows in (
         ("primary", [result["primary"]]),
@@ -183,7 +193,7 @@ def render(result: dict) -> str:
     ):
         for c in rows:
             if not c.get("available"):
-                lines.append(f"| {label}: {c['treatment']} − {c['control']} | n/a | | | |")
+                lines.append(f"| {label}: {c['treatment']} − {c['control']} | n/a | | | | |")
                 continue
             p = c["logrank"].get("p_value")
             cells = [
@@ -192,6 +202,7 @@ def render(result: dict) -> str:
                 f"[{c['ci'][0]:+.0f}, {c['ci'][1]:+.0f}]",
                 f"{c['apps_favouring_treatment']}/{c['apps']}",
                 p if p is not None else "n/a",
+                c["verdict"],
             ]
             lines.append("| " + " | ".join(str(x) for x in cells) + " |")
     lines += ["", "Clean-build controls: " + json.dumps(result["clean_build_controls"])]
