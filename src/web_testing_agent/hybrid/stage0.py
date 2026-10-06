@@ -88,13 +88,26 @@ def view_of(url: str) -> str:
     return "home" if name in ("", "index") else name
 
 
+_MERGED = {"save", "advance", "commit"}
+
+
+def _v3(answers: set[str] | None) -> set[str] | None:
+    if answers is None:
+        return None
+    return {"submit" if a in _MERGED else a for a in answers}
+
+
 def truth_for(dom_id: str, table: dict) -> tuple[bool, set[str] | None]:
-    """(known, acceptable answers) for a DOM id, by exact id or by prefix."""
+    """(known, acceptable answers) for a DOM id, by exact id or by prefix.
+
+    Answers are in the current labeller's vocabulary: from labels-v3, save / advance /
+    commit are one role, `submit`.
+    """
     if dom_id in table:
-        return True, table[dom_id]
+        return True, _v3(table[dom_id])
     for key, value in table.items():
         if key.endswith("-") and dom_id.startswith(key):
-            return True, value
+            return True, _v3(value)
     return False, None
 
 

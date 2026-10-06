@@ -94,3 +94,26 @@ def test_labels_ignore_entered_values():
     assert without_entered_values(filled) == empty
     checked = '<input type=checkbox checked name=c><option value="3" selected>3</option>'
     assert without_entered_values(checked) == "<input type=checkbox name=c><option>3</option>"
+
+
+def test_markup_facts_decide_toggles_forms_and_logins():
+    from web_testing_agent.hybrid.labels import page_facts
+
+    html = (
+        '<input id="topic-a" name="topic" type="radio"><input id="ok" name="agree" type="checkbox">'
+        '<input id="q" name="q" type="search"><button id="go">Go</button>'
+    )
+    specs = [
+        _spec(1, ActionType.CLICK, "topic-a", "topic"),
+        _spec(2, ActionType.CLICK, "ok", "agree"),
+        _spec(3, ActionType.TYPE, "q", "q", category="valid_typical"),
+        _spec(4, ActionType.CLICK, "go", "Go"),
+    ]
+    facts = page_facts(specs, html)
+    kinds = {c.identity: (c.kind, c.deterministic, c.search) for c in facts.controls}
+    assert kinds['[id="topic-a"]'] == ("field", "choice", False)  # a radio is a choice field
+    assert kinds['[id="q"]'][2] is True  # a search box is not entry
+    assert facts.entry_fields == 2 and facts.kind == "form"
+    one = page_facts(specs[2:], html)
+    assert one.entry_fields == 0 and one.kind == ""  # left to the model
+    assert page_facts([], '<input type="password" name="pw">').kind == "login"

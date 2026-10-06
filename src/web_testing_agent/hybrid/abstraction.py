@@ -16,7 +16,7 @@ from urllib.parse import urlparse
 
 from ..envs.types import ActionSpec, ActionType
 from ..rl.features import read_form_state
-from .labels import PageLabels, control_identity, describe_controls
+from .labels import PageLabels, control_identity, page_facts
 
 _NUMBER = re.compile(r"\d+")
 _ALERT_CLASS = re.compile(r"(?:^|[\s_-])(error|invalid|warning|alert|notice)(?:$|[\s_-])", re.I)
@@ -118,30 +118,43 @@ def form_signature(html: str) -> tuple[tuple[str, bool], ...]:
 #: English cues for a control's role, used only when no model labels are available. Their
 #: limits are the point of the ablation: they fail on unfamiliar vocabulary.
 _ROLE_CUES: tuple[tuple[str, tuple[str, ...]], ...] = (
-    ("commit", ("place order", "submit", "send", "confirm", "pay", "book", "finish", "complete")),
-    ("save", ("save", "store", "apply", "update")),
+    (
+        "submit",
+        (
+            "place order",
+            "submit",
+            "send",
+            "confirm",
+            "pay",
+            "book",
+            "finish",
+            "complete",
+            "save",
+            "store",
+            "apply",
+            "update",
+            "next",
+            "continue",
+            "proceed",
+            "review",
+            "checkout",
+        ),
+    ),
     ("edit", ("edit", "change", "modify", "amend")),
     ("remove", ("remove", "delete", "discard", "clear")),
     ("add", ("add", "new item", "include")),
     ("back", ("back", "cancel", "close", "return")),
     ("search_or_filter", ("search", "filter", "sort", "find")),
     ("help", ("help", "faq", "support", "about")),
-    ("advance", ("next", "continue", "proceed", "review", "checkout")),
     ("open", ("start", "begin", "open", "new", "create", "view")),
 )
 
 
 def deterministic_labels(url: str, html: str, specs: list[ActionSpec]) -> PageLabels:
-    controls = describe_controls(specs, html)
+    facts = page_facts(specs, html)
+    controls = facts.controls
     labels = PageLabels(key="", kind="other", model="deterministic", source="deterministic")
-    has_password = 'type="password"' in (html or "").lower()
-    editable = [c for c in controls if c.kind == "field"]
-    if has_password:
-        labels.kind = "login"
-    elif editable:
-        labels.kind = "form"
-    elif path_template(url) in ("/", "/index.html"):
-        labels.kind = "home"
+    labels.kind = facts.kind or ("home" if path_template(url) in ("/", "/index.html") else "other")
     for control in controls:
         if control.kind == "field":
             labels.meanings[control.identity] = control.deterministic or "other"

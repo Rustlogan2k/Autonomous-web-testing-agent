@@ -25,9 +25,7 @@ from .operators import Operator, options
 NO_OP_INDEX = 0
 #: Free exploration's preference among roles (the operators do the targeted probing).
 ROLE_WEIGHTS = {
-    "advance": 3.0,
-    "save": 3.0,
-    "commit": 2.5,
+    "submit": 3.0,
     "open": 2.5,
     "add": 2.0,
     "edit": 1.5,

@@ -60,8 +60,7 @@ def test_abstraction():
     view = _view()
     assert view.labels.kind == "form"
     assert view.cell == "form|/orders/{n}/edit|email=0,qty=1|!"
-    assert [s.index for s in view.controls_with_role("save")] == [3]
-    assert [s.index for s in view.controls_with_role("commit")] == [6]
+    assert [s.index for s in view.controls_with_role("submit")] == [3, 6]
 
 
 def test_archive_keeps_the_shortest_walk_and_discounts_deep_cells():

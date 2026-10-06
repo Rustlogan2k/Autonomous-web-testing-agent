@@ -31,7 +31,7 @@ from ..utils.logging import get_logger
 
 logger = get_logger(__name__)
 
-LABEL_VERSION = "labels-v2"
+LABEL_VERSION = "labels-v3"
 
 PAGE_KINDS: tuple[str, ...] = (
     "home",
@@ -45,10 +45,10 @@ PAGE_KINDS: tuple[str, ...] = (
     "error",
     "other",
 )
+#: v3: save / advance / commit are one role. Stage 0 showed the model cannot keep them apart
+#: (commit over-used for non-final steps), and the tester's operators do not need to.
 CONTROL_ROLES: tuple[str, ...] = (
-    "commit",
-    "advance",
-    "save",
+    "submit",
     "edit",
     "add",
     "remove",
@@ -87,6 +87,11 @@ _TYPE_MEANING = {
     "password": "password",
 }
 _CLICKABLE = (ActionType.CLICK, ActionType.RAPID_CLICK)
+_TOGGLES = ("radio", "checkbox")
+#: Field names that conventionally mark a search or filter box rather than data entry.
+_SEARCH_NAME = re.compile(r"(?:^|[_-])(?:q|query|search|filter)(?:$|[_-])", re.I)
+#: Visible data-entry fields (toggles included, search boxes excluded) that make a page a form.
+FORM_MIN_FIELDS = 2
 _FIELDS = (ActionType.TYPE, ActionType.SELECT)
 #: Controls described to the model per page; the rest are labelled "other" and flagged.
 MAX_CONTROLS = 40
@@ -108,10 +113,12 @@ Page kinds:
 - error: an error page
 - other: none of the above
 
+Judge a page by what it contains and lets the user do, not by a word in its title or menu:
+a step made of input fields is a form whatever it is called.
+
 Control roles (c-numbered controls; buttons and links):
-- commit: performs the final, irreversible action of a task (place order, send, submit for good)
-- advance: moves to the next step of a task without being final
-- save: stores the values entered in the current step
+- submit: sends, saves or confirms what has been entered, or moves a task on to its next
+  step (save, next, continue, review, place order, send)
 - edit: returns to change something already entered
 - add / remove: adds an item to, or removes one from, a selection, basket or list
 - open: starts a task or opens a section, item or dialog
@@ -138,13 +145,19 @@ class _InputTypes(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.types: dict[str, str] = {}
         self.textareas: set[str] = set()
+        self.search_fields: set[str] = set()
+        self.password = False
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = {k: (v or "") for k, v in attrs}
         keys = [k for k in (values.get("id"), values.get("name")) if k]
         if tag == "input":
+            kind = values.get("type", "text").lower()
+            self.password = self.password or kind == "password"
             for key in keys:
-                self.types[key] = values.get("type", "text").lower()
+                self.types[key] = kind
+            if kind == "search" or _SEARCH_NAME.search(values.get("name", "")):
+                self.search_fields.update(keys)
         elif tag == "textarea":
             self.textareas.update(keys)
 
@@ -185,10 +198,30 @@ class Control:
     kind: str  # "clickable" | "field"
     line: str  # how it is described to the model
     deterministic: str = ""  # a field meaning settled without the model
+    search: bool = False  # a search or filter box, not data entry
+
+
+@dataclass
+class PageFacts:
+    """What the markup itself states about the page, decided without a model."""
+
+    controls: list[Control]
+    password: bool
+    entry_fields: int
+
+    @property
+    def kind(self) -> str:
+        if self.password:
+            return "login"
+        return "form" if self.entry_fields >= FORM_MIN_FIELDS else ""
 
 
 def describe_controls(specs: list[ActionSpec], html: str) -> list[Control]:
     """One entry per distinct control, in the registry's (DOM) order."""
+    return page_facts(specs, html).controls
+
+
+def page_facts(specs: list[ActionSpec], html: str) -> PageFacts:
     parser = _InputTypes()
     with contextlib.suppress(Exception):  # malformed markup only loses the type hints
         parser.feed(html or "")
@@ -203,7 +236,14 @@ def describe_controls(specs: list[ActionSpec], html: str) -> list[Control]:
         if identity in seen or spec.action_type not in _CLICKABLE + _FIELDS:
             continue
         label = (spec.element_id or "").strip()
-        if spec.action_type in _CLICKABLE:
+        dom = _selector_id(spec)
+        toggle = parser.types.get(dom) in _TOGGLES
+        if spec.action_type in _CLICKABLE and toggle:
+            # A radio button or checkbox: a choice field the registry exposes as a click.
+            fields += 1
+            line = f'option "{label}" ({parser.types[dom]})'
+            seen[identity] = Control(f"f{fields}", identity, "field", line, "choice")
+        elif spec.action_type in _CLICKABLE:
             clicks += 1
             href = str(params.get("href") or "")
             kind = "link" if params.get("navigational") or href else "button"
@@ -211,7 +251,6 @@ def describe_controls(specs: list[ActionSpec], html: str) -> list[Control]:
             seen[identity] = Control(f"c{clicks}", identity, "clickable", line)
         else:
             fields += 1
-            dom = _selector_id(spec)
             declared = parser.types.get(dom) or parser.types.get(label) or ""
             shown = str(params.get("label_text") or "").strip()
             if spec.action_type is ActionType.SELECT:
@@ -224,12 +263,15 @@ def describe_controls(specs: list[ActionSpec], html: str) -> list[Control]:
             meaning = _TYPE_MEANING.get(declared, "")
             if widget == "textarea":
                 meaning = "free_text"
-            seen[identity] = Control(f"f{fields}", identity, "field", line, meaning)
+            search = dom in parser.search_fields or label in parser.search_fields
+            seen[identity] = Control(f"f{fields}", identity, "field", line, meaning, search)
     for identity, values in options.items():
         control = seen.get(identity)
         if control is not None:
             control.line += "; options: " + ", ".join(dict.fromkeys(values))
-    return list(seen.values())
+    controls = list(seen.values())
+    entry = sum(1 for c in controls if c.kind == "field" and not c.search)
+    return PageFacts(controls, parser.password, entry)
 
 
 # -- labels and their cache --------------------------------------------------------------------
@@ -338,7 +380,8 @@ class SemanticLabeller:
         visible_text: str | None = None,
     ) -> PageLabels | None:
         digest = page_digest(url, without_entered_values(html), visible_text)
-        controls = describe_controls(specs, html)
+        facts = page_facts(specs, html)
+        controls = facts.controls
         listing = "\n".join(f"{c.key}: {c.line}" for c in controls)
         key = hashlib.sha256(
             "\x00".join((LABEL_VERSION, self.model, context, digest, listing)).encode(
@@ -363,7 +406,11 @@ class SemanticLabeller:
             return None
 
         labels = PageLabels(
-            key=key, kind=answer["page_kind"], model=self.model, seconds=round(elapsed, 3)
+            key=key,
+            # What the markup states (a page of input fields is a form) outranks the model.
+            kind=facts.kind or answer["page_kind"],
+            model=self.model,
+            seconds=round(elapsed, 3),
         )
         given = answer.get("controls") or {}
         for control in controls:

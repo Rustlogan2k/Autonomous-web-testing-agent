@@ -21,7 +21,7 @@ from ..envs.types import ActionSpec, ActionType
 from .abstraction import PageView
 from .labels import control_identity
 
-SUBMIT_ROLES = ("save", "advance", "commit")
+SUBMIT_ROLES = ("submit",)
 INVALID_CATEGORIES = ("empty_string", "type_mismatch", "boundary_min", "boundary_max")
 #: Operator names, frozen with the plan: the evaluation's decision layer chooses among these.
 OPERATORS = (
@@ -135,7 +135,7 @@ class Operator:
             return submit_step(view)
         if self.stage == 3:
             self.stage = 4
-            controls = view.controls_with_role("commit")
+            controls = view.controls_with_role("submit")
             return controls[0] if controls else None
         return None
 
@@ -209,7 +209,7 @@ def options(view: PageView) -> list[tuple[str, str]]:
         categories = {_category(a) for a in actions}
         out += [("invalid_input", f"{identity}|{c}") for c in INVALID_CATEGORIES if c in categories]
     edits = view.controls_with_role("edit")
-    if edits and view.controls_with_role("commit"):
+    if edits and view.controls_with_role("submit"):
         for spec in edits:
             out += [
                 ("edit_after_review", f"{control_identity(spec)}|{c}")
