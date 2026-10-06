@@ -53,13 +53,20 @@ def _view(html=HTML):
     )
 
 
+def test_main_heading_separates_single_page_views():
+    from web_testing_agent.hybrid.abstraction import main_heading
+
+    assert main_heading("<h2>Review</h2><h1>Order 1042 confirmed</h1>") == "order {n} confirmed"
+    assert main_heading("<h1 hidden>x</h1><h2>Basket</h2>") == "basket"
+
+
 def test_abstraction():
     assert path_template("http://h:9/orders/17#step-2") == "/orders/{n}#step-{n}"
     assert form_signature(HTML) == (("email", False), ("qty", True))
     assert shows_alert(HTML) and not shows_alert('<p class="notice"></p><br>')
     view = _view()
     assert view.labels.kind == "form"
-    assert view.cell == "form|/orders/{n}/edit|email=0,qty=1|!"
+    assert view.cell == "form|/orders/{n}/edit||email=0,qty=1|!"
     assert [s.index for s in view.controls_with_role("submit")] == [3, 6]
 
 
@@ -91,3 +98,29 @@ def test_operators_offered_and_sequenced():
     assert op.next(view) is None and op.done
     complete = Operator("complete_step")
     assert complete.next(view).index == 7  # fill the empty field validly first
+
+
+def test_bandit_learns_and_backs_off_to_general_keys():
+    from web_testing_agent.hybrid.learner import BanditPlanner, target_type
+    from web_testing_agent.hybrid.policy import Decision
+
+    archive = Archive()
+    cell, _ = archive.visit("form|/x||", [], "form", 0)
+    bandit = BanditPlanner(archive, seed=1)
+    choices = [("complete_step", ""), ("reload_and_resume", "")]
+    for _ in range(20):
+        bandit.feedback(cell, Decision("reload_and_resume", ""), None, 1.0)
+        bandit.feedback(cell, Decision("complete_step", ""), None, 0.0)
+    picks = [bandit.choose_operator(cell, choices, None).operator for _ in range(30)]
+    assert picks.count("reload_and_resume") >= 28
+    # Evidence from form pages informs an unseen page kind through the general keys.
+    assert bandit.value("list", "reload_and_resume", "") > bandit.value("list", "complete_step", "")
+    assert (
+        target_type("invalid_input", '[id="email"]|type_mismatch', _view()) == "email:type_mismatch"
+    )
+    restored = BanditPlanner(
+        archive, prior={tuple(k.split("|")): v for k, v in bandit.state().items()}
+    )
+    assert restored.value("form", "reload_and_resume", "") == bandit.value(
+        "form", "reload_and_resume", ""
+    )

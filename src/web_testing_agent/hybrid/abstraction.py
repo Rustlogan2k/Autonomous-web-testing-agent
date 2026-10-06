@@ -86,6 +86,48 @@ class _AlertParser(HTMLParser):
             self.alert = True
 
 
+class _HeadingParser(HTMLParser):
+    """The page's main heading: its first visible h1, else its first h2."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.found: dict[str, str] = {}
+        self._open: str | None = None
+        self._hidden_depth = 0
+        self._buffer: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = {k: (v or "") for k, v in attrs}
+        visible = values.get("data-hidden") != "true" and "hidden" not in values
+        if tag in ("h1", "h2") and tag not in self.found and self._open is None and visible:
+            self._open, self._buffer = tag, []
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == self._open:
+            self.found[tag] = " ".join("".join(self._buffer).split())
+            self._open = None
+
+    def handle_data(self, data: str) -> None:
+        if self._open:
+            self._buffer.append(data)
+
+
+def main_heading(html: str) -> str:
+    """Normalised main heading (lower case, digits as `{n}`, at most 48 characters).
+
+    Within one application it separates views that share a URL (single-page apps put the
+    review, the outcome and a list on one address). It is part of a cell's identity only,
+    which is per application; the learner's keys use page kinds, never headings.
+    """
+    parser = _HeadingParser()
+    try:
+        parser.feed(html or "")
+    except Exception:  # noqa: BLE001 - unreadable markup has no heading
+        return ""
+    text = parser.found.get("h1") or parser.found.get("h2") or ""
+    return _NUMBER.sub("{n}", text.lower())[:48]
+
+
 def shows_alert(html: str) -> bool:
     parser = _AlertParser()
     try:
@@ -181,11 +223,13 @@ class PageView:
     signature: tuple[tuple[str, bool], ...]
     alert: bool
     specs: list[ActionSpec] = field(default_factory=list)
+    heading: str = ""
 
     @property
     def cell(self) -> str:
         filled = ",".join(f"{name}={'1' if value else '0'}" for name, value in self.signature)
-        return f"{self.labels.kind}|{path_template(self.url)}|{filled}|{'!' if self.alert else ''}"
+        alert = "!" if self.alert else ""
+        return f"{self.labels.kind}|{path_template(self.url)}|{self.heading}|{filled}|{alert}"
 
     def role_of(self, spec: ActionSpec) -> str:
         if spec.action_type in _FIXED:
@@ -222,4 +266,11 @@ def observe(info: dict, labeller=None, *, context: str = "") -> PageView:
         )
     if labels is None:
         labels = deterministic_labels(url, html, specs)
-    return PageView(url, labels, form_signature(html), shows_alert(html), specs)
+    return PageView(
+        url,
+        labels,
+        form_signature(html),
+        shows_alert(html),
+        specs=specs,
+        heading=main_heading(html),
+    )

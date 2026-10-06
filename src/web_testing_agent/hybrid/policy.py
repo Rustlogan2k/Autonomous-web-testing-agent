@@ -70,6 +70,10 @@ class Planner:
         operator, target = pool[int(self.rng.integers(len(pool)))]
         return Decision(operator, target)
 
+    def register(self, cell: Cell, choices: list[tuple[str, str]], view: PageView) -> None:
+        """Called once per cell with the page it was first seen on; learning planners cache
+        what they need from it."""
+
     def feedback(self, cell: Cell, decision: Decision, view: PageView, outcome: float) -> None:
         """Learning planners update here; this one does not learn."""
 
@@ -140,7 +144,9 @@ class HybridPolicy:
         )
         if created:
             self.stats["new_cells"] += 1
-        self.offered.setdefault(cell.key, options(view))
+        if cell.key not in self.offered:
+            self.offered[cell.key] = options(view)
+            self.planner.register(cell, self.offered[cell.key], view)
 
         spec = None
         if self.phase == "return":

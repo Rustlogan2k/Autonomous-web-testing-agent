@@ -126,3 +126,19 @@ to revise the labeller once and re-test it, under these terms fixed before the r
   condition is conservative only in the sense of being an extra requirement).
 - Pass: LLM labels become the main arm, deterministic labels the ablation. Fail: deterministic
   labels stay, and the result is reported as a negative finding. No further revision.
+
+## 9. Addendum 2026-10-06 (night): decision layer and cell identity, before any held-out contact
+
+- **Decision layer changed from the plan's §3 step 5.** One return-and-probe per 40-step
+  episode gives about fifty decisions in a 2,000-interaction run: too few for v1's
+  Q-network to learn anything. The learner is a Thompson-sampling bandit over semantic keys
+  — (page kind, operator, target type), backing off to (operator, target type) and
+  (operator) — with each general key's evidence as the specific key's discounted prior
+  (`hybrid/learner.py`). It is still reinforcement learning (a contextual bandit: one-step
+  decisions, reward observed). Its rewards are the tester's own observations (an alert, new
+  abstract states, generic-invariant candidates), never the seeded-fault oracle. Its
+  learned evidence exports as a prior, which is how the optional cross-app prior is formed.
+- **Cell identity gains the page's main heading** (normalised), found on a development app
+  (booking_desk) where a single-page application puts its review, outcome and list views on
+  one URL and the cells could not tell them apart. Headings identify cells within one
+  application only; the learner's keys never contain them.
