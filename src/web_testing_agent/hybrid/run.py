@@ -35,6 +35,11 @@ DEVELOPMENT_APPS = (
 
 ARMS: dict[str, dict] = {
     "random": {"kind": "random"},
+    # v1's strongest non-learning baseline, unchanged (`rl.search.FeatureSearchPolicy`).
+    "search_S": {"kind": "feature_search"},
+    # v1's DQN from scratch, as in the primary's dqn_scratch_nollm arm: the primary found no
+    # benefit from the LLM reward, so the v1 learner is compared without it.
+    "v1_dqn": {"kind": "v1_dqn"},
     "hybrid_nolearn": {"kind": "hybrid", "planner": "count", "labels": "deterministic"},
     "hybrid_bandit": {"kind": "hybrid", "planner": "bandit", "labels": "deterministic"},
     "hybrid_bandit_llm": {"kind": "hybrid", "planner": "bandit", "labels": "llm"},
@@ -99,6 +104,27 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
         from ..evaluation.rollout import RandomPolicy
 
         return RandomPolicy(MAX_ACTIONS, seed=job.seed, valid_only=True), None
+    if spec["kind"] == "feature_search":
+        from ..rl import FeatureSearchPolicy
+
+        return FeatureSearchPolicy(seed=job.seed, epsilon=0.05), None
+    if spec["kind"] == "v1_dqn":
+        from ..experiments.transfer import ExperimentConfig, _epsilon_config
+        from ..rl import AgentConfig, QAgent, RewardComposer, RewardConfig
+
+        primary = ExperimentConfig()
+        agent_config = AgentConfig(
+            algorithm="dqn",
+            seed=job.seed,
+            total_steps=config.budget,
+            gamma=0.95,
+            learn=True,
+            **_epsilon_config(primary.target_epsilon, config.budget),
+        )
+        rewarder = RewardComposer(RewardConfig(llm_weight=0.0, shaping_gamma=agent_config.gamma))
+        agent = QAgent(agent_config, rewarder=rewarder)
+        agent.set_application(job.app, app_name)
+        return agent, None
     from .learner import BanditPlanner
     from .policy import HybridPolicy
 
