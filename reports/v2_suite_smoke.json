@@ -1,0 +1,444 @@
+{
+  "git": {
+    "commit": "bbb6017e5643c36c8dca59d22f53ec20c20a27ff",
+    "dirty": false,
+    "source": "git"
+  },
+  "passed": true,
+  "results": [
+    {
+      "app_id": "bagstreet",
+      "witnesses": {
+        "BAG-1": {
+          "verified": [
+            "BAG-1"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 7,
+          "confirmed": true
+        },
+        "BAG-2": {
+          "verified": [
+            "BAG-2"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 9,
+          "confirmed": true
+        },
+        "BAG-3": {
+          "verified": [
+            "BAG-2",
+            "BAG-3"
+          ],
+          "candidates": 2,
+          "rejections": {},
+          "steps": 7,
+          "confirmed": true
+        }
+      },
+      "benign": [
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 8
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 6
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 5
+        }
+      ],
+      "passed": true
+    },
+    {
+      "app_id": "clinicflow",
+      "witnesses": {
+        "CLIN-1": {
+          "verified": [
+            "CLIN-1"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 15,
+          "confirmed": true
+        },
+        "CLIN-2": {
+          "verified": [
+            "CLIN-2"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 14,
+          "confirmed": true
+        },
+        "CLIN-3": {
+          "verified": [
+            "CLIN-3"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 8,
+          "confirmed": true
+        }
+      },
+      "benign": [
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 11
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 9
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 12
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 16
+        }
+      ],
+      "passed": true
+    },
+    {
+      "app_id": "helpline",
+      "witnesses": {
+        "HELP-1": {
+          "verified": [
+            "HELP-1"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 6,
+          "confirmed": true
+        },
+        "HELP-2": {
+          "verified": [
+            "HELP-2"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 4,
+          "confirmed": true
+        },
+        "HELP-3": {
+          "verified": [
+            "HELP-3"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 3,
+          "confirmed": true
+        }
+      },
+      "benign": [
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 3
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 5
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 6
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 9
+        }
+      ],
+      "passed": true
+    },
+    {
+      "app_id": "ledgerly",
+      "witnesses": {
+        "LED-1": {
+          "verified": [
+            "LED-1"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 4,
+          "confirmed": true
+        },
+        "LED-2": {
+          "verified": [
+            "LED-2"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 10,
+          "confirmed": true
+        },
+        "LED-3": {
+          "verified": [
+            "LED-3"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 12,
+          "confirmed": true
+        }
+      },
+      "benign": [
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 8
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 9
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 11
+        }
+      ],
+      "passed": true
+    },
+    {
+      "app_id": "orbit",
+      "witnesses": {
+        "ORB-1": {
+          "verified": [
+            "ORB-1"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 5,
+          "confirmed": true
+        },
+        "ORB-2": {
+          "verified": [
+            "ORB-2"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 3,
+          "confirmed": true
+        },
+        "ORB-3": {
+          "verified": [
+            "ORB-3"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 5,
+          "confirmed": true
+        }
+      },
+      "benign": [
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 7
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 7
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 11
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 9
+        }
+      ],
+      "passed": true
+    },
+    {
+      "app_id": "stackroom",
+      "witnesses": {
+        "STK-1": {
+          "verified": [
+            "STK-1"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 4,
+          "confirmed": true
+        },
+        "STK-2": {
+          "verified": [
+            "STK-2"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 4,
+          "confirmed": true
+        },
+        "STK-3": {
+          "verified": [
+            "STK-3"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 2,
+          "confirmed": true
+        }
+      },
+      "benign": [
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 6
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 4
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 7
+        }
+      ],
+      "passed": true
+    },
+    {
+      "app_id": "tidewater",
+      "witnesses": {
+        "TIDE-1": {
+          "verified": [
+            "TIDE-1"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 7,
+          "confirmed": true
+        },
+        "TIDE-2": {
+          "verified": [
+            "TIDE-2"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 6,
+          "confirmed": true
+        },
+        "TIDE-3": {
+          "verified": [
+            "TIDE-3"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 5,
+          "confirmed": true
+        }
+      },
+      "benign": [
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 5
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 4
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 11
+        }
+      ],
+      "passed": true
+    },
+    {
+      "app_id": "wayfarer",
+      "witnesses": {
+        "WAY-1": {
+          "verified": [
+            "WAY-1"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 4,
+          "confirmed": true
+        },
+        "WAY-2": {
+          "verified": [
+            "WAY-2"
+          ],
+          "candidates": 1,
+          "rejections": {},
+          "steps": 7,
+          "confirmed": true
+        }
+      },
+      "benign": [
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 4
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 5
+        },
+        {
+          "verified": [],
+          "candidates": 0,
+          "rejections": {},
+          "steps": 6
+        }
+      ],
+      "passed": true
+    }
+  ]
+}
