@@ -9,6 +9,7 @@ the alert flag — is read deterministically from the page, never from the model
 
 from __future__ import annotations
 
+import hashlib
 import re
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
@@ -239,6 +240,15 @@ _ROLE_CUES: tuple[tuple[str, tuple[str, ...]], ...] = (
 )
 
 
+_LINK_SUBMIT_CUES = ("checkout", "continue", "proceed", "next", "review")
+
+
+def _has_cue(label: str, cue: str) -> bool:
+    """Whole-word (or whole-phrase) match, so "Store" the shop is not "store" the verb in
+    "Stockists" and "restore" never matches "store"."""
+    return re.search(rf"(?<![a-z]){re.escape(cue)}(?![a-z])", label) is not None
+
+
 def deterministic_labels(url: str, html: str, specs: list[ActionSpec]) -> PageLabels:
     facts = page_facts(specs, html)
     controls = facts.controls
@@ -250,9 +260,15 @@ def deterministic_labels(url: str, html: str, specs: list[ActionSpec]) -> PageLa
             labels.deterministic.append(control.identity)
             continue
         text = control.line.lower()
-        role = next((r for r, cues in _ROLE_CUES if any(cue in text for cue in cues)), "")
+        is_link = text.startswith("link")
+        label = control.line.split('"')[1].lower() if '"' in control.line else ""
+        role = next((r for r, cues in _ROLE_CUES if any(_has_cue(label, cue) for cue in cues)), "")
+        # A link is a submission only when it moves a task on ("Continue to checkout");
+        # a link reading "Store" or "Save" is navigation.
+        if is_link and role == "submit" and not any(_has_cue(label, c) for c in _LINK_SUBMIT_CUES):
+            role = "navigate"
         if not role:
-            role = "navigate" if text.startswith("link") else "other"
+            role = "navigate" if is_link else "other"
         labels.roles[control.identity] = role
         labels.deterministic.append(control.identity)
     return labels
@@ -276,11 +292,17 @@ class PageView:
     @property
     def cell(self) -> str:
         """Coarse on purpose: a page's form is empty, partly or fully filled, never the exact
-        combination of fields and toggles (which made one development app 150-225 cells)."""
+        combination of fields and toggles (which made one development app 150-225 cells).
+
+        It does record which submit controls the page offers: an empty basket and a filled
+        one share a page, a heading and no fields, but only the second can go to checkout,
+        and a return to "the basket" must know which it is returning to.
+        """
         alert = "!" if self.alert else ""
-        return (
-            f"{self.labels.kind}|{path_template(self.url)}|{self.heading}|{self.fill_level}|{alert}"
-        )
+        submits = sorted({control_identity(s) for s in self.controls_with_role("submit")})
+        offers = hashlib.sha256("\n".join(submits).encode()).hexdigest()[:6] if submits else ""
+        kind, path = self.labels.kind, path_template(self.url)
+        return f"{kind}|{path}|{self.heading}|{self.fill_level}|{alert}|{offers}"
 
     @property
     def fill_level(self) -> str:

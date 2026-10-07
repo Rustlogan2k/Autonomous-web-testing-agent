@@ -33,6 +33,11 @@ DEVELOPMENT_APPS = (
     "account_hub",
 )
 
+#: Final hybrid configuration (development round 3, 2026-10-07): weighted free exploration and
+#: a preference for deeper archived states, the same for every hybrid arm so that the arms
+#: differ only in what each comparison names.
+HYBRID = {"kind": "hybrid", "labels": "deterministic", "explore": "weighted", "depth_bias": 2.0}
+
 ARMS: dict[str, dict] = {
     "random": {"kind": "random"},
     # v1's strongest non-learning baseline, unchanged (`rl.search.FeatureSearchPolicy`).
@@ -40,36 +45,16 @@ ARMS: dict[str, dict] = {
     # v1's DQN from scratch, as in the primary's dqn_scratch_nollm arm: the primary found no
     # benefit from the LLM reward, so the v1 learner is compared without it.
     "v1_dqn": {"kind": "v1_dqn"},
-    "hybrid_nolearn": {"kind": "hybrid", "planner": "count", "labels": "deterministic"},
-    "hybrid_bandit": {"kind": "hybrid", "planner": "bandit", "labels": "deterministic"},
-    # Development variants (exploration by v1's search score; preference for deep cells).
-    "dev_bandit_search": {
-        "kind": "hybrid",
-        "planner": "bandit",
-        "labels": "deterministic",
-        "explore": "search",
-    },
-    "dev_bandit_deep": {
-        "kind": "hybrid",
-        "planner": "bandit",
-        "labels": "deterministic",
-        "depth_bias": 2.0,
-    },
-    "dev_bandit_search_deep": {
-        "kind": "hybrid",
-        "planner": "bandit",
-        "labels": "deterministic",
-        "explore": "search",
-        "depth_bias": 2.0,
-    },
-    "hybrid_bandit_llm": {"kind": "hybrid", "planner": "bandit", "labels": "llm"},
+    "hybrid_nolearn": {**HYBRID, "planner": "count"},
+    "hybrid_bandit": {**HYBRID, "planner": "bandit"},
+    # Exploratory: labeller v3's labels, which failed their accuracy gates (owner's option A).
+    "hybrid_bandit_llm": {**HYBRID, "planner": "bandit", "labels": "llm"},
     # The bandit starting from the development applications' pooled evidence (hybrid/prior.py).
-    "hybrid_bandit_prior": {
-        "kind": "hybrid",
-        "planner": "bandit",
-        "labels": "deterministic",
-        "prior": "data/v2_prior.json",
-    },
+    "hybrid_bandit_prior": {**HYBRID, "planner": "bandit", "prior": "data/v2_prior.json"},
+    # Development variants compared in round 3 (kept so those results stay reproducible).
+    "dev_bandit_search": {**HYBRID, "planner": "bandit", "explore": "search", "depth_bias": 0.0},
+    "dev_bandit_deep": {**HYBRID, "planner": "bandit"},
+    "dev_bandit_search_deep": {**HYBRID, "planner": "bandit", "explore": "search"},
 }
 
 
