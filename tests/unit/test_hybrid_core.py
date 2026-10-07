@@ -115,6 +115,34 @@ def test_operators_take_each_submit_control_in_turn():
     assert view.cell != view_filled.cell  # uses are counted per abstract page
 
 
+def test_outcomes_reward_the_unexpected_response_not_any_alert():
+    import pytest
+
+    from web_testing_agent.hybrid.policy import HybridPolicy
+
+    view = _view()  # shows an alert
+    quiet = _view(HTML.replace('class="notice"', ""))
+    with pytest.raises(ValueError):
+        HybridPolicy(outcome="reward")
+
+    def finished(outcome, name, *, submitted, alerted, page):
+        policy = HybridPolicy(seed=0, outcome=outcome)
+        policy.operator = Operator(name, probe_submitted=submitted)
+        policy._operator_alerted = alerted
+        return policy._outcome(page)
+
+    # The v2 development default: any alert at the end is a success.
+    assert finished("alert", "invalid_input", submitted=True, alerted=True, page=view) == 1.0
+    # A validation message after invalid input is the expected response...
+    assert finished("surprise", "invalid_input", submitted=True, alerted=True, page=view) == 0.0
+    # ...its absence is the surprise, but only once the invalid value was submitted.
+    assert finished("surprise", "invalid_input", submitted=True, alerted=False, page=quiet) == 1.0
+    assert finished("surprise", "invalid_input", submitted=False, alerted=False, page=quiet) == 0.0
+    # A valid path that is refused is a surprise too; "novelty" ignores alerts entirely.
+    assert finished("surprise", "complete_step", submitted=True, alerted=True, page=view) == 1.0
+    assert finished("novelty", "complete_step", submitted=True, alerted=True, page=view) == 0.0
+
+
 def test_archive_keeps_the_shortest_walk_and_discounts_deep_cells():
     archive = Archive(episode_steps=40)
     cell, created = archive.visit("a", [{"type": "CLICK"}] * 5, "form", 0)

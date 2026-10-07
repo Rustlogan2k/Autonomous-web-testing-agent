@@ -22,12 +22,19 @@ from .abstraction import PageView, observe
 from .archive import Archive, Cell, step_for
 from .invariants import Candidate, InvariantChecker
 from .labels import control_identity
-from .operators import Operator, options
+from .operators import DEVIANT_OPERATORS, Operator, options
 
 NO_OP_INDEX = 0
 #: Free steps between probes: after an operator finishes, explore this many steps from
 #: where it landed, then decide again there (several probes per episode, not one).
 EXPLORE_BETWEEN_PROBES = 6
+#: What a finished operator reports to the planner, besides invariant candidates (always 1):
+#: - "alert": the page shows an alert (development rounds 1-7), else new cells;
+#: - "novelty": new cells only, not counting a known cell that merely shows an alert;
+#: - "surprise": a response other than the expected one (a deviant probe accepted without a
+#:   message, or a valid one refused), else as "novelty". A validation message after
+#:   invalid input is the application working, so "alert" rewards the wrong thing.
+OUTCOMES = ("alert", "novelty", "surprise")
 #: Free exploration's preference among roles (the operators do the targeted probing).
 ROLE_WEIGHTS = {
     "submit": 3.0,
@@ -94,7 +101,11 @@ class HybridPolicy:
         episode_steps: int = 40,
         explore: str = "weighted",
         depth_bias: float = 0.0,
+        outcome: str = "alert",
     ) -> None:
+        if outcome not in OUTCOMES:
+            raise ValueError(f"unknown outcome {outcome!r}; expected one of {OUTCOMES}")
+        self.outcome = outcome
         self.labeller = labeller
         self.context = context
         self.archive = Archive(seed, episode_steps=episode_steps, depth_bias=depth_bias)
@@ -125,6 +136,11 @@ class HybridPolicy:
         self._operator_candidates = 0
         #: (cell, control) -> times an operator submitted with it; see `_choose_submit`.
         self.submit_uses: dict[tuple[str, str], int] = {}
+        #: Cells without their alert flag: a page and the same page showing a message are
+        #: one state for the "novelty" and "surprise" outcomes.
+        self.base_cells: set[str] = set()
+        self._base_before = 0
+        self._operator_alerted = False
         self.reset()
 
     # -- the hunt protocol ----------------------------------------------------------------------
@@ -172,6 +188,7 @@ class HybridPolicy:
         )
         if created:
             self.stats["new_cells"] += 1
+        self.base_cells.add(_without_alert(view.cell))
         if cell.key not in self.offered:
             self.offered[cell.key] = options(view)
             self.planner.register(cell, self.offered[cell.key], view)
@@ -214,6 +231,8 @@ class HybridPolicy:
             for candidate in found:
                 self.candidates.append(candidate)
                 self._operator_candidates += 1
+        if self.operator is not None and after_view.alert:
+            self._operator_alerted = True
         if self.search is not None:
             self.search.observe_transition(before, action, reward, after, terminated, done)
         # An episode that ends mid-operator still reports the operator's outcome.
@@ -280,6 +299,8 @@ class HybridPolicy:
             counts = self.stats["operators"]
             counts[decision.operator] = counts.get(decision.operator, 0) + 1
             self.cells_before = len(self.archive)
+            self._base_before = len(self.base_cells)
+            self._operator_alerted = False
         spec = self.operator.next(view)
         if spec is None:
             self._finish_operator(view)
@@ -325,10 +346,23 @@ class HybridPolicy:
             return view.specs[NO_OP_INDEX]
         return view.specs[int(self.rng.choice(len(values), p=values / values.sum()))]
 
+    def _outcome(self, view: PageView) -> float:
+        if self._operator_candidates:
+            return 1.0
+        if self.outcome == "alert":
+            new_cells = len(self.archive) - self.cells_before
+            return 1.0 if view.alert else min(new_cells, 2) / 2.0
+        if self.outcome == "surprise" and self.operator is not None:
+            if self.operator.name in DEVIANT_OPERATORS:
+                surprised = self.operator.probe_submitted and not self._operator_alerted
+            else:
+                surprised = self._operator_alerted
+            if surprised:
+                return 1.0
+        return min(len(self.base_cells) - self._base_before, 2) / 2.0
+
     def _finish_operator(self, view: PageView) -> None:
-        new_cells = len(self.archive) - self.cells_before
-        found = self._operator_candidates or view.alert
-        outcome = 1.0 if found else min(new_cells, 2) / 2.0
+        outcome = self._outcome(view)
         if self.operator_cell is not None and self.decision is not None:
             self.planner.feedback(self.operator_cell, self.decision, view, outcome)
         self.operator = None
@@ -344,3 +378,11 @@ class HybridPolicy:
             self.stats["label_fallbacks"] += 1
         self._view_cache = (id(info), view)
         return view
+
+
+def _without_alert(cell: str) -> str:
+    """A cell key with its alert flag cleared (`PageView.cell`'s fifth field)."""
+    parts = cell.split("|")
+    if len(parts) >= 6:
+        parts[-2] = ""
+    return "|".join(parts)

@@ -55,6 +55,9 @@ ARMS: dict[str, dict] = {
     "dev_bandit_search": {**HYBRID, "planner": "bandit", "explore": "search", "depth_bias": 0.0},
     "dev_bandit_deep": {**HYBRID, "planner": "bandit"},
     "dev_bandit_search_deep": {**HYBRID, "planner": "bandit", "explore": "search"},
+    # Development variants of the bandit's outcome signal (suite round 3, 2026-10-08).
+    "dev_bandit_novelty": {**HYBRID, "planner": "bandit", "outcome": "novelty"},
+    "dev_bandit_surprise": {**HYBRID, "planner": "bandit", "outcome": "surprise"},
 }
 
 
@@ -153,6 +156,7 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
         episode_steps=config.episode_steps,
         explore=spec.get("explore", "weighted"),
         depth_bias=float(spec.get("depth_bias", 0.0)),
+        outcome=spec.get("outcome", "alert"),
     )
     return policy, labeller
 

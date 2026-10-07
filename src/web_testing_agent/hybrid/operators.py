@@ -35,6 +35,9 @@ OPERATORS = (
     "double_submit",
     "collection_churn",
 )
+#: Operators whose probe submits a value the page should refuse: the expected response is
+#: a validation message, so its absence is the surprise (see `HybridPolicy` outcomes).
+DEVIANT_OPERATORS = frozenset({"invalid_input", "edit_after_review"})
 MAX_OPERATOR_STEPS = 20
 #: After its probe, an operator carries the task on (complete the form, submit) for up to
 #: this many more submissions: a fault's effect usually shows at the end of a workflow.
@@ -123,6 +126,7 @@ class Operator:
     submissions: int = 0  # follow-through submissions so far
     log: list[str] = field(default_factory=list)
     choose: Chooser | None = None  # which of several submit controls (see `submit_step`)
+    probe_submitted: bool = False  # the probe's own sequence submitted the page
 
     def next(self, view: PageView) -> ActionSpec | None:
         if self.done or self.steps >= MAX_OPERATOR_STEPS:
@@ -143,7 +147,10 @@ class Operator:
         return spec
 
     def _submit(self, view: PageView, *, roles: tuple[str, ...] = SUBMIT_ROLES + ("add",)):
-        return submit_step(view, self.choose, roles=roles)
+        spec = submit_step(view, self.choose, roles=roles)
+        if spec is not None and not self.probed:
+            self.probe_submitted = True
+        return spec
 
     def _follow_through(self, view: PageView) -> ActionSpec | None:
         """Carry the task on after the probe: complete the form, then submit."""
