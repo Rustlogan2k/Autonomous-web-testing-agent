@@ -39,7 +39,9 @@ with theirs.
 | `hybrid_bandit_llm` | as `hybrid_bandit`, with labeller v3's page and control labels (exploratory; the labels failed their pre-set accuracy gates) |
 
 - Hybrid settings **[freeze]**: free-exploration mode (`weighted` or `search`) and cell
-  depth preference, chosen on development applications only; operator list as in plan §4.
+  depth preference, chosen on development applications only; operators as in plan §4 and
+  §11 (complete_step, choose_option, invalid_input, edit_after_review, back_and_resume,
+  reload_and_resume, double_submit, collection_churn; each follows through after its probe).
 - **Budget** 2,000 interactions per hunt (every browser action, including replays to archived
   states); 40-step episodes; 80 ms settle; seeds 0–4 for every arm on every application
   (280 hunts). Clean-build controls: every arm, seed 0, every application (56 hunts).
@@ -62,8 +64,10 @@ with theirs.
 
 ## 4. The specification-free oracle (S1), reported separately
 
-Generic-invariant candidates (reload stability, typed-value round trip, validation
-consistency) reproduced 2/2 in fresh sessions. On faulty builds, a reproduced candidate is
+Generic-invariant candidates reproduced 2/2 in fresh sessions: reload stability (an entered
+value shown as content must survive a reload), typed-value round trip (an entered value must
+not reappear altered), validation consistency (the same field on the same page must not be
+rejected on one walk and accepted on another, single-factor submissions only). On faulty builds, a reproduced candidate is
 attributed to a seeded fault when that fault's control build does not reproduce it; one
 that reproduces on the clean build is not a seeded fault's. Reported per arm: seeded faults
 flagged by the invariants alone, and reproduced candidates on clean builds — each of the

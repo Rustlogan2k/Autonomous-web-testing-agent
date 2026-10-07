@@ -152,3 +152,23 @@ public in each manifest) through the v2 runner's serving and monitor path
 (`hybrid/suite.py`), with a scripted policy. It passes when every witness is confirmed by
 the monitor and no benign walk raises a confirmed finding. No agent, operator, learner or
 labeller runs on a suite application; nothing about the agent is changed in response to it.
+
+## 11. Addendum 2026-10-07: development changes (development applications only; no held-out contact)
+
+Found and fixed on the development applications, each in its own commit with the evidence:
+
+- **Replay**: steps that raised a notice were pruned from stored walks (failed returns
+  6/14 → 0/28 on support_portal / booking_desk).
+- **Cell granularity**: exact field/toggle combinations made 150–225 cells on account_hub;
+  cells now record a page's form as empty / partial / full (~20 cells).
+- **Operators**: form completion ticks checkboxes and chooses unset radio groups; the primary
+  action falls back to an "add" control; new `choose_option` (equivalence partitioning over a
+  select's options); every operator follows through (complete and submit, up to four
+  submissions) after its probe; six free steps after each operator, then a new decision
+  (19 → 55–66 decisions per 800 interactions).
+- **Invariants**: validation consistency now compares the same field on the same page across
+  walks, single-factor submissions only, "accepted" only when the page moves on (19
+  clean-build false alarms before); reload stability narrowed to entered values that vanish
+  (whole-page diffs flagged one-time messages and open editors).
+
+The operator list in §4 gains `choose_option` and follow-through; it is frozen with the code.
