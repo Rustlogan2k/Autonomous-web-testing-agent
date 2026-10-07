@@ -15,6 +15,7 @@ reading the page's labels, and stops when its sequence is done.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 from ..envs.types import ActionSpec, ActionType
@@ -88,13 +89,24 @@ def _text_fill(view: PageView, skip: str) -> ActionSpec | None:
     return None
 
 
-def submit_step(view: PageView) -> ActionSpec | None:
+#: Picks one of a page's submit controls (all of one role, in page order).
+Chooser = Callable[[PageView, list[ActionSpec]], ActionSpec]
+
+
+def submit_step(
+    view: PageView,
+    choose: Chooser | None = None,
+    *,
+    roles: tuple[str, ...] = SUBMIT_ROLES + ("add",),
+) -> ActionSpec | None:
     """The page's primary action: a submit control, else (a form whose action is to add, as
-    "Add to basket") its add control."""
-    for role in SUBMIT_ROLES + ("add",):
+    "Add to basket") its add control. With several, `choose` picks one (default: the first);
+    the policy uses it to take each in turn across visits, since a page such as a basket
+    offers both "Update" and "Go to checkout"."""
+    for role in roles:
         controls = view.controls_with_role(role)
         if controls:
-            return controls[0]
+            return choose(view, controls) if choose is not None else controls[0]
     return None
 
 
@@ -110,6 +122,7 @@ class Operator:
     probed: bool = False  # the operator's own sequence is finished; follow-through runs
     submissions: int = 0  # follow-through submissions so far
     log: list[str] = field(default_factory=list)
+    choose: Chooser | None = None  # which of several submit controls (see `submit_step`)
 
     def next(self, view: PageView) -> ActionSpec | None:
         if self.done or self.steps >= MAX_OPERATOR_STEPS:
@@ -129,6 +142,9 @@ class Operator:
             self.log.append(spec.description)
         return spec
 
+    def _submit(self, view: PageView, *, roles: tuple[str, ...] = SUBMIT_ROLES + ("add",)):
+        return submit_step(view, self.choose, roles=roles)
+
     def _follow_through(self, view: PageView) -> ActionSpec | None:
         """Carry the task on after the probe: complete the form, then submit."""
         if self.submissions >= FOLLOW_THROUGH_SUBMISSIONS:
@@ -136,7 +152,7 @@ class Operator:
         spec = fill_step(view)
         if spec is not None:
             return spec
-        spec = submit_step(view)
+        spec = self._submit(view)
         if spec is not None:
             self.submissions += 1
         return spec
@@ -149,7 +165,7 @@ class Operator:
             if spec is not None:
                 return spec
             self.stage = 1
-            return submit_step(view)
+            return self._submit(view)
         return None
 
     def _choose_option(self, view: PageView) -> ActionSpec | None:
@@ -174,7 +190,7 @@ class Operator:
             if spec is not None:
                 return spec
             self.stage = 2
-            return submit_step(view)
+            return self._submit(view)
         return None
 
     def _invalid_input(self, view: PageView) -> ActionSpec | None:
@@ -190,7 +206,7 @@ class Operator:
                 return spec
         if self.stage == 1:
             self.stage = 2
-            return submit_step(view)
+            return self._submit(view)
         return None
 
     def _edit_after_review(self, view: PageView) -> ActionSpec | None:
@@ -208,11 +224,10 @@ class Operator:
                     return spec
         if self.stage == 2:
             self.stage = 3
-            return submit_step(view)
+            return self._submit(view)
         if self.stage == 3:
             self.stage = 4
-            controls = view.controls_with_role("submit")
-            return controls[0] if controls else None
+            return self._submit(view, roles=SUBMIT_ROLES)
         return None
 
     def _back_and_resume(self, view: PageView) -> ActionSpec | None:
@@ -237,7 +252,7 @@ class Operator:
             if spec is not None:
                 return spec
             self.stage = 5
-            return submit_step(view)
+            return self._submit(view)
         return None
 
     def _double_submit(self, view: PageView) -> ActionSpec | None:
@@ -271,7 +286,7 @@ class Operator:
                 return spec
         if self.stage == len(plan):
             self.stage += 1
-            return submit_step(view)
+            return self._submit(view)
         return None
 
 

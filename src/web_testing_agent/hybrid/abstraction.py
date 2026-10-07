@@ -152,6 +152,42 @@ class _ToggleParser(HTMLParser):
             )
 
 
+_CHROME_TAGS = frozenset({"nav", "header", "footer"})
+_CHROME_ROLES = frozenset({"navigation", "banner", "contentinfo"})
+
+
+class _ChromeParser(HTMLParser):
+    """Ids of the elements inside the site's navigation, header or footer."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.ids: set[str] = set()
+        self._depth = 0  # >0 while inside chrome
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = {k: (v or "") for k, v in attrs}
+        opens = tag in _CHROME_TAGS or values.get("role") in _CHROME_ROLES
+        if (self._depth or opens) and values.get("id"):
+            self.ids.add(values["id"])
+        if tag in _VOID:
+            return
+        if self._depth or opens:
+            self._depth += 1
+
+    def handle_endtag(self, tag: str) -> None:
+        if self._depth and tag not in _VOID:
+            self._depth -= 1
+
+
+def chrome_ids(html: str) -> frozenset[str]:
+    parser = _ChromeParser()
+    try:
+        parser.feed(html or "")
+    except Exception:  # noqa: BLE001 - unreadable markup has no chrome
+        return frozenset()
+    return frozenset(parser.ids)
+
+
 def toggles_of(html: str) -> list[Toggle]:
     parser = _ToggleParser()
     try:
@@ -252,11 +288,16 @@ def _has_cue(label: str, cue: str) -> bool:
     return re.search(rf"(?<![a-z]){re.escape(cue)}", label) is not None
 
 
+def _dom_id(identity: str) -> str:
+    return identity[5:-2] if identity.startswith('[id="') and identity.endswith('"]') else ""
+
+
 def deterministic_labels(url: str, html: str, specs: list[ActionSpec]) -> PageLabels:
     facts = page_facts(specs, html)
     controls = facts.controls
     labels = PageLabels(key="", kind="other", model="deterministic", source="deterministic")
     labels.kind = facts.kind or ("home" if path_template(url) in ("/", "/index.html") else "other")
+    chrome = chrome_ids(html)
     for control in controls:
         if control.kind == "field":
             labels.meanings[control.identity] = control.deterministic or "other"
@@ -269,6 +310,11 @@ def deterministic_labels(url: str, html: str, specs: list[ActionSpec]) -> PageLa
         # A link is a submission only when it moves a task on ("Continue to checkout");
         # a link reading "Store" or "Save" is navigation.
         if is_link and role == "submit" and not any(_has_cue(label, c) for c in _LINK_SUBMIT_CUES):
+            role = "navigate"
+        # Site navigation, header and footer are on every page: whatever a control there
+        # says ("Express checkout", "Book now"), it starts a journey, it does not submit
+        # the one under way.
+        if role == "submit" and _dom_id(control.identity) in chrome:
             role = "navigate"
         if not role:
             role = "navigate" if is_link else "other"

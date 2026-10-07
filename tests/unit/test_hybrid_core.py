@@ -75,6 +75,46 @@ def test_abstraction():
     assert [s.index for s in view.controls_with_role("submit")] == [3, 6]
 
 
+def test_site_chrome_controls_never_submit():
+    from web_testing_agent.hybrid.abstraction import chrome_ids
+
+    html = (
+        '<header><nav><a id="express" href="/express">Express checkout</a></nav></header>'
+        '<main><button id="update">Update bag</button>'
+        '<a id="checkout" href="/checkout">Go to checkout</a></main>'
+        '<div role="contentinfo"><button id="foot">Send feedback</button></div>'
+    )
+    assert chrome_ids(html) == {"express", "foot"}
+    specs = [
+        _spec(0, ActionType.CLICK, "express", "Express checkout"),
+        _spec(1, ActionType.CLICK, "update", "Update bag"),
+        _spec(2, ActionType.CLICK, "checkout", "Go to checkout"),
+        _spec(3, ActionType.CLICK, "foot", "Send feedback"),
+    ]
+    labels = deterministic_labels("http://h:1/bag", html, specs)
+    roles = {k[5:-2]: v for k, v in labels.roles.items()}
+    assert roles == {
+        "express": "navigate",
+        "update": "submit",
+        "checkout": "submit",
+        "foot": "navigate",
+    }
+
+
+def test_operators_take_each_submit_control_in_turn():
+    from web_testing_agent.hybrid.policy import HybridPolicy
+
+    policy = HybridPolicy(seed=0)
+    view = _view()
+    first = Operator("complete_step", choose=policy._choose_submit)
+    second = Operator("complete_step", choose=policy._choose_submit)
+    view_filled = _view(HTML.replace('value=""', 'value="a@b.c"'))
+    assert first.next(view_filled).index == 3  # save, first in page order
+    assert second.next(view_filled).index == 6  # next visit: the other submit control
+    assert Operator("complete_step").next(view_filled).index == 3  # no chooser: the first
+    assert view.cell != view_filled.cell  # uses are counted per abstract page
+
+
 def test_archive_keeps_the_shortest_walk_and_discounts_deep_cells():
     archive = Archive(episode_steps=40)
     cell, created = archive.visit("a", [{"type": "CLICK"}] * 5, "form", 0)

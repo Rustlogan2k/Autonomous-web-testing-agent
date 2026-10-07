@@ -21,6 +21,7 @@ from ..evaluation.scripted import ScriptedPolicy
 from .abstraction import PageView, observe
 from .archive import Archive, Cell, step_for
 from .invariants import Candidate, InvariantChecker
+from .labels import control_identity
 from .operators import Operator, options
 
 NO_OP_INDEX = 0
@@ -122,6 +123,8 @@ class HybridPolicy:
         self.invariants = InvariantChecker()
         self.candidates: list[Candidate] = []
         self._operator_candidates = 0
+        #: (cell, control) -> times an operator submitted with it; see `_choose_submit`.
+        self.submit_uses: dict[tuple[str, str], int] = {}
         self.reset()
 
     # -- the hunt protocol ----------------------------------------------------------------------
@@ -270,7 +273,9 @@ class HybridPolicy:
             if decision is None:
                 return None
             self.decision, self.operator_cell = decision, cell
-            self.operator = Operator(decision.operator, decision.target)
+            self.operator = Operator(
+                decision.operator, decision.target, choose=self._choose_submit
+            )
             cell.tried.add((decision.operator, decision.target))
             counts = self.stats["operators"]
             counts[decision.operator] = counts.get(decision.operator, 0) + 1
@@ -278,6 +283,17 @@ class HybridPolicy:
         spec = self.operator.next(view)
         if spec is None:
             self._finish_operator(view)
+        return spec
+
+    def _choose_submit(self, view: PageView, controls: list[ActionSpec]) -> ActionSpec:
+        """Of a page's submit controls, the one operators have used least on this abstract
+        page (page order breaks ties), so repeated visits take each in turn."""
+        cell = view.cell
+        spec = min(
+            controls, key=lambda s: self.submit_uses.get((cell, control_identity(s)), 0)
+        )
+        key = (cell, control_identity(spec))
+        self.submit_uses[key] = self.submit_uses.get(key, 0) + 1
         return spec
 
     def _explore_step(self, view: PageView, cell: Cell, observation=None, info=None) -> ActionSpec:
