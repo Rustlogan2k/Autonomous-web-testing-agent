@@ -172,3 +172,20 @@ Found and fixed on the development applications, each in its own commit with the
   (whole-page diffs flagged one-time messages and open editors).
 
 The operator list in §4 gains `choose_option` and follow-through; it is frozen with the code.
+
+## 12. Amendment 2026-10-07: the suite becomes development data; a new validation set is held out
+
+Owner's decision, 2026-10-07, made before any agent had run on a suite application (the only
+contact was the declared infrastructure test, `reports/v2_suite_smoke.json`).
+
+- **Development** (tuning, debugging, the cross-app prior): the 6 benchmark applications, the
+  ctxbench variants, Gitea, **and the 8 suite applications**. Reason: the benchmark apps are
+  static pages from one early design; the suite's real backends, sessions and five
+  architectures are the realistic ground the tester must be tuned on.
+- **Held-out evaluation**: a **new validation set** of applications, planned to differ from
+  every suite and benchmark application in domain, architecture and fault design, with fault
+  designs fixed from standard fault classes before any tuning result can shape them, built
+  and admitted under the suite's conventions and checks. No agent runs on it before the freeze.
+- Unchanged: arms, budget, statistics and decision rules of the draft pre-registration; it
+  will name the new set when the set exists.
+- Disclosed: the same developer builds both sets and knows the seeded faults.
