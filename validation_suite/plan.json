@@ -1,0 +1,3112 @@
+{
+  "plan": "held-out validation set: 8 small web applications, 24 seeded functional faults",
+  "status": "planned, not built",
+  "date": "2026-10-07",
+  "location_when_built": "validation_suite/apps/<app_id>/ (same layout and runtime contract as e2e_suite/CONVENTIONS.md)",
+  "independence": "Designed without reading the tester's strategy code or its v2 plan/pre-registration/reports; fault designs come from standard functional fault taxonomies (calculation, boundary, data/state, interface, persistence) and only the tester's documented action space, input values and oracle grammar were used to make every fault reachable and verifiable.",
+  "taxonomy_note": "fault_class and subtype use the harness's closed vocabularies (oracle/faults.py FaultClass; e2e_suite/harness/manifest.py SUBTYPES) so the unchanged harness admits the apps. The finer defect_type field records the specific defect (many not present in the existing 14 apps); validate_manifest ignores unknown keys, so it can go into app.json as-is.",
+  "build_order": [
+    "dutyday",
+    "markbook",
+    "sideline",
+    "skylark",
+    "larder",
+    "fosterly",
+    "tally",
+    "quizcraft"
+  ],
+  "summary": {
+    "apps": 8,
+    "faults": 24,
+    "by_class": {
+      "broken_transition": 4,
+      "calculation_error": 6,
+      "constraint_bypass": 5,
+      "persistence_failure": 4,
+      "state_corruption": 5
+    },
+    "by_subtype": {
+      "calculation": 6,
+      "conditional-ui": 2,
+      "cross-page": 2,
+      "form-submission": 1,
+      "incorrect-navigation": 2,
+      "missing-validation": 3,
+      "persistence": 4,
+      "stale-state": 1,
+      "state-transition": 2,
+      "wrong-target": 1
+    },
+    "subtypes_unused_by_existing_suite": [
+      "calculation",
+      "conditional-ui",
+      "form-submission"
+    ],
+    "by_oracle": {
+      "extension": 17,
+      "existing": 7
+    },
+    "assertion_kinds": {
+      "input_absent": 1,
+      "region_arithmetic": 12,
+      "region_empty": 1,
+      "region_stable_across_reload": 4,
+      "text_absent": 11,
+      "text_equals": 2
+    },
+    "witness_lengths": [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      6,
+      7,
+      8,
+      8,
+      10,
+      12,
+      13
+    ],
+    "minimal_trigger_lengths": [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      6,
+      7,
+      7,
+      8,
+      8,
+      12,
+      13
+    ],
+    "witnesses_at_least_8": [
+      "MARK-3",
+      "SIDE-1",
+      "SIDE-2",
+      "FOST-2",
+      "TALLY-3"
+    ],
+    "stacks": {
+      "python": 4,
+      "node": 4
+    },
+    "without_dockerfile": [
+      "quizcraft"
+    ],
+    "est_source_lines": {
+      "dutyday": 640,
+      "markbook": 720,
+      "sideline": 700,
+      "skylark": 760,
+      "larder": 760,
+      "fosterly": 720,
+      "tally": 760,
+      "quizcraft": 820
+    }
+  },
+  "admission_command": "venv/Scripts/python.exe -m e2e_suite.harness.validate_suite --apps validation_suite/apps/<app_id> --browser --docker",
+  "admission_notes": [
+    "variants build under e2e_suite/.build/<app_id>/ and reports land in e2e_suite/admission/<app_id>.json (hard-wired); move them to validation_suite/admission/ or approve an --admission-root option",
+    "run e2e_suite.harness.diversity.analyse() over the union of e2e_suite/apps and validation_suite/apps manifests (max shared source lines < 15%, no repeated architecture/stack/persistence triple)",
+    "quizcraft is admitted when the product intake refuses it (no Dockerfile), like wayfarer"
+  ],
+  "open_decisions": [
+    "17 of 24 faults use extension kinds (region_arithmetic 12, region_stable_across_reload 4, input_absent 1); the final evaluation must verify them through e2e_suite/harness/ext_oracle.py, as the suite already does for 8 faults",
+    "new subtypes would need SUBTYPES in e2e_suite/harness/manifest.py extended (harness change); the plan instead uses the three unused subtypes plus a defect_type field",
+    "dutyday (volunteer rostering) is adjacent to the booking/appointments exclusion; fallback domain: allotment plot-allocation calendar with the same faults"
+  ],
+  "apps": [
+    {
+      "app_id": "dutyday",
+      "name": "Dutyday",
+      "domain": "volunteer shift rota for a community food bank",
+      "user_goal": "Fill the month's sorting, packing and delivery shifts with volunteers within each volunteer's weekly hours limit, and let volunteers withdraw from shifts.",
+      "architecture": "server-rendered-calendar+zero-javascript",
+      "architecture_notes": "No JavaScript at all. Month, day and week are carried in paths and query strings (GET links); every change is an HTML form POST answered with 303 to a GET page (post/redirect/get); withdrawal goes through a confirmation page instead of a dialog.",
+      "stack": "python-stdlib(http.server)+sqlite",
+      "start": [
+        "python",
+        "src/server.py"
+      ],
+      "dockerfile": true,
+      "persistence": "sqlite rows partitioned by session; each shift row stores a derived status (Open / Needs n / Full) kept in step with its assignments",
+      "entry": "/rota",
+      "views": [
+        "/rota?month=YYYY-MM (month grid Mon-Sun; each day shows open places)",
+        "/rota/day/YYYY-MM-DD (three shifts: roster, status, assign form)",
+        "/volunteers",
+        "/volunteers/<v>?week=YYYY-MM-DD (that week's shifts, hours against the 12-hour limit, next shift)",
+        "/assignments/<id>/withdraw (confirmation page)",
+        "/rota/print?month= (print layout)",
+        "/help"
+      ],
+      "workflow_shape": {
+        "kind": [
+          "calendar-grid",
+          "hub-and-spoke",
+          "revisit"
+        ],
+        "summary": "month grid is the hub; days and volunteer weeks are spokes; month and week paging by links; confirmation pages for withdrawal"
+      },
+      "features": [
+        "server-rendered",
+        "zero-javascript",
+        "calendar-grid",
+        "query-string-state",
+        "server-state",
+        "table",
+        "cross-page-state",
+        "dynamic-validation",
+        "date-arithmetic"
+      ],
+      "seed": "Clock 2026-06-10 (Wed). Shifts Mon-Sat: morning sort 09:00-12:00 (3 h), afternoon pack 13:00-17:00 (4 h), evening deliver 17:30-20:00 (2.5 h); 2 volunteers each; Sundays closed; days before 10 Jun read-only. Volunteers (select order): Ana, Ben, Chidi, Dana, Ezra, Priya. Priya: Sat 13 Jun morning, Wed 1 Jul afternoon, Thu 2 Jul afternoon, Fri 3 Jul evening (10.5 h in the week of 29 Jun). Ben: only past June shifts, nothing upcoming. Ana: Fri 12 Jun afternoon (with Dana; assignment id a14, shift Full) and Mon 15 Jun morning. Every volunteer with an upcoming shift has one in June. Weekly limit 12 h per ISO week (Mon-Sun).",
+      "regions": {
+        "month_title": "#month-title",
+        "status_morning": "#status-morning",
+        "status_afternoon": "#status-afternoon",
+        "status_evening": "#status-evening",
+        "count_morning": "#count-morning",
+        "count_afternoon": "#count-afternoon",
+        "count_evening": "#count-evening",
+        "flash": "#flash",
+        "week_hours": "#week-hours",
+        "next_in": "#next-in",
+        "next_when": "#next-when",
+        "vol_shifts": "#vol-shifts"
+      },
+      "region_notes": "#count-afternoon holds only the number of volunteers assigned (0, 1 or 2; 'of 2 needed' sits outside the region); #status-afternoon 'Full' / 'Needs 1' / 'Open'; #week-hours e.g. '10.5 of 12'; #next-in only the whole number of days until the next shift (absent when there is none).",
+      "controls": [
+        "month-prev",
+        "month-next",
+        "day-YYYY-MM-DD",
+        "assign-morning|afternoon|evening (select)",
+        "assign-<slot>-go",
+        "remove-<assignment>",
+        "vol-<id>",
+        "nav-rota",
+        "nav-volunteers",
+        "withdraw-<assignment>",
+        "confirm-withdraw",
+        "cancel-withdraw",
+        "jump-date (date) + jump-go",
+        "week-prev",
+        "week-next",
+        "print-month",
+        "calendar-feed"
+      ],
+      "decoys": [
+        "print-month (print layout only)",
+        "calendar-feed (shows a fixed feed address as text)"
+      ],
+      "state_dependent": [
+        "the slot's Assign is refused on a Full shift and assigns on a shift with places",
+        "confirm-withdraw is refused for a past shift (before 10 Jun) and withdraws from a future one"
+      ],
+      "workflows": [
+        "assign Chidi to Mon 15 Jun morning -> day roster contains 'Chidi'",
+        "page to July -> #month-title contains 'July 2026'",
+        "try Priya on Sat 4 Jul morning (over the limit) -> #flash contains '12'",
+        "jump to 2026-06-15 -> URL /rota/day/2026-06-15"
+      ],
+      "est_source_lines": 640,
+      "nearest_existing": {
+        "app": "clinicflow",
+        "also_close": [
+          "bagstreet"
+        ],
+        "differs_on": {
+          "domain": "staff-side volunteer rostering vs patient appointment booking",
+          "architecture": "zero-JavaScript server pages with all view state in the URL, vs a server wizard with client conditionals and a draft row",
+          "interaction": "month calendar grid and week paging; confirmation pages instead of dialogs",
+          "workflow_shape": "calendar hub with day/volunteer spokes vs branching linear wizard",
+          "state_model": "assignments plus a stored derived status per shift; no draft"
+        }
+      },
+      "faults": [
+        {
+          "fault_id": "DUTY-1",
+          "fault_class": "constraint_bypass",
+          "subtype": "missing-validation",
+          "defect_type": "period boundary: weekly limit summed over only the calendar month's part of the week",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "The 12-hour weekly limit is checked over the part of the ISO week that falls in the same month as the shift being assigned. For a week spanning a month end, hours on the other side of the boundary are ignored, so Priya can be given a fourth shift that takes her to 14.5 hours.",
+          "expected_behaviour": "Nobody is rostered for more than 12 hours in any Monday-Sunday week.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "day-2026-06-30"
+            },
+            {
+              "type": "SELECT",
+              "id": "assign-afternoon",
+              "params": {
+                "option": "priya"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "assign-afternoon-go"
+            },
+            {
+              "type": "CLICK",
+              "id": "vol-priya"
+            }
+          ],
+          "witness_length": 4,
+          "minimal_trigger_length": 4,
+          "observable_violation": "Priya's week of 29 June shows 14.5 of 12 hours.",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_arithmetic",
+              "where": "/volunteers/[a-z]+",
+              "expression": "hours <= 12",
+              "operands": {
+                "hours": "week_hours"
+              },
+              "describes": "no volunteer is rostered for more than 12 hours in a week"
+            }
+          ],
+          "regions_read": [
+            "week_hours"
+          ],
+          "patch": {
+            "file": "src/rota.py",
+            "idea": "week_window(day) clips the Monday-Sunday window to the month of `day`",
+            "find_sketch": "return monday, monday + timedelta(days=6)  # the ISO week, whatever the month",
+            "replace_sketch": "return max(monday, day.replace(day=1)), min(monday + timedelta(days=6), month_end(day))  # the ISO week, whatever the month"
+          },
+          "silent_on_clean_because": "Seeds keep every week at 12 h or less and the clean check sums the whole ISO week; the volunteer page shows the stored total.",
+          "isolation_from_other_patches": "DUTY-2 changes only the days-until figure; DUTY-3 only the status refresh on withdrawal."
+        },
+        {
+          "fault_id": "DUTY-2",
+          "fault_class": "calculation_error",
+          "subtype": "calculation",
+          "defect_type": "date arithmetic: day-of-month subtraction across a month boundary",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "'Days until next shift' subtracts day-of-month numbers instead of dates. Within June it is right; for a next shift in July it goes negative (1 - 10 = -9).",
+          "expected_behaviour": "The days until a volunteer's next shift is the calendar difference between the two dates.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "month-next"
+            },
+            {
+              "type": "CLICK",
+              "id": "day-2026-07-01"
+            },
+            {
+              "type": "SELECT",
+              "id": "assign-morning",
+              "params": {
+                "option": "ben"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "assign-morning-go"
+            },
+            {
+              "type": "CLICK",
+              "id": "vol-ben"
+            }
+          ],
+          "witness_length": 5,
+          "minimal_trigger_length": 5,
+          "observable_violation": "Ben's page says his next shift (Wed 1 Jul) is -9 days away; it is 21.",
+          "oracle": "existing",
+          "assertions": [
+            {
+              "kind": "text_absent",
+              "where": "/volunteers/[a-z]+",
+              "region": "next_in",
+              "expected": "-",
+              "describes": "the next shift is never in the past"
+            }
+          ],
+          "regions_read": [
+            "next_in"
+          ],
+          "patch": {
+            "file": "src/rota.py",
+            "idea": "days_until(shift_day) = (shift_day - TODAY).days becomes shift_day.day - TODAY.day",
+            "find_sketch": "return (shift_day - TODAY).days",
+            "replace_sketch": "return shift_day.day - TODAY.day"
+          },
+          "silent_on_clean_because": "'Next shift' only ever lists shifts on or after today, so the clean figure is >= 0; #next-in is absent when there is no next shift; seeds give every volunteer with upcoming shifts a June one, so only a newly assigned (or newly uncovered) July shift exposes it.",
+          "isolation_from_other_patches": "DUTY-1's patch affects limit checks (Ben is far under the limit); DUTY-3's only shift status."
+        },
+        {
+          "fault_id": "DUTY-3",
+          "fault_class": "broken_transition",
+          "subtype": "state-transition",
+          "defect_type": "derived status not recomputed on an alternate path",
+          "defect_type_new_vs_existing_sets": false,
+          "description": "Withdrawing from the volunteer's own page removes the assignment but does not recompute the shift's stored status (removing from the day page does), so the shift stays 'Full' with one volunteer and the month grid stops offering it.",
+          "expected_behaviour": "A shift shown as Full always has both volunteers.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "nav-volunteers"
+            },
+            {
+              "type": "CLICK",
+              "id": "vol-ana"
+            },
+            {
+              "type": "CLICK",
+              "id": "withdraw-a14"
+            },
+            {
+              "type": "CLICK",
+              "id": "confirm-withdraw"
+            },
+            {
+              "type": "CLICK",
+              "id": "nav-rota"
+            },
+            {
+              "type": "CLICK",
+              "id": "day-2026-06-12"
+            }
+          ],
+          "witness_length": 6,
+          "minimal_trigger_length": 6,
+          "observable_violation": "Fri 12 Jun afternoon reads 'Full' with 1 volunteer assigned (of 2 needed).",
+          "oracle": "existing",
+          "assertions": [
+            {
+              "kind": "text_absent",
+              "where": "/rota/day/\\d{4}-\\d{2}-\\d{2}$",
+              "region": "status_afternoon",
+              "expected": "Full",
+              "describes": "the afternoon shift is shown as Full ..."
+            },
+            {
+              "kind": "text_absent",
+              "where": "/rota/day/\\d{4}-\\d{2}-\\d{2}$",
+              "region": "count_afternoon",
+              "expected": "1",
+              "describes": "... while only one volunteer is assigned to it"
+            }
+          ],
+          "regions_read": [
+            "count_afternoon",
+            "status_afternoon"
+          ],
+          "patch": {
+            "file": "src/server.py",
+            "idea": "the volunteer-page withdraw handler loses its refresh_status() call",
+            "find_sketch": "        refresh_status(conn, sid, shift_id)  # a withdrawal can reopen the shift\n",
+            "replace_sketch": ""
+          },
+          "silent_on_clean_because": "Every clean path that changes assignments recomputes the status in the same transaction; on Sundays (no shifts) the regions are absent, which satisfies text_absent.",
+          "isolation_from_other_patches": "DUTY-1 and DUTY-2 patches change no status; the witness assigns nobody."
+        }
+      ],
+      "benign_traces": [
+        [
+          {
+            "type": "CLICK",
+            "id": "day-2026-06-15"
+          },
+          {
+            "type": "SELECT",
+            "id": "assign-morning",
+            "params": {
+              "option": "chidi"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "assign-morning-go"
+          },
+          {
+            "type": "CLICK",
+            "id": "vol-chidi"
+          }
+        ],
+        [
+          {
+            "type": "CLICK",
+            "id": "month-next"
+          },
+          {
+            "type": "CLICK",
+            "id": "day-2026-07-04"
+          },
+          {
+            "type": "SELECT",
+            "id": "assign-evening",
+            "params": {
+              "option": "ana"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "assign-evening-go"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-rota"
+          }
+        ]
+      ]
+    },
+    {
+      "app_id": "markbook",
+      "name": "Markbook",
+      "domain": "school assessment: a teacher's markbook for one class, with each student's view of published marks",
+      "user_goal": "Enter and correct marks, see each student's weighted percentage and level, set assessment maxima, publish assessments, keep private notes, and check what a student sees.",
+      "architecture": "server-rendered-matrix+click-to-edit-cells+role-route-trees",
+      "architecture_notes": "The markbook is a server-rendered students x assessments matrix. Each cell is a button; clicking it swaps in a single number input with Save mark/Cancel (one editor at a time); Save sends a fetch PATCH and the server answers with the recomputed row (weighted %, level) and column (class average) as JSON, which replace those cells. Teacher pages live under /teacher/..., the student's own view under /student/<s>.",
+      "stack": "python-stdlib-wsgiref+sqlite",
+      "start": [
+        "python",
+        "src/server.py"
+      ],
+      "dockerfile": true,
+      "persistence": "one sqlite file per session copied from a seeded template; marks, assessments (max, weight, published), notes with a visibility column",
+      "entry": "/teacher",
+      "views": [
+        "/teacher (classes hub)",
+        "/teacher/classes/10b (markbook matrix: 6 students x 4 assessments + weighted % + level + class averages)",
+        "/teacher/classes/10b/assessments/<a> (maximum marks, publish / withdraw)",
+        "/teacher/classes/10b/students/<s> (marks, canned feedback, private note)",
+        "/student/<s> (student view: published marks, provisional %, feedback)",
+        "/teacher/classes/10b/report (level distribution)",
+        "/help"
+      ],
+      "workflow_shape": {
+        "kind": [
+          "data-grid",
+          "hub-and-spoke",
+          "multi-role-views",
+          "revisit"
+        ],
+        "summary": "matrix hub with assessment and student spokes; a second role's view of the same data"
+      },
+      "features": [
+        "server-rendered",
+        "inline-edit",
+        "table",
+        "multi-role",
+        "server-state",
+        "enable-disable",
+        "dynamic-validation",
+        "cross-page-state",
+        "derived-columns"
+      ],
+      "seed": "Assessments: Homework max 20 (20%, published), Quiz max 30 (20%, published), Project max 40 (30%, published), Exam max 120 (30%, draft). Weighted % = hw*20/max_hw + quiz*20/max_quiz + proj*30/max_proj + exam*30/max_exam, computed exactly (fractions) and shown to 1 decimal, half-up; '-' until all four marks exist. Level 5 >= 80, 4 >= 70, 3 >= 60, 2 >= 50, else 1. Students s1 Amara (18, 26, 36, 85 -> 83.6), s2 Bilal (complete; no notes), s3 Chen (17, 20, 35, exam blank), s4 Dara, s5 Elif, s6 Femi (complete). Marks are whole numbers 0..max; a maximum is a whole number >= 1 and may not be lowered below a mark already given. Canned feedback is a select (no free text); the private note is a textarea shown as text with 'Edit note' once saved.",
+      "regions": {
+        "pct_s1": "#pct-s1",
+        "pct_s3": "#pct-s3",
+        "level_s3": "#level-s3",
+        "mark_s3_hw": "#mark-s3-hw",
+        "mark_s3_quiz": "#mark-s3-quiz",
+        "mark_s3_proj": "#mark-s3-proj",
+        "mark_s3_exam": "#mark-s3-exam",
+        "max_hw": "#max-hw",
+        "max_quiz": "#max-quiz",
+        "max_proj": "#max-proj",
+        "max_exam": "#max-exam",
+        "cell_error": "#cell-error",
+        "assess_flash": "#assess-flash",
+        "student_view": "#student-view",
+        "student_comments": "#student-comments"
+      },
+      "region_notes": "Mark cells are buttons whose text is only the mark (or '-'); #max-* only the maximum; #pct-* e.g. '67.1%'; #student-comments lists comments the student may see, each with its badge (canned feedback is badged 'From your teacher'; a private note is badged 'Private note' wherever it is rendered).",
+      "controls": [
+        "class-10b",
+        "mark-<s>-<a> (cell buttons, 24)",
+        "mark (number input, one at a time)",
+        "save-mark",
+        "cancel-mark",
+        "assess-<a>",
+        "max-marks (number)",
+        "save-assessment",
+        "publish-assessment",
+        "withdraw-assessment",
+        "back-to-markbook",
+        "student-<s>",
+        "feedback (select)",
+        "save-feedback",
+        "private-note (textarea)",
+        "save-note",
+        "edit-note",
+        "preview-as-student",
+        "nav-report",
+        "export-csv-help"
+      ],
+      "decoys": [
+        "export-csv-help (explains how to export; changes nothing)",
+        "nav-report (read-only report)"
+      ],
+      "state_dependent": [
+        "save-assessment refuses a maximum below an existing mark and saves one above all marks",
+        "publish-assessment publishes a draft assessment; on a published one the same button is refused"
+      ],
+      "workflows": [
+        "give Chen 42 in the exam -> #pct-s3 contains '67.1'",
+        "publish the exam -> student view of s1 shows the exam mark",
+        "raise the quiz maximum to 42 -> #max-quiz contains '42'",
+        "choose canned feedback for Bilal -> student view lists it"
+      ],
+      "est_source_lines": 720,
+      "nearest_existing": {
+        "app": "stackroom",
+        "also_close": [
+          "ledgerly"
+        ],
+        "differs_on": {
+          "domain": "school marks vs warehouse stock",
+          "architecture": "server-rendered 2-D matrix with click-to-edit cells returning recomputed rows/columns, plus role route trees; vs client-rendered paged grid over a JSON API",
+          "interaction": "click a cell to edit, derived columns update in place; publish/withdraw; preview as another role",
+          "workflow_shape": "matrix hub + second-role view vs grid hub with paging",
+          "state_model": "template sqlite file per session; derived values recomputed server-side; visibility per row"
+        }
+      },
+      "faults": [
+        {
+          "fault_id": "MARK-1",
+          "fault_class": "calculation_error",
+          "subtype": "calculation",
+          "defect_type": "rounding: truncation instead of half-up",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "The weighted percentage is quantised with ROUND_DOWN instead of ROUND_HALF_UP, so 67.0833...% is shown as 67.0 instead of 67.1 (and any value with a second decimal of 5 or more is shown a tenth too low).",
+          "expected_behaviour": "Percentages are rounded to the nearest tenth, halves up.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "class-10b"
+            },
+            {
+              "type": "CLICK",
+              "id": "mark-s3-exam"
+            },
+            {
+              "type": "TYPE",
+              "id": "mark",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-mark"
+            }
+          ],
+          "witness_length": 4,
+          "minimal_trigger_length": 4,
+          "observable_violation": "Chen's weighted percentage shows 67.0% for marks 17/20, 20/30, 35/40, 42/120 (exactly 67.083%).",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_arithmetic",
+              "where": "/teacher/classes/10b$",
+              "expression": "pct == hw * 20 / mhw + quiz * 20 / mquiz + proj * 30 / mproj + exam * 30 / mexam",
+              "tolerance": 0.0501,
+              "operands": {
+                "pct": "pct_s3",
+                "hw": "mark_s3_hw",
+                "quiz": "mark_s3_quiz",
+                "proj": "mark_s3_proj",
+                "exam": "mark_s3_exam",
+                "mhw": "max_hw",
+                "mquiz": "max_quiz",
+                "mproj": "max_proj",
+                "mexam": "max_exam"
+              },
+              "describes": "the weighted percentage is the weighted sum of the marks, correctly rounded to one decimal"
+            }
+          ],
+          "regions_read": [
+            "pct_s3",
+            "mark_s3_*",
+            "max_*"
+          ],
+          "patch": {
+            "file": "src/grades.py",
+            "idea": "percent() quantises with decimal.ROUND_DOWN instead of decimal.ROUND_HALF_UP (import the decimal module, so the faulty constant needs no new import)",
+            "find_sketch": ".quantize(TENTH, rounding=decimal.ROUND_HALF_UP)",
+            "replace_sketch": ".quantize(TENTH, rounding=decimal.ROUND_DOWN)"
+          },
+          "silent_on_clean_because": "Half-up rounding of the exact value differs from it by at most 0.05 for every reachable mark (0..max) and maximum (>= 1); a blank mark makes an operand non-numeric (inconclusive, never violated); maxima are operands, so raising one keeps the identity.",
+          "isolation_from_other_patches": "MARK-2's patch changes which maxima are accepted (operands track them); MARK-3's only note visibility."
+        },
+        {
+          "fault_id": "MARK-2",
+          "fault_class": "constraint_bypass",
+          "subtype": "missing-validation",
+          "defect_type": "invariant-breaking configuration change (check scoped to published marks only)",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "Lowering an assessment's maximum below a mark already given must be refused. The check reuses the student-view query, which only sees published marks, so for the unpublished exam no mark is found and any lower maximum is accepted; students then score more than 100%.",
+          "expected_behaviour": "No student can score more than 100% of an assessment.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "class-10b"
+            },
+            {
+              "type": "CLICK",
+              "id": "assess-exam"
+            },
+            {
+              "type": "TYPE",
+              "id": "max-marks",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-assessment"
+            },
+            {
+              "type": "CLICK",
+              "id": "back-to-markbook"
+            }
+          ],
+          "witness_length": 5,
+          "minimal_trigger_length": 5,
+          "observable_violation": "After setting the exam maximum to 42, Amara's weighted percentage is 123.0% (18 + 17.33 + 27 + 85 x 30/42).",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_arithmetic",
+              "where": "/teacher/classes/10b$",
+              "expression": "pct <= 100",
+              "operands": {
+                "pct": "pct_s1"
+              },
+              "describes": "no student's weighted percentage exceeds 100"
+            }
+          ],
+          "regions_read": [
+            "pct_s1"
+          ],
+          "patch": {
+            "file": "src/server.py",
+            "idea": "highest_mark(conn, assessment, published_only=False) is called with published_only=True",
+            "find_sketch": "highest = highest_mark(conn, assessment_id, published_only=False)",
+            "replace_sketch": "highest = highest_mark(conn, assessment_id, published_only=True)"
+          },
+          "silent_on_clean_because": "Marks are refused above the maximum and a maximum is refused below the highest mark, so every component is <= its weight on the clean build.",
+          "isolation_from_other_patches": "MARK-1 truncates (only lowers) percentages; MARK-3 is unrelated. The control (no MARK-2 patch) refuses the 42 maximum."
+        },
+        {
+          "fault_id": "MARK-3",
+          "fault_class": "state_corruption",
+          "subtype": "cross-page",
+          "defect_type": "role-dependent visibility: a private note becomes visible to the student after it is edited",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "A teacher's private note is created with visibility 'teacher'. Editing it rewrites the row without the visibility column, so the column default ('shared', the value canned feedback uses) applies and the student's own page lists the private note.",
+          "expected_behaviour": "Private notes are only ever shown to the teacher.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "class-10b"
+            },
+            {
+              "type": "CLICK",
+              "id": "student-s2"
+            },
+            {
+              "type": "TYPE",
+              "id": "private-note",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-note"
+            },
+            {
+              "type": "CLICK",
+              "id": "edit-note"
+            },
+            {
+              "type": "TYPE",
+              "id": "private-note",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-note"
+            },
+            {
+              "type": "CLICK",
+              "id": "preview-as-student"
+            }
+          ],
+          "witness_length": 8,
+          "minimal_trigger_length": 8,
+          "observable_violation": "Bilal's student view lists an entry badged 'Private note' with the teacher's text.",
+          "oracle": "existing",
+          "assertions": [
+            {
+              "kind": "text_absent",
+              "where": "/student/s\\d+$",
+              "region": "student_comments",
+              "expected": "Private",
+              "describes": "a student never sees a teacher's private note"
+            }
+          ],
+          "regions_read": [
+            "student_comments"
+          ],
+          "patch": {
+            "file": "src/notes.py",
+            "idea": "the edit path's INSERT OR REPLACE omits the visibility column",
+            "find_sketch": "INSERT OR REPLACE INTO notes (id, student, body, visibility) VALUES (?, ?, ?, 'teacher')",
+            "replace_sketch": "INSERT OR REPLACE INTO notes (id, student, body) VALUES (?, ?, ?)"
+          },
+          "silent_on_clean_because": "The student query returns only visibility='shared' rows (canned feedback); private notes are always written with 'teacher' on both create and edit paths; the 'Private note' badge only accompanies private notes.",
+          "isolation_from_other_patches": "MARK-1 and MARK-2 patches do not touch notes."
+        }
+      ],
+      "benign_traces": [
+        [
+          {
+            "type": "CLICK",
+            "id": "class-10b"
+          },
+          {
+            "type": "CLICK",
+            "id": "mark-s2-quiz"
+          },
+          {
+            "type": "TYPE",
+            "id": "mark",
+            "params": {
+              "category": "boundary_min"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-mark"
+          },
+          {
+            "type": "CLICK",
+            "id": "student-s2"
+          },
+          {
+            "type": "CLICK",
+            "id": "preview-as-student"
+          }
+        ],
+        [
+          {
+            "type": "CLICK",
+            "id": "class-10b"
+          },
+          {
+            "type": "CLICK",
+            "id": "assess-quiz"
+          },
+          {
+            "type": "TYPE",
+            "id": "max-marks",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-assessment"
+          },
+          {
+            "type": "CLICK",
+            "id": "back-to-markbook"
+          }
+        ]
+      ]
+    },
+    {
+      "app_id": "sideline",
+      "name": "Sideline",
+      "domain": "amateur sport: a Sunday football league's results and league table",
+      "user_goal": "The league secretary records results, each club's captain confirms or disputes them, and the public sees fixtures, results and a table built from confirmed results only.",
+      "architecture": "multi-role-portals(path-prefixed front doors)+server-rendered+client-sortable-table",
+      "architecture_notes": "A landing page offers three front doors: League secretary (/sec/...), Club captains (/club/<team>/...) and Public (/table, /results, /teams/<team>). Each portal is a server-rendered projection of the same results with its own actions (post/redirect/get). The public table has client-side sortable column headers (a re-order of the rendered rows only; row ids stay tied to league position).",
+      "stack": "python-stdlib(http.server)+sqlite",
+      "start": [
+        "python",
+        "src/server.py"
+      ],
+      "dockerfile": true,
+      "persistence": "sqlite rows partitioned by session; each result has a status (provisional / confirmed / disputed) and one confirmation flag per club; standings are derived on every request",
+      "entry": "/",
+      "views": [
+        "/ (choose who you are)",
+        "/sec (secretary: fixtures and results)",
+        "/sec/results/<F>/edit (enter or correct a score)",
+        "/sec/results/<F> (result, status, confirmations)",
+        "/club/<team> (captain: results awaiting your confirmation)",
+        "/club/<team>/dispute/<F> (dispute with a reason)",
+        "/table (public league table + 'Based on n confirmed results')",
+        "/results (public results)",
+        "/teams/<team>"
+      ],
+      "workflow_shape": {
+        "kind": [
+          "multi-role-portal",
+          "state-machine",
+          "hub-and-spoke"
+        ],
+        "summary": "a result moves provisional -> confirmed (both clubs) or disputed, and a correction sends it back to provisional; each role sees and acts on its own projection"
+      },
+      "features": [
+        "server-rendered",
+        "multi-role",
+        "table",
+        "sort",
+        "server-state",
+        "state-machine",
+        "cross-page-state",
+        "dynamic-validation"
+      ],
+      "seed": "Teams: Ashby Rovers (ash), Brookfield (bro), Cobham Town (cob), Dunmore (dun), Eastleigh Albion (eas), Fenwick (fen). Confirmed results: F1 ASH 1-0 DUN, F2 COB 4-3 EAS, F3 BRO 2-2 FEN, F4 ASH 0-0 COB, F5 DUN 2-0 FEN, F6 FEN 0-0 ASH, F9 COB 3-2 DUN, F10 COB 1-1 BRO, F11 EAS 2-1 DUN. Unplayed: F7 ASH v BRO, F8 EAS v BRO, F12 FEN v COB. No one-sided confirmations in the seed. Seed table: COB 8 pts (8-6), ASH 5 (1-0), EAS 3 (5-5), DUN 3 (5-6), BRO 2 (3-3), FEN 2 (2-4); no tie where goals-for order and goal-difference order disagree (verified). Order: points, goal difference, goals for, name. Score selects 0-9 (the tester is offered 9, 0, 1, 2). Win 3, draw 1.",
+      "regions": {
+        "pts_1": "#pts-1",
+        "pts_2": "#pts-2",
+        "pts_3": "#pts-3",
+        "pts_4": "#pts-4",
+        "pts_5": "#pts-5",
+        "pts_6": "#pts-6",
+        "gf_1": "#gf-1",
+        "gf_2": "#gf-2",
+        "gf_3": "#gf-3",
+        "gf_4": "#gf-4",
+        "gf_5": "#gf-5",
+        "gf_6": "#gf-6",
+        "ga_1": "#ga-1",
+        "ga_2": "#ga-2",
+        "ga_3": "#ga-3",
+        "ga_4": "#ga-4",
+        "ga_5": "#ga-5",
+        "ga_6": "#ga-6",
+        "pl_1": "#pl-1",
+        "pl_2": "#pl-2",
+        "pl_3": "#pl-3",
+        "pl_4": "#pl-4",
+        "pl_5": "#pl-5",
+        "pl_6": "#pl-6",
+        "results_counted": "#results-counted",
+        "result_status": "#result-status",
+        "confirm_count": "#confirm-count",
+        "club_pending": "#club-pending",
+        "flash": "#flash"
+      },
+      "region_notes": "Table cells carry ids by league position (#pts-1 is the leader's points) and keep them when the public re-sorts the view; goals for and against are separate non-negative numbers (goal difference is never an operand, because the extension oracle reads numbers without their sign); #confirm-count holds only the number of clubs that have confirmed (0, 1 or 2).",
+      "controls": [
+        "door-secretary",
+        "door-public",
+        "door-club-<team>",
+        "nav-home",
+        "enter-F<n>",
+        "result-F<n>",
+        "edit-result",
+        "home-goals (select 0-9)",
+        "away-goals (select 0-9)",
+        "save-result",
+        "confirm-F<n>",
+        "dispute-F<n>",
+        "dispute-reason (text)",
+        "submit-dispute",
+        "sort-gf",
+        "sort-pts",
+        "nav-results",
+        "team-<id>",
+        "print-table",
+        "follow-team"
+      ],
+      "decoys": [
+        "print-table (print layout)",
+        "follow-team (a client-only star)"
+      ],
+      "state_dependent": [
+        "confirm-F<n> records the club's confirmation on a provisional result awaiting it; on one already confirmed the same button is refused",
+        "save-result on an unchanged score changes nothing; on a changed score it records the correction"
+      ],
+      "workflows": [
+        "secretary enters F12 0-0, both clubs confirm -> #results-counted contains '10'",
+        "a club disputes F8 -> #result-status contains 'Disputed'",
+        "public table -> #pts-1 contains '8'",
+        "sort by goals for -> #gf-1 still the leader's goals ('8')"
+      ],
+      "est_source_lines": 700,
+      "nearest_existing": {
+        "app": "ledgerly",
+        "also_close": [
+          "helpline"
+        ],
+        "differs_on": {
+          "domain": "sports results and standings vs expense claims",
+          "architecture": "three path-prefixed role portals over shared data with derived standings and a client-sortable table, Python; vs a 'viewing as' switch over an event log with a form island, Node",
+          "interaction": "two-party confirmation, disputes, corrections, public projection",
+          "workflow_shape": "per-result confirmation state machine feeding a derived ranking vs an approval chain",
+          "state_model": "status + per-club flags, standings recomputed per request vs append-only event log"
+        }
+      },
+      "faults": [
+        {
+          "fault_id": "SIDE-1",
+          "fault_class": "calculation_error",
+          "subtype": "calculation",
+          "defect_type": "sort correctness: tie-break precedence (goals for ranked above goal difference)",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "Teams level on points must be separated by goal difference, then goals for. The sort key puts goals for before goal difference, so when two teams are level and the one with more goals has the worse difference, they are shown the wrong way round.",
+          "expected_behaviour": "Teams level on points are ordered by goal difference.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "door-secretary"
+            },
+            {
+              "type": "CLICK",
+              "id": "enter-F7"
+            },
+            {
+              "type": "SELECT",
+              "id": "home-goals",
+              "params": {
+                "option": "2"
+              }
+            },
+            {
+              "type": "SELECT",
+              "id": "away-goals",
+              "params": {
+                "option": "0"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-result"
+            },
+            {
+              "type": "CLICK",
+              "id": "nav-home"
+            },
+            {
+              "type": "CLICK",
+              "id": "door-club-ash"
+            },
+            {
+              "type": "CLICK",
+              "id": "confirm-F7"
+            },
+            {
+              "type": "CLICK",
+              "id": "nav-home"
+            },
+            {
+              "type": "CLICK",
+              "id": "door-club-bro"
+            },
+            {
+              "type": "CLICK",
+              "id": "confirm-F7"
+            },
+            {
+              "type": "CLICK",
+              "id": "nav-home"
+            },
+            {
+              "type": "CLICK",
+              "id": "door-public"
+            }
+          ],
+          "witness_length": 13,
+          "minimal_trigger_length": 13,
+          "observable_violation": "Cobham Town (8 pts, 8-6, +2) is listed above Ashby Rovers (8 pts, 3-0, +3).",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_arithmetic",
+              "where": "/table(\\?.*)?$",
+              "expression": "(p1 > p2 or (p1 >= p2 and f1 - a1 >= f2 - a2)) and (p2 > p3 or (p2 >= p3 and f2 - a2 >= f3 - a3)) and (p3 > p4 or (p3 >= p4 and f3 - a3 >= f4 - a4)) and (p4 > p5 or (p4 >= p5 and f4 - a4 >= f5 - a5)) and (p5 > p6 or (p5 >= p6 and f5 - a5 >= f6 - a6))",
+              "operands": {
+                "p1": "pts_1",
+                "f1": "gf_1",
+                "a1": "ga_1",
+                "p2": "pts_2",
+                "f2": "gf_2",
+                "a2": "ga_2",
+                "p3": "pts_3",
+                "f3": "gf_3",
+                "a3": "ga_3",
+                "p4": "pts_4",
+                "f4": "gf_4",
+                "a4": "ga_4",
+                "p5": "pts_5",
+                "f5": "gf_5",
+                "a5": "ga_5",
+                "p6": "pts_6",
+                "f6": "gf_6",
+                "a6": "ga_6"
+              },
+              "describes": "each team is ranked above the next by points, or level on points with at least as good a goal difference"
+            }
+          ],
+          "regions_read": [
+            "pts_1..6",
+            "gf_1..6",
+            "ga_1..6"
+          ],
+          "patch": {
+            "file": "src/standings.py",
+            "idea": "the ranking key swaps goal difference and goals for",
+            "find_sketch": "key=lambda row: (-row.points, -row.goal_difference, -row.goals_for, row.name)",
+            "replace_sketch": "key=lambda row: (-row.points, -row.goals_for, -row.goal_difference, row.name)"
+          },
+          "silent_on_clean_because": "The clean key orders by points then goal difference, so every adjacent pair satisfies the rule; the boolean expression deliberately avoids '==' (the extension evaluator splits on it) by writing equality as p_i >= p_i+1 after p_i > p_i+1 has failed.",
+          "isolation_from_other_patches": "SIDE-2's patch changes which results count (in this witness every counted result is fully confirmed); SIDE-3's only corrections."
+        },
+        {
+          "fault_id": "SIDE-2",
+          "fault_class": "constraint_bypass",
+          "subtype": "cross-page",
+          "defect_type": "role-dependent visibility: a result one club has confirmed is published",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "The public table must count only results both clubs have confirmed. Its standings query tests either club's flag instead of the status, so a result confirmed by one club (and possibly disputed by the other) is already in the public table, while the footnote still counts confirmed results.",
+          "expected_behaviour": "Only results both clubs have confirmed appear in public.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "door-secretary"
+            },
+            {
+              "type": "CLICK",
+              "id": "enter-F8"
+            },
+            {
+              "type": "SELECT",
+              "id": "home-goals",
+              "params": {
+                "option": "0"
+              }
+            },
+            {
+              "type": "SELECT",
+              "id": "away-goals",
+              "params": {
+                "option": "1"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-result"
+            },
+            {
+              "type": "CLICK",
+              "id": "nav-home"
+            },
+            {
+              "type": "CLICK",
+              "id": "door-club-eas"
+            },
+            {
+              "type": "CLICK",
+              "id": "confirm-F8"
+            },
+            {
+              "type": "CLICK",
+              "id": "nav-home"
+            },
+            {
+              "type": "CLICK",
+              "id": "door-public"
+            }
+          ],
+          "witness_length": 10,
+          "minimal_trigger_length": 8,
+          "observable_violation": "'Based on 9 confirmed results' above a table whose Played column sums to 20 (should be 18).",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_arithmetic",
+              "where": "/table(\\?.*)?$",
+              "expression": "l1 + l2 + l3 + l4 + l5 + l6 == 2 * counted",
+              "operands": {
+                "l1": "pl_1",
+                "l2": "pl_2",
+                "l3": "pl_3",
+                "l4": "pl_4",
+                "l5": "pl_5",
+                "l6": "pl_6",
+                "counted": "results_counted"
+              },
+              "describes": "the public table is built from exactly the confirmed results it says it is based on"
+            }
+          ],
+          "regions_read": [
+            "pl_1..6",
+            "results_counted"
+          ],
+          "patch": {
+            "file": "src/standings.py",
+            "idea": "the standings query's WHERE r.status = 'confirmed' becomes (r.home_ok = 1 OR r.away_ok = 1)",
+            "find_sketch": "FROM results r WHERE r.status = 'confirmed'",
+            "replace_sketch": "FROM results r WHERE (r.home_ok = 1 OR r.away_ok = 1)"
+          },
+          "silent_on_clean_because": "On the clean build table and footnote read the same status column; every confirmed result adds exactly two appearances.",
+          "isolation_from_other_patches": "SIDE-1 only re-orders rows (the sum is order-free); SIDE-3 keeps a corrected result's status confirmed, which the clean table and footnote both still count."
+        },
+        {
+          "fault_id": "SIDE-3",
+          "fault_class": "broken_transition",
+          "subtype": "state-transition",
+          "defect_type": "a correction keeps the stale status",
+          "defect_type_new_vs_existing_sets": false,
+          "description": "Correcting a confirmed score must clear both confirmations and return the result to provisional. The update clears the flags but not the status, so the corrected score stays 'Confirmed' with no confirmations and goes straight into the public table.",
+          "expected_behaviour": "A result is Confirmed only while both clubs have confirmed it.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "door-secretary"
+            },
+            {
+              "type": "CLICK",
+              "id": "result-F3"
+            },
+            {
+              "type": "CLICK",
+              "id": "edit-result"
+            },
+            {
+              "type": "SELECT",
+              "id": "home-goals",
+              "params": {
+                "option": "1"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-result"
+            }
+          ],
+          "witness_length": 5,
+          "minimal_trigger_length": 5,
+          "observable_violation": "F3 now reads 'Confirmed' with 0 confirmations.",
+          "oracle": "existing",
+          "assertions": [
+            {
+              "kind": "text_absent",
+              "where": "/sec/results/F\\d+$",
+              "region": "result_status",
+              "expected": "Confirmed",
+              "describes": "the result is shown as Confirmed ..."
+            },
+            {
+              "kind": "text_equals",
+              "where": "/sec/results/F\\d+$",
+              "region": "confirm_count",
+              "expected": "2",
+              "describes": "... without both clubs' confirmations"
+            }
+          ],
+          "regions_read": [
+            "confirm_count",
+            "result_status"
+          ],
+          "patch": {
+            "file": "src/results.py",
+            "idea": "the correction's SET clause loses status = 'provisional'",
+            "find_sketch": "SET home_goals = ?, away_goals = ?, status = 'provisional', home_ok = 0, away_ok = 0",
+            "replace_sketch": "SET home_goals = ?, away_goals = ?, home_ok = 0, away_ok = 0"
+          },
+          "silent_on_clean_because": "Every clean path that sets 'confirmed' requires both flags; every path that clears a flag also leaves 'confirmed'.",
+          "isolation_from_other_patches": "SIDE-1 and SIDE-2 patches do not write results."
+        }
+      ],
+      "benign_traces": [
+        [
+          {
+            "type": "CLICK",
+            "id": "door-secretary"
+          },
+          {
+            "type": "CLICK",
+            "id": "enter-F12"
+          },
+          {
+            "type": "SELECT",
+            "id": "home-goals",
+            "params": {
+              "option": "0"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "away-goals",
+            "params": {
+              "option": "0"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-result"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-home"
+          },
+          {
+            "type": "CLICK",
+            "id": "door-club-fen"
+          },
+          {
+            "type": "CLICK",
+            "id": "confirm-F12"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-home"
+          },
+          {
+            "type": "CLICK",
+            "id": "door-club-cob"
+          },
+          {
+            "type": "CLICK",
+            "id": "confirm-F12"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-home"
+          },
+          {
+            "type": "CLICK",
+            "id": "door-public"
+          }
+        ],
+        [
+          {
+            "type": "CLICK",
+            "id": "door-public"
+          },
+          {
+            "type": "CLICK",
+            "id": "sort-gf"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-results"
+          },
+          {
+            "type": "CLICK",
+            "id": "team-ash"
+          }
+        ]
+      ]
+    },
+    {
+      "app_id": "skylark",
+      "name": "Skylark",
+      "domain": "citizen science: a local nature group's bird-sightings register",
+      "user_goal": "Read the group's sightings newest first, load older ones, filter by site, record a sighting, flag doubtful records, and see how many birds the listed sightings add up to.",
+      "architecture": "server-rendered-first-page+load-more-append(keyset cursor)+client-draft",
+      "architecture_notes": "GET /feed is rendered by the server with the first page of 6 sightings, the tallies for those rows and a 'Load more' button carrying a keyset cursor (date, id). Load more fetches the next page as JSON and appends rendered rows, updating 'Showing n of m' and the tallies in place. Filters are a GET form (full reload). Recording is a two-step form (/sightings/new -> /sightings/new/<site>) whose unsent values are kept as a draft in localStorage (namespaced per session) and restored on reload.",
+      "stack": "node-builtins+json-files",
+      "start": [
+        "node",
+        "src/server.js"
+      ],
+      "dockerfile": true,
+      "persistence": "one JSON file per session (sightings with a verification status); unsent record-form drafts in the browser's localStorage",
+      "entry": "/feed",
+      "views": [
+        "/feed (?site=marsh|wood|lake)",
+        "/sightings/new (step 1: where)",
+        "/sightings/new/<site> (step 2: what, how many, when, notes)",
+        "/sightings/<id> (detail: flag as doubtful / restore)",
+        "/sites",
+        "/sites/<site>",
+        "/summary (species totals this month)",
+        "/help"
+      ],
+      "workflow_shape": {
+        "kind": [
+          "feed",
+          "hub-and-spoke",
+          "linear-wizard",
+          "revisit"
+        ],
+        "summary": "an incrementally loaded feed is the hub; a two-step record form and record details are spokes"
+      },
+      "features": [
+        "server-rendered",
+        "load-more-pagination",
+        "filter",
+        "client-state",
+        "server-state",
+        "reload-persistence",
+        "table",
+        "cross-page-state",
+        "aggregation"
+      ],
+      "seed": "22 verified sightings s1..s22 dated 2026-05-20..2026-06-09 at three sites (Marsh hide, Wood edge, Lakeside), ordered newest first by (date desc, id desc). Same-date pairs sit at newest-first positions 5/6, 11/12 and 17/18 and nowhere else, so on the seed no page boundary (6/7, 12/13, 18/19) splits a date; one new sighting (dated today, 2026-06-10) shifts the first pair onto the 6/7 boundary. Each same-date pair is at two different sites, so no single-site view contains a tie at all. s14 (page 2) is at Wood edge; s21 (page 1) is at Lakeside. Page size 6. Species select (alphabetical): blackbird, blue-tit, heron, kingfisher, robin, wren; count (number, default 1, 1-500); date (default today, not after today, not before 2026-01-01).",
+      "regions": {
+        "shown_count": "#shown-count",
+        "total_count": "#total-count",
+        "feed_end": "#feed-end",
+        "feed_list": "#feed-list",
+        "tally_total": "#tally-total",
+        "tally_marsh": "#tally-marsh",
+        "tally_wood": "#tally-wood",
+        "tally_lake": "#tally-lake",
+        "draft_summary": "#draft-summary",
+        "sighting_status": "#sighting-status",
+        "flash": "#flash"
+      },
+      "region_notes": "#shown-count counts the rows actually in the list; #total-count is the server's count for the current filter; #feed-end appears ('End of sightings') only when no more pages remain; #tally-* count birds in the listed, non-doubtful sightings (total and per site); #draft-summary describes the live form ('Heron x 1 at Marsh hide, today').",
+      "controls": [
+        "load-more",
+        "filter-site (select: all, marsh, wood, lake)",
+        "apply-filter",
+        "new-sighting",
+        "where-site (select)",
+        "choose-site",
+        "species (select)",
+        "count (number)",
+        "seen-on (date)",
+        "notes (text)",
+        "save-sighting",
+        "discard-draft",
+        "sighting-<id>",
+        "flag-doubtful",
+        "restore-sighting",
+        "back-to-feed",
+        "nav-sites",
+        "site-<id>",
+        "nav-summary",
+        "share-sighting",
+        "show-map"
+      ],
+      "decoys": [
+        "share-sighting (shows the record's address as text)",
+        "show-map (shows 'Maps are not available offline')"
+      ],
+      "state_dependent": [
+        "save-sighting is refused without a species and saves with one",
+        "flag-doubtful changes a verified record; on a record already flagged the same button is refused"
+      ],
+      "workflows": [
+        "load every page -> #feed-end present and #shown-count contains '22'",
+        "record a heron -> the first feed row contains 'Heron'",
+        "filter Marsh hide -> #feed-list contains only Marsh hide rows",
+        "flag s20 doubtful -> #sighting-status contains 'Doubtful'"
+      ],
+      "est_source_lines": 760,
+      "nearest_existing": {
+        "app": "stackroom",
+        "also_close": [
+          "bagstreet"
+        ],
+        "differs_on": {
+          "domain": "wildlife records vs warehouse stock",
+          "architecture": "server-rendered first page + client-appended keyset pages (no page numbers) vs client-rendered offset pages over JSON",
+          "interaction": "Load more appends; tallies over everything loaded so far; two-step record form with a restorable draft",
+          "workflow_shape": "incrementally growing feed vs paged grid",
+          "state_model": "server records + browser localStorage draft for unsent input"
+        }
+      },
+      "faults": [
+        {
+          "fault_id": "SKY-1",
+          "fault_class": "state_corruption",
+          "subtype": "incorrect-navigation",
+          "defect_type": "keyset pagination boundary: a date-only cursor skips same-date rows",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "The next page is selected with date < cursor.date only, dropping the (date, id) tie-break. Whenever a page ends inside a run of same-date sightings the rest of that run is skipped. The seed has no such boundary; recording one new sighting moves a same-date pair onto the first page boundary, and the second row of the pair is never listed.",
+          "expected_behaviour": "Loading every page lists every sighting exactly once.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "new-sighting"
+            },
+            {
+              "type": "CLICK",
+              "id": "choose-site"
+            },
+            {
+              "type": "SELECT",
+              "id": "species",
+              "params": {
+                "option": "heron"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-sighting"
+            },
+            {
+              "type": "CLICK",
+              "id": "load-more"
+            },
+            {
+              "type": "CLICK",
+              "id": "load-more"
+            },
+            {
+              "type": "CLICK",
+              "id": "load-more"
+            }
+          ],
+          "witness_length": 7,
+          "minimal_trigger_length": 7,
+          "observable_violation": "At the end of the feed (pages 1-6, 8-13, 14-19, 20-23): 'Showing 22 of 23 sightings'.",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_arithmetic",
+              "where": "/feed(\\?.*)?$",
+              "expression": "shown == total",
+              "operands": {
+                "shown": "shown_count",
+                "total": "total_count"
+              },
+              "guard": {
+                "region": "feed_end",
+                "contains": "End"
+              },
+              "describes": "once the feed says it has ended, it lists every matching sighting"
+            }
+          ],
+          "regions_read": [
+            "shown_count",
+            "total_count",
+            "feed_end"
+          ],
+          "patch": {
+            "file": "src/sightings.js",
+            "idea": "after(cursor) drops the same-date/id clause",
+            "find_sketch": "rows.filter((r) => r.date < c.date || (r.date === c.date && r.id < c.id))",
+            "replace_sketch": "rows.filter((r) => r.date < c.date)"
+          },
+          "silent_on_clean_because": "The clean keyset (date desc, id desc) visits every row exactly once in every filter; #feed-end appears only after the last page.",
+          "isolation_from_other_patches": "SKY-2 is client draft code; SKY-3 changes only tallies, not which rows load."
+        },
+        {
+          "fault_id": "SKY-2",
+          "fault_class": "persistence_failure",
+          "subtype": "persistence",
+          "defect_type": "unsent draft listener misses dropdowns",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "The draft is written to localStorage by listeners bound to input and textarea elements only, so a change made with a dropdown is never saved: after choosing the species (with nothing typed afterwards) a reload restores the draft without it.",
+          "expected_behaviour": "Unsent input survives a reload.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "new-sighting"
+            },
+            {
+              "type": "CLICK",
+              "id": "choose-site"
+            },
+            {
+              "type": "SELECT",
+              "id": "species",
+              "params": {
+                "option": "heron"
+              }
+            },
+            {
+              "type": "REFRESH"
+            }
+          ],
+          "witness_length": 4,
+          "minimal_trigger_length": 4,
+          "observable_violation": "Before the reload the draft summary says 'Heron x 1 at Marsh hide'; after it, 'No species yet x 1 at Marsh hide'.",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_stable_across_reload",
+              "where": "/sightings/new/[a-z]+$",
+              "region": "draft_summary",
+              "describes": "an unsent sighting survives a reload as it was"
+            }
+          ],
+          "regions_read": [
+            "draft_summary"
+          ],
+          "patch": {
+            "file": "src/static/record.js",
+            "idea": "draft listeners attach to 'input, textarea' instead of 'input, select, textarea'",
+            "find_sketch": "form.querySelectorAll(\"input, select, textarea\").forEach((el) => el.addEventListener(\"input\", saveDraft));",
+            "replace_sketch": "form.querySelectorAll(\"input, textarea\").forEach((el) => el.addEventListener(\"input\", saveDraft));"
+          },
+          "silent_on_clean_because": "On the clean build every control's input event writes the whole form synchronously before the DOM settles, and the summary is drawn from the same form state that is restored.",
+          "isolation_from_other_patches": "SKY-1 and SKY-3 are feed code; this witness never opens the feed after recording."
+        },
+        {
+          "fault_id": "SKY-3",
+          "fault_class": "calculation_error",
+          "subtype": "calculation",
+          "defect_type": "aggregation over appended pages diverges from the per-site tallies",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "Tallies exclude doubtful sightings. The server-rendered first page gets this right; when a page is appended, the client adds the page's all-records sum (page.birds) to the total but the verified-only sums to each site, so a doubtful record on a later page makes the total disagree with the sites.",
+          "expected_behaviour": "The total is always the sum of the per-site figures.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "load-more"
+            },
+            {
+              "type": "CLICK",
+              "id": "sighting-s14"
+            },
+            {
+              "type": "CLICK",
+              "id": "flag-doubtful"
+            },
+            {
+              "type": "CLICK",
+              "id": "back-to-feed"
+            },
+            {
+              "type": "CLICK",
+              "id": "load-more"
+            }
+          ],
+          "witness_length": 5,
+          "minimal_trigger_length": 5,
+          "observable_violation": "After the append, 'Birds in the listed sightings' exceeds Marsh + Wood + Lakeside by the flagged sighting's count.",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_arithmetic",
+              "where": "/feed(\\?.*)?$",
+              "expression": "total == marsh + wood + lake",
+              "operands": {
+                "total": "tally_total",
+                "marsh": "tally_marsh",
+                "wood": "tally_wood",
+                "lake": "tally_lake"
+              },
+              "describes": "the bird total is the sum of the per-site totals"
+            }
+          ],
+          "regions_read": [
+            "tally_total",
+            "tally_marsh",
+            "tally_wood",
+            "tally_lake"
+          ],
+          "patch": {
+            "file": "src/static/feed.js",
+            "idea": "appendPage() adds page.birds (all rows) instead of page.countedBirds (verified rows) to the total",
+            "find_sketch": "tally.total += page.countedBirds;",
+            "replace_sketch": "tally.total += page.birds;"
+          },
+          "silent_on_clean_because": "Clean server and client paths both count only verified rows, per site and in total, so the identity holds after every append and every filter.",
+          "isolation_from_other_patches": "SKY-1 changes which rows arrive (still consistent tallies); SKY-2 is record-form code."
+        }
+      ],
+      "benign_traces": [
+        [
+          {
+            "type": "CLICK",
+            "id": "load-more"
+          },
+          {
+            "type": "CLICK",
+            "id": "load-more"
+          },
+          {
+            "type": "CLICK",
+            "id": "load-more"
+          }
+        ],
+        [
+          {
+            "type": "SELECT",
+            "id": "filter-site",
+            "params": {
+              "option": "lake"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "apply-filter"
+          },
+          {
+            "type": "CLICK",
+            "id": "sighting-s21"
+          },
+          {
+            "type": "CLICK",
+            "id": "back-to-feed"
+          },
+          {
+            "type": "CLICK",
+            "id": "load-more"
+          }
+        ]
+      ]
+    },
+    {
+      "app_id": "larder",
+      "name": "Larder",
+      "domain": "home cooking: a personal recipe box with serving scaling, unit conversion and a shopping list",
+      "user_goal": "Open a saved recipe, scale it to the number of people, read it in metric or US measures, and build a shopping list from it.",
+      "architecture": "spa-history-router+master-detail+json-api",
+      "architecture_notes": "One HTML shell is served for every app path; in-app links are intercepted and navigated with history.pushState, and Back/Forward are rendered from the popstate event. /recipes/:id shows a master list pane beside a detail pane. A breadcrumb is derived from location.pathname; the detail pane from the route state.",
+      "stack": "node-builtins+json-files",
+      "start": [
+        "node",
+        "src/server.js"
+      ],
+      "dockerfile": true,
+      "persistence": "one JSON file per session (recipes, servings chosen per recipe, shopping list, kitchen settings); the client keeps the current route in History API state and the kitchen settings it last saved in memory (optimistic merge after each save)",
+      "entry": "/recipes",
+      "views": [
+        "/recipes (master list, empty detail pane)",
+        "/recipes/:id (master + detail: ingredients, servings stepper, add to list)",
+        "/recipes/:id/method (detail sub-route: method steps)",
+        "/list (shopping list grouped by aisle; tick off; clear ticked)",
+        "/settings (kitchen units: 'Measures' sub-form and 'Oven' sub-form, each with its own Save; settings summary)",
+        "/conversions (reference chart)",
+        "not-found view"
+      ],
+      "workflow_shape": {
+        "kind": [
+          "master-detail",
+          "hub-and-spoke",
+          "revisit"
+        ],
+        "summary": "list pane is the hub; selecting a recipe swaps the detail pane without leaving the list; settings change how every detail renders; Back/Forward walk the pushState history"
+      },
+      "features": [
+        "spa",
+        "history-api-routing",
+        "master-detail",
+        "client-state",
+        "server-state",
+        "table",
+        "cross-page-state",
+        "reload-persistence",
+        "unit-conversion"
+      ],
+      "seed": "r1 Shortbread (serves 4; line 1 plain flour 250 g, butter 125 g, caster sugar 75 g), r2 Pancakes (serves 4; line 1 plain flour 150 g, milk 300 ml, eggs 2), r3 Tomato soup (serves 4; line 1 tomatoes 800 g), r4 Lemonade (serves 6; line 1 water 1000 ml). Servings stepper 1-12. Settings default: metric, Celsius. Conversion: 1 oz = 28.35 g, 1 US fl oz = 29.57 ml; US amounts shown to 1 decimal.",
+      "regions": {
+        "crumb_ref": "#crumb-ref",
+        "detail_ref": "#detail-ref",
+        "detail_serves": "#detail-serves",
+        "line1_metric": "#m-1",
+        "line1_us": "#u-1",
+        "line1_unit": "#unit-1",
+        "settings_summary": "#settings-summary",
+        "list_lines": "#list-lines",
+        "list_count": "#list-count",
+        "notice": "#notice"
+      },
+      "region_notes": "#crumb-ref holds only the recipe number taken from the path (e.g. 2); #detail-ref only the number of the recipe whose data fills the pane; #m-1 the scaled metric amount of ingredient line 1 (e.g. '312.5 g'), #u-1 its US amount (present only in US mode, e.g. '11.0 oz'), #unit-1 the bare metric unit ('g' or 'ml').",
+      "controls": [
+        "nav-recipes",
+        "nav-list",
+        "nav-units",
+        "nav-conversions",
+        "recipe-r1..recipe-r4",
+        "serve-less",
+        "serve-more",
+        "tab-ingredients",
+        "tab-method",
+        "add-to-list",
+        "tick-<item>",
+        "clear-ticked",
+        "unit-system (select: metric, us)",
+        "save-measures",
+        "oven-scale (select: celsius, fahrenheit, gas)",
+        "save-oven",
+        "print-view",
+        "share-recipe"
+      ],
+      "decoys": [
+        "print-view (switches to a print layout, client only)",
+        "share-recipe (reveals the recipe's address as text)"
+      ],
+      "state_dependent": [
+        "add-to-list adds the recipe at its current servings once; on a recipe already on the list the same button is refused ('already on your list')",
+        "serve-less lowers the servings above 1 and changes nothing at 1"
+      ],
+      "workflows": [
+        "scale Shortbread to 6 and add it to the list -> #list-lines contains '375 g'",
+        "switch to US measures and open Shortbread -> #u-1 contains '8.8'",
+        "open Pancakes, then its method -> URL /recipes/r2/method, method shown",
+        "tick an item off the list -> #list-count shows one fewer to buy"
+      ],
+      "est_source_lines": 760,
+      "nearest_existing": {
+        "app": "wayfarer",
+        "also_close": [
+          "orbit",
+          "tidewater"
+        ],
+        "differs_on": {
+          "domain": "recipes and kitchen measures vs travel itineraries",
+          "architecture": "History API pushState/popstate on real paths with a master-detail split pane, vs hash router with hub views",
+          "interaction": "split-pane selection, servings stepper, unit-system rendering, Back/Forward rendered from route state",
+          "state_model": "everything committed server-side per session; route state in the History API; no localStorage draft",
+          "workflow_shape": "master-detail (list stays on screen) vs hub-and-spoke"
+        }
+      },
+      "faults": [
+        {
+          "fault_id": "LARD-1",
+          "fault_class": "calculation_error",
+          "subtype": "calculation",
+          "defect_type": "unit conversion of a scaled quantity",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "In US measures, weight ingredients are converted from the recipe's base quantity instead of the scaled quantity (volume ingredients use the scaled one), so once the servings are changed the ounces no longer match the grams shown beside them.",
+          "expected_behaviour": "A weight's US amount is always the metric amount on screen converted to ounces.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "nav-units"
+            },
+            {
+              "type": "SELECT",
+              "id": "unit-system",
+              "params": {
+                "option": "us"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-measures"
+            },
+            {
+              "type": "CLICK",
+              "id": "nav-recipes"
+            },
+            {
+              "type": "CLICK",
+              "id": "recipe-r1"
+            },
+            {
+              "type": "CLICK",
+              "id": "serve-more"
+            }
+          ],
+          "witness_length": 6,
+          "minimal_trigger_length": 6,
+          "observable_violation": "Shortbread for 5 shows flour 312.5 g beside 8.8 oz (8.8 oz is 250 g; 312.5 g is 11.0 oz).",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_arithmetic",
+              "where": "/recipes/r\\d+$",
+              "expression": "us == round(metric / 28.35, 1)",
+              "tolerance": 0.051,
+              "operands": {
+                "us": "line1_us",
+                "metric": "line1_metric"
+              },
+              "guard": {
+                "region": "line1_unit",
+                "contains": "g"
+              },
+              "describes": "a weight ingredient's US amount is its displayed metric amount in ounces"
+            }
+          ],
+          "regions_read": [
+            "line1_us",
+            "line1_metric",
+            "line1_unit"
+          ],
+          "patch": {
+            "file": "src/static/units.js",
+            "idea": "the weight branch of usAmount(line) converts line.base instead of line.scaled",
+            "find_sketch": "if (line.unit === \"g\") return ounces(line.scaled); // weights convert the amount on screen",
+            "replace_sketch": "if (line.unit === \"g\") return ounces(line.base); // weights convert the amount on screen"
+          },
+          "silent_on_clean_because": "On the clean build both numbers derive from the same scaled quantity for every servings value 1-12 (error < 0.05 oz); in metric mode #u-1 is absent (inconclusive, never violated); 'ml' lines fail the guard.",
+          "isolation_from_other_patches": "LARD-2's patch only changes History state; LARD-3's only resets the Oven setting when Measures is saved later (this witness saves Measures once and never Oven)."
+        },
+        {
+          "fault_id": "LARD-2",
+          "fault_class": "broken_transition",
+          "subtype": "incorrect-navigation",
+          "defect_type": "History API state recorded for the wrong entry",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "When a recipe is opened from the list, pushState stores the recipe that was on screen before (not the one being opened) in the new history entry. Back renders the detail pane from that state, so after visiting three recipes Back shows the first recipe under the second recipe's address.",
+          "expected_behaviour": "Back and Forward show the recipe whose address they land on.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "recipe-r1"
+            },
+            {
+              "type": "CLICK",
+              "id": "recipe-r2"
+            },
+            {
+              "type": "CLICK",
+              "id": "recipe-r3"
+            },
+            {
+              "type": "BROWSER_BACK"
+            }
+          ],
+          "witness_length": 4,
+          "minimal_trigger_length": 4,
+          "observable_violation": "At /recipes/r2 the breadcrumb says recipe 2 while the detail pane shows Shortbread (recipe 1).",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_arithmetic",
+              "where": "/recipes/r\\d+$",
+              "expression": "shown == crumb",
+              "operands": {
+                "shown": "detail_ref",
+                "crumb": "crumb_ref"
+              },
+              "describes": "the detail pane shows the recipe the address names"
+            }
+          ],
+          "regions_read": [
+            "detail_ref",
+            "crumb_ref"
+          ],
+          "patch": {
+            "file": "src/static/app.js",
+            "idea": "openRecipe() pushes {recipe: current.id} (the recipe being replaced) instead of {recipe: next.id}",
+            "find_sketch": "history.pushState({ recipe: next.id }, \"\", href);",
+            "replace_sketch": "history.pushState({ recipe: current && current.id }, \"\", href);"
+          },
+          "silent_on_clean_because": "Clean pushState stores the opened recipe and popstate falls back to the path when state is empty, so pane and breadcrumb always agree; REFRESH renders from the path.",
+          "isolation_from_other_patches": "No other patch touches routing; the witness never changes settings or servings."
+        },
+        {
+          "fault_id": "LARD-3",
+          "fault_class": "persistence_failure",
+          "subtype": "persistence",
+          "defect_type": "partial update overwrites a sibling setting (merge with defaults)",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "Each settings sub-form saves only its own field. The server merges a save into the defaults instead of into the session's current settings, so saving the Oven scale silently resets Measures to metric. The page keeps showing the client's merged copy until a reload.",
+          "expected_behaviour": "Saving one group of settings never changes another.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "nav-units"
+            },
+            {
+              "type": "SELECT",
+              "id": "unit-system",
+              "params": {
+                "option": "us"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-measures"
+            },
+            {
+              "type": "SELECT",
+              "id": "oven-scale",
+              "params": {
+                "option": "fahrenheit"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "save-oven"
+            },
+            {
+              "type": "REFRESH"
+            }
+          ],
+          "witness_length": 6,
+          "minimal_trigger_length": 6,
+          "observable_violation": "Before the reload the settings summary reads 'US cups and ounces, Fahrenheit'; after it, 'Metric, Fahrenheit'.",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_stable_across_reload",
+              "where": "/settings$",
+              "region": "settings_summary",
+              "describes": "saved kitchen settings survive a reload unchanged"
+            }
+          ],
+          "regions_read": [
+            "settings_summary"
+          ],
+          "patch": {
+            "file": "src/server.js",
+            "idea": "settings PATCH handler: { ...session.settings, ...patch } becomes { ...DEFAULT_SETTINGS, ...patch }",
+            "find_sketch": "session.settings = { ...session.settings, ...patch };",
+            "replace_sketch": "session.settings = { ...DEFAULT_SETTINGS, ...patch };"
+          },
+          "silent_on_clean_because": "The summary shows only saved settings (an unsaved select change does not alter it), and on the clean build the server holds exactly what the client merged; the PATCH answers {ok:true} only, so the client never re-reads a divergent copy before the reload.",
+          "isolation_from_other_patches": "LARD-1's patch affects US rendering only; LARD-2's only History state. Neither changes what is stored."
+        }
+      ],
+      "benign_traces": [
+        [
+          {
+            "type": "CLICK",
+            "id": "recipe-r2"
+          },
+          {
+            "type": "CLICK",
+            "id": "serve-more"
+          },
+          {
+            "type": "CLICK",
+            "id": "add-to-list"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-list"
+          }
+        ],
+        [
+          {
+            "type": "CLICK",
+            "id": "nav-units"
+          },
+          {
+            "type": "SELECT",
+            "id": "oven-scale",
+            "params": {
+              "option": "gas"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-oven"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-recipes"
+          },
+          {
+            "type": "CLICK",
+            "id": "recipe-r4"
+          }
+        ]
+      ]
+    },
+    {
+      "app_id": "fosterly",
+      "name": "Fosterly",
+      "domain": "animal rescue: an application to become a foster carer for rescue dogs and cats",
+      "user_goal": "Fill in a foster-carer application section by section with every answer saved as you go, leave and continue it later by its reference, review it and submit it.",
+      "architecture": "single-page-accordion-form+field-autosave-api",
+      "architecture_notes": "The application is one server-rendered page with five accordion sections opened by <button aria-expanded> headers (one open at a time; collapsed panels are display:none). Every field change (input/change event) is sent at once as a PATCH of that single field; the server validates it, stores it and answers {ok, completeness}. Each collapsed header shows a summary rendered from the client's copy of the accepted answers. Ticking 'Other animals at home' reveals a nested sub-section. Drafts have references (FOS-1001 ...) listed on the start page for resuming.",
+      "stack": "node-builtins+json-files",
+      "start": [
+        "node",
+        "src/server.js"
+      ],
+      "dockerfile": true,
+      "persistence": "one JSON file per session: drafts stored field by field as each change is accepted, and submitted applications (immutable); the client keeps an optimistic copy of accepted answers for the section summaries",
+      "entry": "/",
+      "views": [
+        "/ (start: new application; saved applications to continue)",
+        "/apply/<FOS-ref> (accordion: About you, Your home [+ Other animals], Experience, Availability, Declaration; completeness meter)",
+        "/apply/<FOS-ref>/review (check your answers; Submit)",
+        "/applications/<FA-ref> (submitted application)",
+        "/applications (your applications)",
+        "/help/fostering (what fostering involves)"
+      ],
+      "workflow_shape": {
+        "kind": [
+          "accordion",
+          "nested-form",
+          "revisit",
+          "save-and-resume"
+        ],
+        "summary": "non-linear: sections can be completed in any order and revisited; a completeness gate guards review/submit; drafts are resumed from the start page"
+      },
+      "features": [
+        "accordion",
+        "autosave",
+        "progressive-disclosure",
+        "conditional-section",
+        "client-state",
+        "server-state",
+        "reload-persistence",
+        "dynamic-validation",
+        "cross-page-state"
+      ],
+      "seed": "One saved draft FOS-1001 (listed on the start page as 'Continue application FOS-1001'): all five sections complete; Your home: flat, no garden, Other animals: No; Availability: from 2026-07-01, at least 4 weeks. New drafts get FOS-1002, ...; submitted applications FA-2001, .... Fields: full-name (text), email (email), phone (tel), home-type (select: house, flat, farm, other), garden (checkbox), other-animals (checkbox) -> animal-species (select: dog, cat, rabbit, other) and animal-count (select: 1, 2, 3, 4-or-more), years-experience (number 0-60), experience-notes (textarea), available-from (date, not before today), min-weeks (select: 2, 4, 8, 12), declaration (checkbox). Home is complete when home-type is set and, if other-animals is ticked, species and count are set.",
+      "regions": {
+        "completeness": "#completeness",
+        "summary_about": "#summary-about",
+        "summary_home": "#summary-home",
+        "summary_availability": "#summary-availability",
+        "review_status": "#review-status",
+        "flash": "#flash",
+        "sub_ref": "#sub-ref",
+        "sub_other_animals": "#sub-other-animals",
+        "sub_animals": "#sub-animals",
+        "sub_available": "#sub-available"
+      },
+      "region_notes": "#sub-other-animals holds only 'Yes' or 'No'; #sub-animals lists the animals on the submitted application ('2 x Cat') and is rendered empty when there are none; #summary-availability e.g. 'From 15 Jun 2026, at least 4 weeks'.",
+      "controls": [
+        "start-new",
+        "resume-FOS-<n>",
+        "acc-about",
+        "acc-home",
+        "acc-experience",
+        "acc-availability",
+        "acc-declaration",
+        "full-name",
+        "email",
+        "phone",
+        "home-type",
+        "garden",
+        "other-animals",
+        "animal-species",
+        "animal-count",
+        "years-experience",
+        "experience-notes",
+        "available-from",
+        "min-weeks",
+        "declaration",
+        "to-review",
+        "back-to-form",
+        "submit-application",
+        "print-copy",
+        "nav-help"
+      ],
+      "decoys": [
+        "print-copy on the review page (print layout only)",
+        "nav-help (information page)"
+      ],
+      "state_dependent": [
+        "submit-application is refused while any section is incomplete and submits once all are complete",
+        "ticking declaration completes the Declaration section only once About you is complete"
+      ],
+      "workflows": [
+        "continue FOS-1001 and submit -> #sub-ref contains 'FA-2001'",
+        "new application, fill About you -> #completeness contains '1'",
+        "tick other animals, choose 2 cats, submit FOS-1001 -> #sub-animals contains '2'",
+        "set availability on a new draft -> #summary-availability contains '15 Jun 2026'"
+      ],
+      "est_source_lines": 720,
+      "nearest_existing": {
+        "app": "account_hub",
+        "also_close": [
+          "support_portal",
+          "clinicflow"
+        ],
+        "differs_on": {
+          "domain": "animal-rescue volunteer application vs SaaS account settings / broadband support request",
+          "architecture": "Node server with per-field PATCH autosave and server-computed completeness, accordion on one page; vs static pages with sessionStorage panels or a server wizard",
+          "interaction": "accordion disclosure, no Save buttons, nested conditional sub-section, resume by reference",
+          "workflow_shape": "any-order sections behind a completeness gate vs linear stages",
+          "state_model": "field-level server draft written on every change + immutable submissions"
+        }
+      },
+      "faults": [
+        {
+          "fault_id": "FOST-1",
+          "fault_class": "persistence_failure",
+          "subtype": "persistence",
+          "defect_type": "autosave field silently dropped by the server's field allow-list",
+          "defect_type_new_vs_existing_sets": false,
+          "description": "The availability section's allow-list names the field 'availableFrom' while the form sends 'available_from'. The server filters the PATCH body by the allow-list, stores nothing, and still answers ok, so the summary updates but the answer is gone after a reload.",
+          "expected_behaviour": "Every answer the page accepts is kept.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "start-new"
+            },
+            {
+              "type": "CLICK",
+              "id": "acc-availability"
+            },
+            {
+              "type": "TYPE",
+              "id": "available-from",
+              "params": {
+                "category": "valid_typical"
+              }
+            },
+            {
+              "type": "REFRESH"
+            }
+          ],
+          "witness_length": 4,
+          "minimal_trigger_length": 4,
+          "observable_violation": "The Availability summary reads 'From 15 Jun 2026' before the reload and 'Not started' after it.",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_stable_across_reload",
+              "where": "/apply/FOS-\\d+$",
+              "region": "summary_availability",
+              "describes": "an answer the page accepted is still there after a reload"
+            }
+          ],
+          "regions_read": [
+            "summary_availability"
+          ],
+          "patch": {
+            "file": "src/fields.js",
+            "idea": "FIELDS.availability lists 'availableFrom' instead of 'available_from'",
+            "find_sketch": "availability: [\"available_from\", \"min_weeks\"],",
+            "replace_sketch": "availability: [\"availableFrom\", \"min_weeks\"],"
+          },
+          "silent_on_clean_because": "The summary is updated only after the server accepts a value (a refused value such as 0001-01-01 leaves it unchanged); the clean server stores every accepted field before answering, so the reloaded summary is identical.",
+          "isolation_from_other_patches": "FOST-2 and FOST-3 patches act at submission and completeness; this witness never submits."
+        },
+        {
+          "fault_id": "FOST-2",
+          "fault_class": "state_corruption",
+          "subtype": "conditional-ui",
+          "defect_type": "answers in a hidden (unticked) sub-section are submitted",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "When 'Other animals at home' is unticked the animals sub-section is hidden, but its earlier answers stay in the draft. Submission copies draft.animals without checking the tick, so the application says 'Other animals: No' and still lists the hidden animals.",
+          "expected_behaviour": "What is submitted is what the applicant can see.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "resume-FOS-1001"
+            },
+            {
+              "type": "CLICK",
+              "id": "acc-home"
+            },
+            {
+              "type": "CLICK",
+              "id": "other-animals"
+            },
+            {
+              "type": "SELECT",
+              "id": "animal-species",
+              "params": {
+                "option": "cat"
+              }
+            },
+            {
+              "type": "SELECT",
+              "id": "animal-count",
+              "params": {
+                "option": "2"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "other-animals"
+            },
+            {
+              "type": "CLICK",
+              "id": "to-review"
+            },
+            {
+              "type": "CLICK",
+              "id": "submit-application"
+            }
+          ],
+          "witness_length": 8,
+          "minimal_trigger_length": 7,
+          "observable_violation": "The submitted application shows 'Other animals: No' and lists '2 x Cat'.",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "text_absent",
+              "where": "/applications/FA-\\d+$",
+              "region": "sub_other_animals",
+              "expected": "No",
+              "describes": "the applicant said they have no other animals ..."
+            },
+            {
+              "kind": "input_absent",
+              "where": "/applications/FA-\\d+$",
+              "region": "sub_animals",
+              "input_field": "animal_species",
+              "describes": "... so no animal they described in the hidden section is on the application"
+            }
+          ],
+          "regions_read": [
+            "sub_other_animals",
+            "sub_animals"
+          ],
+          "patch": {
+            "file": "src/applications.js",
+            "idea": "submit() builds animals: draft.animals instead of draft.other_animals ? draft.animals : []",
+            "find_sketch": "animals: draft.other_animals ? draft.animals : [],",
+            "replace_sketch": "animals: draft.animals,"
+          },
+          "silent_on_clean_because": "On the clean build an application with 'No' always has an empty animals list, so the input_absent conjunct cannot hold together with the 'No' conjunct.",
+          "isolation_from_other_patches": "FOST-3's patch only weakens the Home completeness check (the section is complete in this witness either way); FOST-1's only drops available_from (seeded in FOS-1001)."
+        },
+        {
+          "fault_id": "FOST-3",
+          "fault_class": "constraint_bypass",
+          "subtype": "missing-validation",
+          "defect_type": "conditional requirement ignored by the completeness check",
+          "defect_type_new_vs_existing_sets": false,
+          "description": "Home completeness should require species and count when 'Other animals at home' is ticked. The condition reads draft.otherAnimals (never set), so the section counts as complete with the box ticked and nothing described, and the application can be submitted.",
+          "expected_behaviour": "An application that says the applicant has other animals says which.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "resume-FOS-1001"
+            },
+            {
+              "type": "CLICK",
+              "id": "acc-home"
+            },
+            {
+              "type": "CLICK",
+              "id": "other-animals"
+            },
+            {
+              "type": "CLICK",
+              "id": "to-review"
+            },
+            {
+              "type": "CLICK",
+              "id": "submit-application"
+            }
+          ],
+          "witness_length": 5,
+          "minimal_trigger_length": 5,
+          "observable_violation": "The submitted application shows 'Other animals: Yes' with no animals listed.",
+          "oracle": "existing",
+          "assertions": [
+            {
+              "kind": "text_absent",
+              "where": "/applications/FA-\\d+$",
+              "region": "sub_other_animals",
+              "expected": "Yes",
+              "describes": "the applicant said they have other animals ..."
+            },
+            {
+              "kind": "region_empty",
+              "where": "/applications/FA-\\d+$",
+              "region": "sub_animals",
+              "describes": "... so the application describes at least one"
+            }
+          ],
+          "regions_read": [
+            "sub_other_animals",
+            "sub_animals"
+          ],
+          "patch": {
+            "file": "src/fields.js",
+            "idea": "conditional requirement reads the camelCase name",
+            "find_sketch": "if (draft.other_animals) required.push(\"animal_species\", \"animal_count\");",
+            "replace_sketch": "if (draft.otherAnimals) required.push(\"animal_species\", \"animal_count\");"
+          },
+          "silent_on_clean_because": "Clean submission is refused while Home is incomplete, so 'Yes' always comes with at least one animal.",
+          "isolation_from_other_patches": "FOST-2's patch changes what is copied when the box is unticked (here it is ticked and empty); FOST-1's is unrelated."
+        }
+      ],
+      "benign_traces": [
+        [
+          {
+            "type": "CLICK",
+            "id": "resume-FOS-1001"
+          },
+          {
+            "type": "CLICK",
+            "id": "to-review"
+          },
+          {
+            "type": "CLICK",
+            "id": "submit-application"
+          }
+        ],
+        [
+          {
+            "type": "CLICK",
+            "id": "start-new"
+          },
+          {
+            "type": "CLICK",
+            "id": "acc-about"
+          },
+          {
+            "type": "TYPE",
+            "id": "full-name",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "TYPE",
+            "id": "email",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "acc-home"
+          },
+          {
+            "type": "SELECT",
+            "id": "home-type",
+            "params": {
+              "option": "house"
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "app_id": "tally",
+      "name": "Tally",
+      "domain": "club governance: electing a members' club chair by ranked ballot at the AGM (instant-runoff count)",
+      "user_goal": "Run the AGM election: issue ballot papers one at a time, let each member rank the candidates, close the poll, step through the count round by round, and publish the declaration.",
+      "architecture": "single-url-server-phase-machine+fetch-ballot-panel+client-round-stepper",
+      "architecture_notes": "/poll is one URL whose content the server decides from the poll's phase: open (officer panel + voting kiosk), closing (confirmation), counted (results), declared. Phase changes are form POSTs answered with 303 back to /poll. In the open phase, casting is a fetch from a ballot panel that stays on screen (status line updates in place) until 'Next voter'. The count's rounds are embedded as JSON and stepped through client-side (Previous/Next round). /declaration is a separate printable page.",
+      "stack": "node-builtins+json-files",
+      "start": [
+        "node",
+        "src/server.js"
+      ],
+      "dockerfile": true,
+      "persistence": "one JSON file per session: poll phase, issued papers (number, used), ballots (paper, preferences), and the count once the poll is closed",
+      "entry": "/poll",
+      "views": [
+        "/poll [open] (officer: papers issued, ballots cast, Next voter, Close poll; kiosk: Start ballot, rank selects, Cast ballot)",
+        "/poll [closing] (confirm close; unused papers will be voided)",
+        "/poll [counted] (round stepper: tallies, continuing and exhausted ballots, outcome)",
+        "/poll [declared]",
+        "/declaration (printable declaration)",
+        "/register (members and paper numbers)",
+        "/ballots (ballot audit, after close)",
+        "/help (rules of the count)"
+      ],
+      "workflow_shape": {
+        "kind": [
+          "phase-machine",
+          "kiosk-loop",
+          "round-stepper",
+          "state-machine"
+        ],
+        "summary": "a repeated issue -> start -> rank -> cast loop on one URL, then a one-way close -> count -> declare sequence; results are browsed round by round"
+      },
+      "features": [
+        "single-url",
+        "server-state",
+        "client-state",
+        "state-machine",
+        "table",
+        "enable-disable",
+        "dynamic-validation",
+        "aggregation"
+      ],
+      "seed": "Candidates (select values in ballot order): cand-a Ada Okoro, cand-b Bram Lindqvist, cand-c Cleo Mendes, cand-d Dev Patel; each rank select also has an empty '-' option (ignored by the tester's scanner, so all four candidates are offered). 18 members; papers 1-11 issued and used by these ballots: (A,B,D) (A,D) (B,A) (B,C) (B,D,A) (C,B) (D) (D,A,B) (D,B) (D,B,A) (D,C,B). Count rules: a candidate with more than half of the continuing ballots is elected; otherwise the candidate with fewest votes is eliminated (ties: fewer first preferences, then later on the paper) and ballots transfer to their next continuing preference; a ballot with none left is exhausted. A final two-way tie is shown as 'Tied' and nobody is elected. Verified counts: seed -> R1 A2 B3 C1 D5, R2 A2 B4 D5, R3 B5 D6: Dev elected 6 of 11. Seed + (D) -> R1 D 6 of 12 (exactly half, not elected), R2 A2 B4 D6, R3 B5 D7: Dev elected 7 of 12. Seed + (B) + (A,B) -> R1 A3 B4 C1 D5, R2 A3 B5 D5, R3 B7 D6: Bram elected 7 of 13 although Dev led round 1.",
+      "regions": {
+        "ballots_cast": "#ballots-cast",
+        "papers_issued": "#papers-issued",
+        "kiosk_status": "#kiosk-status",
+        "round_number": "#round-number",
+        "round_outcome": "#round-outcome",
+        "round_leader_votes": "#round-leader-votes",
+        "round_continuing": "#round-continuing",
+        "declared_name": "#declared-name",
+        "declared_votes": "#declared-votes",
+        "declared_continuing": "#declared-continuing"
+      },
+      "region_notes": "#round-outcome reads e.g. 'Dev Patel is elected' / 'Cleo Mendes is eliminated' / 'Tied'; #round-leader-votes the highest tally in the round shown; #round-continuing the continuing ballots in that round; #declared-votes and #declared-continuing the declared candidate's votes and the continuing ballots in the final round. The counted phase opens on the final round.",
+      "controls": [
+        "next-voter",
+        "start-ballot",
+        "pref-1",
+        "pref-2",
+        "pref-3",
+        "cast-ballot",
+        "close-poll",
+        "confirm-close",
+        "cancel-close",
+        "round-prev",
+        "round-next",
+        "publish-declaration",
+        "view-declaration",
+        "nav-register",
+        "nav-ballots",
+        "print-paper",
+        "nav-help"
+      ],
+      "decoys": [
+        "print-paper (print layout of a blank ballot)",
+        "nav-help (rules of the count)"
+      ],
+      "state_dependent": [
+        "cast-ballot records a ballot for the current unused paper; pressed again for the same (now used) paper it is refused",
+        "close-poll with no ballot paper outstanding moves to the closing phase; publish-declaration acts only in the counted phase"
+      ],
+      "workflows": [
+        "one ballot for Ada, close and count -> #round-outcome contains 'Dev Patel'",
+        "step back one round -> #round-number contains '2'",
+        "issue a paper -> #papers-issued contains '12'",
+        "publish the declaration -> #declared-name contains 'Dev Patel'"
+      ],
+      "est_source_lines": 760,
+      "nearest_existing": {
+        "app": "helpline",
+        "also_close": [
+          "booking_desk",
+          "ledgerly"
+        ],
+        "differs_on": {
+          "domain": "elections and vote counting vs support tickets",
+          "architecture": "one URL whose view is chosen by a server-side phase, a fetch ballot panel, and a client round stepper; vs per-ticket pages updated by HTML fragments",
+          "interaction": "kiosk loop (issue, start, rank, cast), one-way close, round-by-round results",
+          "workflow_shape": "repeated loop then a one-way phase sequence vs a per-item status machine",
+          "state_model": "phase + papers + ballots; results derived once at close"
+        }
+      },
+      "faults": [
+        {
+          "fault_id": "TALLY-1",
+          "fault_class": "constraint_bypass",
+          "subtype": "form-submission",
+          "defect_type": "double submission: the server does not refuse a used ballot paper",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "Each ballot is tied to the paper issued to the voter, and a paper may be used once. The server looks the paper up without the 'not yet used' condition, so pressing Cast ballot again (or rapidly) records the same voter's ballot several times.",
+          "expected_behaviour": "One paper, one ballot.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "next-voter"
+            },
+            {
+              "type": "CLICK",
+              "id": "start-ballot"
+            },
+            {
+              "type": "SELECT",
+              "id": "pref-1",
+              "params": {
+                "option": "cand-a"
+              }
+            },
+            {
+              "type": "RAPID_CLICK",
+              "id": "cast-ballot"
+            }
+          ],
+          "witness_length": 4,
+          "minimal_trigger_length": 4,
+          "observable_violation": "'Ballots cast: 16' with 'Papers issued: 12'.",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_arithmetic",
+              "where": "/poll$",
+              "expression": "cast <= issued",
+              "operands": {
+                "cast": "ballots_cast",
+                "issued": "papers_issued"
+              },
+              "describes": "there are never more ballots than papers issued"
+            }
+          ],
+          "regions_read": [
+            "ballots_cast",
+            "papers_issued"
+          ],
+          "patch": {
+            "file": "src/poll.js",
+            "idea": "castBallot() finds the paper by number only, dropping && !p.used",
+            "find_sketch": "const paper = poll.papers.find((p) => p.number === body.paper && !p.used);",
+            "replace_sketch": "const paper = poll.papers.find((p) => p.number === body.paper);"
+          },
+          "silent_on_clean_because": "The clean server answers a second cast for a used paper with 200 {ok:false} ('This paper has already been used'); the panel and its button stay on screen so every repeated click reaches the server, and refusals add nothing.",
+          "isolation_from_other_patches": "TALLY-2 and TALLY-3 patches act on the count and the declaration only."
+        },
+        {
+          "fault_id": "TALLY-2",
+          "fault_class": "calculation_error",
+          "subtype": "calculation",
+          "defect_type": "boundary off-by-one: exactly half of the continuing ballots treated as a majority",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "Election needs more than half of the continuing ballots. The test uses >= instead of >, so a candidate with exactly half is declared elected in that round instead of the count continuing.",
+          "expected_behaviour": "Elected means more than half of the continuing ballots.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "next-voter"
+            },
+            {
+              "type": "CLICK",
+              "id": "start-ballot"
+            },
+            {
+              "type": "SELECT",
+              "id": "pref-1",
+              "params": {
+                "option": "cand-d"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "cast-ballot"
+            },
+            {
+              "type": "CLICK",
+              "id": "close-poll"
+            },
+            {
+              "type": "CLICK",
+              "id": "confirm-close"
+            }
+          ],
+          "witness_length": 6,
+          "minimal_trigger_length": 6,
+          "observable_violation": "Round 1 of 1: 'Dev Patel is elected' with 6 of 12 continuing ballots.",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_arithmetic",
+              "where": "/poll$",
+              "expression": "leader * 2 > continuing",
+              "operands": {
+                "leader": "round_leader_votes",
+                "continuing": "round_continuing"
+              },
+              "guard": {
+                "region": "round_outcome",
+                "contains": "elected"
+              },
+              "describes": "a candidate is elected only with more than half of the continuing ballots"
+            }
+          ],
+          "regions_read": [
+            "round_leader_votes",
+            "round_continuing",
+            "round_outcome"
+          ],
+          "patch": {
+            "file": "src/count.js",
+            "idea": "majority test top.votes * 2 > continuing becomes >=",
+            "find_sketch": "if (top.votes * 2 > continuing) {",
+            "replace_sketch": "if (top.votes * 2 >= continuing) {"
+          },
+          "silent_on_clean_because": "The clean rule elects only on a strict majority and shows a final tie as 'Tied', so every round labelled 'elected' has leader x 2 > continuing; other rounds fail the guard.",
+          "isolation_from_other_patches": "TALLY-1's patch is not exercised (one click on Cast); TALLY-3's acts on the declaration page only."
+        },
+        {
+          "fault_id": "TALLY-3",
+          "fault_class": "state_corruption",
+          "subtype": "wrong-target",
+          "defect_type": "the declaration reads the first round's leader instead of the final round's",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "Publishing the declaration takes the elected candidate from rounds[0] instead of the last round. When transfers change the leader, the declaration names the first-round leader (with that candidate's final-round votes).",
+          "expected_behaviour": "The declaration names the candidate the count elected.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "next-voter"
+            },
+            {
+              "type": "CLICK",
+              "id": "start-ballot"
+            },
+            {
+              "type": "SELECT",
+              "id": "pref-1",
+              "params": {
+                "option": "cand-b"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "cast-ballot"
+            },
+            {
+              "type": "CLICK",
+              "id": "next-voter"
+            },
+            {
+              "type": "CLICK",
+              "id": "start-ballot"
+            },
+            {
+              "type": "SELECT",
+              "id": "pref-1",
+              "params": {
+                "option": "cand-a"
+              }
+            },
+            {
+              "type": "SELECT",
+              "id": "pref-2",
+              "params": {
+                "option": "cand-b"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "cast-ballot"
+            },
+            {
+              "type": "CLICK",
+              "id": "close-poll"
+            },
+            {
+              "type": "CLICK",
+              "id": "confirm-close"
+            },
+            {
+              "type": "CLICK",
+              "id": "publish-declaration"
+            }
+          ],
+          "witness_length": 12,
+          "minimal_trigger_length": 12,
+          "observable_violation": "The declaration names Dev Patel with 6 of 13 votes; the count elected Bram Lindqvist with 7 of 13.",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_arithmetic",
+              "where": "/declaration$",
+              "expression": "votes * 2 > continuing",
+              "operands": {
+                "votes": "declared_votes",
+                "continuing": "declared_continuing"
+              },
+              "describes": "the declared candidate has a majority of the continuing ballots in the final round"
+            }
+          ],
+          "regions_read": [
+            "declared_votes",
+            "declared_continuing"
+          ],
+          "patch": {
+            "file": "src/declaration.js",
+            "idea": "elected = count.rounds[0].leader instead of the last round's",
+            "find_sketch": "const elected = count.rounds[count.rounds.length - 1].leader;",
+            "replace_sketch": "const elected = count.rounds[0].leader;"
+          },
+          "silent_on_clean_because": "A declaration can be published only when the final round elected someone, who by the clean rule has more than half; a 'Tied' result cannot be declared.",
+          "isolation_from_other_patches": "No round of this witness has exactly half (TALLY-2's patch changes nothing here); TALLY-1's is not exercised (one click per paper)."
+        }
+      ],
+      "benign_traces": [
+        [
+          {
+            "type": "CLICK",
+            "id": "next-voter"
+          },
+          {
+            "type": "CLICK",
+            "id": "start-ballot"
+          },
+          {
+            "type": "SELECT",
+            "id": "pref-1",
+            "params": {
+              "option": "cand-a"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "cast-ballot"
+          },
+          {
+            "type": "CLICK",
+            "id": "close-poll"
+          },
+          {
+            "type": "CLICK",
+            "id": "confirm-close"
+          },
+          {
+            "type": "CLICK",
+            "id": "round-prev"
+          },
+          {
+            "type": "CLICK",
+            "id": "publish-declaration"
+          }
+        ],
+        [
+          {
+            "type": "CLICK",
+            "id": "nav-register"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-help"
+          }
+        ]
+      ]
+    },
+    {
+      "app_id": "quizcraft",
+      "name": "Quizcraft",
+      "domain": "questionnaire authoring: a cycling club secretary edits the members' annual survey",
+      "user_goal": "Edit the survey's questions, required flags and skip logic, preview it as a member would answer it, undo and redo edits, and save revisions.",
+      "architecture": "client-command-stack-editor+revisioned-document-api",
+      "architecture_notes": "One page (/quiz) with editor, preview and history panes; the pane and preview step live in the query string via history.replaceState. Every edit is a command object executed against an in-memory working copy and pushed on an undo stack (undo/redo stacks are page memory only). Save posts the whole document; the server appends it as a new revision. A reload returns to the latest saved revision.",
+      "stack": "python-stdlib(http.server)+sqlite",
+      "start": [
+        "python",
+        "src/server.py"
+      ],
+      "dockerfile": false,
+      "dockerfile_note": "No Dockerfile and no compose file on purpose (the product intake's documented limitation); a Python app this time, so the future stack detector is exercised on a second language. README documents `python src/server.py`.",
+      "persistence": "sqlite, append-only table of saved revisions per session; the working copy and undo/redo stacks live only in page memory",
+      "entry": "/quiz",
+      "views": [
+        "editor (question list + inspector for the selected question)",
+        "add-question menu (choice, yes/no, rating, text)",
+        "logic panel (for a yes/no question: 'If No, skip to ...')",
+        "preview (?view=preview&step=n: one question at a time, end screen)",
+        "history (?view=history: the command list with the current position)",
+        "/revisions (server-rendered list of saved revisions)",
+        "/help"
+      ],
+      "workflow_shape": {
+        "kind": [
+          "editor-loop",
+          "nested-form",
+          "revisit"
+        ],
+        "summary": "a single-screen tool: edit -> preview -> edit -> save loops on one URL; undo/redo moves along a linear command history"
+      },
+      "features": [
+        "spa",
+        "client-state",
+        "server-state",
+        "undo-redo",
+        "conditional-section",
+        "enable-disable",
+        "dynamic-validation",
+        "reload-persistence"
+      ],
+      "seed": "Revision 1 of 'Members' survey 2026': Q1 How often do you ride? (choice: weekly / monthly / rarely; optional); Q2 Did you join any club rides this year? (yes/no; required; rule: If No, skip to Q4); Q3 Which rides did you join? (choice; optional); Q4 Rate the club overall (rating 1-5; required); Q5 Anything else? (text; optional); Q6 May we contact you? (yes/no; optional). At most 9 questions. The inspector is empty until a question is selected. Option values are fixed codes (yes, no); option labels come from the vocabulary.",
+      "regions": {
+        "history_ahead": "#history-ahead",
+        "history_last_kind": "#history-last-kind",
+        "question_count": "#question-count",
+        "unsaved_flag": "#unsaved-flag",
+        "saved_summary": "#saved-summary",
+        "preview_step": "#preview-step",
+        "preview_answer_2": "#preview-answer-2",
+        "preview_rule_2": "#preview-rule-2",
+        "preview_end": "#preview-end"
+      },
+      "region_notes": "#history-ahead holds the number of redoable steps; #history-last-kind the kind of the latest history operation ('Change', 'Undo' or 'Redo' in the default vocabulary); #saved-summary 'Revision n: k questions, r required' for the document the client last saved; #preview-step only the position number shown; #preview-answer-2 the label of the current preview run's answer to Q2 (empty if unanswered); #preview-rule-2 the target position of Q2's 'If No' rule (empty if none).",
+      "controls": [
+        "q-1..q-9",
+        "add-question",
+        "add-type-<type>",
+        "delete-question",
+        "move-up",
+        "move-down",
+        "q-title (text, name question_title)",
+        "q-required (checkbox)",
+        "rule-target (select: none, 3, 4, 5, 6)",
+        "undo",
+        "redo",
+        "save-quiz",
+        "tab-editor",
+        "tab-preview",
+        "tab-history",
+        "preview-next",
+        "preview-back",
+        "preview-restart",
+        "answer-<n> (select per question)",
+        "nav-revisions",
+        "copy-link",
+        "spell-check"
+      ],
+      "decoys": [
+        "copy-link (shows the survey address as text)",
+        "spell-check (reports 'No spelling problems found')"
+      ],
+      "state_dependent": [
+        "save-quiz creates a revision only when there are unsaved changes",
+        "redo changes the document only after an undo"
+      ],
+      "workflows": [
+        "add a question and save -> #saved-summary contains '7'",
+        "make Q5 required and save -> #saved-summary contains '3'",
+        "preview: answer No at Q2 -> #preview-step contains '4'",
+        "delete Q6 then undo -> #question-count contains '6'"
+      ],
+      "est_source_lines": 820,
+      "nearest_existing": {
+        "app": "wayfarer",
+        "also_close": [
+          "orbit"
+        ],
+        "differs_on": {
+          "domain": "survey authoring vs travel itineraries",
+          "architecture": "command-pattern editor with undo/redo over a revisioned document, single URL with replaceState panes; vs hash-routed planner with a localStorage draft",
+          "interaction": "select-then-inspect editing, undo/redo, respondent preview with skip logic",
+          "state_model": "working copy and undo/redo stacks only in page memory; server append-only revisions (no localStorage)",
+          "workflow_shape": "edit/preview loop on one screen vs hub-and-spoke",
+          "stack": "Python stdlib vs Node (the suite's no-Dockerfile app was Node)"
+        }
+      },
+      "faults": [
+        {
+          "fault_id": "QUIZ-1",
+          "fault_class": "state_corruption",
+          "subtype": "stale-state",
+          "defect_type": "undo/redo: redo stack survives a new edit",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "Executing a new command after an undo should discard the redo branch. The clear is missing, so after undo + a new edit the history still offers a redo of the abandoned change, which would re-apply it on top of the new one.",
+          "expected_behaviour": "A new change after an undo ends the redo branch.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "q-2"
+            },
+            {
+              "type": "CLICK",
+              "id": "q-required"
+            },
+            {
+              "type": "CLICK",
+              "id": "undo"
+            },
+            {
+              "type": "TYPE",
+              "id": "q-title",
+              "params": {
+                "category": "valid_typical"
+              }
+            }
+          ],
+          "witness_length": 4,
+          "minimal_trigger_length": 4,
+          "observable_violation": "Right after a new change the history panel shows 1 step ahead (Redo enabled).",
+          "oracle": "existing",
+          "assertions": [
+            {
+              "kind": "text_absent",
+              "where": "/quiz",
+              "region": "history_last_kind",
+              "expected": "Change",
+              "describes": "the latest history operation is a new change ..."
+            },
+            {
+              "kind": "text_equals",
+              "where": "/quiz",
+              "region": "history_ahead",
+              "expected": "0",
+              "describes": "... so nothing is left to redo"
+            }
+          ],
+          "regions_read": [
+            "history_ahead",
+            "history_last_kind"
+          ],
+          "patch": {
+            "file": "src/static/editor.js",
+            "idea": "execute(command) loses the line that empties the redo stack",
+            "find_sketch": "    state.redo.length = 0; // a new change ends the redo branch\n",
+            "replace_sketch": ""
+          },
+          "silent_on_clean_because": "On the clean build every new command empties the redo stack, so whenever the latest operation is a Change the ahead count is exactly '0' (#history-ahead holds only the number); after Undo/Redo the first conjunct is not violated.",
+          "isolation_from_other_patches": "QUIZ-2's patch is in preview navigation, QUIZ-3's in save serialisation; neither touches the stacks."
+        },
+        {
+          "fault_id": "QUIZ-2",
+          "fault_class": "broken_transition",
+          "subtype": "conditional-ui",
+          "defect_type": "skip logic compares the answer's display label with the stored value",
+          "defect_type_new_vs_existing_sets": true,
+          "description": "Preview's Next applies Q2's rule by comparing the stored answer value ('no') with the option's display label ('No'), so the rule never matches and a member who answered No is shown Q3, which the survey says to skip.",
+          "expected_behaviour": "A member who answers No to Q2 goes straight to the question the rule names.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "tab-preview"
+            },
+            {
+              "type": "CLICK",
+              "id": "preview-next"
+            },
+            {
+              "type": "SELECT",
+              "id": "answer-2",
+              "params": {
+                "option": "no"
+              }
+            },
+            {
+              "type": "CLICK",
+              "id": "preview-next"
+            }
+          ],
+          "witness_length": 4,
+          "minimal_trigger_length": 4,
+          "observable_violation": "Preview shows question 3 although Q2 was answered No and Q2's rule says skip to 4.",
+          "oracle": "existing",
+          "assertions": [
+            {
+              "kind": "text_absent",
+              "where": "view=preview",
+              "region": "preview_step",
+              "expected": "3",
+              "describes": "question 3 is shown ..."
+            },
+            {
+              "kind": "text_absent",
+              "where": "view=preview",
+              "region": "preview_answer_2",
+              "expected": "No",
+              "describes": "... while this run answered Q2 with No ..."
+            },
+            {
+              "kind": "text_absent",
+              "where": "view=preview",
+              "region": "preview_rule_2",
+              "expected": "4",
+              "describes": "... and Q2's rule skips No to question 4"
+            }
+          ],
+          "regions_read": [
+            "preview_step",
+            "preview_answer_2",
+            "preview_rule_2"
+          ],
+          "patch": {
+            "file": "src/static/preview.js",
+            "idea": "nextStep(): rule test uses labelOf(rule.when) instead of rule.when",
+            "find_sketch": "if (answers[q.id] === rule.when) return rule.target;",
+            "replace_sketch": "if (answers[q.id] === labelOf(q, rule.when)) return rule.target;"
+          },
+          "silent_on_clean_because": "Clean preview always jumps from Q2 to the rule's target when this run's answer is No; Q3 is shown only for Yes, or when the rule targets 3 or is removed (then #preview-rule-2 is not '4'). Rule conditions are fixed to 'If No' in this app.",
+          "isolation_from_other_patches": "QUIZ-1 and QUIZ-3 patches do not touch preview navigation."
+        },
+        {
+          "fault_id": "QUIZ-3",
+          "fault_class": "persistence_failure",
+          "subtype": "persistence",
+          "defect_type": "save serialises a stale snapshot (the frozen preview copy)",
+          "defect_type_new_vs_existing_sets": false,
+          "description": "Entering preview freezes a copy of the document for the respondent walk-through. Save serialises that frozen copy when one exists instead of the working copy, so edits made after a preview are acknowledged ('Saved') but not stored, and a reload brings back the older document.",
+          "expected_behaviour": "Every saved revision contains the edits made before Save.",
+          "trigger_trace": [
+            {
+              "type": "CLICK",
+              "id": "tab-preview"
+            },
+            {
+              "type": "CLICK",
+              "id": "tab-editor"
+            },
+            {
+              "type": "CLICK",
+              "id": "add-question"
+            },
+            {
+              "type": "CLICK",
+              "id": "save-quiz"
+            },
+            {
+              "type": "REFRESH"
+            }
+          ],
+          "witness_length": 5,
+          "minimal_trigger_length": 5,
+          "observable_violation": "After saving, the summary says 'Revision 2: 7 questions'; after a reload it says 'Revision 2: 6 questions'.",
+          "oracle": "extension",
+          "assertions": [
+            {
+              "kind": "region_stable_across_reload",
+              "where": "/quiz",
+              "region": "saved_summary",
+              "describes": "what the page says was saved is what the server returns after a reload"
+            }
+          ],
+          "regions_read": [
+            "saved_summary"
+          ],
+          "patch": {
+            "file": "src/static/editor.js",
+            "idea": "save() serialises state.previewDoc || state.doc",
+            "find_sketch": "const payload = serialize(state.doc);",
+            "replace_sketch": "const payload = serialize(state.previewDoc || state.doc);"
+          },
+          "silent_on_clean_because": "#saved-summary changes only when a save succeeds and then describes exactly the payload sent, which the clean server stores; unsaved edits do not alter it, so a reload shows the same summary.",
+          "isolation_from_other_patches": "QUIZ-1's patch leaves extra redo entries but the witness never redoes; QUIZ-2's affects only Next in preview (the witness does not answer)."
+        }
+      ],
+      "benign_traces": [
+        [
+          {
+            "type": "CLICK",
+            "id": "q-5"
+          },
+          {
+            "type": "CLICK",
+            "id": "q-required"
+          },
+          {
+            "type": "CLICK",
+            "id": "save-quiz"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-revisions"
+          }
+        ],
+        [
+          {
+            "type": "CLICK",
+            "id": "tab-preview"
+          },
+          {
+            "type": "CLICK",
+            "id": "preview-next"
+          },
+          {
+            "type": "SELECT",
+            "id": "answer-2",
+            "params": {
+              "option": "yes"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "preview-next"
+          },
+          {
+            "type": "CLICK",
+            "id": "tab-editor"
+          }
+        ]
+      ]
+    }
+  ]
+}
