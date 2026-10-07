@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from html.parser import HTMLParser
 
 from ..envs.types import ActionSpec, ActionType
-from .abstraction import _ALERT_CLASS, _VOID, PageView
+from .abstraction import _ALERT_CLASS, _VOID, PageView, path_template
 from .labels import control_identity
 
 _CLOCK = re.compile(r"\b\d{1,2}:\d{2}(?::\d{2})?\b")
@@ -105,11 +105,10 @@ class InvariantChecker:
 
     def __init__(self) -> None:
         self.entered: dict[str, tuple[str, str, str]] = {}  # field -> (value, meaning, category)
-        self.pending: dict[
-            str, tuple[str, str]
-        ] = {}  # field -> (meaning, category) since last submit
-        #: (meaning, category) -> outcome ("rejected" / "accepted") -> the walk that produced it
-        self.verdicts: dict[tuple[str, str], dict[str, list[dict]]] = {}
+        #: (page path, field) -> category entered since the last submission
+        self.pending: dict[tuple[str, str], str] = {}
+        #: (page path, field, category) -> outcome ("rejected" / "accepted") -> its walk
+        self.verdicts: dict[tuple[str, str, str], dict[str, list[dict]]] = {}
         self.seen: set[tuple[str, str]] = set()  # (invariant, detail) already raised this run
 
     def begin_episode(self) -> None:
@@ -137,7 +136,7 @@ class InvariantChecker:
             spec.action_type in (ActionType.CLICK, ActionType.RAPID_CLICK)
             and before.role_of(spec) == "submit"
         ):
-            found += self._judge_submission(after, step, trace)
+            found += self._judge_submission(before, after, step, trace)
         found += self._round_trip(after, step)
         out = [c for c in found if c is not None]
         for candidate in out:
@@ -153,29 +152,47 @@ class InvariantChecker:
         value = field_value(after, identity)
         if value is not None:
             self.entered[identity] = (value, meaning, category)
-        self.pending[identity] = (meaning, category)
+        self.pending[(path_template(before.url), identity)] = category
 
     def _judge_submission(
-        self, after: PageView, step: int, trace: list[dict]
+        self, before: PageView, after: PageView, step: int, trace: list[dict]
     ) -> list[Candidate | None]:
-        outcome = "rejected" if after.alert else "accepted"
-        raised = []
-        for meaning, category in self.pending.values():
-            if category in ("", "valid_typical") or meaning == "other":
-                continue
-            seen = self.verdicts.setdefault((meaning, category), {})
-            if outcome == "accepted" and "rejected" in seen:
-                candidate = self._raise(
-                    "validation_consistency",
-                    step,
-                    after,
-                    f"{category} {meaning} rejected elsewhere, accepted here",
-                )
-                if candidate is not None:
-                    candidate.context_trace = list(seen["rejected"])
-                raised.append(candidate)
-            seen.setdefault(outcome, list(trace))
+        """Record how the application treated one invalid entry, and flag inconsistency.
+
+        Only single-factor submissions count: exactly one field holds a non-valid value, so a
+        rejection is that value's. "Accepted" means the page moved on without an alert; a
+        submission after which nothing changed is no verdict at all. The comparison is the
+        same field on the same page reached by different walks (an edit path that skips a
+        check the first path applies), never different fields that merely look alike.
+        """
+        invalid = [
+            (key, category)
+            for key, category in self.pending.items()
+            if category not in ("", "valid_typical")
+        ]
         self.pending.clear()
+        if len(invalid) != 1:
+            return []
+        if after.alert:
+            outcome = "rejected"
+        elif after.cell != before.cell:
+            outcome = "accepted"
+        else:
+            return []
+        (path, identity), category = invalid[0]
+        seen = self.verdicts.setdefault((path, identity, category), {})
+        raised: list[Candidate | None] = []
+        if outcome == "accepted" and "rejected" in seen:
+            candidate = self._raise(
+                "validation_consistency",
+                step,
+                after,
+                f"{category} into {identity} on {path}: rejected on one walk, accepted on another",
+            )
+            if candidate is not None:
+                candidate.context_trace = list(seen["rejected"])
+            raised.append(candidate)
+        seen.setdefault(outcome, list(trace))
         return raised
 
     def _round_trip(self, after: PageView, step: int) -> list[Candidate | None]:
