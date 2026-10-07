@@ -38,8 +38,16 @@ def _harness():
     return ext_oracle, launcher, manifest, variants
 
 
+#: The v2 held-out validation set (plan amendment §12), laid out like the suite.
+VALIDATION_APPS = Path(__file__).resolve().parents[3] / "validation_suite" / "apps"
+
+
 def load_suite_app(app_id: str):
-    return _harness()[2].load(app_id)
+    """A suite or validation-set application by id (suite first)."""
+    manifest = _harness()[2]
+    if (manifest.APPS_ROOT / app_id / "app.json").is_file():
+        return manifest.load(app_id)
+    return manifest.load(VALIDATION_APPS / app_id)
 
 
 def suite_app_ids() -> list[str]:

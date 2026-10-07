@@ -10,12 +10,16 @@ suite's extension grammar are kept apart and verified by `ext_oracle`.
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from web_testing_agent.oracle.faults import AssertionKind, BenchmarkApp, FaultClass
 
-SUITE_ROOT = Path(__file__).resolve().parents[1]
+#: The suite this harness admits. `WTA_SUITE_ROOT` points it at another suite laid out the same
+#: way (the v2 validation set in `validation_suite/`), so one harness admits both.
+SUITE_ROOT = (Path(os.environ["WTA_SUITE_ROOT"]).resolve() if os.environ.get("WTA_SUITE_ROOT")
+              else Path(__file__).resolve().parents[1])
 APPS_ROOT = SUITE_ROOT / "apps"
 BUILD_ROOT = SUITE_ROOT / ".build"
 ADMISSION_ROOT = SUITE_ROOT / "admission"
