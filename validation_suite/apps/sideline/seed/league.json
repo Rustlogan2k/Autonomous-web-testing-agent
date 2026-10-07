@@ -1,0 +1,27 @@
+{
+  "league": "Brookvale & District Sunday League",
+  "division": "Division One",
+  "season": "2025-26",
+  "teams": [
+    {"code": "ash", "name": "Ashby Rovers", "ground": "Mill Lane"},
+    {"code": "bro", "name": "Brookfield", "ground": "Brookfield Rec"},
+    {"code": "cob", "name": "Cobham Town", "ground": "The Paddock"},
+    {"code": "dun", "name": "Dunmore", "ground": "Dunmore Park"},
+    {"code": "eas", "name": "Eastleigh Albion", "ground": "Station Road"},
+    {"code": "fen", "name": "Fenwick", "ground": "Fenwick Fields"}
+  ],
+  "fixtures": [
+    {"id": "F1", "played_on": "2026-05-03", "home": "ash", "away": "dun", "score": [1, 0], "status": "confirmed"},
+    {"id": "F2", "played_on": "2026-05-03", "home": "cob", "away": "eas", "score": [4, 3], "status": "confirmed"},
+    {"id": "F3", "played_on": "2026-05-03", "home": "bro", "away": "fen", "score": [2, 2], "status": "confirmed"},
+    {"id": "F4", "played_on": "2026-05-10", "home": "ash", "away": "cob", "score": [0, 0], "status": "confirmed"},
+    {"id": "F5", "played_on": "2026-05-10", "home": "dun", "away": "fen", "score": [2, 0], "status": "confirmed"},
+    {"id": "F6", "played_on": "2026-05-17", "home": "fen", "away": "ash", "score": [0, 0], "status": "confirmed"},
+    {"id": "F7", "played_on": "2026-06-07", "home": "ash", "away": "bro", "score": null, "status": "scheduled"},
+    {"id": "F8", "played_on": "2026-05-31", "home": "eas", "away": "bro", "score": null, "status": "scheduled"},
+    {"id": "F9", "played_on": "2026-05-17", "home": "cob", "away": "dun", "score": [3, 2], "status": "confirmed"},
+    {"id": "F10", "played_on": "2026-05-24", "home": "cob", "away": "bro", "score": [1, 1], "status": "confirmed"},
+    {"id": "F11", "played_on": "2026-05-24", "home": "eas", "away": "dun", "score": [2, 1], "status": "confirmed"},
+    {"id": "F12", "played_on": "2026-06-07", "home": "fen", "away": "cob", "score": null, "status": "scheduled"}
+  ]
+}

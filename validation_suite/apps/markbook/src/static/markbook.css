@@ -1,0 +1,55 @@
+:root { --ink: #1f2a33; --muted: #5b6770; --line: #cfd8de; --accent: #1d5f8a; --paper: #f6f8f9;
+         --ok: #e6f2e8; --ok-line: #3c7a48; --bad: #fbeaea; --bad-line: #a53030; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 16px/1.5 "Segoe UI", system-ui, sans-serif; color: var(--ink); background: var(--paper); }
+.bar { display: flex; align-items: center; gap: 1rem; padding: .7rem 1.5rem; background: var(--accent); color: #fff; }
+.bar.student { background: #4a3a72; }
+.bar .brand { font-weight: 700; font-size: 1.2rem; letter-spacing: .02em; }
+.bar .role { font-size: .85rem; padding: .1rem .5rem; border: 1px solid rgba(255,255,255,.6); border-radius: 1rem; }
+.bar nav { margin-left: auto; display: flex; gap: 1.2rem; }
+.bar a { color: #fff; }
+.classbar { display: flex; gap: 1.2rem; align-items: baseline; padding: .5rem 1.5rem; background: #fff; border-bottom: 1px solid var(--line); }
+.preview { margin: 0; padding: .5rem 1.5rem; background: #efe9fb; border-bottom: 1px solid #c9bde8; }
+main { max-width: 68rem; margin: 1.5rem auto; padding: 0 1.25rem; }
+h1 small { font-size: .9rem; color: var(--muted); font-weight: 400; }
+.lede, .muted { color: var(--muted); }
+.cards { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); gap: 1rem; }
+.card { background: #fff; border: 1px solid var(--line); border-radius: .4rem; padding: .8rem 1rem; }
+.card a { font-size: 1.15rem; font-weight: 600; }
+.card p { margin: .3rem 0 0; color: var(--muted); }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; background: #fff; }
+.matrix { width: 100%; }
+.matrix th, .matrix td, .record th, .record td { border: 1px solid var(--line); padding: .35rem .55rem; text-align: left; vertical-align: top; }
+.matrix thead th small { display: block; font-weight: 400; color: var(--muted); font-size: .8rem; }
+.matrix thead th.draft { background: #fff8e6; }
+.matrix td.mark { text-align: center; min-width: 4.5rem; }
+.matrix tfoot { background: #eef3f6; font-size: .9rem; }
+.cell { font: inherit; min-width: 3rem; padding: .2rem .4rem; border: 1px dashed transparent; background: none; cursor: pointer; }
+.cell:hover, .cell:focus { border-color: var(--accent); background: #eef6fb; }
+.editor { display: inline-flex; gap: .3rem; align-items: center; flex-wrap: wrap; }
+.editor label { font-size: .75rem; color: var(--muted); }
+.editor input { width: 4.5rem; }
+.pct, .level { font-variant-numeric: tabular-nums; font-weight: 600; }
+.status { min-height: 1.4em; color: var(--muted); margin: .3rem 0; }
+.error { min-height: 1.4em; color: var(--bad-line); margin: .3rem 0; }
+.flash { padding: .5rem .75rem; border-left: 4px solid var(--ok-line); background: var(--ok); }
+.flash.error { border-color: var(--bad-line); background: var(--bad); }
+.tag { font-size: .85rem; vertical-align: middle; padding: .1rem .5rem; border-radius: 1rem; background: #e8eef2; font-weight: 400; }
+.facts { display: grid; grid-template-columns: 12rem auto; gap: .2rem 1rem; }
+.facts dd { margin: 0; }
+.row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+label { font-weight: 600; }
+input, select, textarea, button { font: inherit; }
+input, select, textarea { padding: .3rem .4rem; border: 1px solid #9aa8b1; border-radius: .2rem; background: #fff; }
+textarea { display: block; width: 100%; max-width: 40rem; margin: .3rem 0; }
+button { padding: .35rem .9rem; border: 1px solid var(--accent); border-radius: .25rem; background: #fff; color: var(--accent); cursor: pointer; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.comments { list-style: none; padding: 0; }
+.comment { margin: .4rem 0; }
+.badge { display: inline-block; font-size: .75rem; padding: .05rem .45rem; border-radius: .6rem; background: #e3eef6; }
+.badge.private { background: #fdeccf; }
+.note { margin: .5rem 0; padding: .5rem .8rem; background: #fff; border-left: 4px solid #e0a43a; white-space: pre-wrap; overflow-wrap: anywhere; }
+q { overflow-wrap: anywhere; }
+.panel { background: #fff; border: 1px solid var(--line); padding: .3rem 1rem; max-width: 46rem; }
+section { margin-bottom: 1.5rem; }

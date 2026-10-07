@@ -1,0 +1,41 @@
+{
+  "group": "Skylark Nature Group",
+  "sites": [
+    {"id": "marsh", "name": "Marsh hide", "habitat": "Reedbed and open water, watched from the east hide on the causeway."},
+    {"id": "wood", "name": "Wood edge", "habitat": "Hedgerow and the oak margin of Copse Wood, walked along the bridleway."},
+    {"id": "lake", "name": "Lakeside", "habitat": "Gravel shore and willows on the north bank of the old pit lake."}
+  ],
+  "species": [
+    {"id": "blackbird", "name": "Blackbird"},
+    {"id": "blue-tit", "name": "Blue tit"},
+    {"id": "heron", "name": "Heron"},
+    {"id": "kingfisher", "name": "Kingfisher"},
+    {"id": "robin", "name": "Robin"},
+    {"id": "wren", "name": "Wren"}
+  ],
+  "statuses": {"verified": "Verified", "doubtful": "Doubtful"},
+  "sightings": [
+    {"id": 1, "date": "2026-05-20", "site": "marsh", "species": "robin", "count": 1, "notes": "Singing from the hide roof.", "status": "verified"},
+    {"id": 2, "date": "2026-05-21", "site": "wood", "species": "blackbird", "count": 4, "notes": "", "status": "verified"},
+    {"id": 3, "date": "2026-05-22", "site": "lake", "species": "blue-tit", "count": 7, "notes": "Family party in the willows.", "status": "verified"},
+    {"id": 4, "date": "2026-05-24", "site": "marsh", "species": "kingfisher", "count": 1, "notes": "Flew low across the channel.", "status": "verified"},
+    {"id": 5, "date": "2026-05-25", "site": "wood", "species": "robin", "count": 2, "notes": "", "status": "verified"},
+    {"id": 6, "date": "2026-05-25", "site": "lake", "species": "wren", "count": 3, "notes": "", "status": "verified"},
+    {"id": 7, "date": "2026-05-26", "site": "wood", "species": "heron", "count": 1, "notes": "Over the field towards the lake.", "status": "verified"},
+    {"id": 8, "date": "2026-05-27", "site": "marsh", "species": "blackbird", "count": 2, "notes": "", "status": "verified"},
+    {"id": 9, "date": "2026-05-28", "site": "lake", "species": "kingfisher", "count": 2, "notes": "Pair on the jetty post.", "status": "verified"},
+    {"id": 10, "date": "2026-05-29", "site": "wood", "species": "robin", "count": 1, "notes": "", "status": "verified"},
+    {"id": 11, "date": "2026-05-30", "site": "marsh", "species": "blue-tit", "count": 5, "notes": "", "status": "verified"},
+    {"id": 12, "date": "2026-05-30", "site": "lake", "species": "heron", "count": 2, "notes": "Fishing in the shallows.", "status": "verified"},
+    {"id": 13, "date": "2026-05-31", "site": "marsh", "species": "wren", "count": 1, "notes": "", "status": "verified"},
+    {"id": 14, "date": "2026-06-01", "site": "wood", "species": "blackbird", "count": 3, "notes": "Carrying food.", "status": "verified"},
+    {"id": 15, "date": "2026-06-03", "site": "lake", "species": "robin", "count": 2, "notes": "", "status": "verified"},
+    {"id": 16, "date": "2026-06-04", "site": "marsh", "species": "heron", "count": 1, "notes": "Standing in the reeds all morning.", "status": "verified"},
+    {"id": 17, "date": "2026-06-05", "site": "wood", "species": "blue-tit", "count": 6, "notes": "", "status": "verified"},
+    {"id": 18, "date": "2026-06-05", "site": "lake", "species": "blackbird", "count": 3, "notes": "", "status": "verified"},
+    {"id": 19, "date": "2026-06-06", "site": "marsh", "species": "robin", "count": 1, "notes": "", "status": "verified"},
+    {"id": 20, "date": "2026-06-07", "site": "wood", "species": "wren", "count": 2, "notes": "Alarm calls by the stile.", "status": "verified"},
+    {"id": 21, "date": "2026-06-08", "site": "lake", "species": "kingfisher", "count": 1, "notes": "", "status": "verified"},
+    {"id": 22, "date": "2026-06-09", "site": "marsh", "species": "blue-tit", "count": 4, "notes": "At the feeder by the gate.", "status": "verified"}
+  ]
+}

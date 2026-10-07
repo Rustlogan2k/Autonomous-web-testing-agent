@@ -1,0 +1,323 @@
+{
+  "app_id": "tally",
+  "name": "Tally",
+  "domain": "club governance: electing a members' club chair by ranked ballot at the AGM (instant-runoff count)",
+  "user_goal": "Run the AGM election: issue ballot papers one at a time, let each member rank the candidates, close the poll, step through the count round by round, and publish the declaration.",
+  "architecture": "single-url-server-phase-machine+fetch-ballot-panel+client-round-stepper",
+  "stack": "node-builtins+json-files",
+  "persistence": "one JSON file per session: poll phase, issued papers (number, member, started, used, void), ballots (paper, preferences), the kiosk's current paper, and the count and declaration once made",
+  "entry": "/poll",
+  "start": ["node", "src/server.js"],
+  "dockerfile": true,
+  "workflow_graph": {
+    "kind": ["phase-machine", "kiosk-loop", "round-stepper", "state-machine"],
+    "nodes": ["poll:open", "poll:open:paper-ready", "poll:open:ballot-panel", "poll:open:blank-paper", "poll:closing", "poll:counted", "poll:counted:round", "poll:declared", "declaration", "register", "ballots", "help"],
+    "edges": [
+      ["poll:open", "poll:open:paper-ready"],
+      ["poll:open:paper-ready", "poll:open:ballot-panel"],
+      ["poll:open:ballot-panel", "poll:open:ballot-panel"],
+      ["poll:open:ballot-panel", "poll:open:paper-ready"],
+      ["poll:open", "poll:open:blank-paper"],
+      ["poll:open", "poll:closing"],
+      ["poll:open:paper-ready", "poll:closing"],
+      ["poll:closing", "poll:open"],
+      ["poll:closing", "poll:counted"],
+      ["poll:counted", "poll:counted:round"],
+      ["poll:counted:round", "poll:counted:round"],
+      ["poll:counted", "poll:declared"],
+      ["poll:declared", "declaration"],
+      ["poll:open", "register"],
+      ["poll:counted", "ballots"],
+      ["poll:open", "help"],
+      ["register", "poll:open"],
+      ["ballots", "poll:counted"],
+      ["help", "poll:open"],
+      ["declaration", "poll:declared"]
+    ]
+  },
+  "features": ["single-url", "server-state", "client-state", "state-machine", "table", "enable-disable", "dynamic-validation", "aggregation"],
+  "vocabulary": {
+    "progress_keys": ["act.next_voter", "act.start_ballot", "act.cast_ballot", "act.close_poll", "act.confirm_close", "act.publish_declaration", "act.round_next", "act.round_prev"]
+  },
+  "regions": {
+    "ballots_cast": "#ballots-cast",
+    "papers_issued": "#papers-issued",
+    "kiosk_status": "#kiosk-status",
+    "round_number": "#round-number",
+    "round_outcome": "#round-outcome",
+    "round_leader_votes": "#round-leader-votes",
+    "round_continuing": "#round-continuing",
+    "declared_name": "#declared-name",
+    "declared_votes": "#declared-votes",
+    "declared_continuing": "#declared-continuing"
+  },
+  "workflows": [
+    {
+      "name": "one ballot for Ada, close and count",
+      "trace": [
+        {"type": "CLICK", "id": "next-voter"},
+        {"type": "CLICK", "id": "start-ballot"},
+        {"type": "SELECT", "id": "pref-1", "params": {"option": "cand-a"}},
+        {"type": "CLICK", "id": "cast-ballot"},
+        {"type": "CLICK", "id": "close-poll"},
+        {"type": "CLICK", "id": "confirm-close"}
+      ],
+      "expect": [
+        {"region": "round_outcome", "contains": "Dev Patel"},
+        {"region": "round_number", "contains": "3"},
+        {"region": "round_leader_votes", "contains": "6"},
+        {"region": "round_continuing", "contains": "11"},
+        {"region": "ballots_cast", "contains": "12"}
+      ]
+    },
+    {
+      "name": "step back one round",
+      "trace": [
+        {"type": "CLICK", "id": "close-poll"},
+        {"type": "CLICK", "id": "confirm-close"},
+        {"type": "CLICK", "id": "round-prev"}
+      ],
+      "expect": [
+        {"region": "round_number", "contains": "2"},
+        {"region": "round_outcome", "contains": "Ada Okoro"},
+        {"region": "round_leader_votes", "contains": "5"}
+      ]
+    },
+    {
+      "name": "issue a paper",
+      "trace": [
+        {"type": "CLICK", "id": "next-voter"}
+      ],
+      "expect": [
+        {"region": "papers_issued", "contains": "12"},
+        {"region": "ballots_cast", "contains": "11"}
+      ]
+    },
+    {
+      "name": "publish the declaration",
+      "trace": [
+        {"type": "CLICK", "id": "close-poll"},
+        {"type": "CLICK", "id": "confirm-close"},
+        {"type": "CLICK", "id": "publish-declaration"}
+      ],
+      "expect": [
+        {"region": "declared_name", "contains": "Dev Patel"},
+        {"region": "declared_votes", "contains": "6"},
+        {"region": "declared_continuing", "contains": "11"}
+      ]
+    },
+    {
+      "name": "a member ranks two candidates",
+      "trace": [
+        {"type": "CLICK", "id": "next-voter"},
+        {"type": "CLICK", "id": "start-ballot"},
+        {"type": "SELECT", "id": "pref-1", "params": {"option": "cand-b"}},
+        {"type": "SELECT", "id": "pref-2", "params": {"option": "cand-a"}},
+        {"type": "CLICK", "id": "cast-ballot"}
+      ],
+      "expect": [
+        {"region": "ballots_cast", "contains": "12"},
+        {"region": "papers_issued", "contains": "12"},
+        {"region": "kiosk_status", "contains": "12"}
+      ]
+    }
+  ],
+  "state_dependent": [
+    {
+      "name": "Cast ballot records a ballot on an unused paper and is refused on the same paper once used",
+      "useless": {
+        "trace": [
+          {"type": "CLICK", "id": "next-voter"},
+          {"type": "CLICK", "id": "start-ballot"},
+          {"type": "SELECT", "id": "pref-1", "params": {"option": "cand-a"}},
+          {"type": "CLICK", "id": "cast-ballot"}
+        ],
+        "action": {"type": "CLICK", "id": "cast-ballot"}
+      },
+      "useful": {
+        "trace": [
+          {"type": "CLICK", "id": "next-voter"},
+          {"type": "CLICK", "id": "start-ballot"},
+          {"type": "SELECT", "id": "pref-1", "params": {"option": "cand-a"}}
+        ],
+        "action": {"type": "CLICK", "id": "cast-ballot"}
+      }
+    },
+    {
+      "name": "Close poll moves to closing when no voter is part-way through a ballot, and is refused while one is",
+      "useless": {
+        "trace": [
+          {"type": "CLICK", "id": "next-voter"},
+          {"type": "CLICK", "id": "start-ballot"}
+        ],
+        "action": {"type": "CLICK", "id": "close-poll"}
+      },
+      "useful": {
+        "trace": [],
+        "action": {"type": "CLICK", "id": "close-poll"}
+      }
+    },
+    {
+      "name": "Publish declaration acts in the counted phase and is refused once published",
+      "useless": {
+        "trace": [
+          {"type": "CLICK", "id": "close-poll"},
+          {"type": "CLICK", "id": "confirm-close"},
+          {"type": "CLICK", "id": "publish-declaration"},
+          {"type": "CLICK", "id": "nav-poll"}
+        ],
+        "action": {"type": "CLICK", "id": "publish-declaration"}
+      },
+      "useful": {
+        "trace": [
+          {"type": "CLICK", "id": "close-poll"},
+          {"type": "CLICK", "id": "confirm-close"}
+        ],
+        "action": {"type": "CLICK", "id": "publish-declaration"}
+      }
+    }
+  ],
+  "decoys": [
+    {
+      "name": "Print a blank ballot paper",
+      "trace": [],
+      "decoy": {"type": "CLICK", "id": "print-paper"}
+    },
+    {
+      "name": "Rules of the count",
+      "trace": [],
+      "decoy": {"type": "CLICK", "id": "nav-help"}
+    }
+  ],
+  "faults": [
+    {
+      "fault_id": "TALLY-1",
+      "fault_class": "constraint_bypass",
+      "subtype": "form-submission",
+      "defect_type": "double submission: the server does not refuse a used ballot paper",
+      "oracle": "extension",
+      "description": "Each ballot is tied to the paper issued to the voter, and a paper may be used once. The server looks the paper up without the 'not yet used' condition, so pressing Cast ballot again (or rapidly) records the same voter's ballot several times.",
+      "trigger_condition": "Issue a paper, start the ballot, rank a candidate and press Cast ballot several times in quick succession.",
+      "expected_behaviour": "One paper, one ballot.",
+      "observable_violation": "'Ballots cast: 16' with 'Papers issued: 12'.",
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "/poll$",
+          "expression": "cast <= issued",
+          "operands": {"cast": "ballots_cast", "issued": "papers_issued"},
+          "describes": "there are never more ballots than papers issued"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 4,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "next-voter"},
+        {"type": "CLICK", "id": "start-ballot"},
+        {"type": "SELECT", "id": "pref-1", "params": {"option": "cand-a"}},
+        {"type": "RAPID_CLICK", "id": "cast-ballot"}
+      ],
+      "patch": {
+        "file": "src/poll.js",
+        "find": "const paper = poll.papers.find((p) => p.number === body.paper && !p.used);",
+        "replace": "const paper = poll.papers.find((p) => p.number === body.paper);"
+      }
+    },
+    {
+      "fault_id": "TALLY-2",
+      "fault_class": "calculation_error",
+      "subtype": "calculation",
+      "defect_type": "boundary off-by-one: exactly half of the continuing ballots treated as a majority",
+      "oracle": "extension",
+      "description": "Election needs more than half of the continuing ballots. The test uses >= instead of >, so a candidate with exactly half is declared elected in that round instead of the count continuing.",
+      "trigger_condition": "Cast one more first preference for the round-1 leader so that it holds exactly half of the ballots, then close and count.",
+      "expected_behaviour": "Elected means more than half of the continuing ballots.",
+      "observable_violation": "Round 1 of 1: 'Dev Patel is elected' with 6 of 12 continuing ballots.",
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "/poll$",
+          "expression": "leader * 2 > continuing",
+          "operands": {"leader": "round_leader_votes", "continuing": "round_continuing"},
+          "guard": {"region": "round_outcome", "contains": "elected"},
+          "describes": "a candidate is elected only with more than half of the continuing ballots"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 6,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "next-voter"},
+        {"type": "CLICK", "id": "start-ballot"},
+        {"type": "SELECT", "id": "pref-1", "params": {"option": "cand-d"}},
+        {"type": "CLICK", "id": "cast-ballot"},
+        {"type": "CLICK", "id": "close-poll"},
+        {"type": "CLICK", "id": "confirm-close"}
+      ],
+      "patch": {
+        "file": "src/count.js",
+        "find": "if (top.votes * 2 > continuing) {",
+        "replace": "if (top.votes * 2 >= continuing) {"
+      }
+    },
+    {
+      "fault_id": "TALLY-3",
+      "fault_class": "state_corruption",
+      "subtype": "wrong-target",
+      "defect_type": "the declaration reads the first round's leader instead of the final round's",
+      "oracle": "extension",
+      "description": "Publishing the declaration takes the elected candidate from rounds[0] instead of the last round. When transfers change the leader, the declaration names the first-round leader (with that candidate's final-round votes).",
+      "trigger_condition": "Cast ballots so that transfers overturn the round-1 leader, close, count and publish the declaration.",
+      "expected_behaviour": "The declaration names the candidate the count elected.",
+      "observable_violation": "The declaration names Dev Patel with 6 of 13 votes; the count elected Bram Lindqvist with 7 of 13.",
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "/declaration$",
+          "expression": "votes * 2 > continuing",
+          "operands": {"votes": "declared_votes", "continuing": "declared_continuing"},
+          "describes": "the declared candidate has a majority of the continuing ballots in the final round"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 12,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "next-voter"},
+        {"type": "CLICK", "id": "start-ballot"},
+        {"type": "SELECT", "id": "pref-1", "params": {"option": "cand-b"}},
+        {"type": "CLICK", "id": "cast-ballot"},
+        {"type": "CLICK", "id": "next-voter"},
+        {"type": "CLICK", "id": "start-ballot"},
+        {"type": "SELECT", "id": "pref-1", "params": {"option": "cand-a"}},
+        {"type": "SELECT", "id": "pref-2", "params": {"option": "cand-b"}},
+        {"type": "CLICK", "id": "cast-ballot"},
+        {"type": "CLICK", "id": "close-poll"},
+        {"type": "CLICK", "id": "confirm-close"},
+        {"type": "CLICK", "id": "publish-declaration"}
+      ],
+      "patch": {
+        "file": "src/declaration.js",
+        "find": "const elected = count.rounds[count.rounds.length - 1].leader;",
+        "replace": "const elected = count.rounds[0].leader;"
+      }
+    }
+  ],
+  "benign_traces": [
+    [
+      {"type": "CLICK", "id": "next-voter"},
+      {"type": "CLICK", "id": "start-ballot"},
+      {"type": "SELECT", "id": "pref-1", "params": {"option": "cand-a"}},
+      {"type": "CLICK", "id": "cast-ballot"},
+      {"type": "CLICK", "id": "close-poll"},
+      {"type": "CLICK", "id": "confirm-close"},
+      {"type": "CLICK", "id": "round-prev"},
+      {"type": "CLICK", "id": "publish-declaration"}
+    ],
+    [
+      {"type": "CLICK", "id": "nav-register"},
+      {"type": "CLICK", "id": "nav-help"}
+    ]
+  ]
+}

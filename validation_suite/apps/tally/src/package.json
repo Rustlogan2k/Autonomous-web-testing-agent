@@ -1,0 +1,6 @@
+{
+  "name": "tally",
+  "private": true,
+  "type": "module",
+  "description": "ES modules for the server (src/*.js). The browser script src/static/poll.js is a classic script. No dependencies."
+}

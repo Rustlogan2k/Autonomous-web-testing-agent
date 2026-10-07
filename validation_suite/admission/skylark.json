@@ -1,0 +1,653 @@
+{
+  "app_id": "skylark",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "# tests 28",
+          "# pass 28",
+          "# fail 0"
+        ],
+        "pass_lines": 1,
+        "tail": []
+      }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "f8060aaacbb6e7cd4069edf2bc07047815d86094aadf84ccb46f358275be11dc",
+        "fresh_context_sha": [
+          "f8060aaacbb6e7cd4069edf2bc07047815d86094aadf84ccb46f358275be11dc",
+          "f8060aaacbb6e7cd4069edf2bc07047815d86094aadf84ccb46f358275be11dc"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault SKY-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "SKY-1",
+        "subtype": "incorrect-navigation",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 7,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False shown=22 total=23"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 17,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 166.2
+      }
+    },
+    {
+      "name": "fault SKY-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "SKY-2",
+        "subtype": "persistence",
+        "oracle": "extension",
+        "fault_class": "persistence_failure",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='Heron \u00d7 1 at Marsh hide, today' after='No species yet \u00d7 1 at Marsh hide,"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 66.1
+      }
+    },
+    {
+      "name": "fault SKY-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "SKY-3",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False total=31 marsh + wood + lake=28"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 109.3
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 101,
+      "keys_used_by_source": 86,
+      "action_keys": 14,
+      "unused_keys": [
+        "error.already_doubtful",
+        "error.already_verified",
+        "error.count",
+        "error.date_early",
+        "error.date_format",
+        "error.date_future",
+        "error.notes",
+        "error.review",
+        "error.site",
+        "error.species",
+        "flash.flagged",
+        "flash.recorded",
+        "flash.restored",
+        "missing.body",
+        "missing.title"
+      ],
+      "default_action_labels": {
+        "act.apply_filter": "Show sightings",
+        "act.back_to_feed": "Back to sightings",
+        "act.back_to_sites": "All sites",
+        "act.change_site": "Change site",
+        "act.choose_site": "Choose this site",
+        "act.discard_draft": "Discard draft",
+        "act.flag_doubtful": "Flag as doubtful",
+        "act.load_more": "Load more",
+        "act.new_sighting": "Record a sighting",
+        "act.restore": "Restore to verified",
+        "act.save_sighting": "Save sighting",
+        "act.share": "Share",
+        "act.show_map": "Show on map",
+        "act.site_sightings": "See the sightings from here"
+      },
+      "alt_action_labels": {
+        "act.apply_filter": "Filter list",
+        "act.back_to_feed": "Return to the register",
+        "act.back_to_sites": "Every place",
+        "act.change_site": "Pick another place",
+        "act.choose_site": "Use this place",
+        "act.discard_draft": "Clear the form",
+        "act.flag_doubtful": "Mark as doubtful",
+        "act.load_more": "Show older records",
+        "act.new_sighting": "Add a record",
+        "act.restore": "Mark verified again",
+        "act.save_sighting": "Add to register",
+        "act.share": "Copy link",
+        "act.show_map": "Map view",
+        "act.site_sightings": "Records from this place"
+      }
+    },
+    "patch_sizes": {
+      "SKY-1": {
+        "file": "src/sightings.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 39
+      },
+      "SKY-2": {
+        "file": "src/static/record.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 72
+      },
+      "SKY-3": {
+        "file": "src/static/feed.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 13
+      }
+    },
+    "workflows": [
+      {
+        "name": "load every page of the feed [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "record a heron at the marsh hide [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "filter the feed to the marsh hide [default vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "flag s20 as doubtful [default vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a doubtful sighting stays listed but leaves the tallies [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "an unsent sighting survives a reload of the record form [default vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "load every page of the feed [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "record a heron at the marsh hide [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "filter the feed to the marsh hide [alt vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "flag s20 as doubtful [alt vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a doubtful sighting stays listed but leaves the tallies [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "an unsent sighting survives a reload of the record form [alt vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "Save sighting is refused without a species and records the sighting once one is chosen",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "Flag as doubtful changes a verified sighting and is refused on one already flagged",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "Share on a sighting's page",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "Show on map on a sighting's page",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "SKY-1",
+        "subtype": "incorrect-navigation",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 7,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False shown=22 total=23"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 17,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "new-sighting"
+          },
+          {
+            "type": "CLICK",
+            "id": "choose-site"
+          },
+          {
+            "type": "SELECT",
+            "id": "species",
+            "params": {
+              "option": "heron"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-sighting"
+          },
+          {
+            "type": "CLICK",
+            "id": "load-more"
+          },
+          {
+            "type": "CLICK",
+            "id": "load-more"
+          },
+          {
+            "type": "CLICK",
+            "id": "load-more"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 166.2
+      },
+      {
+        "fault_id": "SKY-2",
+        "subtype": "persistence",
+        "oracle": "extension",
+        "fault_class": "persistence_failure",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='Heron \u00d7 1 at Marsh hide, today' after='No species yet \u00d7 1 at Marsh hide,"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "new-sighting"
+          },
+          {
+            "type": "CLICK",
+            "id": "choose-site"
+          },
+          {
+            "type": "SELECT",
+            "id": "species",
+            "params": {
+              "option": "heron"
+            }
+          },
+          {
+            "type": "REFRESH"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 66.1
+      },
+      {
+        "fault_id": "SKY-3",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False total=31 marsh + wood + lake=28"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "load-more"
+          },
+          {
+            "type": "CLICK",
+            "id": "sighting-s14"
+          },
+          {
+            "type": "CLICK",
+            "id": "flag-doubtful"
+          },
+          {
+            "type": "CLICK",
+            "id": "back-to-feed"
+          },
+          {
+            "type": "CLICK",
+            "id": "load-more"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 109.3
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
+    }
+  },
+  "admitted": true,
+  "checks_run": 20,
+  "checks_failed": [],
+  "browser_checks_run": true,
+  "docker_checks_run": false,
+  "wall_clock_s": 498.6
+}

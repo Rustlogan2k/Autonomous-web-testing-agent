@@ -1,0 +1,49 @@
+:root { --pitch: #1f5b3a; --chalk: #f4f7f2; --ink: #1b241e; --line: #cdd8cf; --soft: #5d6b61; --flag: #b8461b; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.5 "Segoe UI", system-ui, sans-serif; color: var(--ink); background: var(--chalk); }
+.masthead { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 1.2rem; padding: .7rem 1.4rem;
+  background: var(--pitch); color: #fff; }
+.brand { margin: 0; font-weight: 700; font-size: 1.15rem; }
+.brand .league { font-weight: 400; font-size: .85rem; opacity: .85; margin-left: .4rem; }
+.portal-name { margin: 0; padding: .1rem .55rem; border: 1px solid rgba(255, 255, 255, .5); border-radius: 999px; font-size: .85rem; }
+.portal-nav { display: flex; gap: 1rem; margin-left: auto; }
+.portal-nav a { color: #e6f3ea; }
+.portal-nav a.switch { font-weight: 600; }
+.sheet { max-width: 62rem; margin: 0 auto; padding: 1.2rem 1.4rem 2rem; }
+.foot { text-align: center; color: var(--soft); font-size: .8rem; padding: 1rem; }
+h1 { font-size: 1.45rem; margin: .2rem 0 .6rem; }
+h2 { font-size: 1.1rem; margin: 1.4rem 0 .4rem; }
+.lead { font-size: 1.02rem; }
+.muted { color: var(--soft); }
+.flash { min-height: 1.4rem; margin: 0 0 .6rem; color: var(--pitch); font-weight: 600; }
+.doors { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
+.door { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 1rem; }
+.door h2 { margin-top: 0; }
+.door-link, a.primary { display: inline-block; padding: .3rem .8rem; border-radius: 4px; background: var(--pitch); color: #fff; text-decoration: none; }
+.club-doors { list-style: none; padding: 0; margin: 0; display: grid; gap: .3rem; }
+table { border-collapse: collapse; width: 100%; background: #fff; }
+th, td { padding: .35rem .55rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+th { font-size: .85rem; color: var(--soft); }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.pts { font-weight: 700; }
+.actions form { display: inline; }
+button { font: inherit; padding: .25rem .7rem; border: 1px solid var(--pitch); border-radius: 4px; background: var(--pitch); color: #fff; cursor: pointer; }
+th button { background: none; color: var(--pitch); border: none; padding: 0; font-weight: 700; text-decoration: underline; }
+th[aria-sort="descending"] button::after { content: " \25BE"; }
+button.star { background: #fff; color: var(--pitch); }
+button.star[aria-pressed="true"] { background: #f3d36b; color: var(--ink); border-color: #c9a227; }
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: .3rem 1rem; }
+.facts dd { margin: 0; }
+.status { padding: .05rem .5rem; border-radius: 4px; background: #e8eee9; }
+.status.st-confirmed { background: #d4ecd9; }
+.status.st-disputed { background: #f7dccf; color: var(--flag); }
+.score { font-size: 1.3rem; }
+.dispute { border-left: 3px solid var(--flag); padding-left: .7rem; }
+.refusal { color: var(--flag); }
+.field label { display: block; font-weight: 600; margin-bottom: .2rem; }
+.field input[type="text"] { width: 100%; max-width: 32rem; padding: .35rem; }
+.field select { padding: .25rem; min-width: 5rem; }
+.basis { margin-top: .6rem; }
+body.print-layout .masthead, body.print-layout .foot { background: #fff; color: var(--ink); }
+body.print-layout .portal-nav a { color: var(--ink); }
+body.print-layout table, body.print-layout th, body.print-layout td { border: 1px solid #000; }

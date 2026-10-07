@@ -1,0 +1,307 @@
+{
+  "app_id": "larder",
+  "name": "Larder",
+  "domain": "home cooking: a personal recipe box with serving scaling, unit conversion and a shopping list",
+  "user_goal": "Open a saved recipe, scale it to the number of people, read it in metric or US measures, and build a shopping list from it.",
+  "architecture": "spa-history-router+master-detail+json-api",
+  "stack": "node-builtins+json-files",
+  "persistence": "one JSON file per session (servings chosen per recipe, shopping list, kitchen settings); the client keeps the current route in History API state and the kitchen settings it last saved in memory (optimistic merge after each save)",
+  "entry": "/recipes",
+  "start": ["node", "src/server.js"],
+  "dockerfile": true,
+  "workflow_graph": {
+    "kind": ["master-detail", "hub-and-spoke", "revisit"],
+    "nodes": ["recipes", "recipe:ingredients", "recipe:method", "recipe:share-panel", "recipe:print-layout", "list", "settings", "conversions", "not-found"],
+    "edges": [
+      ["recipes", "recipe:ingredients"],
+      ["recipe:ingredients", "recipe:ingredients"],
+      ["recipe:ingredients", "recipe:method"],
+      ["recipe:method", "recipe:ingredients"],
+      ["recipe:method", "recipe:method"],
+      ["recipe:ingredients", "recipe:share-panel"],
+      ["recipe:ingredients", "recipe:print-layout"],
+      ["recipe:print-layout", "recipe:ingredients"],
+      ["recipe:ingredients", "recipes"],
+      ["recipe:ingredients", "list"],
+      ["recipes", "list"],
+      ["list", "list"],
+      ["list", "recipes"],
+      ["recipes", "settings"],
+      ["recipe:ingredients", "settings"],
+      ["settings", "settings"],
+      ["settings", "recipes"],
+      ["recipes", "conversions"],
+      ["conversions", "recipes"],
+      ["not-found", "recipes"]
+    ]
+  },
+  "features": ["spa", "history-api-routing", "master-detail", "client-state", "server-state", "table", "cross-page-state", "reload-persistence", "unit-conversion"],
+  "vocabulary": {
+    "progress_keys": ["act.add_to_list", "act.serve_more", "act.serve_less", "act.save_measures", "act.save_oven", "act.clear_ticked", "act.tick"]
+  },
+  "regions": {
+    "crumb_ref": "#crumb-ref",
+    "detail_ref": "#detail-ref",
+    "detail_serves": "#detail-serves",
+    "line1_metric": "#m-1",
+    "line1_us": "#u-1",
+    "line1_unit": "#unit-1",
+    "settings_summary": "#settings-summary",
+    "list_lines": "#list-lines",
+    "list_count": "#list-count",
+    "notice": "#notice",
+    "method_steps": "#method-steps"
+  },
+  "workflows": [
+    {
+      "name": "scale Shortbread to 6 and add it to the shopping list",
+      "trace": [
+        {"type": "CLICK", "id": "recipe-r1"},
+        {"type": "CLICK", "id": "serve-more"},
+        {"type": "CLICK", "id": "serve-more"},
+        {"type": "CLICK", "id": "add-to-list"},
+        {"type": "CLICK", "id": "nav-list"}
+      ],
+      "expect": [
+        {"region": "list_lines", "contains": "375 g"},
+        {"region": "list_lines", "contains": "187.5 g"},
+        {"region": "list_count", "contains": "3"}
+      ]
+    },
+    {
+      "name": "switch to US measures and open Shortbread",
+      "trace": [
+        {"type": "CLICK", "id": "nav-units"},
+        {"type": "SELECT", "id": "unit-system", "params": {"option": "us"}},
+        {"type": "CLICK", "id": "save-measures"},
+        {"type": "CLICK", "id": "nav-recipes"},
+        {"type": "CLICK", "id": "recipe-r1"}
+      ],
+      "expect": [
+        {"region": "line1_us", "contains": "8.8"},
+        {"region": "line1_metric", "contains": "250"},
+        {"region": "detail_ref", "contains": "1"}
+      ]
+    },
+    {
+      "name": "open Pancakes, then its method",
+      "trace": [
+        {"type": "CLICK", "id": "recipe-r2"},
+        {"type": "CLICK", "id": "tab-method"}
+      ],
+      "expect": [
+        {"region": "crumb_ref", "contains": "2"},
+        {"region": "detail_ref", "contains": "2"},
+        {"region": "method_steps", "contains": "batter"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "tick an item off the shopping list",
+      "trace": [
+        {"type": "CLICK", "id": "recipe-r2"},
+        {"type": "CLICK", "id": "add-to-list"},
+        {"type": "CLICK", "id": "nav-list"},
+        {"type": "CLICK", "id": "tick-i2"}
+      ],
+      "expect": [
+        {"region": "list_count", "contains": "2"},
+        {"region": "list_lines", "contains": "300 ml"}
+      ]
+    },
+    {
+      "name": "bake Shortbread in Fahrenheit",
+      "trace": [
+        {"type": "CLICK", "id": "nav-units"},
+        {"type": "SELECT", "id": "oven-scale", "params": {"option": "fahrenheit"}},
+        {"type": "CLICK", "id": "save-oven"},
+        {"type": "CLICK", "id": "nav-recipes"},
+        {"type": "CLICK", "id": "recipe-r1"},
+        {"type": "CLICK", "id": "tab-method"}
+      ],
+      "expect": [
+        {"region": "method_steps", "contains": "320"},
+        {"region": "crumb_ref", "contains": "1"}
+      ]
+    },
+    {
+      "name": "Back after opening two recipes shows the first",
+      "trace": [
+        {"type": "CLICK", "id": "recipe-r3"},
+        {"type": "CLICK", "id": "recipe-r4"},
+        {"type": "BROWSER_BACK"}
+      ],
+      "expect": [
+        {"region": "crumb_ref", "contains": "3"},
+        {"region": "detail_ref", "contains": "3"},
+        {"region": "line1_metric", "contains": "800"}
+      ],
+      "commits": false
+    }
+  ],
+  "state_dependent": [
+    {
+      "name": "Add to shopping list adds a recipe once and is refused for a recipe already on the list",
+      "useless": {
+        "trace": [{"type": "CLICK", "id": "recipe-r1"}, {"type": "CLICK", "id": "add-to-list"}],
+        "action": {"type": "CLICK", "id": "add-to-list"}
+      },
+      "useful": {
+        "trace": [{"type": "CLICK", "id": "recipe-r1"}],
+        "action": {"type": "CLICK", "id": "add-to-list"}
+      }
+    },
+    {
+      "name": "One fewer lowers the servings above 1 and changes nothing at 1",
+      "useless": {
+        "trace": [
+          {"type": "CLICK", "id": "recipe-r1"},
+          {"type": "CLICK", "id": "serve-less"},
+          {"type": "CLICK", "id": "serve-less"},
+          {"type": "CLICK", "id": "serve-less"}
+        ],
+        "action": {"type": "CLICK", "id": "serve-less"}
+      },
+      "useful": {
+        "trace": [{"type": "CLICK", "id": "recipe-r1"}],
+        "action": {"type": "CLICK", "id": "serve-less"}
+      }
+    }
+  ],
+  "decoys": [
+    {
+      "name": "Print view on a recipe",
+      "trace": [{"type": "CLICK", "id": "recipe-r1"}],
+      "decoy": {"type": "CLICK", "id": "print-view"}
+    },
+    {
+      "name": "Share recipe",
+      "trace": [{"type": "CLICK", "id": "recipe-r2"}],
+      "decoy": {"type": "CLICK", "id": "share-recipe"}
+    }
+  ],
+  "faults": [
+    {
+      "fault_id": "LARD-1",
+      "fault_class": "calculation_error",
+      "subtype": "calculation",
+      "defect_type": "unit conversion of a scaled quantity",
+      "oracle": "extension",
+      "description": "In US measures, weight ingredients are converted from the recipe's base quantity instead of the scaled quantity (volume ingredients use the scaled one), so once the servings are changed the ounces no longer match the grams shown beside them.",
+      "trigger_condition": "Save US measures, open a recipe whose first line is a weight and change its servings.",
+      "expected_behaviour": "A weight's US amount is always the metric amount on screen converted to ounces.",
+      "observable_violation": "Shortbread for 5 shows flour 312.5 g beside 8.8 oz (8.8 oz is 250 g; 312.5 g is 11.0 oz).",
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "/recipes/r\\d+$",
+          "expression": "us == round(metric / 28.35, 1)",
+          "tolerance": 0.051,
+          "operands": {"us": "line1_us", "metric": "line1_metric"},
+          "guard": {"region": "line1_unit", "contains": "g"},
+          "describes": "a weight ingredient's US amount is its displayed metric amount in ounces"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 6,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "nav-units"},
+        {"type": "SELECT", "id": "unit-system", "params": {"option": "us"}},
+        {"type": "CLICK", "id": "save-measures"},
+        {"type": "CLICK", "id": "nav-recipes"},
+        {"type": "CLICK", "id": "recipe-r1"},
+        {"type": "CLICK", "id": "serve-more"}
+      ],
+      "patch": {
+        "file": "src/static/units.js",
+        "find": "if (line.unit === \"g\") return ounces(line.scaled); // weights convert the amount on screen",
+        "replace": "if (line.unit === \"g\") return ounces(line.base); // weights convert the amount on screen"
+      }
+    },
+    {
+      "fault_id": "LARD-2",
+      "fault_class": "broken_transition",
+      "subtype": "incorrect-navigation",
+      "defect_type": "History API state recorded for the wrong entry",
+      "oracle": "extension",
+      "description": "When a recipe is opened from the list, pushState stores the recipe that was on screen before (not the one being opened) in the new history entry. Back renders the detail pane from that state, so after visiting three recipes Back shows the first recipe under the second recipe's address.",
+      "trigger_condition": "Open three recipes from the list one after another, then go Back.",
+      "expected_behaviour": "Back and Forward show the recipe whose address they land on.",
+      "observable_violation": "At /recipes/r2 the breadcrumb says recipe 2 while the detail pane shows Shortbread (recipe 1).",
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "/recipes/r\\d+$",
+          "expression": "shown == crumb",
+          "operands": {"shown": "detail_ref", "crumb": "crumb_ref"},
+          "describes": "the detail pane shows the recipe the address names"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 4,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "recipe-r1"},
+        {"type": "CLICK", "id": "recipe-r2"},
+        {"type": "CLICK", "id": "recipe-r3"},
+        {"type": "BROWSER_BACK"}
+      ],
+      "patch": {
+        "file": "src/static/app.js",
+        "find": "history.pushState({ recipe: next.id }, \"\", href);",
+        "replace": "history.pushState({ recipe: current && current.id }, \"\", href);"
+      }
+    },
+    {
+      "fault_id": "LARD-3",
+      "fault_class": "persistence_failure",
+      "subtype": "persistence",
+      "defect_type": "partial update overwrites a sibling setting (merge with defaults)",
+      "oracle": "extension",
+      "description": "Each settings sub-form saves only its own field. The server merges a save into the defaults instead of into the session's current settings, so saving the Oven scale silently resets Measures to metric. The page keeps showing the client's merged copy until a reload.",
+      "trigger_condition": "Save US measures, then save an oven scale, then reload the settings page.",
+      "expected_behaviour": "Saving one group of settings never changes another.",
+      "observable_violation": "Before the reload the settings summary reads 'US cups and ounces, Fahrenheit'; after it, 'Metric, Fahrenheit'.",
+      "assertions": [
+        {
+          "kind": "region_stable_across_reload",
+          "where": "/settings$",
+          "region": "settings_summary",
+          "describes": "saved kitchen settings survive a reload unchanged"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 1,
+      "shortest_path": 6,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "nav-units"},
+        {"type": "SELECT", "id": "unit-system", "params": {"option": "us"}},
+        {"type": "CLICK", "id": "save-measures"},
+        {"type": "SELECT", "id": "oven-scale", "params": {"option": "fahrenheit"}},
+        {"type": "CLICK", "id": "save-oven"},
+        {"type": "REFRESH"}
+      ],
+      "patch": {
+        "file": "src/server.js",
+        "find": "session.settings = { ...session.settings, ...patch };",
+        "replace": "session.settings = { ...DEFAULT_SETTINGS, ...patch };"
+      }
+    }
+  ],
+  "benign_traces": [
+    [
+      {"type": "CLICK", "id": "recipe-r2"},
+      {"type": "CLICK", "id": "serve-more"},
+      {"type": "CLICK", "id": "add-to-list"},
+      {"type": "CLICK", "id": "nav-list"}
+    ],
+    [
+      {"type": "CLICK", "id": "nav-units"},
+      {"type": "SELECT", "id": "oven-scale", "params": {"option": "gas"}},
+      {"type": "CLICK", "id": "save-oven"},
+      {"type": "CLICK", "id": "nav-recipes"},
+      {"type": "CLICK", "id": "recipe-r4"}
+    ]
+  ]
+}

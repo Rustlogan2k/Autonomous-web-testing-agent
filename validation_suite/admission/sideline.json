@@ -1,0 +1,730 @@
+{
+  "app_id": "sideline",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "Ran 11 tests in 0.710s",
+          "OK"
+        ],
+        "pass_lines": null,
+        "tail": []
+      }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "14440488e6faf7c42e6448b6ceb9f433816f416d98ce5a575e83f4f62ceae54f",
+        "fresh_context_sha": [
+          "14440488e6faf7c42e6448b6ceb9f433816f416d98ce5a575e83f4f62ceae54f",
+          "14440488e6faf7c42e6448b6ceb9f433816f416d98ce5a575e83f4f62ceae54f"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault SIDE-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "SIDE-1",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 13,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'p1': 8.0, 'f1': 8.0, 'a1': 6.0, 'p2': 8.0, 'f2': 3.0, 'a2': 0.0, 'p3': 3.0, 'f"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 8,
+        "minimization_trials": 28,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 299.5
+      }
+    },
+    {
+      "name": "fault SIDE-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "SIDE-2",
+        "subtype": "cross-page",
+        "oracle": "extension",
+        "fault_class": "constraint_bypass",
+        "witness_length": 10,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False l1 + l2 + l3 + l4 + l5 + l6=20 2 * counted=18"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 8,
+        "minimization_trials": 24,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 231.0
+      }
+    },
+    {
+      "name": "fault SIDE-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "SIDE-3",
+        "subtype": "state-transition",
+        "oracle": "existing",
+        "fault_class": "broken_transition",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Confirmed",
+          "text_equals: violated=True inconclusive=False 0"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 95.8
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 119,
+      "keys_used_by_source": 76,
+      "action_keys": 22,
+      "unused_keys": [
+        "act.door_club",
+        "club.pending",
+        "club.title",
+        "dispute.hint",
+        "dispute.title",
+        "edit.correct_title",
+        "edit.enter_title",
+        "edit.goals_for",
+        "home.today",
+        "msg.confirmed_both",
+        "msg.confirmed_one",
+        "msg.corrected",
+        "msg.disputed",
+        "msg.entered",
+        "portal.club",
+        "portal.home",
+        "portal.public",
+        "portal.secretary",
+        "refuse.already_confirmed",
+        "refuse.already_disputed",
+        "refuse.goals",
+        "refuse.no_fixture",
+        "refuse.no_score",
+        "refuse.not_played",
+        "refuse.not_yours",
+        "refuse.reason_long",
+        "refuse.reason_missing",
+        "refuse.unchanged",
+        "refuse.under_dispute",
+        "refuse.you_confirmed",
+        "result.confirm_count",
+        "result.disputed_by",
+        "result.played_on",
+        "result.title",
+        "sec.confirmed_by",
+        "sec.summary",
+        "status.confirmed",
+        "status.disputed",
+        "status.provisional",
+        "status.scheduled",
+        "table.as_of",
+        "table.basis",
+        "team.standing"
+      ],
+      "default_action_labels": {
+        "act.back_to_club": "Back to your results",
+        "act.cancel_edit": "Back to the result",
+        "act.confirm": "Confirm",
+        "act.dispute": "Dispute",
+        "act.door_club": "{club} captain",
+        "act.door_public": "See the league table",
+        "act.door_secretary": "Open the secretary's desk",
+        "act.edit_result": "Correct the score",
+        "act.enter_first": "Enter the score",
+        "act.enter_score": "Enter score",
+        "act.follow": "Follow this club",
+        "act.nav_club": "Our results",
+        "act.nav_home": "Change role",
+        "act.nav_results": "Results",
+        "act.nav_sec": "All fixtures",
+        "act.nav_table": "League table",
+        "act.print_table": "Print layout",
+        "act.save_result": "Save score",
+        "act.sort_gf": "GF",
+        "act.sort_pts": "Pts",
+        "act.submit_dispute": "Send dispute",
+        "act.view_result": "Details"
+      },
+      "alt_action_labels": {
+        "act.back_to_club": "Return to club scores",
+        "act.cancel_edit": "Return to the game",
+        "act.confirm": "Agree score",
+        "act.dispute": "Challenge",
+        "act.door_club": "Captain of {club}",
+        "act.door_public": "View the standings",
+        "act.door_secretary": "Go to the results desk",
+        "act.edit_result": "Fix the score",
+        "act.enter_first": "Record the score",
+        "act.enter_score": "Record score",
+        "act.follow": "Star this team",
+        "act.nav_club": "Club scores",
+        "act.nav_home": "Switch view",
+        "act.nav_results": "Scores",
+        "act.nav_sec": "Every fixture",
+        "act.nav_table": "Standings",
+        "act.print_table": "Printer-friendly",
+        "act.save_result": "Store score",
+        "act.sort_gf": "Goals for",
+        "act.sort_pts": "Points",
+        "act.submit_dispute": "Lodge challenge",
+        "act.view_result": "Open"
+      }
+    },
+    "patch_sizes": {
+      "SIDE-1": {
+        "file": "src/standings.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 27
+      },
+      "SIDE-2": {
+        "file": "src/standings.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 31
+      },
+      "SIDE-3": {
+        "file": "src/results.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 48
+      }
+    },
+    "workflows": [
+      {
+        "name": "the secretary enters F12 0-0 and both clubs confirm it [default vocabulary]",
+        "steps": 13,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a club disputes a newly entered result [default vocabulary]",
+        "steps": 13,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "the public table is led by Cobham Town on 8 points [default vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "sorting the public table by goals for keeps the leader's cells [default vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a newly entered result waits for the home captain [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a correction sends a confirmed result back to both clubs [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "the secretary enters F12 0-0 and both clubs confirm it [alt vocabulary]",
+        "steps": 13,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a club disputes a newly entered result [alt vocabulary]",
+        "steps": 13,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "the public table is led by Cobham Town on 8 points [alt vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "sorting the public table by goals for keeps the leader's cells [alt vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a newly entered result waits for the home captain [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a correction sends a confirmed result back to both clubs [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "Confirm records a club's confirmation on a result awaiting it, and is refused on a confirmed one",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "Save score changes nothing on an unchanged score, and records a changed one as a correction",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "Print layout of the league table",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "Follow a club",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "SIDE-1",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 13,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'p1': 8.0, 'f1': 8.0, 'a1': 6.0, 'p2': 8.0, 'f2': 3.0, 'a2': 0.0, 'p3': 3.0, 'f"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 8,
+        "minimization_trials": 28,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "door-secretary"
+          },
+          {
+            "type": "CLICK",
+            "id": "enter-F7"
+          },
+          {
+            "type": "CLICK",
+            "id": "save-result"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-home"
+          },
+          {
+            "type": "CLICK",
+            "id": "door-club-bro"
+          },
+          {
+            "type": "CLICK",
+            "id": "confirm-F7"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-home"
+          },
+          {
+            "type": "CLICK",
+            "id": "door-public"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 299.5
+      },
+      {
+        "fault_id": "SIDE-2",
+        "subtype": "cross-page",
+        "oracle": "extension",
+        "fault_class": "constraint_bypass",
+        "witness_length": 10,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False l1 + l2 + l3 + l4 + l5 + l6=20 2 * counted=18"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 8,
+        "minimization_trials": 24,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "door-secretary"
+          },
+          {
+            "type": "CLICK",
+            "id": "enter-F8"
+          },
+          {
+            "type": "CLICK",
+            "id": "save-result"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-home"
+          },
+          {
+            "type": "CLICK",
+            "id": "door-club-eas"
+          },
+          {
+            "type": "CLICK",
+            "id": "confirm-F8"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-home"
+          },
+          {
+            "type": "CLICK",
+            "id": "door-public"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 231.0
+      },
+      {
+        "fault_id": "SIDE-3",
+        "subtype": "state-transition",
+        "oracle": "existing",
+        "fault_class": "broken_transition",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Confirmed",
+          "text_equals: violated=True inconclusive=False 0"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "door-secretary"
+          },
+          {
+            "type": "CLICK",
+            "id": "result-F3"
+          },
+          {
+            "type": "CLICK",
+            "id": "edit-result"
+          },
+          {
+            "type": "SELECT",
+            "id": "home-goals",
+            "params": {
+              "option": "1"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-result"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 95.8
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 2,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
+    }
+  },
+  "admitted": true,
+  "checks_run": 20,
+  "checks_failed": [],
+  "browser_checks_run": true,
+  "docker_checks_run": false,
+  "wall_clock_s": 840.3
+}

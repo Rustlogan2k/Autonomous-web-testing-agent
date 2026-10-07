@@ -1,0 +1,32 @@
+:root { --ink: #1d2433; --muted: #5d6677; --line: #d9dee8; --accent: #1f4e8c; --paper: #f7f9fc; --warn: #8c2f1f; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: var(--ink); background: var(--paper); }
+.masthead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1.5rem; padding: 0.75rem 1.5rem; background: #fff; border-bottom: 1px solid var(--line); }
+.wordmark { font-weight: 700; font-size: 1.3rem; color: var(--accent); }
+.election { color: var(--muted); }
+.masthead nav { display: flex; flex-wrap: wrap; gap: 1rem; margin-left: auto; }
+.masthead nav a { color: var(--accent); text-decoration: none; }
+.masthead nav a[aria-current] { font-weight: 700; border-bottom: 2px solid var(--accent); }
+main { max-width: 56rem; padding: 1rem 1.5rem 2rem; }
+.flash { padding: 0.5rem 0.75rem; border-radius: 4px; background: #e8f0fb; }
+.flash.error { background: #fbeae8; color: var(--warn); }
+section { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 0.75rem 1.25rem 1rem; margin: 1rem 0; }
+section h2 { margin-top: 0.25rem; font-size: 1.15rem; }
+.figures { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+.muted { color: var(--muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+form.inline { display: inline; }
+button { font: inherit; padding: 0.35rem 0.9rem; border: 1px solid var(--accent); border-radius: 4px; background: #fff; color: var(--accent); cursor: pointer; }
+button:disabled { opacity: 0.45; cursor: default; }
+fieldset { border: 1px solid var(--line); border-radius: 4px; }
+label { display: inline-block; min-width: 8rem; }
+#kiosk-status.refused { color: var(--warn); }
+.blank-paper { border: 1px dashed var(--muted); padding: 0.5rem 1rem; margin-top: 0.5rem; }
+.blank-paper ol { list-style: none; padding: 0; }
+.box { display: inline-block; width: 1.4rem; height: 1.4rem; border: 1px solid var(--ink); vertical-align: middle; margin-right: 0.5rem; }
+table { border-collapse: collapse; margin: 0.5rem 0 1rem; }
+th, td { text-align: left; padding: 0.3rem 1.25rem 0.3rem 0; border-bottom: 1px solid var(--line); }
+.outcome strong { color: var(--accent); }
+.declaration { background: #fff; border: 1px solid var(--line); padding: 1rem 2rem; }
+.declaration .elected { font-size: 1.15rem; }
+body.print-paper .officer, body.print-paper .masthead nav { display: none; }

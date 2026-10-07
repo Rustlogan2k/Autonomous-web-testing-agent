@@ -1,0 +1,701 @@
+{
+  "app_id": "tally",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "# tests 23",
+          "# pass 23",
+          "# fail 0"
+        ],
+        "pass_lines": 1,
+        "tail": []
+      }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "a4fa8cab23d88be8c34bdca7ce89d78130312ca5f173272e342b0ad0de5b6d40",
+        "fresh_context_sha": [
+          "a4fa8cab23d88be8c34bdca7ce89d78130312ca5f173272e342b0ad0de5b6d40",
+          "a4fa8cab23d88be8c34bdca7ce89d78130312ca5f173272e342b0ad0de5b6d40"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault TALLY-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "TALLY-1",
+        "subtype": "form-submission",
+        "oracle": "extension",
+        "fault_class": "constraint_bypass",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'cast': 16.0, 'issued': 12.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 66.9
+      }
+    },
+    {
+      "name": "fault TALLY-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "TALLY-2",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 6,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'leader': 6.0, 'continuing': 12.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 6,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 125.5
+      }
+    },
+    {
+      "name": "fault TALLY-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "TALLY-3",
+        "subtype": "wrong-target",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 12,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'votes': 6.0, 'continuing': 13.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 12,
+        "minimization_trials": 30,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 345.3
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 108,
+      "keys_used_by_source": 63,
+      "action_keys": 10,
+      "unused_keys": [
+        "act.cancel_close",
+        "act.close_poll",
+        "act.confirm_close",
+        "act.next_voter",
+        "act.publish_declaration",
+        "flash.all_issued",
+        "flash.already_declared",
+        "flash.closing",
+        "flash.counted",
+        "flash.declared",
+        "flash.issued",
+        "flash.not_closing",
+        "flash.not_counted",
+        "flash.not_open",
+        "flash.paper_waiting",
+        "flash.reopened",
+        "flash.tied",
+        "flash.voter_at_kiosk",
+        "help.rule_eliminate",
+        "help.rule_exhausted",
+        "help.rule_majority",
+        "help.rule_paper",
+        "help.rule_tied",
+        "help.rule_ties",
+        "kiosk.bad_ranking",
+        "kiosk.closed",
+        "kiosk.empty",
+        "kiosk.gap",
+        "kiosk.no_paper",
+        "kiosk.rank_1",
+        "kiosk.rank_2",
+        "kiosk.rank_3",
+        "kiosk.started",
+        "kiosk.twice",
+        "kiosk.used",
+        "nav.ballots",
+        "nav.declaration",
+        "nav.help",
+        "nav.poll",
+        "nav.register",
+        "phase.closing",
+        "phase.counted",
+        "phase.declared",
+        "phase.open",
+        "poll.title"
+      ],
+      "default_action_labels": {
+        "act.cancel_close": "Keep the poll open",
+        "act.cast_ballot": "Cast ballot",
+        "act.close_poll": "Close poll",
+        "act.confirm_close": "Close and count",
+        "act.next_voter": "Next voter",
+        "act.print_paper": "Print a blank paper",
+        "act.publish_declaration": "Publish declaration",
+        "act.round_next": "Next round",
+        "act.round_prev": "Previous round",
+        "act.start_ballot": "Start ballot"
+      },
+      "alt_action_labels": {
+        "act.cancel_close": "No, carry on voting",
+        "act.cast_ballot": "Submit my vote",
+        "act.close_poll": "End voting",
+        "act.confirm_close": "Yes, end voting and count",
+        "act.next_voter": "Call the next member",
+        "act.print_paper": "Printable empty paper",
+        "act.publish_declaration": "Announce the result",
+        "act.round_next": "Later round",
+        "act.round_prev": "Earlier round",
+        "act.start_ballot": "Begin voting"
+      }
+    },
+    "patch_sizes": {
+      "TALLY-1": {
+        "file": "src/poll.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 13
+      },
+      "TALLY-2": {
+        "file": "src/count.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 15
+      },
+      "TALLY-3": {
+        "file": "src/declaration.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 32
+      }
+    },
+    "workflows": [
+      {
+        "name": "one ballot for Ada, close and count [default vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "step back one round [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "issue a paper [default vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "publish the declaration [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a member ranks two candidates [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "one ballot for Ada, close and count [alt vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "step back one round [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "issue a paper [alt vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "publish the declaration [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "a member ranks two candidates [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "Cast ballot records a ballot on an unused paper and is refused on the same paper once used",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "Close poll moves to closing when no voter is part-way through a ballot, and is refused while one is",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "Publish declaration acts in the counted phase and is refused once published",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "Print a blank ballot paper",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "Rules of the count",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "TALLY-1",
+        "subtype": "form-submission",
+        "oracle": "extension",
+        "fault_class": "constraint_bypass",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'cast': 16.0, 'issued': 12.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "next-voter"
+          },
+          {
+            "type": "CLICK",
+            "id": "start-ballot"
+          },
+          {
+            "type": "SELECT",
+            "id": "pref-1",
+            "params": {
+              "option": "cand-a"
+            }
+          },
+          {
+            "type": "RAPID_CLICK",
+            "id": "cast-ballot"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 66.9
+      },
+      {
+        "fault_id": "TALLY-2",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 6,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'leader': 6.0, 'continuing': 12.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 6,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "next-voter"
+          },
+          {
+            "type": "CLICK",
+            "id": "start-ballot"
+          },
+          {
+            "type": "SELECT",
+            "id": "pref-1",
+            "params": {
+              "option": "cand-d"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "cast-ballot"
+          },
+          {
+            "type": "CLICK",
+            "id": "close-poll"
+          },
+          {
+            "type": "CLICK",
+            "id": "confirm-close"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 125.5
+      },
+      {
+        "fault_id": "TALLY-3",
+        "subtype": "wrong-target",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 12,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'votes': 6.0, 'continuing': 13.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 12,
+        "minimization_trials": 30,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "next-voter"
+          },
+          {
+            "type": "CLICK",
+            "id": "start-ballot"
+          },
+          {
+            "type": "SELECT",
+            "id": "pref-1",
+            "params": {
+              "option": "cand-b"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "cast-ballot"
+          },
+          {
+            "type": "CLICK",
+            "id": "next-voter"
+          },
+          {
+            "type": "CLICK",
+            "id": "start-ballot"
+          },
+          {
+            "type": "SELECT",
+            "id": "pref-1",
+            "params": {
+              "option": "cand-a"
+            }
+          },
+          {
+            "type": "SELECT",
+            "id": "pref-2",
+            "params": {
+              "option": "cand-b"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "cast-ballot"
+          },
+          {
+            "type": "CLICK",
+            "id": "close-poll"
+          },
+          {
+            "type": "CLICK",
+            "id": "confirm-close"
+          },
+          {
+            "type": "CLICK",
+            "id": "publish-declaration"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 345.3
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
+    }
+  },
+  "admitted": true,
+  "checks_run": 20,
+  "checks_failed": [],
+  "browser_checks_run": true,
+  "docker_checks_run": false,
+  "wall_clock_s": 696.1
+}

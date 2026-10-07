@@ -1,0 +1,199 @@
+{
+  "app_id": "dutyday",
+  "name": "Dutyday",
+  "domain": "volunteer shift rota for a community food bank",
+  "user_goal": "Fill the month's sorting, packing and delivery shifts with volunteers within each volunteer's weekly hours limit, and let volunteers withdraw from shifts.",
+  "architecture": "server-rendered-calendar+zero-javascript",
+  "stack": "python-stdlib(http.server)+sqlite",
+  "persistence": "sqlite rows partitioned by session; each shift row stores a derived status (Open / Needs n / Full) kept in step with its assignments",
+  "entry": "/rota",
+  "start": ["python", "src/server.py"],
+  "dockerfile": true,
+  "workflow_graph": {
+    "kind": ["calendar-grid", "hub-and-spoke", "revisit"],
+    "summary": "month grid is the hub; days and volunteer weeks are spokes; month and week paging by links; confirmation pages for withdrawal",
+    "nodes": ["rota/month", "rota/month+feed", "rota/print", "rota/day", "volunteers", "volunteer/week",
+              "assignment/withdraw-confirm", "help"],
+    "edges": [["rota/month", "rota/month"], ["rota/month", "rota/day"], ["rota/month", "rota/print"],
+              ["rota/month", "rota/month+feed"], ["rota/print", "rota/month"], ["rota/day", "rota/day"],
+              ["rota/day", "rota/month"], ["rota/day", "volunteer/week"], ["volunteers", "volunteer/week"],
+              ["volunteer/week", "volunteer/week"], ["volunteer/week", "assignment/withdraw-confirm"],
+              ["assignment/withdraw-confirm", "volunteer/week"], ["rota/month", "volunteers"],
+              ["volunteers", "rota/month"], ["rota/month", "help"]],
+    "shift_status": {
+      "states": ["open", "needs", "full"],
+      "derived_from": "the number of assignments (0 open, 1 needs 1, 2 full); refreshed on assign, remove and withdraw"
+    }
+  },
+  "features": ["server-rendered", "zero-javascript", "calendar-grid", "query-string-state", "server-state", "table",
+               "cross-page-state", "dynamic-validation", "date-arithmetic"],
+  "vocabulary": {"progress_keys": ["act.assign", "act.confirm_withdraw", "act.jump"]},
+  "regions": {
+    "month_title": "#month-title",
+    "day_date": "#day-date",
+    "status_morning": "#status-morning",
+    "status_afternoon": "#status-afternoon",
+    "status_evening": "#status-evening",
+    "count_morning": "#count-morning",
+    "count_afternoon": "#count-afternoon",
+    "count_evening": "#count-evening",
+    "roster_morning": "#roster-morning",
+    "roster_afternoon": "#roster-afternoon",
+    "roster_evening": "#roster-evening",
+    "flash": "#flash",
+    "week_hours": "#week-hours",
+    "next_in": "#next-in",
+    "next_when": "#next-when",
+    "vol_shifts": "#vol-shifts"
+  },
+  "workflows": [
+    {"name": "assign Chidi to Monday 15 June's morning sort",
+     "trace": [{"type": "CLICK", "id": "day-2026-06-15"},
+               {"type": "SELECT", "id": "assign-morning", "params": {"option": "chidi"}},
+               {"type": "CLICK", "id": "assign-morning-go"}],
+     "expect": [{"region": "roster_morning", "contains": "Chidi"}, {"region": "count_morning", "contains": "2"}]},
+    {"name": "page the rota to July",
+     "trace": [{"type": "CLICK", "id": "month-next"}],
+     "expect": [{"region": "month_title", "contains": "July 2026"}],
+     "commits": false},
+    {"name": "try Priya on Saturday 4 July's morning sort, over her weekly limit",
+     "trace": [{"type": "CLICK", "id": "month-next"}, {"type": "CLICK", "id": "day-2026-07-04"},
+               {"type": "SELECT", "id": "assign-morning", "params": {"option": "priya"}},
+               {"type": "CLICK", "id": "assign-morning-go"}],
+     "expect": [{"region": "flash", "contains": "12"}, {"region": "roster_morning", "absent": "Priya"}],
+     "commits": false},
+    {"name": "jump to 15 June",
+     "trace": [{"type": "TYPE", "id": "jump-date", "params": {"category": "valid_typical"}},
+               {"type": "CLICK", "id": "jump-go"}],
+     "expect": [{"region": "day_date", "contains": "15 June 2026"}],
+     "commits": false},
+    {"name": "Ana withdraws from Friday 12 June's afternoon pack",
+     "trace": [{"type": "CLICK", "id": "nav-volunteers"}, {"type": "CLICK", "id": "vol-ana"},
+               {"type": "CLICK", "id": "withdraw-a14"}, {"type": "CLICK", "id": "confirm-withdraw"}],
+     "expect": [{"region": "vol_shifts", "absent": "12 Jun"}, {"region": "week_hours", "contains": "0"}]}
+  ],
+  "state_dependent": [
+    {"name": "Assign is refused on a full shift and assigns on a shift with places",
+     "useless": {"trace": [{"type": "CLICK", "id": "day-2026-06-12"},
+                           {"type": "SELECT", "id": "assign-afternoon", "params": {"option": "chidi"}}],
+                 "action": {"type": "CLICK", "id": "assign-afternoon-go"}},
+     "useful": {"trace": [{"type": "CLICK", "id": "day-2026-06-16"},
+                          {"type": "SELECT", "id": "assign-afternoon", "params": {"option": "chidi"}}],
+                "action": {"type": "CLICK", "id": "assign-afternoon-go"}}},
+    {"name": "Confirming a withdrawal is refused for a past shift and withdraws from a future one",
+     "useless": {"trace": [{"type": "CLICK", "id": "nav-volunteers"}, {"type": "CLICK", "id": "vol-ben"},
+                           {"type": "CLICK", "id": "withdraw-a9"}],
+                 "action": {"type": "CLICK", "id": "confirm-withdraw"}},
+     "useful": {"trace": [{"type": "CLICK", "id": "nav-volunteers"}, {"type": "CLICK", "id": "vol-ana"},
+                          {"type": "CLICK", "id": "withdraw-a14"}],
+                "action": {"type": "CLICK", "id": "confirm-withdraw"}}}
+  ],
+  "decoys": [
+    {"name": "Print this month", "trace": [], "decoy": {"type": "CLICK", "id": "print-month"}},
+    {"name": "Calendar feed on the July rota", "trace": [{"type": "CLICK", "id": "month-next"}],
+     "decoy": {"type": "CLICK", "id": "calendar-feed"}}
+  ],
+  "faults": [
+    {
+      "fault_id": "DUTY-1",
+      "fault_class": "constraint_bypass",
+      "subtype": "missing-validation",
+      "defect_type": "period boundary: weekly limit summed over only the calendar month's part of the week",
+      "oracle": "extension",
+      "description": "The 12-hour weekly limit is checked over the part of the ISO week that falls in the same month as the shift being assigned. For a week spanning a month end, hours on the other side of the boundary are ignored, so Priya can be given a fourth shift that takes her to 14.5 hours.",
+      "trigger_condition": "Assign a volunteer to a shift in a week that spans a month end, when their hours in the other month's part of that week would take them over the limit (Priya on Tuesday 30 June's afternoon pack).",
+      "expected_behaviour": "Nobody is rostered for more than 12 hours in any Monday-Sunday week.",
+      "observable_violation": "Priya's week of 29 June shows 14.5 of 12 hours.",
+      "assertions": [
+        {"kind": "region_arithmetic", "where": "/volunteers/[a-z]+", "expression": "hours <= 12",
+         "operands": {"hours": "week_hours"},
+         "describes": "no volunteer is rostered for more than 12 hours in a week"}
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 4,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "day-2026-06-30"},
+        {"type": "SELECT", "id": "assign-afternoon", "params": {"option": "priya"}},
+        {"type": "CLICK", "id": "assign-afternoon-go"},
+        {"type": "CLICK", "id": "vol-priya"}
+      ],
+      "patch": {
+        "file": "src/rota.py",
+        "find": "return monday, monday + timedelta(days=6)  # the ISO week, whatever the month",
+        "replace": "return max(monday, day.replace(day=1)), min(monday + timedelta(days=6), month_end(day))  # the ISO week, whatever the month"
+      }
+    },
+    {
+      "fault_id": "DUTY-2",
+      "fault_class": "calculation_error",
+      "subtype": "calculation",
+      "defect_type": "date arithmetic: day-of-month subtraction across a month boundary",
+      "oracle": "existing",
+      "description": "'Days until next shift' subtracts day-of-month numbers instead of dates. Within June it is right; for a next shift in July it goes negative (1 - 10 = -9).",
+      "trigger_condition": "Give a volunteer with no upcoming shifts a shift in a later month, then open their page (Ben on Wednesday 1 July's morning sort).",
+      "expected_behaviour": "The days until a volunteer's next shift is the calendar difference between the two dates.",
+      "observable_violation": "Ben's page says his next shift (Wed 1 Jul) is -9 days away; it is 21.",
+      "assertions": [
+        {"kind": "text_absent", "where": "/volunteers/[a-z]+", "region": "next_in", "expected": "-",
+         "describes": "the next shift is never in the past"}
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 5,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "month-next"},
+        {"type": "CLICK", "id": "day-2026-07-01"},
+        {"type": "SELECT", "id": "assign-morning", "params": {"option": "ben"}},
+        {"type": "CLICK", "id": "assign-morning-go"},
+        {"type": "CLICK", "id": "vol-ben"}
+      ],
+      "patch": {
+        "file": "src/rota.py",
+        "find": "return (shift_day - TODAY).days",
+        "replace": "return shift_day.day - TODAY.day"
+      }
+    },
+    {
+      "fault_id": "DUTY-3",
+      "fault_class": "broken_transition",
+      "subtype": "state-transition",
+      "defect_type": "derived status not recomputed on an alternate path",
+      "oracle": "existing",
+      "description": "Withdrawing from the volunteer's own page removes the assignment but does not recompute the shift's stored status (removing from the day page does), so the shift stays 'Full' with one volunteer and the month grid stops offering it.",
+      "trigger_condition": "Withdraw a volunteer from a full shift through their own page and its confirmation page, then open that day (Ana from Friday 12 June's afternoon pack).",
+      "expected_behaviour": "A shift shown as Full always has both volunteers.",
+      "observable_violation": "Fri 12 Jun afternoon reads 'Full' with 1 volunteer assigned (of 2 needed).",
+      "assertions": [
+        {"kind": "text_absent", "where": "/rota/day/\\d{4}-\\d{2}-\\d{2}$", "region": "status_afternoon",
+         "expected": "Full", "describes": "the afternoon shift is shown as Full ..."},
+        {"kind": "text_absent", "where": "/rota/day/\\d{4}-\\d{2}-\\d{2}$", "region": "count_afternoon",
+         "expected": "1", "describes": "... while only one volunteer is assigned to it"}
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 6,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "nav-volunteers"},
+        {"type": "CLICK", "id": "vol-ana"},
+        {"type": "CLICK", "id": "withdraw-a14"},
+        {"type": "CLICK", "id": "confirm-withdraw"},
+        {"type": "CLICK", "id": "nav-rota"},
+        {"type": "CLICK", "id": "day-2026-06-12"}
+      ],
+      "patch": {
+        "file": "src/server.py",
+        "find": "    rota.refresh_status(conn, sid, shift_id)  # a withdrawal can reopen the shift\n",
+        "replace": ""
+      }
+    }
+  ],
+  "benign_traces": [
+    [{"type": "CLICK", "id": "day-2026-06-15"},
+     {"type": "SELECT", "id": "assign-morning", "params": {"option": "chidi"}},
+     {"type": "CLICK", "id": "assign-morning-go"}, {"type": "CLICK", "id": "vol-chidi"}],
+    [{"type": "CLICK", "id": "month-next"}, {"type": "CLICK", "id": "day-2026-07-04"},
+     {"type": "SELECT", "id": "assign-evening", "params": {"option": "ana"}},
+     {"type": "CLICK", "id": "assign-evening-go"}, {"type": "CLICK", "id": "nav-rota"}]
+  ]
+}

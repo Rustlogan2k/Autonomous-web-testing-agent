@@ -1,0 +1,635 @@
+{
+  "app_id": "dutyday",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "Ran 15 tests in 1.029s",
+          "OK"
+        ],
+        "pass_lines": null,
+        "tail": []
+      }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "298c89281c6b3422dab8918df7ae9c019323a1e288d02ba59e8c27e2bc60f98d",
+        "fresh_context_sha": [
+          "298c89281c6b3422dab8918df7ae9c019323a1e288d02ba59e8c27e2bc60f98d",
+          "298c89281c6b3422dab8918df7ae9c019323a1e288d02ba59e8c27e2bc60f98d"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault DUTY-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "DUTY-1",
+        "subtype": "missing-validation",
+        "oracle": "extension",
+        "fault_class": "constraint_bypass",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'hours': 14.5}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 77.2
+      }
+    },
+    {
+      "name": "fault DUTY-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "DUTY-2",
+        "subtype": "calculation",
+        "oracle": "existing",
+        "fault_class": "calculation_error",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False -9"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 96.7
+      }
+    },
+    {
+      "name": "fault DUTY-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "DUTY-3",
+        "subtype": "state-transition",
+        "oracle": "existing",
+        "fault_class": "broken_transition",
+        "witness_length": 6,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Full",
+          "text_absent: violated=True inconclusive=False 1"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 6,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 106.4
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 81,
+      "keys_used_by_source": 60,
+      "action_keys": 14,
+      "unused_keys": [
+        "day.missing_title",
+        "help.day",
+        "help.past",
+        "help.places",
+        "help.week",
+        "help.withdraw",
+        "missing.body",
+        "msg.already_on_shift",
+        "msg.assigned",
+        "msg.choose_volunteer",
+        "msg.one_a_day",
+        "msg.over_limit",
+        "msg.removed",
+        "msg.shift_full",
+        "msg.withdrawn",
+        "slot.afternoon",
+        "slot.evening",
+        "slot.morning",
+        "vol.missing_title",
+        "vol.unknown",
+        "withdraw.missing_title"
+      ],
+      "default_action_labels": {
+        "act.assign": "Assign",
+        "act.back_to_month": "Back to the month",
+        "act.back_to_rota": "Back to the rota",
+        "act.cancel_withdraw": "Keep this shift",
+        "act.confirm_withdraw": "Yes, withdraw",
+        "act.feed": "Calendar feed",
+        "act.jump": "Show day",
+        "act.month_next": "Next month",
+        "act.month_prev": "Previous month",
+        "act.print": "Print this month",
+        "act.remove": "Remove",
+        "act.week_next": "Next week",
+        "act.week_prev": "Previous week",
+        "act.withdraw": "Withdraw"
+      },
+      "alt_action_labels": {
+        "act.assign": "Put on shift",
+        "act.back_to_month": "Return to calendar",
+        "act.back_to_rota": "Leave print view",
+        "act.cancel_withdraw": "Stay on shift",
+        "act.confirm_withdraw": "Confirm drop-out",
+        "act.feed": "Subscribe in a calendar",
+        "act.jump": "Open date",
+        "act.month_next": "Later month",
+        "act.month_prev": "Earlier month",
+        "act.print": "Printable version",
+        "act.remove": "Take off",
+        "act.week_next": "Later week",
+        "act.week_prev": "Earlier week",
+        "act.withdraw": "Drop out"
+      }
+    },
+    "patch_sizes": {
+      "DUTY-1": {
+        "file": "src/rota.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 105
+      },
+      "DUTY-2": {
+        "file": "src/rota.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 25
+      },
+      "DUTY-3": {
+        "file": "src/server.py",
+        "lines_removed": 2,
+        "lines_added": 1,
+        "chars_changed": 82
+      }
+    },
+    "workflows": [
+      {
+        "name": "assign Chidi to Monday 15 June's morning sort [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "page the rota to July [default vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "try Priya on Saturday 4 July's morning sort, over her weekly limit [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "jump to 15 June [default vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "Ana withdraws from Friday 12 June's afternoon pack [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "assign Chidi to Monday 15 June's morning sort [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "page the rota to July [alt vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "try Priya on Saturday 4 July's morning sort, over her weekly limit [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "jump to 15 June [alt vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "Ana withdraws from Friday 12 June's afternoon pack [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "Assign is refused on a full shift and assigns on a shift with places",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "Confirming a withdrawal is refused for a past shift and withdraws from a future one",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "Print this month",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "Calendar feed on the July rota",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "DUTY-1",
+        "subtype": "missing-validation",
+        "oracle": "extension",
+        "fault_class": "constraint_bypass",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'hours': 14.5}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "day-2026-06-30"
+          },
+          {
+            "type": "SELECT",
+            "id": "assign-afternoon",
+            "params": {
+              "option": "priya"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "assign-afternoon-go"
+          },
+          {
+            "type": "CLICK",
+            "id": "vol-priya"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 77.2
+      },
+      {
+        "fault_id": "DUTY-2",
+        "subtype": "calculation",
+        "oracle": "existing",
+        "fault_class": "calculation_error",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False -9"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "month-next"
+          },
+          {
+            "type": "CLICK",
+            "id": "day-2026-07-01"
+          },
+          {
+            "type": "SELECT",
+            "id": "assign-morning",
+            "params": {
+              "option": "ben"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "assign-morning-go"
+          },
+          {
+            "type": "CLICK",
+            "id": "vol-ben"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 96.7
+      },
+      {
+        "fault_id": "DUTY-3",
+        "subtype": "state-transition",
+        "oracle": "existing",
+        "fault_class": "broken_transition",
+        "witness_length": 6,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Full",
+          "text_absent: violated=True inconclusive=False 1"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 6,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-volunteers"
+          },
+          {
+            "type": "CLICK",
+            "id": "vol-ana"
+          },
+          {
+            "type": "CLICK",
+            "id": "withdraw-a14"
+          },
+          {
+            "type": "CLICK",
+            "id": "confirm-withdraw"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-rota"
+          },
+          {
+            "type": "CLICK",
+            "id": "day-2026-06-12"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 106.4
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
+    }
+  },
+  "admitted": true,
+  "checks_run": 20,
+  "checks_failed": [],
+  "browser_checks_run": true,
+  "docker_checks_run": false,
+  "wall_clock_s": 438.0
+}

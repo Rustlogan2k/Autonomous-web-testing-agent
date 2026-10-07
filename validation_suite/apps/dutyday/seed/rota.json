@@ -1,0 +1,47 @@
+{
+  "season": {"first": "2026-06-01", "last": "2026-08-31"},
+  "weekly_limit_hours": 12,
+  "places_per_shift": 2,
+  "slots": [
+    {"id": "morning", "start": "09:00", "end": "12:00", "hours": 3},
+    {"id": "afternoon", "start": "13:00", "end": "17:00", "hours": 4},
+    {"id": "evening", "start": "17:30", "end": "20:00", "hours": 2.5}
+  ],
+  "volunteers": [
+    {"id": "ana", "name": "Ana"},
+    {"id": "ben", "name": "Ben"},
+    {"id": "chidi", "name": "Chidi"},
+    {"id": "dana", "name": "Dana"},
+    {"id": "ezra", "name": "Ezra"},
+    {"id": "priya", "name": "Priya"}
+  ],
+  "assignments": [
+    {"id": "a1", "day": "2026-06-01", "slot": "morning", "volunteer": "ben"},
+    {"id": "a2", "day": "2026-06-01", "slot": "morning", "volunteer": "chidi"},
+    {"id": "a3", "day": "2026-06-02", "slot": "afternoon", "volunteer": "dana"},
+    {"id": "a4", "day": "2026-06-02", "slot": "afternoon", "volunteer": "ezra"},
+    {"id": "a5", "day": "2026-06-03", "slot": "evening", "volunteer": "ana"},
+    {"id": "a6", "day": "2026-06-04", "slot": "afternoon", "volunteer": "ben"},
+    {"id": "a7", "day": "2026-06-05", "slot": "morning", "volunteer": "priya"},
+    {"id": "a8", "day": "2026-06-06", "slot": "evening", "volunteer": "dana"},
+    {"id": "a9", "day": "2026-06-08", "slot": "morning", "volunteer": "ben"},
+    {"id": "a10", "day": "2026-06-08", "slot": "afternoon", "volunteer": "chidi"},
+    {"id": "a11", "day": "2026-06-09", "slot": "evening", "volunteer": "ben"},
+    {"id": "a12", "day": "2026-06-10", "slot": "morning", "volunteer": "ezra"},
+    {"id": "a13", "day": "2026-06-11", "slot": "evening", "volunteer": "chidi"},
+    {"id": "a14", "day": "2026-06-12", "slot": "afternoon", "volunteer": "ana"},
+    {"id": "a15", "day": "2026-06-12", "slot": "afternoon", "volunteer": "dana"},
+    {"id": "a16", "day": "2026-06-13", "slot": "morning", "volunteer": "priya"},
+    {"id": "a17", "day": "2026-06-15", "slot": "morning", "volunteer": "ana"},
+    {"id": "a18", "day": "2026-06-17", "slot": "evening", "volunteer": "ezra"},
+    {"id": "a19", "day": "2026-06-18", "slot": "afternoon", "volunteer": "chidi"},
+    {"id": "a20", "day": "2026-06-19", "slot": "morning", "volunteer": "dana"},
+    {"id": "a21", "day": "2026-06-24", "slot": "afternoon", "volunteer": "ezra"},
+    {"id": "a22", "day": "2026-06-26", "slot": "evening", "volunteer": "dana"},
+    {"id": "a23", "day": "2026-07-01", "slot": "afternoon", "volunteer": "priya"},
+    {"id": "a24", "day": "2026-07-02", "slot": "afternoon", "volunteer": "priya"},
+    {"id": "a25", "day": "2026-07-03", "slot": "evening", "volunteer": "priya"},
+    {"id": "a26", "day": "2026-07-08", "slot": "morning", "volunteer": "dana"},
+    {"id": "a27", "day": "2026-07-09", "slot": "afternoon", "volunteer": "chidi"}
+  ]
+}

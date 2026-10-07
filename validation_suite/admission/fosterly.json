@@ -1,0 +1,643 @@
+{
+  "app_id": "fosterly",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "# tests 23",
+          "# pass 23",
+          "# fail 0"
+        ],
+        "pass_lines": 1,
+        "tail": []
+      }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "df89f2ddf26a7db25cbe5588ffea9074b06bed9f61bdb701ede71532f79e1efb",
+        "fresh_context_sha": [
+          "df89f2ddf26a7db25cbe5588ffea9074b06bed9f61bdb701ede71532f79e1efb",
+          "df89f2ddf26a7db25cbe5588ffea9074b06bed9f61bdb701ede71532f79e1efb"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault FOST-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "FOST-1",
+        "subtype": "persistence",
+        "oracle": "extension",
+        "fault_class": "persistence_failure",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='From 15 Jun 2026' after='Not started'"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 64.8
+      }
+    },
+    {
+      "name": "fault FOST-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "FOST-2",
+        "subtype": "conditional-ui",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 8,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False No",
+          "input_absent: violated=True inconclusive=False 2 x Cat"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 18,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 176.6
+      }
+    },
+    {
+      "name": "fault FOST-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "FOST-3",
+        "subtype": "missing-validation",
+        "oracle": "existing",
+        "fault_class": "constraint_bypass",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Yes",
+          "region_empty: violated=True inconclusive=False "
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 88.6
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 106,
+      "keys_used_by_source": 73,
+      "action_keys": 9,
+      "unused_keys": [
+        "answer.no",
+        "answer.yes",
+        "error.choice",
+        "error.date",
+        "error.date_past",
+        "error.declaration_first",
+        "error.email",
+        "error.flag",
+        "error.name_long",
+        "error.notes_long",
+        "error.phone",
+        "error.section",
+        "error.years",
+        "field.animal_count",
+        "field.animal_species",
+        "field.available_from",
+        "field.declaration",
+        "flash.incomplete",
+        "flash.submitted",
+        "missing.body",
+        "missing.title",
+        "review.declared",
+        "section.about",
+        "section.availability",
+        "section.declaration",
+        "section.experience",
+        "section.home",
+        "status.done",
+        "status.todo",
+        "summary.garden",
+        "summary.no_garden",
+        "summary.signed",
+        "summary.unsigned"
+      ],
+      "default_action_labels": {
+        "act.all_applications": "All your applications",
+        "act.back_home": "Back to the start page",
+        "act.back_to_form": "Back to the form",
+        "act.print": "Print a copy",
+        "act.resume": "Continue application {ref}",
+        "act.start_new": "Start a new application",
+        "act.submit": "Submit application",
+        "act.to_review": "Check your answers",
+        "act.view_application": "View the submitted application"
+      },
+      "alt_action_labels": {
+        "act.all_applications": "Every form you sent",
+        "act.back_home": "Home",
+        "act.back_to_form": "Return to editing",
+        "act.print": "Printable version",
+        "act.resume": "Pick up form {ref}",
+        "act.start_new": "Begin a fresh form",
+        "act.submit": "Send my application",
+        "act.to_review": "Review everything",
+        "act.view_application": "Open the sent form"
+      }
+    },
+    "patch_sizes": {
+      "FOST-1": {
+        "file": "src/fields.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 20
+      },
+      "FOST-2": {
+        "file": "src/applications.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 35
+      },
+      "FOST-3": {
+        "file": "src/fields.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 58
+      }
+    },
+    "workflows": [
+      {
+        "name": "continue FOS-1001 and submit [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "new application, fill About you [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "tick other animals, choose 2 cats, submit FOS-1001 [default vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "set availability on a new draft [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "an incomplete application is not submitted [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "continue FOS-1001 and submit [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "new application, fill About you [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "tick other animals, choose 2 cats, submit FOS-1001 [alt vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "set availability on a new draft [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "an incomplete application is not submitted [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "Submit application is refused while a section is incomplete and submits once all are complete",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "Ticking the declaration is refused until About you is complete",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "Print a copy on the review page",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "What fostering involves (information page)",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "FOST-1",
+        "subtype": "persistence",
+        "oracle": "extension",
+        "fault_class": "persistence_failure",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='From 15 Jun 2026' after='Not started'"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "start-new"
+          },
+          {
+            "type": "CLICK",
+            "id": "acc-availability"
+          },
+          {
+            "type": "TYPE",
+            "id": "available-from",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "REFRESH"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 64.8
+      },
+      {
+        "fault_id": "FOST-2",
+        "subtype": "conditional-ui",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 8,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False No",
+          "input_absent: violated=True inconclusive=False 2 x Cat"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 18,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "resume-FOS-1001"
+          },
+          {
+            "type": "CLICK",
+            "id": "acc-home"
+          },
+          {
+            "type": "CLICK",
+            "id": "other-animals"
+          },
+          {
+            "type": "SELECT",
+            "id": "animal-species",
+            "params": {
+              "option": "cat"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "other-animals"
+          },
+          {
+            "type": "CLICK",
+            "id": "to-review"
+          },
+          {
+            "type": "CLICK",
+            "id": "submit-application"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 176.6
+      },
+      {
+        "fault_id": "FOST-3",
+        "subtype": "missing-validation",
+        "oracle": "existing",
+        "fault_class": "constraint_bypass",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Yes",
+          "region_empty: violated=True inconclusive=False "
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "resume-FOS-1001"
+          },
+          {
+            "type": "CLICK",
+            "id": "acc-home"
+          },
+          {
+            "type": "CLICK",
+            "id": "other-animals"
+          },
+          {
+            "type": "CLICK",
+            "id": "to-review"
+          },
+          {
+            "type": "CLICK",
+            "id": "submit-application"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 88.6
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
+    }
+  },
+  "admitted": true,
+  "checks_run": 20,
+  "checks_failed": [],
+  "browser_checks_run": true,
+  "docker_checks_run": false,
+  "wall_clock_s": 485.3
+}

@@ -1,0 +1,30 @@
+{
+  "school": "Hollins Park School",
+  "class": {"id": "10b", "name": "10B", "subject": "Mathematics", "teacher": "Ms R. Okafor",
+            "term": "Summer term 2026"},
+  "assessments": [
+    {"id": "hw", "title": "Homework", "max_marks": 20, "weight": 20, "published": true},
+    {"id": "quiz", "title": "Quiz", "max_marks": 30, "weight": 20, "published": true},
+    {"id": "proj", "title": "Project", "max_marks": 40, "weight": 30, "published": true},
+    {"id": "exam", "title": "Exam", "max_marks": 120, "weight": 30, "published": false}
+  ],
+  "students": [
+    {"id": "s1", "name": "Amara Okoye", "marks": {"hw": 18, "quiz": 26, "proj": 36, "exam": 85}},
+    {"id": "s2", "name": "Bilal Hussain", "marks": {"hw": 15, "quiz": 22, "proj": 30, "exam": 74}},
+    {"id": "s3", "name": "Chen Wei", "marks": {"hw": 17, "quiz": 20, "proj": 35}},
+    {"id": "s4", "name": "Dara Byrne", "marks": {"hw": 12, "quiz": 18, "proj": 26, "exam": 61}},
+    {"id": "s5", "name": "Elif Demir", "marks": {"hw": 20, "quiz": 29, "proj": 38, "exam": 102}},
+    {"id": "s6", "name": "Femi Adeyemi", "marks": {"hw": 9, "quiz": 14, "proj": 22, "exam": 48}}
+  ],
+  "comment_bank": [
+    {"id": "cb1", "text": "Excellent effort this term."},
+    {"id": "cb2", "text": "Good progress; keep practising algebra."},
+    {"id": "cb3", "text": "Revise fractions before the exam."},
+    {"id": "cb4", "text": "Please hand homework in on time."},
+    {"id": "cb5", "text": "Well organised project write-up."}
+  ],
+  "notes": [
+    {"student": "s1", "canned": "cb1"},
+    {"student": "s4", "body": "Parents' evening: talk to Dara's carer about exam nerves."}
+  ]
+}

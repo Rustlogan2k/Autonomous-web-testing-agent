@@ -1,0 +1,607 @@
+{
+  "app_id": "markbook",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "Ran 18 tests in 1.071s",
+          "OK"
+        ],
+        "pass_lines": null,
+        "tail": []
+      }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "1f9c3bb2a342838ec394818e680b267f78237ca2de2f6700603ed3ce0242f5cc",
+        "fresh_context_sha": [
+          "1f9c3bb2a342838ec394818e680b267f78237ca2de2f6700603ed3ce0242f5cc",
+          "1f9c3bb2a342838ec394818e680b267f78237ca2de2f6700603ed3ce0242f5cc"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault MARK-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "MARK-1",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False pct=67 hw * 20 / mhw + quiz * 20 / mquiz + proj * 30 / mproj + exam * 30 / mexam"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 67.0
+      }
+    },
+    {
+      "name": "fault MARK-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "MARK-2",
+        "subtype": "missing-validation",
+        "oracle": "extension",
+        "fault_class": "constraint_bypass",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'pct': 123.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 107.8
+      }
+    },
+    {
+      "name": "fault MARK-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "MARK-3",
+        "subtype": "cross-page",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 8,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Private note This is a typical multi-line comment used for functional testing."
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 19,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 180.2
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 102,
+      "keys_used_by_source": 90,
+      "action_keys": 13,
+      "unused_keys": [
+        "badge.feedback",
+        "help.export_title",
+        "help.levels",
+        "help.levels_title",
+        "help.marks",
+        "help.marks_title",
+        "help.notes",
+        "help.notes_title",
+        "help.publish",
+        "help.publish_title",
+        "help.rounding",
+        "help.rounding_title"
+      ],
+      "default_action_labels": {
+        "act.back_markbook": "Back to markbook",
+        "act.cancel_mark": "Cancel",
+        "act.cancel_note": "Cancel",
+        "act.edit_note": "Edit note",
+        "act.end_preview": "Back to teacher view",
+        "act.export_help": "Exporting marks",
+        "act.preview_student": "Preview as student",
+        "act.publish": "Publish to students",
+        "act.save_assessment": "Save maximum",
+        "act.save_feedback": "Give feedback",
+        "act.save_mark": "Save mark",
+        "act.save_note": "Save note",
+        "act.withdraw": "Withdraw from students"
+      },
+      "alt_action_labels": {
+        "act.back_markbook": "Return to mark sheet",
+        "act.cancel_mark": "Discard",
+        "act.cancel_note": "Leave unchanged",
+        "act.edit_note": "Change note",
+        "act.end_preview": "Leave pupil page",
+        "act.export_help": "How to export",
+        "act.preview_student": "See the pupil's page",
+        "act.publish": "Release to pupils",
+        "act.save_assessment": "Update maximum",
+        "act.save_feedback": "Add remark",
+        "act.save_mark": "Store score",
+        "act.save_note": "Keep note",
+        "act.withdraw": "Hide from pupils"
+      }
+    },
+    "patch_sizes": {
+      "MARK-1": {
+        "file": "src/grades.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 8
+      },
+      "MARK-2": {
+        "file": "src/server.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 6
+      },
+      "MARK-3": {
+        "file": "src/notes.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 40
+      }
+    },
+    "workflows": [
+      {
+        "name": "give Chen 42 in the exam [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "publish the exam, then Amara's own page shows her exam mark [default vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "raise the quiz maximum to 42 [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "give Bilal feedback from the comment bank [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "give Chen 42 in the exam [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "publish the exam, then Amara's own page shows her exam mark [alt vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "raise the quiz maximum to 42 [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "give Bilal feedback from the comment bank [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "Save maximum is refused below a mark already given (the exam: 102) and saves a maximum above every mark (the quiz)",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "Publish publishes a draft assessment and is refused on one already published",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "Exporting marks (help panel on the markbook)",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "Levels report (read-only)",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "MARK-1",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False pct=67 hw * 20 / mhw + quiz * 20 / mquiz + proj * 30 / mproj + exam * 30 / mexam"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "class-10b"
+          },
+          {
+            "type": "CLICK",
+            "id": "mark-s3-exam"
+          },
+          {
+            "type": "TYPE",
+            "id": "mark",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-mark"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 67.0
+      },
+      {
+        "fault_id": "MARK-2",
+        "subtype": "missing-validation",
+        "oracle": "extension",
+        "fault_class": "constraint_bypass",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'pct': 123.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "class-10b"
+          },
+          {
+            "type": "CLICK",
+            "id": "assess-exam"
+          },
+          {
+            "type": "TYPE",
+            "id": "max-marks",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-assessment"
+          },
+          {
+            "type": "CLICK",
+            "id": "back-to-markbook"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 107.8
+      },
+      {
+        "fault_id": "MARK-3",
+        "subtype": "cross-page",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 8,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Private note This is a typical multi-line comment used for functional testing."
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 19,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "class-10b"
+          },
+          {
+            "type": "CLICK",
+            "id": "student-s2"
+          },
+          {
+            "type": "TYPE",
+            "id": "private-note",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-note"
+          },
+          {
+            "type": "CLICK",
+            "id": "edit-note"
+          },
+          {
+            "type": "CLICK",
+            "id": "save-note"
+          },
+          {
+            "type": "CLICK",
+            "id": "preview-as-student"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 180.2
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
+    }
+  },
+  "admitted": true,
+  "checks_run": 20,
+  "checks_failed": [],
+  "browser_checks_run": true,
+  "docker_checks_run": false,
+  "wall_clock_s": 589.7
+}

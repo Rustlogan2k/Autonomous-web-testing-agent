@@ -1,0 +1,59 @@
+{
+  "servings_range": [1, 12],
+  "settings": { "unitSystem": "metric", "ovenScale": "celsius" },
+  "recipes": [
+    {
+      "id": "r1", "number": 1, "name": "Shortbread", "serves": 4, "oven": 160,
+      "lines": [
+        { "name": "plain flour", "amount": 250, "unit": "g", "aisle": "baking" },
+        { "name": "butter", "amount": 125, "unit": "g", "aisle": "dairy" },
+        { "name": "caster sugar", "amount": 75, "unit": "g", "aisle": "baking" }
+      ],
+      "method": [
+        "Heat the oven to {oven} and line a shallow tin.",
+        "Rub the butter into the flour and sugar until the mixture clumps together.",
+        "Press it into the tin, prick it all over and bake for 30 minutes until pale golden.",
+        "Cut into fingers while warm and leave to cool in the tin."
+      ]
+    },
+    {
+      "id": "r2", "number": 2, "name": "Pancakes", "serves": 4, "oven": null,
+      "lines": [
+        { "name": "plain flour", "amount": 150, "unit": "g", "aisle": "baking" },
+        { "name": "milk", "amount": 300, "unit": "ml", "aisle": "dairy" },
+        { "name": "eggs", "amount": 2, "unit": "", "aisle": "dairy" }
+      ],
+      "method": [
+        "Whisk the flour, eggs and half the milk into a smooth batter.",
+        "Whisk in the rest of the milk and rest the batter for 10 minutes.",
+        "Fry a thin layer of batter in a hot greased pan, about a minute a side."
+      ]
+    },
+    {
+      "id": "r3", "number": 3, "name": "Tomato soup", "serves": 4, "oven": null,
+      "lines": [
+        { "name": "tomatoes", "amount": 800, "unit": "g", "aisle": "produce" },
+        { "name": "onion", "amount": 1, "unit": "", "aisle": "produce" },
+        { "name": "vegetable stock", "amount": 500, "unit": "ml", "aisle": "cupboard" }
+      ],
+      "method": [
+        "Soften the chopped onion in a large pan for 10 minutes.",
+        "Add the tomatoes and the stock and simmer for 20 minutes.",
+        "Blend until smooth and season to taste."
+      ]
+    },
+    {
+      "id": "r4", "number": 4, "name": "Lemonade", "serves": 6, "oven": null,
+      "lines": [
+        { "name": "water", "amount": 1000, "unit": "ml", "aisle": "cupboard" },
+        { "name": "lemons", "amount": 4, "unit": "", "aisle": "produce" },
+        { "name": "caster sugar", "amount": 150, "unit": "g", "aisle": "baking" }
+      ],
+      "method": [
+        "Warm the sugar in a quarter of the water until it dissolves.",
+        "Add the juice of the lemons and the rest of the water.",
+        "Chill for an hour and serve over ice."
+      ]
+    }
+  ]
+}

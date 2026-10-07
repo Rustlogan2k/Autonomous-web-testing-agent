@@ -1,0 +1,22 @@
+{
+  "club": "Riverside Wheelers",
+  "saved_at": "2026-06-01T18:30:00",
+  "document": {
+    "title": "Members' survey 2026",
+    "questions": [
+      {"id": "q1", "kind": "choice", "title": "How often do you ride?", "required": false,
+       "options": [{"value": "weekly", "label": "Weekly"}, {"value": "monthly", "label": "Monthly"},
+                   {"value": "rarely", "label": "Rarely"}],
+       "rule": null},
+      {"id": "q2", "kind": "yesno", "title": "Did you join any club rides this year?", "required": true,
+       "options": [], "rule": {"when": "no", "target": "q4"}},
+      {"id": "q3", "kind": "choice", "title": "Which rides did you join?", "required": false,
+       "options": [{"value": "social", "label": "Sunday social"}, {"value": "chaingang", "label": "Tuesday chaingang"},
+                   {"value": "audax", "label": "Summer audax"}],
+       "rule": null},
+      {"id": "q4", "kind": "rating", "title": "Rate the club overall", "required": true, "options": [], "rule": null},
+      {"id": "q5", "kind": "text", "title": "Anything else?", "required": false, "options": [], "rule": null},
+      {"id": "q6", "kind": "yesno", "title": "May we contact you?", "required": false, "options": [], "rule": null}
+    ]
+  }
+}

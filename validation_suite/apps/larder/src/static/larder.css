@@ -1,0 +1,40 @@
+:root { --ink: #2b2118; --muted: #6f6253; --line: #e3d9cc; --accent: #8a4b14; --paper: #fffaf3; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: var(--ink); background: var(--paper); }
+.masthead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.75rem 1.5rem; padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--line); background: #fff; }
+.wordmark { font-weight: 700; font-size: 1.3rem; color: var(--accent); }
+.tagline { color: var(--muted); }
+.primary { display: flex; gap: 1rem; margin-left: auto; }
+.primary a, .tabs a { color: var(--accent); text-decoration: none; padding: 0.15rem 0.2rem; }
+.primary a[aria-current], .tabs a[aria-current] { border-bottom: 2px solid var(--accent); font-weight: 600; }
+main { padding: 0.5rem 1.5rem 2rem; max-width: 64rem; }
+.crumbs { color: var(--muted); font-size: 0.9rem; margin: 0.5rem 0; }
+#notice { min-height: 1.5em; margin: 0.25rem 0 0.75rem; color: var(--accent); }
+.split { display: grid; grid-template-columns: 15rem 1fr; gap: 1.5rem; align-items: start; }
+.master { border-right: 1px solid var(--line); padding-right: 1rem; }
+.master h2 { font-size: 1.05rem; margin-top: 0; }
+.recipes { list-style: none; padding: 0; margin: 0; }
+.recipes li { padding: 0.35rem 0; }
+.recipes a { color: var(--ink); }
+.recipes a[aria-current] { font-weight: 700; color: var(--accent); }
+.detail h2 { margin-top: 0; }
+.detail-empty { color: var(--muted); padding-top: 2rem; }
+.meta, .muted { color: var(--muted); }
+.stepper { display: flex; align-items: center; gap: 0.4rem; margin: 0.5rem 0; }
+.stepper output { font-weight: 700; min-width: 1.5rem; text-align: center; }
+.tabs { display: flex; gap: 1rem; margin: 1rem 0 0.5rem; border-bottom: 1px solid var(--line); }
+table { border-collapse: collapse; margin: 0.5rem 0 1rem; }
+th, td { text-align: left; padding: 0.35rem 1rem 0.35rem 0; border-bottom: 1px solid var(--line); }
+.unit { color: var(--muted); }
+.method li { margin-bottom: 0.4rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+button { font: inherit; padding: 0.3rem 0.8rem; border: 1px solid var(--accent); border-radius: 4px; background: #fff; color: var(--accent); cursor: pointer; }
+button:hover { background: #f6eadc; }
+.list ul { list-style: none; padding: 0; }
+.list li { padding: 0.3rem 0; }
+.list li.ticked .item { text-decoration: line-through; color: var(--muted); }
+.subform { border: 1px solid var(--line); border-radius: 6px; padding: 0.5rem 1rem 1rem; margin: 1rem 0; background: #fff; }
+.share code { background: #fff; padding: 0.1rem 0.3rem; border: 1px solid var(--line); }
+body.print-layout .primary, body.print-layout .master, body.print-layout .crumbs { display: none; }
+body.print-layout .split { grid-template-columns: 1fr; }
+@media (max-width: 40rem) { .split { grid-template-columns: 1fr; } .master { border-right: 0; } }

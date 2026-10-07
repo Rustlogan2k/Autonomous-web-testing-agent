@@ -1,0 +1,659 @@
+{
+  "app_id": "larder",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "# tests 19",
+          "# pass 19",
+          "# fail 0"
+        ],
+        "pass_lines": 1,
+        "tail": []
+      }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "1feee5d1df55508ea3fa0975a1cceae4e7465216ba77d851b1333678f7f92ce4",
+        "fresh_context_sha": [
+          "1feee5d1df55508ea3fa0975a1cceae4e7465216ba77d851b1333678f7f92ce4",
+          "1feee5d1df55508ea3fa0975a1cceae4e7465216ba77d851b1333678f7f92ce4"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault LARD-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "LARD-1",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 6,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False us=8.8 round(metric / 28.35, 1)=11"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 6,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 115.4
+      }
+    },
+    {
+      "name": "fault LARD-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "LARD-2",
+        "subtype": "incorrect-navigation",
+        "oracle": "extension",
+        "fault_class": "broken_transition",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False shown=1 crumb=2"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 60.7
+      }
+    },
+    {
+      "name": "fault LARD-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "LARD-3",
+        "subtype": "persistence",
+        "oracle": "extension",
+        "fault_class": "persistence_failure",
+        "witness_length": 6,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='US cups and ounces, Fahrenheit' after='Metric, Fahrenheit'"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 6,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 115.0
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 82,
+      "keys_used_by_source": 57,
+      "action_keys": 11,
+      "unused_keys": [
+        "act.print_view",
+        "act.screen_view",
+        "act.tick",
+        "act.untick",
+        "aisle.baking",
+        "aisle.cupboard",
+        "aisle.dairy",
+        "aisle.produce",
+        "detail.empty",
+        "detail.missing",
+        "notice.added",
+        "notice.already",
+        "notice.cleared",
+        "notice.item_missing",
+        "notice.measures_saved",
+        "notice.nothing_ticked",
+        "notice.oven_saved",
+        "notice.serves_max",
+        "notice.serves_min",
+        "notice.ticked",
+        "notice.unticked",
+        "tab.ingredients",
+        "tab.method",
+        "units.metric",
+        "units.us"
+      ],
+      "default_action_labels": {
+        "act.add_to_list": "Add to shopping list",
+        "act.clear_ticked": "Clear ticked items",
+        "act.print_view": "Print view",
+        "act.save_measures": "Save measures",
+        "act.save_oven": "Save oven setting",
+        "act.screen_view": "Back to screen view",
+        "act.serve_less": "One fewer",
+        "act.serve_more": "One more",
+        "act.share_recipe": "Share recipe",
+        "act.tick": "Got it",
+        "act.untick": "Still need it"
+      },
+      "alt_action_labels": {
+        "act.add_to_list": "Put on grocery list",
+        "act.clear_ticked": "Remove bought items",
+        "act.print_view": "Printable page",
+        "act.save_measures": "Apply measurement system",
+        "act.save_oven": "Apply oven scale",
+        "act.screen_view": "Normal page",
+        "act.serve_less": "Fewer people",
+        "act.serve_more": "More people",
+        "act.share_recipe": "Get link",
+        "act.tick": "Bought",
+        "act.untick": "Not bought yet"
+      }
+    },
+    "patch_sizes": {
+      "LARD-1": {
+        "file": "src/static/units.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 47
+      },
+      "LARD-2": {
+        "file": "src/static/app.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 33
+      },
+      "LARD-3": {
+        "file": "src/server.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 16
+      }
+    },
+    "workflows": [
+      {
+        "name": "scale Shortbread to 6 and add it to the shopping list [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "switch to US measures and open Shortbread [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "open Pancakes, then its method [default vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "tick an item off the shopping list [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "bake Shortbread in Fahrenheit [default vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "Back after opening two recipes shows the first [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "scale Shortbread to 6 and add it to the shopping list [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "switch to US measures and open Shortbread [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "open Pancakes, then its method [alt vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "tick an item off the shopping list [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "bake Shortbread in Fahrenheit [alt vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "Back after opening two recipes shows the first [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "Add to shopping list adds a recipe once and is refused for a recipe already on the list",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      },
+      {
+        "name": "One fewer lowers the servings above 1 and changes nothing at 1",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "Print view on a recipe",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "Share recipe",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "LARD-1",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 6,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False us=8.8 round(metric / 28.35, 1)=11"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 6,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-units"
+          },
+          {
+            "type": "SELECT",
+            "id": "unit-system",
+            "params": {
+              "option": "us"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-measures"
+          },
+          {
+            "type": "CLICK",
+            "id": "nav-recipes"
+          },
+          {
+            "type": "CLICK",
+            "id": "recipe-r1"
+          },
+          {
+            "type": "CLICK",
+            "id": "serve-more"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 115.4
+      },
+      {
+        "fault_id": "LARD-2",
+        "subtype": "incorrect-navigation",
+        "oracle": "extension",
+        "fault_class": "broken_transition",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False shown=1 crumb=2"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "recipe-r1"
+          },
+          {
+            "type": "CLICK",
+            "id": "recipe-r2"
+          },
+          {
+            "type": "CLICK",
+            "id": "recipe-r3"
+          },
+          {
+            "type": "BROWSER_BACK"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 60.7
+      },
+      {
+        "fault_id": "LARD-3",
+        "subtype": "persistence",
+        "oracle": "extension",
+        "fault_class": "persistence_failure",
+        "witness_length": 6,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='US cups and ounces, Fahrenheit' after='Metric, Fahrenheit'"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 6,
+        "minimization_trials": 14,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-units"
+          },
+          {
+            "type": "SELECT",
+            "id": "unit-system",
+            "params": {
+              "option": "us"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-measures"
+          },
+          {
+            "type": "SELECT",
+            "id": "oven-scale",
+            "params": {
+              "option": "fahrenheit"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-oven"
+          },
+          {
+            "type": "REFRESH"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 115.0
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
+    }
+  },
+  "admitted": true,
+  "checks_run": 20,
+  "checks_failed": [],
+  "browser_checks_run": true,
+  "docker_checks_run": false,
+  "wall_clock_s": 445.8
+}

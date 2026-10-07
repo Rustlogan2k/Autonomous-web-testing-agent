@@ -1,0 +1,43 @@
+{
+  "home_types": [
+    {"id": "house", "name": "House"},
+    {"id": "flat", "name": "Flat"},
+    {"id": "farm", "name": "Farm"},
+    {"id": "other", "name": "Other"}
+  ],
+  "species": [
+    {"id": "dog", "name": "Dog"},
+    {"id": "cat", "name": "Cat"},
+    {"id": "rabbit", "name": "Rabbit"},
+    {"id": "other", "name": "Other"}
+  ],
+  "counts": [
+    {"id": "1", "name": "1"},
+    {"id": "2", "name": "2"},
+    {"id": "3", "name": "3"},
+    {"id": "4-or-more", "name": "4+"}
+  ],
+  "min_weeks": ["2", "4", "8", "12"],
+  "drafts": [
+    {
+      "ref": "FOS-1001",
+      "answers": {
+        "full_name": "Sam Okafor",
+        "email": "sam.okafor@example.org",
+        "phone": "07700 900123",
+        "home_type": "flat",
+        "garden": false,
+        "other_animals": false,
+        "animal_species": "",
+        "animal_count": "",
+        "years_experience": "3",
+        "experience_notes": "Fostered two cats for a friend's rescue in 2024.",
+        "available_from": "2026-07-01",
+        "min_weeks": "4",
+        "declaration": true
+      }
+    }
+  ],
+  "next_draft": 1002,
+  "next_application": 2001
+}

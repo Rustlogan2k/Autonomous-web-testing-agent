@@ -1,0 +1,624 @@
+{
+  "app_id": "quizcraft",
+  "checks": [
+    {
+      "name": "manifest_well_formed",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_external_urls",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "deterministic_source",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "vocabulary_complete",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "trace_ids_exist",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "patches_apply_exactly_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "buggy_equals_clean_plus_patches_only",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "api_tests_pass",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "summary": [
+          "Ran 14 tests in 0.174s",
+          "OK"
+        ],
+        "pass_lines": null,
+        "tail": []
+      }
+    },
+    {
+      "name": "workflows_reachable_both_vocabularies",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "state_dependent_actions_real",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "decoys_change_no_committed_state",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "reset_to_seed",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "seed_sha": "8ac2208d6cb2b6c3d675e0f27fabb5ade8e9f14048b24a2199adba549c432692",
+        "fresh_context_sha": [
+          "8ac2208d6cb2b6c3d675e0f27fabb5ade8e9f14048b24a2199adba549c432692",
+          "8ac2208d6cb2b6c3d675e0f27fabb5ade8e9f14048b24a2199adba549c432692"
+        ]
+      }
+    },
+    {
+      "name": "session_isolation",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": "a second session's workflow left the first session's committed state untouched"
+      }
+    },
+    {
+      "name": "deterministic",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "page_digests_equal": true,
+        "final_state_equal": true
+      }
+    },
+    {
+      "name": "fault QUIZ-1",
+      "passed": true,
+      "detail": {
+        "fault_id": "QUIZ-1",
+        "subtype": "stale-state",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Change",
+          "text_equals: violated=True inconclusive=False 1"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 52.3
+      }
+    },
+    {
+      "name": "fault QUIZ-2",
+      "passed": true,
+      "detail": {
+        "fault_id": "QUIZ-2",
+        "subtype": "conditional-ui",
+        "oracle": "existing",
+        "fault_class": "broken_transition",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False 3",
+          "text_absent: violated=True inconclusive=False No",
+          "text_absent: violated=True inconclusive=False 4"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 49.6
+      }
+    },
+    {
+      "name": "fault QUIZ-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "QUIZ-3",
+        "subtype": "persistence",
+        "oracle": "extension",
+        "fault_class": "persistence_failure",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='Revision 2: 7 questions, 2 required' after='Revision 2: 6 questions, 2 r"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 101.4
+      }
+    },
+    {
+      "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_random_walk_no_candidates_errors_or_network",
+      "passed": true,
+      "detail": {
+        "steps": 150,
+        "seed": 0,
+        "raw_candidates": {},
+        "errors": [],
+        "foreign_requests": [],
+        "passed": true
+      }
+    },
+    {
+      "name": "no_external_network_at_runtime",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "sections": {
+    "vocabulary": {
+      "keys": 106,
+      "keys_used_by_source": 81,
+      "action_keys": 16,
+      "unused_keys": [
+        "answer.no",
+        "answer.yes",
+        "error.count",
+        "error.options",
+        "error.question_title_long",
+        "error.question_title_missing",
+        "error.rule",
+        "error.survey_title_long",
+        "error.survey_title_missing",
+        "history.kind_change",
+        "history.kind_redo",
+        "history.kind_undo",
+        "history.move_down",
+        "history.move_up",
+        "history.required_off",
+        "history.required_on",
+        "history.rule",
+        "history.title",
+        "kind.choice",
+        "kind.rating",
+        "kind.text",
+        "kind.yesno",
+        "preview.optional",
+        "preview.required",
+        "status.unsaved"
+      ],
+      "default_action_labels": {
+        "act.add_question": "Add question",
+        "act.back_to_editor": "Back to the editor",
+        "act.copy_link": "Copy survey link",
+        "act.delete": "Delete question",
+        "act.move_down": "Move down",
+        "act.move_up": "Move up",
+        "act.preview_back": "Previous question",
+        "act.preview_next": "Next question",
+        "act.preview_restart": "Start again",
+        "act.redo": "Redo",
+        "act.save": "Save revision",
+        "act.spell_check": "Check spelling",
+        "act.tab_editor": "Edit",
+        "act.tab_history": "History",
+        "act.tab_preview": "Preview",
+        "act.undo": "Undo"
+      },
+      "alt_action_labels": {
+        "act.add_question": "Insert question",
+        "act.back_to_editor": "Return to composing",
+        "act.copy_link": "Show survey address",
+        "act.delete": "Remove question",
+        "act.move_down": "Lower",
+        "act.move_up": "Raise",
+        "act.preview_back": "Go back a question",
+        "act.preview_next": "Following question",
+        "act.preview_restart": "Restart walk-through",
+        "act.redo": "Step forward",
+        "act.save": "Store version",
+        "act.spell_check": "Proofread",
+        "act.tab_editor": "Compose",
+        "act.tab_history": "Change log",
+        "act.tab_preview": "Try it out",
+        "act.undo": "Step back"
+      }
+    },
+    "patch_sizes": {
+      "QUIZ-1": {
+        "file": "src/static/editor.js",
+        "lines_removed": 2,
+        "lines_added": 1,
+        "chars_changed": 64
+      },
+      "QUIZ-2": {
+        "file": "src/static/preview.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 39
+      },
+      "QUIZ-3": {
+        "file": "src/static/editor.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 25
+      }
+    },
+    "workflows": [
+      {
+        "name": "add a question and save [default vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "make Q5 required and save [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "preview: answer No at Q2 [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "delete Q6 then undo [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "walk the whole preview answering Yes at Q2 [default vocabulary]",
+        "steps": 9,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "add a question and save [alt vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "make Q5 required and save [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "preview: answer No at Q2 [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "delete Q6 then undo [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      },
+      {
+        "name": "walk the whole preview answering Yes at Q2 [alt vocabulary]",
+        "steps": 9,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": []
+      }
+    ],
+    "state_dependent": [
+      {
+        "name": "Save revision creates a revision only when there are unsaved changes",
+        "useless": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": false
+        },
+        "useful": {
+          "prefix_misses": 0,
+          "action_misses": 0,
+          "state_changed": true
+        },
+        "passed": true
+      }
+    ],
+    "decoys": [
+      {
+        "name": "Copy survey link",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      },
+      {
+        "name": "Check spelling",
+        "prefix_misses": 0,
+        "decoy_clicked": true,
+        "committed_state_changed": false,
+        "passed": true
+      }
+    ],
+    "faults": [
+      {
+        "fault_id": "QUIZ-1",
+        "subtype": "stale-state",
+        "oracle": "existing",
+        "fault_class": "state_corruption",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False Change",
+          "text_equals: violated=True inconclusive=False 1"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "q-2"
+          },
+          {
+            "type": "CLICK",
+            "id": "q-required"
+          },
+          {
+            "type": "CLICK",
+            "id": "undo"
+          },
+          {
+            "type": "TYPE",
+            "id": "q-title",
+            "params": {
+              "category": "valid_typical"
+            }
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 52.3
+      },
+      {
+        "fault_id": "QUIZ-2",
+        "subtype": "conditional-ui",
+        "oracle": "existing",
+        "fault_class": "broken_transition",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "text_absent: violated=True inconclusive=False 3",
+          "text_absent: violated=True inconclusive=False No",
+          "text_absent: violated=True inconclusive=False 4"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "tab-preview"
+          },
+          {
+            "type": "CLICK",
+            "id": "preview-next"
+          },
+          {
+            "type": "SELECT",
+            "id": "answer-2",
+            "params": {
+              "option": "no"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "preview-next"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 49.6
+      },
+      {
+        "fault_id": "QUIZ-3",
+        "subtype": "persistence",
+        "oracle": "extension",
+        "fault_class": "persistence_failure",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='Revision 2: 7 questions, 2 required' after='Revision 2: 6 questions, 2 r"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "tab-preview"
+          },
+          {
+            "type": "CLICK",
+            "id": "tab-editor"
+          },
+          {
+            "type": "CLICK",
+            "id": "add-question"
+          },
+          {
+            "type": "CLICK",
+            "id": "save-quiz"
+          },
+          {
+            "type": "REFRESH"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 101.4
+      }
+    ],
+    "benign": [
+      {
+        "trace": 0,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 0,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 1,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
+    "random_walk_clean": {
+      "steps": 150,
+      "seed": 0,
+      "raw_candidates": {},
+      "errors": [],
+      "foreign_requests": [],
+      "passed": true
+    }
+  },
+  "admitted": true,
+  "checks_run": 20,
+  "checks_failed": [],
+  "browser_checks_run": true,
+  "docker_checks_run": false,
+  "wall_clock_s": 345.1
+}

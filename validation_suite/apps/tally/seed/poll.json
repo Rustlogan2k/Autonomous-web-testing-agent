@@ -1,0 +1,44 @@
+{
+  "club": "Riverside Rowing Club",
+  "office": "Chair",
+  "candidates": [
+    { "id": "cand-a", "name": "Ada Okoro" },
+    { "id": "cand-b", "name": "Bram Lindqvist" },
+    { "id": "cand-c", "name": "Cleo Mendes" },
+    { "id": "cand-d", "name": "Dev Patel" }
+  ],
+  "members": [
+    { "id": "m01", "name": "Aisha Bello" },
+    { "id": "m02", "name": "Ben Carter" },
+    { "id": "m03", "name": "Carys Evans" },
+    { "id": "m04", "name": "Daniel Fox" },
+    { "id": "m05", "name": "Esme Grant" },
+    { "id": "m06", "name": "Femi Hassan" },
+    { "id": "m07", "name": "Grace Ito" },
+    { "id": "m08", "name": "Hugo Jensen" },
+    { "id": "m09", "name": "Isla Khan" },
+    { "id": "m10", "name": "Jonah Lewis" },
+    { "id": "m11", "name": "Kiri Moana" },
+    { "id": "m12", "name": "Leo Novak" },
+    { "id": "m13", "name": "Maya Ortiz" },
+    { "id": "m14", "name": "Noah Price" },
+    { "id": "m15", "name": "Olive Quinn" },
+    { "id": "m16", "name": "Pavel Rossi" },
+    { "id": "m17", "name": "Rosa Silva" },
+    { "id": "m18", "name": "Sam Turner" }
+  ],
+  "ballots": [
+    { "paper": 1, "preferences": ["cand-a", "cand-b", "cand-d"] },
+    { "paper": 2, "preferences": ["cand-a", "cand-d"] },
+    { "paper": 3, "preferences": ["cand-b", "cand-a"] },
+    { "paper": 4, "preferences": ["cand-b", "cand-c"] },
+    { "paper": 5, "preferences": ["cand-b", "cand-d", "cand-a"] },
+    { "paper": 6, "preferences": ["cand-c", "cand-b"] },
+    { "paper": 7, "preferences": ["cand-d"] },
+    { "paper": 8, "preferences": ["cand-d", "cand-a", "cand-b"] },
+    { "paper": 9, "preferences": ["cand-d", "cand-b"] },
+    { "paper": 10, "preferences": ["cand-d", "cand-b", "cand-a"] },
+    { "paper": 11, "preferences": ["cand-d", "cand-c", "cand-b"] }
+  ],
+  "ranks": 3
+}
