@@ -7,8 +7,8 @@ violation is a *candidate*, which still has to reproduce on replay before it is 
 oracle: how many seeded faults they alone would have flagged, and how many candidates they
 raise on clean builds.
 
-- `reload_stability`: reloading a page must not change its content. Alert and notice regions
-  (one-time messages) and clock times are ignored; form values are not content.
+- `reload_stability`: a value the tester entered, shown on the page as content, must still be
+  shown after reloading it (one-time messages and open editors may legitimately reset).
 - `round_trip`: a distinctive value the tester entered must not reappear altered (truncated,
   re-cased, partly replaced) on a later page. Values that never reappear are not evidence.
 - `validation_consistency`: a value class (field meaning x input category) that the
@@ -127,9 +127,7 @@ class InvariantChecker:
         trace = list(trace or [])
         found: list[Candidate] = []
         if spec.action_type is ActionType.REFRESH and before.url == after.url:
-            old, new = content_text(before_html(before)), content_text(before_html(after))
-            if old and new and old != new:
-                found.append(self._raise("reload_stability", step, after, _diff(old, new)))
+            found += self._reload_keeps_entries(before, after, step)
         if spec.action_type is ActionType.TYPE:
             self._record_entry(spec, before, after)
         if (
@@ -193,6 +191,32 @@ class InvariantChecker:
                 candidate.context_trace = list(seen["rejected"])
             raised.append(candidate)
         seen.setdefault(outcome, list(trace))
+        return raised
+
+    def _reload_keeps_entries(
+        self, before: PageView, after: PageView, step: int
+    ) -> list[Candidate | None]:
+        """A value the tester entered, shown on the page as content, must survive a reload.
+
+        Narrowed on development data: comparing whole pages flagged what interfaces
+        legitimately reset on reload (one-time confirmations, open editors and dialogs). Lost
+        entered data is the persistence failure the invariant is for.
+        """
+        old, new = content_text(before_html(before)), content_text(before_html(after))
+        if not old or not new:
+            return []
+        raised = []
+        for raw, _meaning, _category in self.entered.values():
+            value = " ".join(raw.split())
+            if len(value) >= 4 and value in old and value not in new:
+                raised.append(
+                    self._raise(
+                        "reload_stability",
+                        step,
+                        after,
+                        f"entered {value!r} shown before reload, gone after",
+                    )
+                )
         return raised
 
     def _round_trip(self, after: PageView, step: int) -> list[Candidate | None]:

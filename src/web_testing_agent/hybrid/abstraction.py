@@ -128,6 +128,53 @@ def main_heading(html: str) -> str:
     return _NUMBER.sub("{n}", text.lower())[:48]
 
 
+@dataclass
+class Toggle:
+    """A checkbox or radio button as the page currently shows it."""
+
+    dom_id: str
+    name: str
+    kind: str  # "checkbox" | "radio"
+    checked: bool
+
+
+class _ToggleParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.toggles: list[Toggle] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = {k: (v or "") for k, v in attrs}
+        kind = values.get("type", "").lower()
+        if tag == "input" and kind in ("checkbox", "radio") and values.get("data-hidden") != "true":
+            self.toggles.append(
+                Toggle(values.get("id", ""), values.get("name", ""), kind, "checked" in values)
+            )
+
+
+def toggles_of(html: str) -> list[Toggle]:
+    parser = _ToggleParser()
+    try:
+        parser.feed(html or "")
+    except Exception:  # noqa: BLE001 - unreadable markup has no toggles
+        return []
+    return parser.toggles
+
+
+def text_fields(html: str) -> dict[str, bool]:
+    """Visible text-entry fields (inputs and textareas, not selects or toggles) -> filled."""
+    form = read_form_state(html)
+    seen: set[int] = set()
+    out: dict[str, bool] = {}
+    for table in (form.by_id, form.by_name):
+        for name, control in table.items():
+            if control.hidden or control.kind != "text" or id(control) in seen:
+                continue
+            seen.add(id(control))
+            out[name] = bool(control.value.strip())
+    return out
+
+
 def shows_alert(html: str) -> bool:
     parser = _AlertParser()
     try:
@@ -228,9 +275,24 @@ class PageView:
 
     @property
     def cell(self) -> str:
-        filled = ",".join(f"{name}={'1' if value else '0'}" for name, value in self.signature)
+        """Coarse on purpose: a page's form is empty, partly or fully filled, never the exact
+        combination of fields and toggles (which made one development app 150-225 cells)."""
         alert = "!" if self.alert else ""
-        return f"{self.labels.kind}|{path_template(self.url)}|{self.heading}|{filled}|{alert}"
+        return (
+            f"{self.labels.kind}|{path_template(self.url)}|{self.heading}|{self.fill_level}|{alert}"
+        )
+
+    @property
+    def fill_level(self) -> str:
+        """'' with no text fields; otherwise 'empty', 'partial' or 'full' over text fields."""
+        text = text_fields(self.html)
+        if not text:
+            return ""
+        filled = sum(text.values())
+        return "empty" if filled == 0 else "full" if filled == len(text) else "partial"
+
+    def toggles(self) -> list[Toggle]:
+        return toggles_of(self.html)
 
     def role_of(self, spec: ActionSpec) -> str:
         if spec.action_type in _FIXED:

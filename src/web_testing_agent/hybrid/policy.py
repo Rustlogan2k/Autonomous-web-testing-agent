@@ -24,6 +24,9 @@ from .invariants import Candidate, InvariantChecker
 from .operators import Operator, options
 
 NO_OP_INDEX = 0
+#: Free steps between probes: after an operator finishes, explore this many steps from
+#: where it landed, then decide again there (several probes per episode, not one).
+EXPLORE_BETWEEN_PROBES = 6
 #: Free exploration's preference among roles (the operators do the targeted probing).
 ROLE_WEIGHTS = {
     "submit": 3.0,
@@ -127,6 +130,7 @@ class HybridPolicy:
         if getattr(self, "search", None) is not None:
             self.search.reset()
         self.phase = "start"
+        self._explore_left = 0
         self.trace: list[dict] = []
         self.target: Cell | None = None
         self.replay: list[dict] = []
@@ -170,13 +174,18 @@ class HybridPolicy:
             self.planner.register(cell, self.offered[cell.key], view)
 
         spec = None
+        if self.phase == "explore" and self._explore_left <= 0 and self.operator is None:
+            self.phase = "operate"  # the free steps are spent: decide again from here
         if self.phase == "return":
             spec = self._return_step(view, cell)
         if self.phase == "operate":
             spec = self._operator_step(view, cell)
         if spec is None:
+            if self.phase != "explore":
+                self._explore_left = EXPLORE_BETWEEN_PROBES
             self.phase = "explore"
             spec = self._explore_step(view, cell, observation, info)
+            self._explore_left -= 1
         self.trace.append(step_for(spec))
         self._last_page = page
         self._last_cell = view.cell
@@ -309,6 +318,7 @@ class HybridPolicy:
         self.operator = None
         self._operator_candidates = 0
         self.phase = "explore"
+        self._explore_left = EXPLORE_BETWEEN_PROBES
 
     def _view(self, info: dict) -> PageView:
         if self._view_cache is not None and self._view_cache[0] == id(info):

@@ -26,6 +26,7 @@ INVALID_CATEGORIES = ("empty_string", "type_mismatch", "boundary_min", "boundary
 #: Operator names, frozen with the plan: the evaluation's decision layer chooses among these.
 OPERATORS = (
     "complete_step",
+    "choose_option",
     "invalid_input",
     "edit_after_review",
     "back_and_resume",
@@ -33,7 +34,10 @@ OPERATORS = (
     "double_submit",
     "collection_churn",
 )
-MAX_OPERATOR_STEPS = 8
+MAX_OPERATOR_STEPS = 20
+#: After its probe, an operator carries the task on (complete the form, submit) for up to
+#: this many more submissions: a fault's effect usually shows at the end of a workflow.
+FOLLOW_THROUGH_SUBMISSIONS = 4
 
 
 def _category(spec: ActionSpec) -> str:
@@ -45,7 +49,32 @@ def _first(specs: list[ActionSpec], kind: ActionType) -> ActionSpec | None:
 
 
 def fill_step(view: PageView, *, skip: str = "") -> ActionSpec | None:
-    """The next valid entry for an empty text field (selects already hold a value)."""
+    """The next step of completing the form as a user would: a valid entry in each empty text
+    field, then tick each unticked checkbox and choose the first option of any radio group
+    with nothing chosen (selects already hold a value). `skip` names a field left alone."""
+    spec = _text_fill(view, skip)
+    return spec if spec is not None else _toggle_fill(view)
+
+
+def _toggle_fill(view: PageView) -> ActionSpec | None:
+    clicks = {
+        (s.selector or "")[5:-2]: s
+        for s in view.specs
+        if s.action_type is ActionType.CLICK and (s.selector or "").startswith('[id="')
+    }
+    toggles = view.toggles()
+    chosen_groups = {t.name for t in toggles if t.kind == "radio" and t.checked}
+    for toggle in toggles:
+        if toggle.dom_id not in clicks or toggle.checked:
+            continue
+        if toggle.kind == "checkbox":
+            return clicks[toggle.dom_id]
+        if toggle.name not in chosen_groups:
+            return clicks[toggle.dom_id]
+    return None
+
+
+def _text_fill(view: PageView, skip: str) -> ActionSpec | None:
     filled = dict(view.signature)
     for identity, actions in view.fields().items():
         if identity == skip:
@@ -60,7 +89,9 @@ def fill_step(view: PageView, *, skip: str = "") -> ActionSpec | None:
 
 
 def submit_step(view: PageView) -> ActionSpec | None:
-    for role in SUBMIT_ROLES:
+    """The page's primary action: a submit control, else (a form whose action is to add, as
+    "Add to basket") its add control."""
+    for role in SUBMIT_ROLES + ("add",):
         controls = view.controls_with_role(role)
         if controls:
             return controls[0]
@@ -76,18 +107,38 @@ class Operator:
     steps: int = 0
     stage: int = 0
     done: bool = False
+    probed: bool = False  # the operator's own sequence is finished; follow-through runs
+    submissions: int = 0  # follow-through submissions so far
     log: list[str] = field(default_factory=list)
 
     def next(self, view: PageView) -> ActionSpec | None:
         if self.done or self.steps >= MAX_OPERATOR_STEPS:
             self.done = True
             return None
-        spec = getattr(self, f"_{self.name}")(view)
+        spec = None
+        if not self.probed:
+            spec = getattr(self, f"_{self.name}")(view)
+            if spec is None:
+                self.probed = True
+        if spec is None:
+            spec = self._follow_through(view)
         if spec is None:
             self.done = True
         else:
             self.steps += 1
             self.log.append(spec.description)
+        return spec
+
+    def _follow_through(self, view: PageView) -> ActionSpec | None:
+        """Carry the task on after the probe: complete the form, then submit."""
+        if self.submissions >= FOLLOW_THROUGH_SUBMISSIONS:
+            return None
+        spec = fill_step(view)
+        if spec is not None:
+            return spec
+        spec = submit_step(view)
+        if spec is not None:
+            self.submissions += 1
         return spec
 
     # -- the operators ------------------------------------------------------------------
@@ -98,6 +149,31 @@ class Operator:
             if spec is not None:
                 return spec
             self.stage = 1
+            return submit_step(view)
+        return None
+
+    def _choose_option(self, view: PageView) -> ActionSpec | None:
+        """Equivalence partitioning over a select's options: one non-default option, the
+        rest of the form completed, then submit."""
+        field_id, option = self.target.rsplit("|", 1)
+        if self.stage == 0:
+            self.stage = 1
+            spec = next(
+                (
+                    a
+                    for a in view.fields().get(field_id, [])
+                    if a.action_type is ActionType.SELECT
+                    and str((a.params or {}).get("option")) == option
+                ),
+                None,
+            )
+            if spec is not None:
+                return spec
+        if self.stage == 1:
+            spec = fill_step(view)
+            if spec is not None:
+                return spec
+            self.stage = 2
             return submit_step(view)
         return None
 
@@ -230,4 +306,8 @@ def options(view: PageView) -> list[tuple[str, str]]:
                 out.append(("double_submit", identity))
     if view.controls_with_role("add"):
         out.append(("collection_churn", ""))
+    for identity, actions in fields.items():
+        for action in actions:
+            if action.action_type is ActionType.SELECT and "option" in (action.params or {}):
+                out.append(("choose_option", f"{identity}|{action.params['option']}"))
     return out

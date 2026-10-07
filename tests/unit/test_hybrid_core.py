@@ -71,7 +71,7 @@ def test_abstraction():
     assert shows_alert(HTML) and not shows_alert('<p class="notice"></p><br>')
     view = _view()
     assert view.labels.kind == "form"
-    assert view.cell == "form|/orders/{n}/edit||email=0,qty=1|!"
+    assert view.cell == "form|/orders/{n}/edit||partial|!"
     assert [s.index for s in view.controls_with_role("submit")] == [3, 6]
 
 
@@ -100,7 +100,9 @@ def test_operators_offered_and_sequenced():
     op = Operator("invalid_input", '[id="email"]|type_mismatch')
     assert op.next(view).index == 8  # the invalid value into the target field
     assert op.next(view).index == 3  # then submit (save before commit)
-    assert op.next(view) is None and op.done
+    assert op.probed is False and op.next(view).index == 7  # follow-through: complete the form
+    steps = [op.next(view) for _ in range(40)]
+    assert op.done and steps[-1] is None and op.steps <= 20  # bounded
     complete = Operator("complete_step")
     assert complete.next(view).index == 7  # fill the empty field validly first
 
@@ -183,3 +185,54 @@ def test_attribution_follows_the_per_fault_control_rule(monkeypatch):
     assert out == {"on_clean": False, "faults": ["B"]}  # silenced when B's patch is removed
     builds["clean"] = True
     assert invariants.attribute(candidate, lambda: "clean", {})["on_clean"] is True
+
+
+def test_complete_step_ticks_boxes_and_chooses_radios_after_text():
+    from web_testing_agent.hybrid.operators import fill_step
+
+    html = (
+        '<input id="name" name="name" type="text" value="Ada">'
+        '<input id="ack" name="ack" type="checkbox">'
+        '<input id="r1" name="plan" type="radio"><input id="r2" name="plan" type="radio">'
+        '<input id="done" name="done" type="checkbox" checked>'
+    )
+    specs = [
+        _spec(0, ActionType.TYPE, "name", "name", category="valid_typical"),
+        _spec(1, ActionType.CLICK, "ack", "ack"),
+        _spec(2, ActionType.CLICK, "r1", "plan"),
+        _spec(3, ActionType.CLICK, "r2", "plan"),
+        _spec(4, ActionType.CLICK, "done", "done"),
+    ]
+    view = PageView(
+        "http://h/x",
+        deterministic_labels("http://h/x", html, specs),
+        form_signature(html),
+        False,
+        specs,
+        html=html,
+    )
+    assert view.fill_level == "full"
+    assert fill_step(view).index == 1  # unticked checkbox first
+    ticked = html.replace(
+        'id="ack" name="ack" type="checkbox"', 'id="ack" name="ack" type="checkbox" checked'
+    )
+    view2 = PageView("http://h/x", view.labels, form_signature(ticked), False, specs, html=ticked)
+    assert fill_step(view2).index == 2  # then the first radio of an unset group
+    chosen = ticked.replace(
+        'id="r1" name="plan" type="radio"', 'id="r1" name="plan" type="radio" checked'
+    )
+    view3 = PageView("http://h/x", view.labels, form_signature(chosen), False, specs, html=chosen)
+    assert fill_step(view3) is None  # complete: nothing left to fill
+
+
+def test_reload_flags_only_lost_entries_not_reset_messages():
+    from web_testing_agent.hybrid.invariants import InvariantChecker
+
+    checker = InvariantChecker()
+    checker.entered['[id="n"]'] = ("Test User Input", "name", "valid_typical")
+    refresh = SPECS[2]  # REFRESH
+    shown = _view("<h1>Profile</h1><p>Name: Test User Input</p><p>Display name updated.</p>")
+    reset = _view("<h1>Profile</h1><p>Name: Test User Input</p>")
+    assert checker.check(shown, refresh, reset, 1) == []  # a one-time message may go
+    lost = _view("<h1>Profile</h1><p>Name: </p>")
+    assert [c.invariant for c in checker.check(shown, refresh, lost, 2)] == ["reload_stability"]
