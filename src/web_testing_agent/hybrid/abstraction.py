@@ -9,7 +9,6 @@ the alert flag — is read deterministically from the page, never from the model
 
 from __future__ import annotations
 
-import hashlib
 import re
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
@@ -294,13 +293,14 @@ class PageView:
         """Coarse on purpose: a page's form is empty, partly or fully filled, never the exact
         combination of fields and toggles (which made one development app 150-225 cells).
 
-        It does record which submit controls the page offers: an empty basket and a filled
-        one share a page, a heading and no fields, but only the second can go to checkout,
-        and a return to "the basket" must know which it is returning to.
+        It does record whether the page offers any submit action: an empty basket and a
+        filled one share a page, a heading and no fields, but only the second can go to
+        checkout, and a return to "the basket" must know which it is returning to. Only
+        whether, not which: recording the exact set split account_hub's pages by every
+        inline editor opened (about 20 cells -> 50) and halved its fault discovery.
         """
         alert = "!" if self.alert else ""
-        submits = sorted({control_identity(s) for s in self.controls_with_role("submit")})
-        offers = hashlib.sha256("\n".join(submits).encode()).hexdigest()[:6] if submits else ""
+        offers = "s" if self.controls_with_role("submit") else ""
         kind, path = self.labels.kind, path_template(self.url)
         return f"{kind}|{path}|{self.heading}|{self.fill_level}|{alert}|{offers}"
 

@@ -71,7 +71,7 @@ def test_abstraction():
     assert shows_alert(HTML) and not shows_alert('<p class="notice"></p><br>')
     view = _view()
     assert view.labels.kind == "form"
-    assert view.cell.startswith("form|/orders/{n}/edit||partial|!|") and len(view.cell.rsplit("|", 1)[1]) == 6
+    assert view.cell == "form|/orders/{n}/edit||partial|!|s"
     assert [s.index for s in view.controls_with_role("submit")] == [3, 6]
 
 
