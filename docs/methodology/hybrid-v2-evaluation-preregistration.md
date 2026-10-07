@@ -38,10 +38,13 @@ with theirs.
 | `hybrid_bandit_prior` | as `hybrid_bandit`, starting from the development applications' pooled evidence (`data/v2_prior.json`, built from development runs only, capped at five pseudo-observations per key) |
 | `hybrid_bandit_llm` | as `hybrid_bandit`, with labeller v3's page and control labels (exploratory; the labels failed their pre-set accuracy gates) |
 
-- Hybrid settings **[freeze]**: free-exploration mode (`weighted` or `search`) and cell
-  depth preference, chosen on development applications only; operators as in plan §4 and
-  §11 (complete_step, choose_option, invalid_input, edit_after_review, back_and_resume,
-  reload_and_resume, double_submit, collection_churn; each follows through after its probe).
+- Hybrid settings (fixed from development round 3, 2026-10-07, development applications
+  only): weighted free exploration, preference for deeper archived states (`depth_bias` 2.0),
+  six free steps between probes, cells = page kind, path template, main heading, form fill
+  level, alert, and the page's submit controls. Identical in every hybrid arm. Operators as in
+  plan §4 and §11 (complete_step, choose_option, invalid_input, edit_after_review,
+  back_and_resume, reload_and_resume, double_submit, collection_churn; each follows through
+  after its probe).
 - **Budget** 2,000 interactions per hunt (every browser action, including replays to archived
   states); 40-step episodes; 80 ms settle; seeds 0–4 for every arm on every application
   (280 hunts). Clean-build controls: every arm, seed 0, every application (56 hunts).
