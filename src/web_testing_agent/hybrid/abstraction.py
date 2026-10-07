@@ -243,9 +243,13 @@ _LINK_SUBMIT_CUES = ("checkout", "continue", "proceed", "next", "review")
 
 
 def _has_cue(label: str, cue: str) -> bool:
-    """Whole-word (or whole-phrase) match, so "Store" the shop is not "store" the verb in
-    "Stockists" and "restore" never matches "store"."""
-    return re.search(rf"(?<![a-z]){re.escape(cue)}(?![a-z])", label) is not None
+    """Cue at the start of a word, any ending: catches "edits", "saving", "reviewed".
+
+    Whole-word matching (tried 2026-10-07) lost those inflections and cut fault discovery on
+    four development applications; the shop's "Store" link, which motivated it, is handled
+    by the rule that a link is a submission only with a progression cue.
+    """
+    return re.search(rf"(?<![a-z]){re.escape(cue)}", label) is not None
 
 
 def deterministic_labels(url: str, html: str, specs: list[ActionSpec]) -> PageLabels:
