@@ -67,6 +67,11 @@ ARMS: dict[str, dict] = {
         "family_choice": True,
         "form_submit": True,
     },
+    # Development arms (suite round 5, 2026-10-08), from the RL web-testing literature: the
+    # hybrid with curiosity-driven Q-learning choosing its free exploration steps, and a
+    # standalone curiosity Q-learning tester (WebExplor / WebRLED components only).
+    "dev_hybrid_curiosity": {**HYBRID, "planner": "count", "explore": "curiosity"},
+    "dev_curiosity_rl": {"kind": "curiosity_rl"},
     "dev_pairwise_bandit": {
         **HYBRID,
         "planner": "bandit",
@@ -149,6 +154,10 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
         agent = QAgent(agent_config, rewarder=rewarder)
         agent.set_application(job.app, app_name)
         return agent, None
+    if spec["kind"] == "curiosity_rl":
+        from .curiosity import CuriosityPolicy
+
+        return CuriosityPolicy(seed=job.seed, episode_steps=config.episode_steps), None
     from .learner import BanditPlanner
     from .policy import HybridPolicy
 

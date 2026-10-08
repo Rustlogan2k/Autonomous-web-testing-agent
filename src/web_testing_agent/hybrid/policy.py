@@ -139,6 +139,13 @@ class HybridPolicy:
         #: score ("search"), which keeps its own visit memory over every step taken.
         self.explore = explore
         self.search = None
+        #: Free exploration by curiosity-driven Q-learning (`curiosity.py`), learned from every
+        #: transition the policy observes, operator and replay steps included.
+        self.curiosity = None
+        if explore == "curiosity":
+            from .curiosity import CuriosityQ
+
+            self.curiosity = CuriosityQ(seed)
         if explore == "search":
             from ..rl.search import FeatureSearchPolicy
 
@@ -175,6 +182,8 @@ class HybridPolicy:
     def reset(self) -> None:
         if getattr(self, "search", None) is not None:
             self.search.reset()
+        if getattr(self, "curiosity", None) is not None:
+            self.curiosity.begin_episode()
         self.phase = "start"
         self._explore_left = 0
         self.trace: list[dict] = []
@@ -260,6 +269,10 @@ class HybridPolicy:
                 self._operator_candidates += 1
         if self.operator is not None and after_view.alert:
             self._operator_alerted = True
+        if self.curiosity is not None and spec is not None:
+            self.curiosity.update(
+                before_view.cell, spec, after_view.cell, after_view.specs, terminated or done
+            )
         if self.search is not None:
             self.search.observe_transition(before, action, reward, after, terminated, done)
         # An episode that ends mid-operator still reports the operator's outcome.
@@ -271,6 +284,7 @@ class HybridPolicy:
             "policy": "hybrid",
             "archive": self.archive.summary(),
             **self.stats,
+            "curiosity": self.curiosity.summary() if self.curiosity is not None else None,
             "invariant_candidates": [c.to_dict() for c in self.candidates],
             "labeller": self.labeller.stats.to_dict() if self.labeller is not None else None,
         }
@@ -349,6 +363,10 @@ class HybridPolicy:
             position = self.search.act(observation or {}, info)
             if 0 <= position < len(view.specs):
                 return view.specs[position]
+        if self.curiosity is not None:
+            spec = self.curiosity.choose(view.cell, view.specs)
+            if spec is not None:
+                return spec
         """Weighted choice favouring controls not yet tried in this cell."""
         tried = {(t.get("type"), t.get("id"), str(t.get("params"))) for t in self.trace}
         weights = []

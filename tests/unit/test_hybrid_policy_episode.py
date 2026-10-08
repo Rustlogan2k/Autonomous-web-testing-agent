@@ -162,3 +162,23 @@ def test_validation_bypass_is_found_without_a_specification():
     raised = [c for c in policy.candidates if c.invariant == "validation_consistency"]
     assert raised, policy.summary()["operators"]
     assert raised[0].context_trace and raised[0].trace  # both walks kept for reproduction
+
+
+def test_curiosity_exploration_inside_the_hybrid_learns_every_step():
+    policy = HybridPolicy(seed=3, explore="curiosity")
+    result = run_hunt(FakeApp(), policy, NullMonitor(), budget=400)
+    summary = policy.summary()
+    assert result.steps == 400 and summary["failed_returns"] == 0
+    assert summary["curiosity"]["updates"] == 400  # one update per transition, all steps
+    assert len(policy.archive) >= 4 and sum(summary["operators"].values()) >= 8
+
+
+def test_standalone_curiosity_tester_explores_and_returns_to_curious_states():
+    from web_testing_agent.hybrid.curiosity import CuriosityPolicy
+
+    policy = CuriosityPolicy(seed=2)
+    result = run_hunt(FakeApp(), policy, NullMonitor(), budget=400)
+    summary = policy.summary()
+    assert result.steps == 400 and summary["episodes"] == 10
+    assert summary["learner"]["updates"] == 400 and summary["learner"]["states"] >= 4
+    assert summary["guided"] >= 2 and summary["failed_returns"] == 0
