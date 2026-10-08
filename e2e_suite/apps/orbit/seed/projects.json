@@ -1,0 +1,48 @@
+[
+  {
+    "_id": "web",
+    "workspace_id": "northlight",
+    "name": "Website relaunch",
+    "summary": "New marketing site, launching before the autumn campaign.",
+    "position": 1,
+    "columns": [
+      {"key": "backlog", "name": "Backlog", "wip": null, "position": 1},
+      {"key": "doing", "name": "Doing", "wip": 3, "position": 2},
+      {"key": "review", "name": "Review", "wip": 2, "position": 3},
+      {"key": "shipped", "name": "Shipped", "wip": null, "position": 4}
+    ],
+    "members": [
+      {"user_id": "rosa", "role": "owner"},
+      {"user_id": "mei", "role": "member"},
+      {"user_id": "ola", "role": "viewer"}
+    ],
+    "labels": [
+      {"key": "design", "name": "Design"},
+      {"key": "content", "name": "Content"},
+      {"key": "dev", "name": "Development"},
+      {"key": "launch", "name": "Launch"}
+    ]
+  },
+  {
+    "_id": "ops",
+    "workspace_id": "northlight",
+    "name": "Office move",
+    "summary": "Moving the studio to the riverside building in July.",
+    "position": 2,
+    "columns": [
+      {"key": "backlog", "name": "Backlog", "wip": null, "position": 1},
+      {"key": "doing", "name": "Doing", "wip": 2, "position": 2},
+      {"key": "review", "name": "Review", "wip": 2, "position": 3},
+      {"key": "shipped", "name": "Shipped", "wip": null, "position": 4}
+    ],
+    "members": [
+      {"user_id": "rosa", "role": "owner"},
+      {"user_id": "mei", "role": "member"}
+    ],
+    "labels": [
+      {"key": "facilities", "name": "Facilities"},
+      {"key": "people", "name": "People"},
+      {"key": "it", "name": "IT"}
+    ]
+  }
+]

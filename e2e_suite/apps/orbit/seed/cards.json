@@ -1,0 +1,256 @@
+[
+  {
+    "_id": 1, "project_id": "web", "column": "backlog", "position": 1, "title": "Cookie banner",
+    "description": "Consent banner for analytics cookies, shown on the first visit only.",
+    "checklist": [
+      {"n": 1, "text": "Draft the consent text", "done": false},
+      {"n": 2, "text": "Wire up the opt-out", "done": false}
+    ],
+    "blocked_by": [], "labels": ["dev"], "assignee_ids": [],
+    "comments": [],
+    "activity": [
+      {"kind": "created", "n": 1, "at": "2026-05-18T10:05:00", "by": "rosa", "detail": {"column": "backlog"}}
+    ]
+  },
+  {
+    "_id": 2, "project_id": "web", "column": "backlog", "position": 2, "title": "Search page",
+    "description": "Site search over blog posts and product pages, fed by the sitemap.",
+    "checklist": [
+      {"n": 1, "text": "Index the blog posts", "done": false},
+      {"n": 2, "text": "Results layout", "done": false},
+      {"n": 3, "text": "Empty state", "done": false}
+    ],
+    "blocked_by": [3], "labels": ["dev", "design"], "assignee_ids": [],
+    "comments": [],
+    "activity": [
+      {"kind": "created", "n": 1, "at": "2026-05-18T10:12:00", "by": "rosa", "detail": {"column": "backlog"}}
+    ]
+  },
+  {
+    "_id": 3, "project_id": "web", "column": "backlog", "position": 3, "title": "Sitemap",
+    "description": "Generate sitemap.xml from the page tree on every publish.",
+    "checklist": [
+      {"n": 1, "text": "List every public route", "done": false},
+      {"n": 2, "text": "Submit to the search console", "done": false}
+    ],
+    "blocked_by": [], "labels": ["dev"], "assignee_ids": [],
+    "comments": [],
+    "activity": [
+      {"kind": "created", "n": 1, "at": "2026-05-18T10:14:00", "by": "rosa", "detail": {"column": "backlog"}}
+    ]
+  },
+  {
+    "_id": 4, "project_id": "web", "column": "doing", "position": 4, "title": "Pricing page copy",
+    "description": "Rewrite the three plan descriptions in the new tone of voice.",
+    "checklist": [
+      {"n": 1, "text": "Outline the plans", "done": true},
+      {"n": 2, "text": "Write the comparison table", "done": false},
+      {"n": 3, "text": "Legal check of the small print", "done": false}
+    ],
+    "blocked_by": [], "labels": ["content"], "assignee_ids": ["mei"],
+    "comments": [
+      {"n": 1, "author_id": "rosa", "body": "Keep the plan names as they are; only the descriptions change.",
+       "at": "2026-06-02T11:15:00"}
+    ],
+    "activity": [
+      {"kind": "created", "n": 1, "at": "2026-05-20T09:40:00", "by": "rosa", "detail": {"column": "backlog"}},
+      {"kind": "moved", "n": 2, "at": "2026-06-01T09:30:00", "by": "mei",
+       "detail": {"from": "backlog", "to": "doing", "via": "pull-in"}},
+      {"kind": "comment", "n": 3, "at": "2026-06-02T11:15:00", "by": "rosa", "detail": {"comment": 1}},
+      {"kind": "checked", "n": 4, "at": "2026-06-03T16:05:00", "by": "mei", "detail": {"item": 1, "done": true}}
+    ]
+  },
+  {
+    "_id": 5, "project_id": "web", "column": "doing", "position": 5, "title": "Hero illustration",
+    "description": "Homepage hero artwork in light and dark variants.",
+    "checklist": [
+      {"n": 1, "text": "Sketch three directions", "done": true},
+      {"n": 2, "text": "Final artwork", "done": false}
+    ],
+    "blocked_by": [], "labels": ["design"], "assignee_ids": ["mei"],
+    "comments": [
+      {"n": 1, "author_id": "rosa", "body": "Direction B for the light variant, please.", "at": "2026-06-05T14:20:00"}
+    ],
+    "activity": [
+      {"kind": "created", "n": 1, "at": "2026-05-20T09:45:00", "by": "rosa", "detail": {"column": "backlog"}},
+      {"kind": "moved", "n": 2, "at": "2026-06-01T09:32:00", "by": "mei",
+       "detail": {"from": "backlog", "to": "doing", "via": "pull-in"}},
+      {"kind": "checked", "n": 3, "at": "2026-06-04T17:10:00", "by": "mei", "detail": {"item": 1, "done": true}},
+      {"kind": "comment", "n": 4, "at": "2026-06-05T14:20:00", "by": "rosa", "detail": {"comment": 1}}
+    ]
+  },
+  {
+    "_id": 6, "project_id": "web", "column": "doing", "position": 6, "title": "Analytics events",
+    "description": "Track sign-ups, plan views and demo requests with the new event schema.",
+    "checklist": [
+      {"n": 1, "text": "Agree the event names", "done": true},
+      {"n": 2, "text": "Add the tracking calls", "done": true},
+      {"n": 3, "text": "Verify in staging", "done": false},
+      {"n": 4, "text": "Dashboard for marketing", "done": false}
+    ],
+    "blocked_by": [], "labels": ["dev", "launch"], "assignee_ids": ["rosa"],
+    "comments": [],
+    "activity": [
+      {"kind": "created", "n": 1, "at": "2026-05-21T10:00:00", "by": "rosa", "detail": {"column": "backlog"}},
+      {"kind": "moved", "n": 2, "at": "2026-06-02T09:10:00", "by": "rosa",
+       "detail": {"from": "backlog", "to": "doing", "via": "move"}},
+      {"kind": "checked", "n": 3, "at": "2026-06-03T12:00:00", "by": "rosa", "detail": {"item": 1, "done": true}},
+      {"kind": "checked", "n": 4, "at": "2026-06-08T15:45:00", "by": "rosa", "detail": {"item": 2, "done": true}}
+    ]
+  },
+  {
+    "_id": 7, "project_id": "web", "column": "review", "position": 7, "title": "Release notes",
+    "description": "Launch announcement listing what is new, including the analytics changes.",
+    "checklist": [
+      {"n": 1, "text": "Collect the changes", "done": true},
+      {"n": 2, "text": "Write the announcement", "done": true},
+      {"n": 3, "text": "Proofread", "done": true}
+    ],
+    "blocked_by": [6], "labels": ["content", "launch"], "assignee_ids": ["mei"],
+    "comments": [
+      {"n": 1, "author_id": "mei", "body": "Ready to go once the analytics events are live.",
+       "at": "2026-06-09T10:30:00"}
+    ],
+    "activity": [
+      {"kind": "created", "n": 1, "at": "2026-05-22T11:00:00", "by": "rosa", "detail": {"column": "backlog"}},
+      {"kind": "moved", "n": 2, "at": "2026-06-03T09:05:00", "by": "mei",
+       "detail": {"from": "backlog", "to": "doing", "via": "move"}},
+      {"kind": "checked", "n": 3, "at": "2026-06-05T09:50:00", "by": "mei", "detail": {"item": 1, "done": true}},
+      {"kind": "checked", "n": 4, "at": "2026-06-08T11:20:00", "by": "mei", "detail": {"item": 2, "done": true}},
+      {"kind": "checked", "n": 5, "at": "2026-06-09T10:25:00", "by": "mei", "detail": {"item": 3, "done": true}},
+      {"kind": "moved", "n": 6, "at": "2026-06-09T10:28:00", "by": "mei",
+       "detail": {"from": "doing", "to": "review", "via": "move"}},
+      {"kind": "comment", "n": 7, "at": "2026-06-09T10:30:00", "by": "mei", "detail": {"comment": 1}}
+    ]
+  },
+  {
+    "_id": 8, "project_id": "web", "column": "review", "position": 8, "title": "Contact form",
+    "description": "Replace the mailto link with a form that files a ticket.",
+    "checklist": [
+      {"n": 1, "text": "Form fields", "done": true},
+      {"n": 2, "text": "Spam protection", "done": true},
+      {"n": 3, "text": "Thank-you page", "done": false}
+    ],
+    "blocked_by": [], "labels": ["dev"], "assignee_ids": ["mei", "rosa"],
+    "comments": [],
+    "activity": [
+      {"kind": "created", "n": 1, "at": "2026-05-22T11:30:00", "by": "rosa", "detail": {"column": "backlog"}},
+      {"kind": "moved", "n": 2, "at": "2026-06-01T14:00:00", "by": "mei",
+       "detail": {"from": "backlog", "to": "doing", "via": "move"}},
+      {"kind": "checked", "n": 3, "at": "2026-06-04T10:15:00", "by": "mei", "detail": {"item": 1, "done": true}},
+      {"kind": "checked", "n": 4, "at": "2026-06-08T16:40:00", "by": "rosa", "detail": {"item": 2, "done": true}},
+      {"kind": "moved", "n": 5, "at": "2026-06-08T16:45:00", "by": "mei",
+       "detail": {"from": "doing", "to": "review", "via": "move"}}
+    ]
+  },
+  {
+    "_id": 9, "project_id": "web", "column": "shipped", "position": 9, "title": "Style guide",
+    "description": "Colours, type scale and spacing tokens for the new site.",
+    "checklist": [
+      {"n": 1, "text": "Colour palette", "done": true},
+      {"n": 2, "text": "Type scale", "done": true}
+    ],
+    "blocked_by": [], "labels": ["design"], "assignee_ids": ["mei"],
+    "comments": [],
+    "activity": [
+      {"kind": "created", "n": 1, "at": "2026-05-11T09:00:00", "by": "rosa", "detail": {"column": "backlog"}},
+      {"kind": "moved", "n": 2, "at": "2026-05-12T09:20:00", "by": "mei",
+       "detail": {"from": "backlog", "to": "doing", "via": "pull-in"}},
+      {"kind": "checked", "n": 3, "at": "2026-05-14T15:00:00", "by": "mei", "detail": {"item": 1, "done": true}},
+      {"kind": "checked", "n": 4, "at": "2026-05-15T11:30:00", "by": "mei", "detail": {"item": 2, "done": true}},
+      {"kind": "shipped", "n": 5, "at": "2026-05-15T16:00:00", "by": "rosa", "detail": {"from": "doing"}}
+    ]
+  },
+  {
+    "_id": 10, "project_id": "web", "column": "shipped", "position": 10, "title": "Domain transfer",
+    "description": "Move the domain to the new registrar and point it at the new host.",
+    "checklist": [
+      {"n": 1, "text": "Unlock the domain", "done": true},
+      {"n": 2, "text": "Transfer", "done": true},
+      {"n": 3, "text": "Update the DNS records", "done": true}
+    ],
+    "blocked_by": [9], "labels": ["dev", "launch"], "assignee_ids": ["rosa"],
+    "comments": [],
+    "activity": [
+      {"kind": "created", "n": 1, "at": "2026-05-11T09:10:00", "by": "rosa", "detail": {"column": "backlog"}},
+      {"kind": "moved", "n": 2, "at": "2026-05-18T09:00:00", "by": "rosa",
+       "detail": {"from": "backlog", "to": "doing", "via": "move"}},
+      {"kind": "checked", "n": 3, "at": "2026-05-18T09:30:00", "by": "rosa", "detail": {"item": 1, "done": true}},
+      {"kind": "checked", "n": 4, "at": "2026-05-25T10:00:00", "by": "rosa", "detail": {"item": 2, "done": true}},
+      {"kind": "checked", "n": 5, "at": "2026-05-26T08:45:00", "by": "rosa", "detail": {"item": 3, "done": true}},
+      {"kind": "moved", "n": 6, "at": "2026-05-26T09:00:00", "by": "rosa",
+       "detail": {"from": "doing", "to": "review", "via": "move"}},
+      {"kind": "shipped", "n": 7, "at": "2026-05-27T10:00:00", "by": "rosa", "detail": {"from": "review"}}
+    ]
+  },
+  {
+    "_id": 11, "project_id": "ops", "column": "doing", "position": 11, "title": "Book movers",
+    "description": "Removal company for the furniture and the server rack.",
+    "checklist": [
+      {"n": 1, "text": "Get three quotes", "done": true},
+      {"n": 2, "text": "Confirm the date", "done": false}
+    ],
+    "blocked_by": [], "labels": ["facilities"], "assignee_ids": ["rosa"],
+    "comments": [
+      {"n": 1, "author_id": "rosa", "body": "Riverside Removals quoted lowest; waiting on their July calendar.",
+       "at": "2026-06-08T12:05:00"}
+    ],
+    "activity": [
+      {"kind": "created", "n": 1, "at": "2026-05-25T09:00:00", "by": "rosa", "detail": {"column": "backlog"}},
+      {"kind": "moved", "n": 2, "at": "2026-06-01T10:00:00", "by": "rosa",
+       "detail": {"from": "backlog", "to": "doing", "via": "pull-in"}},
+      {"kind": "checked", "n": 3, "at": "2026-06-08T12:00:00", "by": "rosa", "detail": {"item": 1, "done": true}},
+      {"kind": "comment", "n": 4, "at": "2026-06-08T12:05:00", "by": "rosa", "detail": {"comment": 1}}
+    ]
+  },
+  {
+    "_id": 12, "project_id": "ops", "column": "review", "position": 12, "title": "Floor plan",
+    "description": "Desk layout for the new floor, agreed with every team.",
+    "checklist": [
+      {"n": 1, "text": "Measure the rooms", "done": true},
+      {"n": 2, "text": "Assign the desks", "done": true}
+    ],
+    "blocked_by": [], "labels": ["people", "facilities"], "assignee_ids": ["mei"],
+    "comments": [
+      {"n": 1, "author_id": "mei", "body": "Every team has signed off except finance, who are away until Friday.",
+       "at": "2026-06-09T15:30:00"}
+    ],
+    "activity": [
+      {"kind": "created", "n": 1, "at": "2026-05-25T09:05:00", "by": "rosa", "detail": {"column": "backlog"}},
+      {"kind": "moved", "n": 2, "at": "2026-05-27T09:00:00", "by": "mei",
+       "detail": {"from": "backlog", "to": "doing", "via": "pull-in"}},
+      {"kind": "checked", "n": 3, "at": "2026-05-29T14:00:00", "by": "mei", "detail": {"item": 1, "done": true}},
+      {"kind": "checked", "n": 4, "at": "2026-06-09T15:20:00", "by": "mei", "detail": {"item": 2, "done": true}},
+      {"kind": "moved", "n": 5, "at": "2026-06-09T15:25:00", "by": "mei",
+       "detail": {"from": "doing", "to": "review", "via": "move"}},
+      {"kind": "comment", "n": 6, "at": "2026-06-09T15:30:00", "by": "mei", "detail": {"comment": 1}}
+    ]
+  },
+  {
+    "_id": 13, "project_id": "ops", "column": "backlog", "position": 13, "title": "Internet line",
+    "description": "Fibre installation at the new address before move-in day.",
+    "checklist": [
+      {"n": 1, "text": "Order the line", "done": false},
+      {"n": 2, "text": "Book the engineer", "done": false},
+      {"n": 3, "text": "Test the router", "done": false}
+    ],
+    "blocked_by": [], "labels": ["it"], "assignee_ids": [],
+    "comments": [],
+    "activity": [
+      {"kind": "created", "n": 1, "at": "2026-05-25T09:10:00", "by": "rosa", "detail": {"column": "backlog"}}
+    ]
+  },
+  {
+    "_id": 14, "project_id": "ops", "column": "backlog", "position": 14, "title": "Farewell lunch",
+    "description": "Last lunch in the old office once the movers are booked.",
+    "checklist": [
+      {"n": 1, "text": "Pick a restaurant", "done": false},
+      {"n": 2, "text": "Send the invitations", "done": false}
+    ],
+    "blocked_by": [11], "labels": ["people"], "assignee_ids": [],
+    "comments": [],
+    "activity": [
+      {"kind": "created", "n": 1, "at": "2026-05-26T13:00:00", "by": "mei", "detail": {"column": "backlog"}}
+    ]
+  }
+]

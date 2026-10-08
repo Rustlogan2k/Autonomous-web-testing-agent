@@ -7,6 +7,10 @@ dist/
 build/
 *.egg
 .eggs/
+# ...except inside the vendored drivers, which are committed verbatim (pg-protocol and
+# @mongodb-js/saslprep load their code from dist/); scripts/vendor_drivers.py owns that tree.
+!e2e_suite/vendor/**/dist/
+!e2e_suite/vendor/**/build/
 
 # Virtual environments
 venv/
