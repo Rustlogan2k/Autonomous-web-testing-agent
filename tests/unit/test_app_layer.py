@@ -220,6 +220,56 @@ def test_stats_and_findings_are_read_from_the_report_file(registry: RunRegistry)
     assert stats["by_severity"] == {"high": 1, "medium": 1, "low": 0}
 
 
+SESSION = {
+    "target": "http://127.0.0.1:1/", "app_name": "shop", "settings": {}, "started_at": "",
+    "hunt": {"steps": 400, "episodes": 10, "unique_states": 12},
+    "agent": {"agent": "rl"},
+    "triggers": {"findings": [
+        {"kind": "document_http_error", "page": "/pricing.html", "detail": "404",
+         "first_seen_at": 27, "occurrences": 3, "verified": True,
+         "minimized_trace": [{"type": "CLICK", "text": "Pricing"}],
+         "minimization": {"original_length": 9}},
+        {"kind": "console_error", "page": "/pricing.html", "detail": "Failed to load",
+         "first_seen_at": 28, "occurrences": 2, "verified": True,
+         "minimized_trace": [{"type": "CLICK", "text": "Pricing"}],
+         "minimization": {"original_length": 9}},
+        {"kind": "console_error", "page": "/x", "detail": "once", "first_seen_at": 5,
+         "occurrences": 1, "verified": False, "minimized_trace": [], "minimization": {}},
+    ]},
+    "reviews": [{"concern": True, "grounded": True, "observation": "too long"}],
+    "degradations": [], "evidence": {}, "wall_clock_s": 60.0,
+}
+
+
+def test_a_test_session_run_appears_in_reports_findings_and_downloads(
+    tmp_path: Path, registry: RunRegistry
+):
+    """Runs started through the test-session path write only `session/`; they must still
+    be listed, counted and downloadable (they were missing from every page)."""
+    import json
+
+    run = registry.create(SourceInfo(name="shop"), TestSettings())
+    run.status = RunStatus.COMPLETED
+    registry.save(run)
+    registry.write_artifact(run.run_id, "session/session.json", json.dumps(SESSION))
+    registry.write_artifact(run.run_id, "session/report.html", "<html>report</html>")
+    registry.write_artifact(run.run_id, "report.md", "# report")
+
+    report = registry.report(run.run_id)
+    # The two signals of one missing page are one finding, as the session report shows it.
+    assert report["counts"]["total"] == 1 and report["counts"]["high"] == 1
+    assert report["counts"]["candidates"] == 1 and report["counts"]["observations"] == 1
+    assert report["bugs"][0]["repro"]
+    assert [f["application"] for f in registry.findings()] == ["shop"]
+    assert registry.stats()["findings"] == 1
+
+    client = TestClient(create_app(var_dir=registry.root))
+    assert run.display_id in client.get("/reports").text
+    for fmt, name in (("json", "session.json"), ("markdown", "report.md"), ("html", "report.html")):
+        response = client.get(f"/api/runs/{run.run_id}/download/{fmt}")
+        assert response.status_code == 200 and name in response.headers["content-disposition"]
+
+
 def test_a_corrupt_run_record_is_skipped_rather_than_fatal(registry: RunRegistry):
     good = registry.create(SourceInfo(name="ok"), TestSettings())
     broken = registry.runs_dir / "999-broken"
@@ -305,7 +355,7 @@ def test_the_static_deployer_serves_a_fixture_and_shuts_down():
 # -- routes ---------------------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("path", ["/", "/new", "/runs", "/findings", "/reports"])
+@pytest.mark.parametrize("path", ["/", "/new", "/runs", "/findings", "/reports", "/evaluation"])
 def test_every_page_route_renders(client: TestClient, path: str):
     response = client.get(path)
     assert response.status_code == 200

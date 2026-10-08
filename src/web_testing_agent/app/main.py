@@ -35,7 +35,15 @@ from . import agents as agent_registry
 from . import targets as target_registry
 from . import uploads
 from .models import RunStatus, SourceInfo, TestSettings
-from .registry import REPORT_JSON, REPORT_MD, ROLLOUT_JSON, RunRegistry
+from .registry import (
+    REPORT_JSON,
+    REPORT_MD,
+    ROLLOUT_JSON,
+    SESSION_HTML,
+    SESSION_JSON,
+    SESSION_MD,
+    RunRegistry,
+)
 from .run_manager import RunManager
 
 logger = get_logger(__name__)
@@ -119,7 +127,7 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
             raise HTTPException(404, "Run not found")
         return page(request, "run.html", run=run,
                     events=registry.events(run_id),
-                    report=registry.read_json(run_id, REPORT_JSON))
+                    report=registry.report(run_id))
 
     @app.get("/runs/{run_id}/report", response_class=HTMLResponse)
     def report_page(request: Request, run_id: str):  # noqa: ANN202
@@ -129,7 +137,7 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
         session_report = registry.directory(run_id) / "session" / "report.html"
         if session_report.is_file():
             return HTMLResponse(session_report.read_text(encoding="utf-8"))
-        report = registry.read_json(run_id, REPORT_JSON)
+        report = registry.report(run_id)
         rollout = registry.read_json(run_id, ROLLOUT_JSON) or {}
         return page(request, "report.html", run=run, report=report, rollout=rollout)
 
@@ -141,10 +149,21 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
     def reports_page(request: Request):  # noqa: ANN202
         rows = []
         for run in registry.list():
-            report = registry.read_json(run.run_id, REPORT_JSON)
+            report = registry.report(run.run_id)
             if report:
-                rows.append({"run": run, "report": report})
-        return page(request, "reports.html", rows=rows)
+                rows.append({"run": run, "report": report,
+                             "formats": _formats(registry, run.run_id)})
+        summary = {
+            "verified": sum((r["report"].get("counts") or {}).get("total", 0) for r in rows),
+            "high": sum((r["report"].get("counts") or {}).get("high", 0) for r in rows),
+        }
+        return page(request, "reports.html", rows=rows, summary=summary)
+
+    @app.get("/evaluation", response_class=HTMLResponse)
+    def evaluation_page(request: Request):  # noqa: ANN202
+        from . import evaluation
+
+        return page(request, "evaluation.html", data=evaluation.load())
 
     # -- actions --------------------------------------------------------------------
 
@@ -279,7 +298,7 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
 
     @app.get("/api/runs/{run_id}/report")
     def api_report(run_id: str):  # noqa: ANN202
-        report = registry.read_json(run_id, REPORT_JSON)
+        report = registry.report(run_id)
         if report is None:
             raise HTTPException(404, "No report for this run")
         return report
@@ -329,15 +348,14 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
     @app.get("/api/runs/{run_id}/download/{fmt}")
     def download(run_id: str, fmt: str):  # noqa: ANN202
         """The existing research artifacts, byte-for-byte. Nothing is reformatted."""
-        names = {"json": (REPORT_JSON, "application/json"),
-                 "markdown": (REPORT_MD, "text/markdown"),
-                 "rollout": (ROLLOUT_JSON, "application/json")}
-        if fmt not in names:
+        if fmt not in DOWNLOADS:
             raise HTTPException(404, "Unknown format")
-        name, media = names[fmt]
-        path = registry.artifact(run_id, name)
+        media = DOWNLOADS[fmt][1]
+        path = next((p for p in (registry.artifact(run_id, n) for n in DOWNLOADS[fmt][0]) if p),
+                    None)
         if path is None:
             raise HTTPException(404, "Not available for this run")
+        name = path.name
         run = registry.get(run_id)
         stem = (run.source.name if run else run_id).replace(" ", "-")
         return FileResponse(path, media_type=media,
@@ -356,6 +374,23 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
 
 
 # -- helpers ---------------------------------------------------------------------------
+
+
+#: Download formats: the files that can serve each, in order of preference (a run started
+#: before the test-session path wrote `report.json`; one started through it wrote
+#: `session/`), and the media type.
+DOWNLOADS: dict[str, tuple[tuple[str, ...], str]] = {
+    "json": ((REPORT_JSON, SESSION_JSON), "application/json"),
+    "markdown": ((REPORT_MD, SESSION_MD), "text/markdown"),
+    "html": ((SESSION_HTML,), "text/html"),
+    "rollout": ((ROLLOUT_JSON,), "application/json"),
+}
+
+
+def _formats(registry: RunRegistry, run_id: str) -> list[str]:
+    """The report downloads this run can serve, in display order."""
+    return [fmt for fmt in ("html", "markdown", "json")
+            if any(registry.artifact(run_id, name) for name in DOWNLOADS[fmt][0])]
 
 
 def _launch(manager: RunManager, run, repo: Path, deployer, detector, cleanup) -> None:  # noqa: ANN001

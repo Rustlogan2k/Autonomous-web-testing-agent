@@ -354,3 +354,91 @@ input:focus, select:focus { outline: 2px solid var(--accent-soft); border-color:
   animation: spin .7s linear infinite; display: inline-block;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* -- navigation sections, filters, small utilities ----------------------------- */
+
+.nav-section {
+  font-size: 10.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--text-faint); padding: 14px 10px 4px;
+}
+.nav-section:first-child { padding-top: 2px; }
+.filter {
+  width: min(320px, 100%); padding: 7px 10px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--surface); color: var(--text); font: inherit;
+  font-size: 13px;
+}
+.filter:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+.hidden { display: none; }
+.btn-row.end { justify-content: flex-end; flex-wrap: nowrap; }
+.mt-4 { margin-top: 4px; }
+.sev-counts { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.sev-counts strong { min-width: 18px; }
+.card-foot { padding: 10px 16px; border-top: 1px solid var(--border); }
+
+/* -- evaluation page ------------------------------------------------------------ */
+
+.tabs {
+  display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; padding: 4px;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+  position: sticky; top: 0; z-index: 2;
+}
+.tabs a {
+  padding: 6px 12px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+  color: var(--text-muted);
+}
+.tabs a:hover { background: var(--surface); color: var(--text); text-decoration: none; }
+section[id] { scroll-margin-top: 64px; }
+
+table.eval td { padding-top: 10px; padding-bottom: 10px; }
+table.eval tr.baseline td { background: var(--surface-2); }
+.section-sub {
+  font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted);
+  padding: 18px 16px 6px; border-top: 1px solid var(--border);
+}
+
+.ci { position: relative; height: 12px; min-width: 180px; margin: 2px 0 6px; }
+.ci::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 5px; height: 2px;
+  background: var(--surface-3); border-radius: 2px;
+}
+.ci-zero { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--border-strong); }
+.ci-range {
+  position: absolute; top: 3px; height: 6px; border-radius: 3px;
+  background: var(--text-faint); opacity: .55;
+}
+.ci-range.better { background: var(--low); opacity: .8; }
+.ci-range.worse { background: var(--high); opacity: .8; }
+.ci-point {
+  position: absolute; top: 1px; width: 10px; height: 10px; margin-left: -5px;
+  border-radius: 50%; background: var(--text); border: 2px solid var(--surface);
+}
+
+.meter { height: 4px; border-radius: 999px; background: var(--surface-3); margin-top: 5px; overflow: hidden; min-width: 60px; }
+.meter > span { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+
+details.round { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; background: var(--surface); }
+details.round > summary {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 14px;
+  cursor: pointer; list-style: none;
+}
+details.round > summary::-webkit-details-marker { display: none; }
+details.round > summary::before {
+  content: "›"; color: var(--text-faint); font-size: 16px; transition: transform .15s ease;
+}
+details.round[open] > summary::before { transform: rotate(90deg); }
+details.round[open] > summary { border-bottom: 1px solid var(--border); }
+.round-title { font-weight: 600; }
+.round-what { flex: 1 1 260px; }
+.round-decision { padding: 10px 14px 0; margin: 0; }
+details.round .table-wrap { padding: 4px 0 6px; }
+
+@media (max-width: 900px) {
+  .grid.cols-3, .grid.cols-2, .grid.cols-4 { grid-template-columns: minmax(0, 1fr); }
+  .ci { min-width: 120px; }
+}
+.card.callout {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 16px 18px; color: var(--text);
+  background: linear-gradient(90deg, var(--accent-soft), var(--surface) 70%);
+}
+.card.callout:hover { text-decoration: none; border-color: var(--accent); }

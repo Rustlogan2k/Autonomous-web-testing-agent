@@ -42,6 +42,10 @@ ROLLOUT_JSON = "rollout.json"
 PROFILE_JSON = "profile.json"
 EVENTS_FILE = "events.jsonl"
 EVIDENCE_DIR = "evidence"
+#: Written by test-session runs (`tester.run_session`) instead of `report.json`.
+SESSION_JSON = "session/session.json"
+SESSION_MD = "session/report.md"
+SESSION_HTML = "session/report.html"
 
 #: How hard to try the atomic rename before giving up on atomicity. See `_write_json`.
 _REPLACE_ATTEMPTS = 6
@@ -144,6 +148,28 @@ class RunRegistry:
             logger.warning("unreadable artifact {}: {}", path, exc)
             return None
 
+    def report(self, run_id: str) -> dict | None:
+        """The run's report in `BugReport.to_dict()` shape, whichever path produced it.
+
+        `report.json` when the run wrote one; otherwise the test session's `session.json`,
+        converted by `session_report` (runs started through `tester.run_session` write
+        only that, and were missing from every page that read `report.json`).
+        """
+        report = self.read_json(run_id, REPORT_JSON)
+        if report is not None:
+            return report
+        session = self.read_json(run_id, SESSION_JSON)
+        if session is None:
+            return None
+        from .session_report import report_from_session  # deferred: imports the tester
+
+        run = self.get(run_id)
+        try:
+            return report_from_session(session, generated_at=run.finished_at if run else None)
+        except Exception as exc:  # noqa: BLE001 - one unreadable session must not break a page
+            logger.warning("unreadable session report for {}: {}", run_id, exc)
+            return None
+
     # -- events --------------------------------------------------------------------
 
     def append_event(self, run_id: str, event: RunEvent) -> None:
@@ -183,7 +209,7 @@ class RunRegistry:
         nothing is re-derived or invented.
         """
         for run in self.list():
-            report = self.read_json(run.run_id, REPORT_JSON)
+            report = self.report(run.run_id)
             if not report:
                 continue
             for index, bug in enumerate(report.get("bugs") or []):

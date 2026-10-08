@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui %}
+
+{% block heading %}Evaluation{% endblock %}
+{% block subheading %}Every experiment and development round, read live from the result files{% endblock %}
+
+{% macro num(value, digits=0) -%}
+  {%- if value is none -%}<span class="faint">—</span>
+  {%- elif digits -%}{{ '%.*f' | format(digits, value) }}
+  {%- else -%}{{ '{:,.0f}'.format(value) }}{%- endif -%}
+{%- endmacro %}
+
+{% macro arm_cell(name, about) -%}
+  <div class="mono">{{ name }}</div>
+  {% if about %}<div class="small muted">{{ about }}</div>{% endif %}
+{%- endmacro %}
+
+{% block content %}
+<nav class="tabs" aria-label="Sections">
+  <a href="#compare">Arms compared</a>
+  <a href="#rounds">Development rounds</a>
+  <a href="#v1">v1 transfer experiment</a>
+  <a href="#diagnostic">Contextual diagnostic</a>
+  <a href="#labeller">LLM labeller gates</a>
+</nav>
+
+<div class="alert info">
+  <strong>How to read this page.</strong> A run is 2,000 browser interactions on one
+  application. It <em>finds</em> a fault when a seeded fault is verified (replayed twice,
+  absent on its control build). Times are interactions to the first verified fault; a run
+  that finds nothing counts as 2,000. The hybrid rounds are <strong>development</strong>
+  data used for tuning, not evidence of generalisation: that comes from the held-out
+  evaluation, which has not run yet.
+</div>
+
+{# -- 1. comparison --------------------------------------------------------------------- #}
+<section class="card" id="compare">
+  <div class="card-head">
+    <div>
+      <h2>Arms compared on the same runs</h2>
+      <div class="small muted mt-4">
+        Suite rounds 2–5, 14 development apps. Each arm against <span class="mono">{{ data.comparison.baseline }}</span>
+        on the (application, seed) pairs both have finished.
+      </div>
+    </div>
+  </div>
+  <div class="card-body tight">
+    {% if data.comparison.arms %}
+    <div class="table-wrap">
+      <table class="eval">
+        <thead>
+          <tr>
+            <th>Arm</th><th class="right">Runs</th><th class="right">Found a fault</th>
+            <th class="right">Median</th><th class="right">Mean</th>
+            <th>Per-app mean difference vs baseline (95% interval)</th>
+            <th class="right">Apps faster / slower</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in data.comparison.arms %}
+          <tr class="{{ 'baseline' if a.baseline }}">
+            <td>{{ arm_cell(a.arm, a.about) }}</td>
+            <td class="right">{{ a.pairs }}</td>
+            <td class="right nowrap">
+              <strong>{{ a.found }}</strong><span class="faint"> / {{ a.pairs }}</span>
+              {% if not a.baseline %}<div class="small faint">baseline {{ a.base_found }}</div>{% endif %}
+            </td>
+            <td class="right">{{ num(a.median) }}</td>
+            <td class="right">{{ num(a.mean) }}</td>
+            <td>
+              {% if a.baseline %}
+                <span class="badge neutral">baseline</span>
+              {% else %}
+                <div class="ci" title="{{ a.diff }} [{{ a.ci[0] }}, {{ a.ci[1] }}]">
+                  <span class="ci-zero"></span>
+                  <span class="ci-range {{ 'better' if a.ci[1] < 0 else 'worse' if a.ci[0] > 0 else '' }}"
+                        style="left: {{ a.bar.left }}%; width: {{ a.bar.width }}%"></span>
+                  <span class="ci-point" style="left: {{ a.bar.point }}%"></span>
+                </div>
+                <div class="small nowrap">
+                  <strong>{{ '%+d' | format(a.diff) }}</strong>
+                  <span class="muted">[{{ '%+d' | format(a.ci[0]) }}, {{ '%+d' | format(a.ci[1]) }}]</span>
+                  {% if a.significant %}<span class="badge {{ 'low' if a.diff < 0 else 'high' }}">significant</span>
+                  {% else %}<span class="badge neutral">not significant</span>{% endif %}
+                </div>
+              {% endif %}
+            </td>
+            <td class="right nowrap">{% if not a.baseline %}{{ a.faster }} / {{ a.slower }}{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="card-foot small muted">
+      Bars share one axis, ±{{ data.comparison.scale }} interactions; left of the line is faster
+      than the baseline. Intervals are a bootstrap over applications.
+    </div>
+    {% else %}
+      {{ ui.empty_state('◇', 'No suite rounds yet', 'Results appear as rounds write their files.') }}
+    {% endif %}
+  </div>
+</section>
+
+{# -- 2. development rounds ----------------------------------------------------------- #}
+<section class="card mt-24" id="rounds">
+  <div class="card-head">
+    <div>
+      <h2>Development rounds</h2>
+      <div class="small muted mt-4">Newest first. Each round, what it compared, and what was decided.</div>
+    </div>
+    <span class="small muted">{{ data.rounds | length }} rounds</span>
+  </div>
+  <div class="card-body">
+    {% for r in data.rounds | reverse %}
+    <details class="round" {{ 'open' if loop.first }}>
+      <summary>
+        <span class="round-title">{{ r.label }}</span>
+        <span class="mono small faint">{{ r.name }}</span>
+        <span class="small muted round-what">{{ r.what }}</span>
+        <span class="badge neutral">{{ r.apps }} apps · seeds {{ r.seeds | join(', ') }}</span>
+      </summary>
+      {% if r.decision %}<p class="small round-decision"><strong>Decision:</strong> {{ r.decision }}</p>{% endif %}
+      <div class="table-wrap">
+        <table class="eval">
+          <thead>
+            <tr>
+              <th>Arm</th><th class="right">Runs</th><th class="right">Found a fault</th>
+              <th class="right">Faults verified</th><th class="right">Median</th><th class="right">Mean</th>
+              <th class="right">Clean-build false positives</th><th class="right">Failed jobs</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in r.arms %}
+            <tr>
+              <td>{{ arm_cell(a.arm, a.about) }}</td>
+              <td class="right">{{ a.runs }}</td>
+              <td class="right nowrap">
+                <strong>{{ a.found }}</strong><span class="faint"> / {{ a.runs }}</span>
+                {% if a.runs %}
+                  <div class="meter"><span style="width: {{ 100 * a.found / a.runs }}%"></span></div>
+                {% endif %}
+              </td>
+              <td class="right">{{ a.faults }}</td>
+              <td class="right">{{ num(a.median) }}</td>
+              <td class="right">{{ num(a.mean) }}</td>
+              <td class="right">{% if a.clean_runs %}{{ a.false_positives }} / {{ a.clean_runs }}{% else %}<span class="faint">—</span>{% endif %}</td>
+              <td class="right">{% if a.failed %}<span class="badge medium">{{ a.failed }}</span>{% else %}<span class="faint">0</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </details>
+    {% else %}
+      {{ ui.empty_state('◇', 'No development rounds found', 'Rounds are read from runs/v2-*/results.') }}
+    {% endfor %}
+  </div>
+</section>
+
+{# -- 3. v1 ---------------------------------------------------------------------------- #}
+<section class="card mt-24" id="v1">
+  <div class="card-head">
+    <div>
+      <h2>v1 transfer experiment (pre-registered, frozen)</h2>
+      <div class="small muted mt-4">
+        Leave-one-application-out over the 6 benchmark apps{% if data.v1 %}; {{ data.v1.runs }} runs,
+        {{ num(data.v1.budget) }} interactions each{% endif %}. Source: <span class="mono">reports/transfer_final.json</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-body tight">
+    {% if data.v1 %}
+    <div class="table-wrap">
+      <table class="eval">
+        <thead>
+          <tr>
+            <th>Arm</th><th class="right">Runs</th><th class="right">Found a fault</th>
+            <th class="right">Discovery rate</th><th class="right">Restricted mean time</th>
+            <th class="right">Median (found runs)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in data.v1.arms %}
+          <tr>
+            <td>{{ arm_cell(a.arm, a.about) }}</td>
+            <td class="right">{{ a.runs }}</td>
+            <td class="right">{{ a.verified_runs }}</td>
+            <td class="right">
+              {{ num(a.discovery_rate, 2) }}
+              <div class="meter"><span style="width: {{ 100 * (a.discovery_rate or 0) }}%"></span></div>
+            </td>
+            <td class="right">{{ num(a.restricted_mean_time) }}</td>
+            <td class="right">{{ num(a.median_time_uncensored) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <h3 class="section-sub">Paired comparisons (all folds)</h3>
+    <div class="table-wrap">
+      <table class="eval">
+        <thead>
+          <tr><th>Comparison</th><th>Question</th><th class="right">Median Δ</th>
+              <th class="right">95% interval</th><th class="right">Folds favouring</th><th class="right">Log-rank p</th></tr>
+        </thead>
+        <tbody>
+          {% for c in data.v1.comparisons %}
+          <tr>
+            <td class="mono small">{{ c.comparison }}</td>
+            <td class="small muted">{{ c.why }}</td>
+            <td class="right">{{ num(c.median) }}</td>
+            <td class="right nowrap small">{% if c.ci %}[{{ num(c.ci[0]) }}, {{ num(c.ci[1]) }}]{% endif %}</td>
+            <td class="right">{{ c.favouring }}</td>
+            <td class="right">{% if c.p is not none %}{{ '%.3f' | format(c.p) }}{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      {{ ui.empty_state('◇', 'Not found', 'reports/transfer_final.json is missing.') }}
+    {% endif %}
+  </div>
+</section>
+
+<div class="grid cols-2 mt-24">
+  {# -- 4. diagnostic ------------------------------------------------------------------- #}
+  <section class="card" id="diagnostic">
+    <div class="card-head">
+      <div>
+        <h2>Contextual diagnostic (pre-registered)</h2>
+        <div class="small muted mt-4">Does the v1 agent understand context, or memorise?</div>
+      </div>
+    </div>
+    <div class="card-body tight">
+      <table class="eval">
+        <thead><tr><th>Hypothesis</th><th>Verdict</th></tr></thead>
+        <tbody>
+          {% for h in data.diagnostic %}
+          <tr>
+            <td><span class="mono">{{ h.hypothesis }}</span> <span class="small muted">{{ h.about }}</span></td>
+            <td><span class="badge {{ 'high' if h.verdict == 'not supported' else 'low' if h.verdict == 'supported' else 'neutral' }}">{{ h.verdict }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {# -- 5. labeller ------------------------------------------------------------------- #}
+  <section class="card" id="labeller">
+    <div class="card-head">
+      <div>
+        <h2>LLM labeller gates</h2>
+        <div class="small muted mt-4">Thresholds fixed in advance: page kind ≥ 0.85, control role ≥ 0.80.</div>
+      </div>
+    </div>
+    <div class="card-body tight">
+      <table class="eval">
+        <thead><tr><th>Test</th><th class="right">Page kind</th><th class="right">Control role</th><th>Gate</th></tr></thead>
+        <tbody>
+          {% for t in data.labeller %}
+          <tr>
+            <td class="small">{{ t.test }}</td>
+            <td class="right">{{ num(t.page, 2) }}</td>
+            <td class="right">{{ num(t.role, 2) }}</td>
+            <td><span class="badge {{ 'low' if t.passed else 'high' }}">{{ 'passed' if t.passed else 'failed' }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

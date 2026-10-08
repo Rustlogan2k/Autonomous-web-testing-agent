@@ -55,6 +55,17 @@
     </div>
   </div>
 
+  <a class="card callout mt-24" href="/evaluation">
+    <div>
+      <h2>Evaluation results</h2>
+      <p class="muted small mb-0 mt-4">
+        Every experiment and development round of the research — arms, runs, faults found and
+        how each arm compares — read live from the result files.
+      </p>
+    </div>
+    <span class="btn">Open evaluation →</span>
+  </a>
+
   <div class="card mt-24">
     <div class="card-head"><h2>How a test runs</h2></div>
     <div class="card-body">
@@ -69,7 +80,7 @@
           ('3 · Explore', 'A headless browser drives the application. The selected agent chooses actions from a page-derived, masked action space.'),
           ('4 · Judge', 'Deterministic triggers watch for console errors, unexpected HTTP failures, stuck pages and broken navigation on every step.'),
           ('5 · Evidence', 'Page bodies and frames are content-addressed as the run proceeds, so every reported finding can be traced back to what produced it.'),
-          ('6 · Report', 'Findings are deduplicated into a report, exportable as JSON and Markdown in the same format the research pipeline produces.')
+          ('6 · Report', 'Verified findings are deduplicated into a report with minimal reproductions, viewable in the browser and downloadable as HTML, Markdown or JSON.')
         ] %}
           <div>
             <h3>{{ title }}</h3>

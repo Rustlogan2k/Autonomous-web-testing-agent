@@ -2,54 +2,96 @@
 {% import "_macros.html" as ui %}
 
 {% block heading %}Reports{% endblock %}
-{% block subheading %}Completed reports, exportable as JSON and Markdown{% endblock %}
+{% block subheading %}Every completed run's report — open it, or download it as HTML, Markdown or JSON{% endblock %}
+{% block actions %}<a class="btn primary" href="/new">New Test</a>{% endblock %}
 
 {% block content %}
-<div class="card">
+<div class="grid cols-3">
+  {{ ui.stat_card('Reports', rows | length, 'one per completed run') }}
+  {{ ui.stat_card('Verified findings', summary.verified, summary.high ~ ' high severity') }}
+  {{ ui.stat_card('Latest report',
+                  (rows[0].run.display_id if rows else '—'),
+                  (rows[0].run.source.name ~ ' · ' ~ (rows[0].run.finished_at | ago)) if rows else 'none yet') }}
+</div>
+
+<div class="card mt-24">
   <div class="card-head">
     <h2>Generated reports</h2>
-    <span class="small muted">{{ rows | length }} available</span>
+    {% if rows %}
+      <input type="search" class="filter" id="report-filter"
+             placeholder="Filter by run, application or agent" aria-label="Filter reports">
+    {% endif %}
   </div>
   <div class="card-body tight">
     {% if rows %}
       <div class="table-wrap">
-        <table>
+        <table id="report-table">
           <thead>
             <tr>
-              <th>Run</th><th>Application</th><th>Generated</th>
-              <th class="right">Findings</th><th class="right">High</th><th>Export</th>
+              <th>Run</th><th>Application</th><th>Agent</th><th>Completed</th>
+              <th>Verified findings</th><th class="right">Unverified</th><th class="right">Export</th>
             </tr>
           </thead>
           <tbody>
             {% for row in rows %}
               {% set counts = row.report.counts or {} %}
-              <tr>
+              <tr data-search="{{ (row.run.display_id ~ ' ' ~ row.run.source.name ~ ' ' ~ (row.run.agent_label or '')) | lower }}">
                 <td class="mono nowrap">
                   <a href="/runs/{{ row.run.run_id }}/report">{{ row.run.display_id }}</a>
                 </td>
-                <td>{{ row.run.source.name }}</td>
+                <td>{{ row.run.source.name or 'Repository' }}</td>
+                <td class="small muted">{{ row.run.agent_label or '—' }}</td>
                 <td class="small muted nowrap">{{ row.run.finished_at | ago }}</td>
-                <td class="right">{{ counts.get('total', 0) }}</td>
-                <td class="right">
-                  {% if counts.get('high') %}<span class="badge high">{{ counts.get('high') }}</span>
-                  {% else %}<span class="faint">0</span>{% endif %}
-                </td>
                 <td>
-                  <div class="btn-row">
-                    <a class="btn sm" href="/api/runs/{{ row.run.run_id }}/download/json">JSON</a>
-                    <a class="btn sm" href="/api/runs/{{ row.run.run_id }}/download/markdown">Markdown</a>
+                  <div class="sev-counts">
+                    <strong>{{ counts.get('total', 0) }}</strong>
+                    {% for level in ('high', 'medium', 'low') %}
+                      {% if counts.get(level) %}
+                        <span class="badge {{ level }}">{{ counts.get(level) }} {{ level }}</span>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </td>
+                <td class="right small muted">{{ counts.get('candidates', '—') }}</td>
+                <td class="right">
+                  <div class="btn-row end">
+                    <a class="btn sm primary" href="/runs/{{ row.run.run_id }}/report">View</a>
+                    {% for fmt in row.formats %}
+                      <a class="btn sm" href="/api/runs/{{ row.run.run_id }}/download/{{ fmt }}"
+                         title="Download {{ fmt }}">{{ {'html': 'HTML', 'markdown': 'MD', 'json': 'JSON'}[fmt] }}</a>
+                    {% endfor %}
                   </div>
                 </td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
+        <div class="empty hidden" id="report-none">No report matches the filter.</div>
       </div>
     {% else %}
       {{ ui.empty_state('▤', 'No reports yet',
-         'A report is written when a run reaches the reporting stage.',
-         '/new', 'Run a test') }}
+         'A report is written when a run completes.', '/new', 'Run a test') }}
     {% endif %}
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    var input = document.getElementById('report-filter');
+    if (!input) return;
+    var rows = document.querySelectorAll('#report-table tbody tr');
+    var none = document.getElementById('report-none');
+    input.addEventListener('input', function () {
+      var q = input.value.trim().toLowerCase(), shown = 0;
+      rows.forEach(function (row) {
+        var match = !q || row.dataset.search.indexOf(q) !== -1;
+        row.hidden = !match;
+        if (match) shown++;
+      });
+      none.classList.toggle('hidden', shown > 0);
+    });
+  })();
+</script>
 {% endblock %}
