@@ -1,2 +1,5 @@
 * text=auto eol=lf
 *.png binary
+# Vendored drivers are pinned byte for byte (vendor/manifest.json holds per-file sha256):
+# never convert their line endings.
+vendor/** -text
