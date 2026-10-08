@@ -360,9 +360,12 @@ sign-in of a fresh variant), over the manifest's `entities` only; exact threshol
 8. **Faults in one app must not mask each other**: the per-fault control is the buggy
    build minus that fault's patch, and the fault's witness must be silent there. Check
    that no other fault's patch alone produces the same symptom on that witness.
-9. **[v2, replaces v1]** Python 3.12 stdlib / Node 22 built-ins plus the vendored drivers;
-   Node apps: `node --test tests/` with `E2E_BASE_URL`; Python apps: `unittest` with
-   `E2E_BASE_URL`. API tests sign in first, through the form, like a browser.
+9. **[v2, replaces v1]** Python 3.12 stdlib / Node 22 built-ins plus the vendored drivers.
+   API tests run against `E2E_BASE_URL` and sign in first, through the form, like a browser.
+   Node apps: test files are named `tests/*.test.mjs` (or `.test.js`); the harness runs
+   `node --test "tests/**/*.test.mjs" "tests/**/*.test.js"` from the app directory, because
+   Node 22 does not accept a directory (`node --test tests/` fails). Python apps:
+   `python -m unittest discover -s tests`.
 10. **Extension kinds** (`harness/ext_oracle.py`): `region_stable_across_reload`,
     `input_absent`, `region_arithmetic` (with `operands` and optional `guard`). Use them
     only when the primary kinds cannot state the expected behaviour path-independently.

@@ -28,3 +28,12 @@ dl.summary dt { color: var(--muted); }
 .modal-backdrop { position: fixed; inset: 0; background: rgba(16, 33, 43, .45); display: flex; align-items: center; justify-content: center; }
 .modal { background: #fff; border-radius: 8px; padding: 1.25rem; width: min(30rem, 92vw); }
 .saved { color: var(--tide); margin-left: .5rem; }
+.who { margin-left: auto; display: flex; gap: .75rem; align-items: center; position: relative; }
+#signed-in-as { font-size: .9rem; opacity: .9; }
+.who #nav-account { color: #fff; border-color: #fff; background: none; }
+.menu { position: absolute; right: 0; top: 2.4rem; background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: .5rem; z-index: 3; }
+.menu[hidden] { display: none; }
+.menu form { margin: 0; }
+.notice { border-left: 4px solid var(--bad); }
+.mandates, .products { margin: .25rem 0 0; padding-left: 1.2rem; }
+main.narrow { max-width: 28rem; }

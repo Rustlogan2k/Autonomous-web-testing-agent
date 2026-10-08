@@ -1,23 +1,353 @@
 {
-  "accounts": [
-    {"id": "everyday", "name": "Everyday", "number": "•••• 4417", "balance": 54000},
-    {"id": "saver", "name": "Saver", "number": "•••• 9902", "balance": 2500},
-    {"id": "bills", "name": "Bills", "number": "•••• 3368", "balance": 18000}
-  ],
-  "payees": [
-    {"id": "landlord", "nickname": "Landlord (R. Okafor)", "bank": "Harbour Bank", "account_number": "40917722"},
-    {"id": "electric", "nickname": "Electric Co", "bank": "Northgate", "account_number": "11800342"},
-    {"id": "mum", "nickname": "Mum", "bank": "Coastal Mutual", "account_number": "70021904"}
-  ],
-  "transactions": [
-    {"account": "everyday", "date": "2026-06-01", "description": "Salary — Brightwater Ltd", "amount": 160000},
-    {"account": "everyday", "date": "2026-06-02", "description": "Rent — Landlord (R. Okafor)", "amount": -95000},
-    {"account": "everyday", "date": "2026-06-04", "description": "Grocer's Row", "amount": -6450},
-    {"account": "everyday", "date": "2026-06-06", "description": "To Saver", "amount": -2500},
-    {"account": "everyday", "date": "2026-06-07", "description": "Cinema Quay", "amount": -2100},
-    {"account": "saver", "date": "2026-06-06", "description": "From Everyday", "amount": 2500},
-    {"account": "bills", "date": "2026-06-01", "description": "From Everyday", "amount": 30000},
-    {"account": "bills", "date": "2026-06-03", "description": "Electric Co", "amount": -12000}
-  ],
-  "opening_balances": {"everyday": 50, "saver": 0, "bills": 0}
+ "customers": [
+  {
+   "id": "alex",
+   "username": "alex.carter",
+   "full_name": "Alex Carter",
+   "email": "alex.carter@tidewater.test",
+   "joined_on": "2019-03-14"
+  },
+  {
+   "id": "jamie",
+   "username": "jamie.carter",
+   "full_name": "Jamie Carter",
+   "email": "jamie.carter@tidewater.test",
+   "joined_on": "2021-09-02"
+  }
+ ],
+ "account_products": [
+  {
+   "code": "everyday-current",
+   "title": "Everyday current account",
+   "kind": "current",
+   "overdraft_limit_pence": 0,
+   "interest_bps": 0
+  },
+  {
+   "code": "easy-saver",
+   "title": "Easy Saver",
+   "kind": "savings",
+   "overdraft_limit_pence": 0,
+   "interest_bps": 325
+  },
+  {
+   "code": "bills-pot",
+   "title": "Bills pot",
+   "kind": "current",
+   "overdraft_limit_pence": 0,
+   "interest_bps": 0
+  },
+  {
+   "code": "fixed-saver-12",
+   "title": "Fixed Saver, 12 months",
+   "kind": "savings",
+   "overdraft_limit_pence": 0,
+   "interest_bps": 410
+  },
+  {
+   "code": "young-saver",
+   "title": "Young Saver",
+   "kind": "savings",
+   "overdraft_limit_pence": 0,
+   "interest_bps": 450
+  }
+ ],
+ "accounts": [
+  {
+   "id": "everyday",
+   "customer_id": "alex",
+   "product_code": "everyday-current",
+   "name": "Everyday",
+   "number": "30264417",
+   "opening_balance_pence": 50,
+   "position": 1
+  },
+  {
+   "id": "saver",
+   "customer_id": "alex",
+   "product_code": "easy-saver",
+   "name": "Saver",
+   "number": "30279902",
+   "opening_balance_pence": 0,
+   "position": 2
+  },
+  {
+   "id": "bills",
+   "customer_id": "alex",
+   "product_code": "bills-pot",
+   "name": "Bills",
+   "number": "30283368",
+   "opening_balance_pence": 0,
+   "position": 3
+  }
+ ],
+ "account_access": [
+  {
+   "customer_id": "alex",
+   "account_id": "everyday",
+   "level": "owner"
+  },
+  {
+   "customer_id": "alex",
+   "account_id": "saver",
+   "level": "owner"
+  },
+  {
+   "customer_id": "alex",
+   "account_id": "bills",
+   "level": "owner"
+  },
+  {
+   "customer_id": "jamie",
+   "account_id": "everyday",
+   "level": "view"
+  },
+  {
+   "customer_id": "jamie",
+   "account_id": "bills",
+   "level": "view"
+  }
+ ],
+ "banks": [
+  {
+   "id": "harbour",
+   "name": "Harbour Bank",
+   "position": 1
+  },
+  {
+   "id": "northgate",
+   "name": "Northgate",
+   "position": 2
+  },
+  {
+   "id": "coastal",
+   "name": "Coastal Mutual",
+   "position": 3
+  },
+  {
+   "id": "fernway",
+   "name": "Fernway",
+   "position": 4
+  }
+ ],
+ "payees": [
+  {
+   "id": "landlord",
+   "customer_id": "alex",
+   "nickname": "Landlord (R. Okafor)",
+   "bank_id": "harbour",
+   "account_number": "40917722",
+   "position": 0
+  },
+  {
+   "id": "electric",
+   "customer_id": "alex",
+   "nickname": "Electric Co",
+   "bank_id": "northgate",
+   "account_number": "11800342",
+   "position": 1
+  },
+  {
+   "id": "mum",
+   "customer_id": "alex",
+   "nickname": "Mum",
+   "bank_id": "coastal",
+   "account_number": "70021904",
+   "position": 2
+  }
+ ],
+ "direct_debits": [
+  {
+   "id": "dd-electric",
+   "account_id": "bills",
+   "originator": "Electric Co",
+   "reference": "TW-ELEC-0071",
+   "collection_day": 3,
+   "status": "active"
+  },
+  {
+   "id": "dd-council",
+   "account_id": "bills",
+   "originator": "Harbourside Council",
+   "reference": "CT 5512 908",
+   "collection_day": 15,
+   "status": "active"
+  },
+  {
+   "id": "dd-gym",
+   "account_id": "everyday",
+   "originator": "Quayside Gym",
+   "reference": "QG-3301",
+   "collection_day": 20,
+   "status": "cancelled"
+  },
+  {
+   "id": "dd-water",
+   "account_id": "bills",
+   "originator": "Coastal Water",
+   "reference": "CW 88 1204",
+   "collection_day": 10,
+   "status": "active"
+  },
+  {
+   "id": "dd-insurance",
+   "account_id": "bills",
+   "originator": "Harbour Insurance",
+   "reference": "HI-HOME-5530",
+   "collection_day": 1,
+   "status": "active"
+  },
+  {
+   "id": "dd-tv",
+   "account_id": "everyday",
+   "originator": "Streamline TV",
+   "reference": "STV 2081 77",
+   "collection_day": 22,
+   "status": "active"
+  }
+ ],
+ "transfer_drafts": [
+  {
+   "id": 901,
+   "customer_id": "alex",
+   "source_id": "everyday",
+   "target_account_id": "saver",
+   "target_payee_id": null,
+   "available_snapshot_pence": 54000
+  },
+  {
+   "id": 902,
+   "customer_id": "alex",
+   "source_id": "everyday",
+   "target_account_id": null,
+   "target_payee_id": "mum",
+   "available_snapshot_pence": 54000
+  }
+ ],
+ "quotes": [
+  {
+   "id": 901,
+   "draft_id": 901,
+   "source_id": "everyday",
+   "target_account_id": "saver",
+   "target_payee_id": null,
+   "amount_pence": 2500,
+   "reference": "",
+   "run_when": "now",
+   "used": true
+  },
+  {
+   "id": 902,
+   "draft_id": 902,
+   "source_id": "everyday",
+   "target_account_id": null,
+   "target_payee_id": "mum",
+   "amount_pence": 2000,
+   "reference": "Birthday",
+   "run_when": "next-friday",
+   "used": true
+  }
+ ],
+ "transfers": [
+  {
+   "id": 901,
+   "source_id": "everyday",
+   "target_account_id": "saver",
+   "target_payee_id": null,
+   "amount_pence": 2500,
+   "reference": "",
+   "run_when": "now",
+   "run_on": "2026-06-06",
+   "status": "completed",
+   "quote_id": 901,
+   "authorised_by": "alex"
+  },
+  {
+   "id": 902,
+   "source_id": "everyday",
+   "target_account_id": null,
+   "target_payee_id": "mum",
+   "amount_pence": 2000,
+   "reference": "Birthday",
+   "run_when": "next-friday",
+   "run_on": "2026-06-05",
+   "status": "cancelled",
+   "quote_id": 902,
+   "authorised_by": "alex"
+  }
+ ],
+ "ledger_entries": [
+  {
+   "id": 1,
+   "account_id": "everyday",
+   "posted_on": "2026-06-01",
+   "description": "Salary — Brightwater Ltd",
+   "amount_pence": 160000,
+   "kind": "salary",
+   "transfer_id": null
+  },
+  {
+   "id": 2,
+   "account_id": "everyday",
+   "posted_on": "2026-06-02",
+   "description": "Rent — Landlord (R. Okafor)",
+   "amount_pence": -95000,
+   "kind": "payment",
+   "transfer_id": null
+  },
+  {
+   "id": 3,
+   "account_id": "everyday",
+   "posted_on": "2026-06-04",
+   "description": "Grocer's Row",
+   "amount_pence": -6450,
+   "kind": "card",
+   "transfer_id": null
+  },
+  {
+   "id": 4,
+   "account_id": "everyday",
+   "posted_on": "2026-06-06",
+   "description": "To Saver",
+   "amount_pence": -2500,
+   "kind": "transfer_out",
+   "transfer_id": 901
+  },
+  {
+   "id": 5,
+   "account_id": "everyday",
+   "posted_on": "2026-06-07",
+   "description": "Cinema Quay",
+   "amount_pence": -2100,
+   "kind": "card",
+   "transfer_id": null
+  },
+  {
+   "id": 6,
+   "account_id": "saver",
+   "posted_on": "2026-06-06",
+   "description": "From Everyday",
+   "amount_pence": 2500,
+   "kind": "transfer_in",
+   "transfer_id": 901
+  },
+  {
+   "id": 7,
+   "account_id": "bills",
+   "posted_on": "2026-06-01",
+   "description": "From Everyday",
+   "amount_pence": 30000,
+   "kind": "transfer_in",
+   "transfer_id": null
+  },
+  {
+   "id": 8,
+   "account_id": "bills",
+   "posted_on": "2026-06-03",
+   "description": "Electric Co",
+   "amount_pence": -12000,
+   "kind": "direct_debit",
+   "transfer_id": null
+  }
+ ]
 }

@@ -191,6 +191,22 @@ def test_a_build_carries_only_its_own_language_of_vendored_drivers(tmp_path):
     assert not list((tmp_path / "build" / "vendor").rglob("__pycache__"))
 
 
+def test_the_vendor_tree_matches_its_manifest_and_the_python_drivers_are_pure():
+    """`scripts/vendor_drivers.py --check`, offline: every vendored file has the sha256 the
+    manifest pins, and pymongo and bson load without their C extensions (plan §4)."""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[3]
+    completed = subprocess.run([sys.executable, str(repo / "scripts" / "vendor_drivers.py"), "--check"],
+                               capture_output=True, text=True, timeout=300, cwd=repo, check=False)
+    output = completed.stdout + completed.stderr
+    assert completed.returncode == 0, output[-2000:]
+    assert "vendor tree matches the manifest" in output
+    assert '"pymongo_has_c": false' in output and '"bson_has_c": false' in output
+
+
 # -- static checks ---------------------------------------------------------------------------------
 
 

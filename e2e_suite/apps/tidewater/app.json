@@ -2,16 +2,151 @@
   "app_id": "tidewater",
   "name": "Tidewater",
   "domain": "personal banking",
-  "user_goal": "Move money between accounts and to payees, now or on a schedule; manage payees; read statements.",
+  "user_goal": "Sign in as the account holder; move money between accounts and to payees, now or on a schedule; manage payees; read statements.",
   "architecture": "spa-hash-router+json-api",
-  "stack": "python-stdlib+sqlite",
-  "persistence": "sqlite rows partitioned by session; client keeps wizard state and a payee cache in memory",
+  "stack": "python-stdlib+pg8000+postgresql",
+  "persistence": "postgresql schema per signed-in session, cloned from a seeded template; balances derived from the ledger; the client keeps wizard state and a payee cache in memory",
   "entry": "/",
   "start": [
     "python",
     "src/server.py"
   ],
   "dockerfile": true,
+  "database": {
+    "engine": "postgres",
+    "isolation": "schema-per-session",
+    "schema": "src/schema.sql",
+    "entities": [
+      "customers",
+      "account_products",
+      "accounts",
+      "account_access",
+      "banks",
+      "payees",
+      "direct_debits",
+      "transfer_drafts",
+      "quotes",
+      "transfers",
+      "ledger_entries"
+    ],
+    "auxiliary": [
+      "counters"
+    ],
+    "references": [],
+    "probes": [
+      {
+        "name": "a payee at a bank that does not exist",
+        "kind": "foreign_key",
+        "sql": "insert into payees values ('p99', 'alex', 'Probe', 'nowhere', '1234', 9)"
+      },
+      {
+        "name": "a ledger entry on an account that does not exist",
+        "kind": "foreign_key",
+        "sql": "insert into ledger_entries values (99, 'offshore', '2026-06-10', 'Probe', 100, 'card', null)"
+      },
+      {
+        "name": "a ledger entry of zero",
+        "kind": "check",
+        "sql": "insert into ledger_entries values (99, 'everyday', '2026-06-10', 'Probe', 0, 'card', null)"
+      },
+      {
+        "name": "an access level other than owner or view",
+        "kind": "check",
+        "sql": "update account_access set level = 'admin' where customer_id = 'jamie' and account_id = 'bills'"
+      },
+      {
+        "name": "a second transfer from the same quote",
+        "kind": "unique",
+        "sql": "insert into transfers values (903, 901, 'everyday', 'saver', null, 100, '', 'now', '2026-06-10', 'completed', 'alex')"
+      },
+      {
+        "name": "a second bank named Northgate",
+        "kind": "unique",
+        "sql": "insert into banks values ('northgate-2', 'Northgate', 9)"
+      }
+    ],
+    "absent_constraints": [
+      {
+        "fault_id": "TIDE-1",
+        "constraint": "a funds rule in the database: a stored balance with CHECK (balance >= 0), or a trigger refusing a transfer larger than the source account's balance",
+        "reason": "balances are derived (opening balance plus the ledger) and funds are checked by the application when it quotes; TIDE-1 is that check reading a stale snapshot, and its over-large transfer must stay authorisable"
+      }
+    ]
+  },
+  "login": {
+    "path": "/login",
+    "protected": [
+      "/",
+      "/#/move",
+      "/#/payees",
+      "/#/statements"
+    ],
+    "public": [
+      "/help/password"
+    ],
+    "users": [
+      {
+        "username": "alex.carter",
+        "name": "Alex Carter",
+        "roles": [
+          "holder"
+        ],
+        "macro": true
+      },
+      {
+        "username": "jamie.carter",
+        "name": "Jamie Carter",
+        "roles": [
+          "viewer"
+        ]
+      }
+    ],
+    "password_value": "Tidewater-quay-26",
+    "steps": [
+      {
+        "type": "TYPE",
+        "id": "login-username",
+        "params": {
+          "value": "alex.carter"
+        }
+      },
+      {
+        "type": "TYPE",
+        "id": "login-password",
+        "params": {
+          "value": "Tidewater-quay-26"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "login-submit"
+      }
+    ],
+    "form": {
+      "action": "/login",
+      "username_field": "username",
+      "password_field": "password"
+    },
+    "signed_in_region": "signed_in_as",
+    "error_region": "login_error",
+    "sign_out": [
+      {
+        "type": "CLICK",
+        "id": "nav-account"
+      },
+      {
+        "type": "CLICK",
+        "id": "sign-out"
+      }
+    ],
+    "restricted": [
+      {
+        "user": "jamie.carter",
+        "path": "/#/move",
+        "region": "access_notice"
+      }
+    ]
+  },
   "workflow_graph": {
     "kind": [
       "hub-and-spoke",
@@ -20,6 +155,8 @@
       "revisit"
     ],
     "nodes": [
+      "sign-in",
+      "password-help",
       "dashboard",
       "offers",
       "move/accounts",
@@ -34,6 +171,22 @@
       "statements"
     ],
     "edges": [
+      [
+        "sign-in",
+        "dashboard"
+      ],
+      [
+        "sign-in",
+        "password-help"
+      ],
+      [
+        "password-help",
+        "sign-in"
+      ],
+      [
+        "dashboard",
+        "sign-in"
+      ],
       [
         "dashboard",
         "move/accounts"
@@ -121,7 +274,8 @@
     "table",
     "filter",
     "cross-page-state",
-    "dynamic-validation"
+    "dynamic-validation",
+    "multi-role"
   ],
   "vocabulary": {
     "progress_keys": [
@@ -142,7 +296,10 @@
     "statement_count": "#statement-count",
     "statement_table": "#statement-table",
     "scheduled_table": "#scheduled-table",
-    "balance_everyday": "#balance-everyday"
+    "balance_everyday": "#balance-everyday",
+    "signed_in_as": "#signed-in-as",
+    "login_error": "#login-error",
+    "access_notice": "#access-notice"
   },
   "workflows": [
     {
@@ -552,8 +709,8 @@
       ],
       "patch": {
         "file": "src/server.py",
-        "find": "            if source != draft[\"source\"]:\n                snapshot = available(conn, sid, source)",
-        "replace": "            if draft[\"available_snapshot\"] is None:\n                snapshot = available(conn, sid, source)"
+        "find": "            if source != draft[\"source_id\"]:\n                snapshot = available(db, source)",
+        "replace": "            if draft[\"available_snapshot_pence\"] is None:\n                snapshot = available(db, source)"
       }
     },
     {

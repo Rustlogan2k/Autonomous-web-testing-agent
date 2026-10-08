@@ -7,6 +7,11 @@
       "detail": []
     },
     {
+      "name": "suite_v2_contract",
+      "passed": true,
+      "detail": []
+    },
+    {
       "name": "no_external_urls",
       "passed": true,
       "detail": []
@@ -27,6 +32,16 @@
       "detail": []
     },
     {
+      "name": "database_url_from_environment",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "dockerfile_copies_vendor",
+      "passed": true,
+      "detail": []
+    },
+    {
       "name": "patches_apply_exactly_once",
       "passed": true,
       "detail": null
@@ -42,11 +57,78 @@
       "detail": {
         "passed": true,
         "summary": [
-          "Ran 11 tests in 0.557s",
+          "Ran 17 tests in 2.849s",
           "OK"
         ],
         "pass_lines": null,
         "tail": []
+      }
+    },
+    {
+      "name": "login_http_round_trip",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "status": 303,
+        "location": "/",
+        "cookie": true,
+        "entry_status": 200,
+        "entry_path": "/",
+        "user": "alex.carter"
+      }
+    },
+    {
+      "name": "data_model_contract",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "session_seed_cost",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "warn": false,
+        "samples": 20,
+        "p50_ms": 95.8,
+        "p95_ms": 123.2,
+        "max_ms": 138.6,
+        "limit_ms": 300.0,
+        "refused": 0,
+        "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
+      }
+    },
+    {
+      "name": "session_cap_honoured",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "cap": 4,
+        "max_live_partitions": 4,
+        "live_after_each": [
+          2,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "evicted_session_state": null,
+        "evicted_session_lands_on": "/login",
+        "every_new_session_starts_from_the_seed": true
       }
     },
     {
@@ -69,10 +151,10 @@
       "passed": true,
       "detail": {
         "passed": true,
-        "seed_sha": "4fc68ee00d6caac818c0d2803d43fea88470c93a47dd7bea5f78b4ad3f9da0c8",
+        "seed_sha": "e55f3adbbd84f979b64e13883e7ef13fd3650695689265364ca596fd3d94a151",
         "fresh_context_sha": [
-          "4fc68ee00d6caac818c0d2803d43fea88470c93a47dd7bea5f78b4ad3f9da0c8",
-          "4fc68ee00d6caac818c0d2803d43fea88470c93a47dd7bea5f78b4ad3f9da0c8"
+          "e55f3adbbd84f979b64e13883e7ef13fd3650695689265364ca596fd3d94a151",
+          "e55f3adbbd84f979b64e13883e7ef13fd3650695689265364ca596fd3d94a151"
         ]
       }
     },
@@ -118,7 +200,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 128.7
+        "seconds": 179.8
       }
     },
     {
@@ -146,7 +228,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 105.0
+        "seconds": 146.9
       }
     },
     {
@@ -174,7 +256,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 81.5
+        "seconds": 119.9
       }
     },
     {
@@ -191,6 +273,44 @@
         "raw_candidates": {},
         "errors": [],
         "foreign_requests": [],
+        "responses": {
+          "count": 110,
+          "p50_ms": 6.7,
+          "p95_ms": 41.7,
+          "max_ms": 55.4,
+          "slowest": [
+            [
+              "GET",
+              "/api/overview",
+              55.4
+            ],
+            [
+              "GET",
+              "/api/overview",
+              53.5
+            ],
+            [
+              "GET",
+              "/api/overview",
+              49.6
+            ],
+            [
+              "GET",
+              "/api/overview",
+              45.4
+            ],
+            [
+              "GET",
+              "/api/overview",
+              43.5
+            ]
+          ],
+          "limits_ms": {
+            "p95": 150.0,
+            "max": 1000.0
+          },
+          "passed": true
+        },
         "passed": true
       }
     },
@@ -200,21 +320,182 @@
       "detail": []
     },
     {
+      "name": "responses_fast",
+      "passed": true,
+      "detail": {
+        "count": 110,
+        "p50_ms": 6.7,
+        "p95_ms": 41.7,
+        "max_ms": 55.4,
+        "slowest": [
+          [
+            "GET",
+            "/api/overview",
+            55.4
+          ],
+          [
+            "GET",
+            "/api/overview",
+            53.5
+          ],
+          [
+            "GET",
+            "/api/overview",
+            49.6
+          ],
+          [
+            "GET",
+            "/api/overview",
+            45.4
+          ],
+          [
+            "GET",
+            "/api/overview",
+            43.5
+          ]
+        ],
+        "limits_ms": {
+          "p95": 150.0,
+          "max": 1000.0
+        },
+        "passed": true
+      }
+    },
+    {
+      "name": "login_protected",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "landing": {
+          "entry": "/login",
+          "/": "/login",
+          "/#/move": "/login",
+          "/#/payees": "/login",
+          "/#/statements": "/login"
+        },
+        "public": {
+          "/help/password": {
+            "status": 200,
+            "redirected": false,
+            "path": "/help/password"
+          }
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "login_macro_signs_in",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "steps_completed": 3,
+        "steps": 3,
+        "path": "/",
+        "signed_in_as": "Alex Carter \u00b7 Account holder",
+        "sha_equals_seed": true
+      }
+    },
+    {
+      "name": "login_wrong_password_refused",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "path": "/login",
+        "error_region": "We couldn't sign you in with that username and password.",
+        "session": null,
+        "errors": []
+      }
+    },
+    {
+      "name": "login_sign_out_sound",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "workflow": "pay the landlord now",
+        "workflow_misses": 0,
+        "sign_out_misses": 0,
+        "landed_on": "/login",
+        "user_after_sign_out": null,
+        "entry_lands_on": "/login",
+        "sign_in_again_steps": 3,
+        "sha_resumed": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "role_restrictions_sound",
+      "passed": true,
+      "detail": [
+        {
+          "user": "jamie.carter",
+          "path": "/#/move",
+          "passed": true,
+          "signed_in_as": "Jamie Carter \u00b7 View-only access",
+          "status": null,
+          "access_region": "You can see balances and statements, but only the account holder can move money or manage payees.",
+          "state_unchanged": true,
+          "errors": []
+        }
+      ]
+    },
+    {
       "name": "docker_offline_build_and_health",
       "passed": true,
       "detail": {
         "image": "e2e-suite/tidewater:clean",
         "build_ok": true,
-        "build_seconds": 1.5,
+        "build_seconds": 1.7,
         "build_tail": [
-          "#10 naming to docker.io/e2e-suite/tidewater:clean done",
-          "#10 unpacking to docker.io/e2e-suite/tidewater:clean 0.1s done",
-          "#10 DONE 0.4s"
+          "#11 naming to docker.io/e2e-suite/tidewater:clean done",
+          "#11 unpacking to docker.io/e2e-suite/tidewater:clean 0.1s done",
+          "#11 DONE 0.4s"
+        ],
+        "route": "host",
+        "attempts": [
+          {
+            "route": "host",
+            "healthy": true,
+            "detail": "{'ok': True, 'app': 'tidewater'}",
+            "sign_in": {
+              "passed": true,
+              "status": 303,
+              "cookie": true,
+              "entry_status": 200,
+              "entry_path": "/",
+              "container_sha": "e55f3adbbd84f979b64e13883e7ef13fd3650695689265364ca596fd3d94a151",
+              "host_sha": "e55f3adbbd84f979b64e13883e7ef13fd3650695689265364ca596fd3d94a151",
+              "sign_in_ms": 86.1
+            }
+          }
         ],
         "container_healthy": true,
         "detail": "{'ok': True, 'app': 'tidewater'}",
-        "image_mb": 43.3,
+        "sign_in": {
+          "passed": true,
+          "status": 303,
+          "cookie": true,
+          "entry_status": 200,
+          "entry_path": "/",
+          "container_sha": "e55f3adbbd84f979b64e13883e7ef13fd3650695689265364ca596fd3d94a151",
+          "host_sha": "e55f3adbbd84f979b64e13883e7ef13fd3650695689265364ca596fd3d94a151",
+          "sign_in_ms": 86.1
+        },
+        "image_mb": 44.5,
         "passed": true
+      }
+    },
+    {
+      "name": "docker_sign_in_and_seed_state",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "status": 303,
+        "cookie": true,
+        "entry_status": 200,
+        "entry_path": "/",
+        "container_sha": "e55f3adbbd84f979b64e13883e7ef13fd3650695689265364ca596fd3d94a151",
+        "host_sha": "e55f3adbbd84f979b64e13883e7ef13fd3650695689265364ca596fd3d94a151",
+        "sign_in_ms": 86.1
       }
     },
     {
@@ -224,40 +505,46 @@
         "profile": {
           "languages": [
             {
-              "language": "JSON",
-              "files": 4,
-              "bytes": 24832,
-              "share": 0.3483
+              "language": "Python",
+              "files": 3,
+              "bytes": 39267,
+              "share": 0.3512
             },
             {
-              "language": "Python",
-              "files": 1,
-              "bytes": 22036,
-              "share": 0.3091
+              "language": "JSON",
+              "files": 5,
+              "bytes": 36898,
+              "share": 0.33
             },
             {
               "language": "JavaScript",
               "files": 1,
-              "bytes": 20386,
-              "share": 0.2859
+              "bytes": 23518,
+              "share": 0.2104
+            },
+            {
+              "language": "SQL",
+              "files": 1,
+              "bytes": 7459,
+              "share": 0.0667
             },
             {
               "language": "CSS",
               "files": 1,
-              "bytes": 2410,
-              "share": 0.0338
+              "bytes": 2986,
+              "share": 0.0267
             },
             {
               "language": "Markdown",
               "files": 1,
               "bytes": 1127,
-              "share": 0.0158
+              "share": 0.0101
             },
             {
               "language": "HTML",
               "files": 1,
-              "bytes": 506,
-              "share": 0.0071
+              "bytes": 543,
+              "share": 0.0049
             }
           ],
           "frameworks": [],
@@ -269,26 +556,48 @@
         },
         "build_plan": {
           "kind": "dockerfile",
-          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\tidewater\\clean\\Dockerfile"
+          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\tidewater\\clean\\Dockerfile"
         },
         "product_can_build": true,
         "matches_expectation": true,
         "expectation": "buildable by the current intake"
       }
+    },
+    {
+      "name": "variant_storage_released",
+      "passed": true,
+      "detail": []
     }
   ],
   "sections": {
     "vocabulary": {
-      "keys": 76,
-      "keys_used_by_source": 76,
-      "action_keys": 19,
-      "unused_keys": [],
+      "keys": 99,
+      "keys_used_by_source": 85,
+      "action_keys": 24,
+      "unused_keys": [
+        "act.back_to_sign_in",
+        "act.forgot_password",
+        "act.sign_in",
+        "help.heading",
+        "help.never_ask",
+        "help.reset",
+        "kind.current",
+        "kind.savings",
+        "role.holder",
+        "role.viewer",
+        "signin.heading",
+        "signin.password",
+        "signin.refused",
+        "signin.username"
+      ],
       "default_action_labels": {
+        "act.account": "Account",
         "act.add_payee": "Add payee",
         "act.apply_filter": "Apply",
         "act.authorise": "Authorise",
         "act.back_accounts": "Back to accounts",
         "act.back_payees": "All payees",
+        "act.back_to_sign_in": "Back to sign in",
         "act.cancel_move": "Cancel",
         "act.cancel_scheduled": "Cancel transfer",
         "act.change_accounts": "Change accounts",
@@ -298,18 +607,23 @@
         "act.confirm_payee": "Add this payee",
         "act.edit": "Edit",
         "act.edit_payee_details": "Edit details",
+        "act.forgot_password": "Forgot password?",
         "act.move": "Move money",
         "act.promo": "Continue",
         "act.refresh": "Refresh balances",
         "act.review": "Review transfer",
+        "act.sign_in": "Sign in",
+        "act.sign_out": "Sign out",
         "act.to_amount": "Set amount"
       },
       "alt_action_labels": {
+        "act.account": "My profile",
         "act.add_payee": "New recipient",
         "act.apply_filter": "Show results",
         "act.authorise": "Approve payment",
         "act.back_accounts": "Return to overview",
         "act.back_payees": "All recipients",
+        "act.back_to_sign_in": "Return to log-in",
         "act.cancel_move": "Abandon",
         "act.cancel_scheduled": "Stop payment",
         "act.change_accounts": "Switch accounts",
@@ -319,10 +633,13 @@
         "act.confirm_payee": "Save recipient",
         "act.edit": "Rename",
         "act.edit_payee_details": "Correct details",
+        "act.forgot_password": "Can't remember your passcode?",
         "act.move": "Send funds",
         "act.promo": "Find out more",
         "act.refresh": "Update figures",
         "act.review": "Check transfer",
+        "act.sign_in": "Log in",
+        "act.sign_out": "Log out",
         "act.to_amount": "Enter sum"
       }
     },
@@ -331,7 +648,7 @@
         "file": "src/server.py",
         "lines_removed": 2,
         "lines_added": 2,
-        "chars_changed": 81
+        "chars_changed": 82
       },
       "TIDE-2": {
         "file": "src/server.py",
@@ -344,6 +661,497 @@
         "lines_removed": 2,
         "lines_added": 1,
         "chars_changed": 67
+      }
+    },
+    "data_model": {
+      "passed": true,
+      "failures": [],
+      "description": {
+        "partition": "s_000001",
+        "tables": [
+          "account_access",
+          "account_products",
+          "accounts",
+          "banks",
+          "counters",
+          "customers",
+          "direct_debits",
+          "ledger_entries",
+          "payees",
+          "quotes",
+          "transfer_drafts",
+          "transfers"
+        ],
+        "entities_found": [
+          "account_access",
+          "account_products",
+          "accounts",
+          "banks",
+          "customers",
+          "direct_debits",
+          "ledger_entries",
+          "payees",
+          "quotes",
+          "transfer_drafts",
+          "transfers"
+        ],
+        "table_count": 11,
+        "foreign_keys": [
+          {
+            "table": "account_access",
+            "name": "account_access_account_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (account_id) REFERENCES s_000001.accounts(id)",
+            "indexed": true
+          },
+          {
+            "table": "account_access",
+            "name": "account_access_customer_id_fkey",
+            "columns": [
+              1
+            ],
+            "definition": "FOREIGN KEY (customer_id) REFERENCES s_000001.customers(id)",
+            "indexed": true
+          },
+          {
+            "table": "accounts",
+            "name": "accounts_customer_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (customer_id) REFERENCES s_000001.customers(id)",
+            "indexed": true
+          },
+          {
+            "table": "accounts",
+            "name": "accounts_product_code_fkey",
+            "columns": [
+              3
+            ],
+            "definition": "FOREIGN KEY (product_code) REFERENCES s_000001.account_products(code)",
+            "indexed": true
+          },
+          {
+            "table": "direct_debits",
+            "name": "direct_debits_account_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (account_id) REFERENCES s_000001.accounts(id)",
+            "indexed": true
+          },
+          {
+            "table": "ledger_entries",
+            "name": "ledger_entries_account_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (account_id) REFERENCES s_000001.accounts(id)",
+            "indexed": true
+          },
+          {
+            "table": "ledger_entries",
+            "name": "ledger_entries_transfer_id_fkey",
+            "columns": [
+              7
+            ],
+            "definition": "FOREIGN KEY (transfer_id) REFERENCES s_000001.transfers(id)",
+            "indexed": true
+          },
+          {
+            "table": "payees",
+            "name": "payees_bank_id_fkey",
+            "columns": [
+              4
+            ],
+            "definition": "FOREIGN KEY (bank_id) REFERENCES s_000001.banks(id)",
+            "indexed": true
+          },
+          {
+            "table": "payees",
+            "name": "payees_customer_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (customer_id) REFERENCES s_000001.customers(id)",
+            "indexed": true
+          },
+          {
+            "table": "quotes",
+            "name": "quotes_draft_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (draft_id) REFERENCES s_000001.transfer_drafts(id)",
+            "indexed": true
+          },
+          {
+            "table": "quotes",
+            "name": "quotes_source_id_fkey",
+            "columns": [
+              3
+            ],
+            "definition": "FOREIGN KEY (source_id) REFERENCES s_000001.accounts(id)",
+            "indexed": true
+          },
+          {
+            "table": "quotes",
+            "name": "quotes_target_account_id_fkey",
+            "columns": [
+              4
+            ],
+            "definition": "FOREIGN KEY (target_account_id) REFERENCES s_000001.accounts(id)",
+            "indexed": true
+          },
+          {
+            "table": "quotes",
+            "name": "quotes_target_payee_id_fkey",
+            "columns": [
+              5
+            ],
+            "definition": "FOREIGN KEY (target_payee_id) REFERENCES s_000001.payees(id)",
+            "indexed": true
+          },
+          {
+            "table": "transfer_drafts",
+            "name": "transfer_drafts_customer_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (customer_id) REFERENCES s_000001.customers(id)",
+            "indexed": true
+          },
+          {
+            "table": "transfer_drafts",
+            "name": "transfer_drafts_source_id_fkey",
+            "columns": [
+              3
+            ],
+            "definition": "FOREIGN KEY (source_id) REFERENCES s_000001.accounts(id)",
+            "indexed": true
+          },
+          {
+            "table": "transfer_drafts",
+            "name": "transfer_drafts_target_account_id_fkey",
+            "columns": [
+              4
+            ],
+            "definition": "FOREIGN KEY (target_account_id) REFERENCES s_000001.accounts(id)",
+            "indexed": true
+          },
+          {
+            "table": "transfer_drafts",
+            "name": "transfer_drafts_target_payee_id_fkey",
+            "columns": [
+              5
+            ],
+            "definition": "FOREIGN KEY (target_payee_id) REFERENCES s_000001.payees(id)",
+            "indexed": true
+          },
+          {
+            "table": "transfers",
+            "name": "transfers_authorised_by_fkey",
+            "columns": [
+              11
+            ],
+            "definition": "FOREIGN KEY (authorised_by) REFERENCES s_000001.customers(id)",
+            "indexed": true
+          },
+          {
+            "table": "transfers",
+            "name": "transfers_quote_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (quote_id) REFERENCES s_000001.quotes(id)",
+            "indexed": true
+          },
+          {
+            "table": "transfers",
+            "name": "transfers_source_id_fkey",
+            "columns": [
+              3
+            ],
+            "definition": "FOREIGN KEY (source_id) REFERENCES s_000001.accounts(id)",
+            "indexed": true
+          },
+          {
+            "table": "transfers",
+            "name": "transfers_target_account_id_fkey",
+            "columns": [
+              4
+            ],
+            "definition": "FOREIGN KEY (target_account_id) REFERENCES s_000001.accounts(id)",
+            "indexed": true
+          },
+          {
+            "table": "transfers",
+            "name": "transfers_target_payee_id_fkey",
+            "columns": [
+              5
+            ],
+            "definition": "FOREIGN KEY (target_payee_id) REFERENCES s_000001.payees(id)",
+            "indexed": true
+          }
+        ],
+        "foreign_key_count": 22,
+        "foreign_keys_indexed": 22,
+        "checks": [
+          {
+            "table": "account_access",
+            "name": "access_level",
+            "definition": "CHECK ((level = ANY (ARRAY['owner'::text, 'view'::text])))"
+          },
+          {
+            "table": "account_products",
+            "name": "interest_range",
+            "definition": "CHECK (((interest_bps >= 0) AND (interest_bps <= 1000)))"
+          },
+          {
+            "table": "account_products",
+            "name": "overdraft_not_negative",
+            "definition": "CHECK ((overdraft_limit_pence >= 0))"
+          },
+          {
+            "table": "account_products",
+            "name": "product_kind",
+            "definition": "CHECK ((kind = ANY (ARRAY['current'::text, 'savings'::text])))"
+          },
+          {
+            "table": "accounts",
+            "name": "account_number_digits",
+            "definition": "CHECK ((number ~ '^[0-9]{8}$'::text))"
+          },
+          {
+            "table": "direct_debits",
+            "name": "collection_day_range",
+            "definition": "CHECK (((collection_day >= 1) AND (collection_day <= 28)))"
+          },
+          {
+            "table": "direct_debits",
+            "name": "mandate_status",
+            "definition": "CHECK ((status = ANY (ARRAY['active'::text, 'cancelled'::text])))"
+          },
+          {
+            "table": "ledger_entries",
+            "name": "entry_kind",
+            "definition": "CHECK ((kind = ANY (ARRAY['salary'::text, 'card'::text, 'payment'::text, 'direct_debit'::text, 'transfer_in'::text, 'transfer_out'::text])))"
+          },
+          {
+            "table": "ledger_entries",
+            "name": "entry_not_zero",
+            "definition": "CHECK ((amount_pence <> 0))"
+          },
+          {
+            "table": "payees",
+            "name": "nickname_length",
+            "definition": "CHECK (((length(nickname) >= 1) AND (length(nickname) <= 5000)))"
+          },
+          {
+            "table": "payees",
+            "name": "payee_number_digits",
+            "definition": "CHECK ((account_number ~ '^[0-9]{2,8}$'::text))"
+          },
+          {
+            "table": "quotes",
+            "name": "quote_amount_positive",
+            "definition": "CHECK ((amount_pence > 0))"
+          },
+          {
+            "table": "quotes",
+            "name": "quote_one_target",
+            "definition": "CHECK ((num_nonnulls(target_account_id, target_payee_id) = 1))"
+          },
+          {
+            "table": "quotes",
+            "name": "quote_reference_length",
+            "definition": "CHECK ((length(reference) <= 140))"
+          },
+          {
+            "table": "quotes",
+            "name": "quote_run_when",
+            "definition": "CHECK ((run_when = ANY (ARRAY['now'::text, 'next-friday'::text, 'month-end'::text])))"
+          },
+          {
+            "table": "transfer_drafts",
+            "name": "draft_one_target",
+            "definition": "CHECK ((num_nonnulls(target_account_id, target_payee_id) = 1))"
+          },
+          {
+            "table": "transfers",
+            "name": "transfer_amount_positive",
+            "definition": "CHECK ((amount_pence > 0))"
+          },
+          {
+            "table": "transfers",
+            "name": "transfer_one_target",
+            "definition": "CHECK ((num_nonnulls(target_account_id, target_payee_id) = 1))"
+          },
+          {
+            "table": "transfers",
+            "name": "transfer_run_when",
+            "definition": "CHECK ((run_when = ANY (ARRAY['now'::text, 'next-friday'::text, 'month-end'::text])))"
+          },
+          {
+            "table": "transfers",
+            "name": "transfer_status",
+            "definition": "CHECK ((status = ANY (ARRAY['scheduled'::text, 'completed'::text, 'cancelled'::text])))"
+          }
+        ],
+        "check_count": 20,
+        "enumerations": [
+          "account_access.access_level",
+          "account_products.product_kind",
+          "direct_debits.mandate_status",
+          "ledger_entries.entry_kind",
+          "quotes.quote_run_when",
+          "transfers.transfer_run_when",
+          "transfers.transfer_status"
+        ],
+        "unique_indexes": [
+          "accounts.account_number_unique",
+          "accounts.account_position_unique",
+          "banks.bank_name_unique",
+          "customers.customer_email_unique",
+          "customers.customer_username_unique",
+          "transfers.transfer_quote_unique"
+        ],
+        "secondary_indexes": [
+          "account_access.account_access_by_account",
+          "accounts.accounts_by_customer",
+          "accounts.accounts_by_product",
+          "direct_debits.direct_debits_by_account",
+          "transfer_drafts.drafts_by_customer",
+          "transfer_drafts.drafts_by_source",
+          "transfer_drafts.drafts_by_target_account",
+          "transfer_drafts.drafts_by_target_payee",
+          "ledger_entries.ledger_by_account",
+          "ledger_entries.ledger_by_transfer",
+          "payees.payees_by_bank",
+          "payees.payees_by_customer",
+          "quotes.quotes_by_draft",
+          "quotes.quotes_by_source",
+          "quotes.quotes_by_target_account",
+          "quotes.quotes_by_target_payee",
+          "transfers.transfers_by_authoriser",
+          "transfers.transfers_by_source",
+          "transfers.transfers_by_target_account",
+          "transfers.transfers_by_target_payee"
+        ],
+        "columns": 68,
+        "not_null_columns": 60,
+        "not_null_ratio": 0.882,
+        "rows": {
+          "account_access": 5,
+          "account_products": 5,
+          "accounts": 3,
+          "banks": 4,
+          "counters": 5,
+          "customers": 2,
+          "direct_debits": 6,
+          "ledger_entries": 8,
+          "payees": 3,
+          "quotes": 2,
+          "transfer_drafts": 2,
+          "transfers": 2
+        },
+        "seed_rows": 42,
+        "non_empty_tables": 11,
+        "user_triggers": [],
+        "rules": [],
+        "event_triggers": [],
+        "volatile_defaults": [],
+        "identity_columns": []
+      },
+      "probes": [
+        {
+          "name": "a payee at a bank that does not exist",
+          "kind": "foreign_key",
+          "expected": "23503",
+          "got": "23503",
+          "passed": true
+        },
+        {
+          "name": "a ledger entry on an account that does not exist",
+          "kind": "foreign_key",
+          "expected": "23503",
+          "got": "23503",
+          "passed": true
+        },
+        {
+          "name": "a ledger entry of zero",
+          "kind": "check",
+          "expected": "23514",
+          "got": "23514",
+          "passed": true
+        },
+        {
+          "name": "an access level other than owner or view",
+          "kind": "check",
+          "expected": "23514",
+          "got": "23514",
+          "passed": true
+        },
+        {
+          "name": "a second transfer from the same quote",
+          "kind": "unique",
+          "expected": "23505",
+          "got": "23505",
+          "passed": true
+        },
+        {
+          "name": "a second bank named Northgate",
+          "kind": "unique",
+          "expected": "23505",
+          "got": "23505",
+          "passed": true
+        }
+      ],
+      "references": []
+    },
+    "sessions": {
+      "cost": {
+        "passed": true,
+        "warn": false,
+        "samples": 20,
+        "p50_ms": 95.8,
+        "p95_ms": 123.2,
+        "max_ms": 138.6,
+        "limit_ms": 300.0,
+        "refused": 0,
+        "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
+      },
+      "cap": {
+        "passed": true,
+        "cap": 4,
+        "max_live_partitions": 4,
+        "live_after_each": [
+          2,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "evicted_session_state": null,
+        "evicted_session_lands_on": "/login",
+        "every_new_session_starts_from_the_seed": true
       }
     },
     "workflows": [
@@ -571,7 +1379,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 128.7
+        "seconds": 179.8
       },
       {
         "fault_id": "TIDE-2",
@@ -627,7 +1435,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 105.0
+        "seconds": 146.9
       },
       {
         "fault_id": "TIDE-3",
@@ -676,7 +1484,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 81.5
+        "seconds": 119.9
       }
     ],
     "benign": [
@@ -729,46 +1537,102 @@
       "raw_candidates": {},
       "errors": [],
       "foreign_requests": [],
+      "responses": {
+        "count": 110,
+        "p50_ms": 6.7,
+        "p95_ms": 41.7,
+        "max_ms": 55.4,
+        "slowest": [
+          [
+            "GET",
+            "/api/overview",
+            55.4
+          ],
+          [
+            "GET",
+            "/api/overview",
+            53.5
+          ],
+          [
+            "GET",
+            "/api/overview",
+            49.6
+          ],
+          [
+            "GET",
+            "/api/overview",
+            45.4
+          ],
+          [
+            "GET",
+            "/api/overview",
+            43.5
+          ]
+        ],
+        "limits_ms": {
+          "p95": 150.0,
+          "max": 1000.0
+        },
+        "passed": true
+      },
       "passed": true
     },
+    "roles": [
+      {
+        "user": "jamie.carter",
+        "path": "/#/move",
+        "passed": true,
+        "signed_in_as": "Jamie Carter \u00b7 View-only access",
+        "status": null,
+        "access_region": "You can see balances and statements, but only the account holder can move money or manage payees.",
+        "state_unchanged": true,
+        "errors": []
+      }
+    ],
     "product_intake": {
       "profile": {
         "languages": [
           {
-            "language": "JSON",
-            "files": 4,
-            "bytes": 24832,
-            "share": 0.3483
+            "language": "Python",
+            "files": 3,
+            "bytes": 39267,
+            "share": 0.3512
           },
           {
-            "language": "Python",
-            "files": 1,
-            "bytes": 22036,
-            "share": 0.3091
+            "language": "JSON",
+            "files": 5,
+            "bytes": 36898,
+            "share": 0.33
           },
           {
             "language": "JavaScript",
             "files": 1,
-            "bytes": 20386,
-            "share": 0.2859
+            "bytes": 23518,
+            "share": 0.2104
+          },
+          {
+            "language": "SQL",
+            "files": 1,
+            "bytes": 7459,
+            "share": 0.0667
           },
           {
             "language": "CSS",
             "files": 1,
-            "bytes": 2410,
-            "share": 0.0338
+            "bytes": 2986,
+            "share": 0.0267
           },
           {
             "language": "Markdown",
             "files": 1,
             "bytes": 1127,
-            "share": 0.0158
+            "share": 0.0101
           },
           {
             "language": "HTML",
             "files": 1,
-            "bytes": 506,
-            "share": 0.0071
+            "bytes": 543,
+            "share": 0.0049
           }
         ],
         "frameworks": [],
@@ -780,7 +1644,7 @@
       },
       "build_plan": {
         "kind": "dockerfile",
-        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\tidewater\\clean\\Dockerfile"
+        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\tidewater\\clean\\Dockerfile"
       },
       "product_can_build": true,
       "matches_expectation": true,
@@ -788,9 +1652,9 @@
     }
   },
   "admitted": true,
-  "checks_run": 22,
+  "checks_run": 37,
   "checks_failed": [],
   "browser_checks_run": true,
   "docker_checks_run": true,
-  "wall_clock_s": 565.0
+  "wall_clock_s": 753.3
 }
