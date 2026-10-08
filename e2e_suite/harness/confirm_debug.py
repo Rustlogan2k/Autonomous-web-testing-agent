@@ -15,7 +15,7 @@ spec = next(f for f in app.oracle_app().faults if f.fault_id == fid)
 builds = {"buggy": variants.build_variant(app, "buggy"), "clean": variants.build_variant(app, "clean"),
           f"without-{fid}": variants.build_variant(app, f"without-{fid}")}
 with serve(app, builds) as urls:
-    faulty, clean, control = _runner(urls["buggy"]), _runner(urls["clean"]), _runner(urls[f"without-{fid}"])
+    faulty, clean, control = (_runner(urls[v], app.login_steps) for v in ("buggy", "clean", f"without-{fid}"))
     pipeline = VerificationPipeline(app.oracle_app(), faulty, control_runner=clean,
                                     control_runners={fid: control}, max_minimization_trials=5)
     for i in range(n):

@@ -1,10 +1,14 @@
 /* Stackroom client. Every page route is the same document; this script renders the route
    named by location.pathname, and pages link to each other with ordinary hrefs. The stock
    grid's state (category, search, sort, page) lives in its own query string, kept in step
-   with history.replaceState, and every change fetches one page of rows from the server. */
+   with history.replaceState, and every change fetches one page of rows from the server.
+   The signed-in user's role arrives with the page: a viewer's grid has no pick boxes, Set
+   fields or Adjust links, and the server refuses a viewer's changes in any case. */
 "use strict";
 
 const WORDS = JSON.parse(document.getElementById("stackroom-words").textContent);
+const SESSION = JSON.parse(document.getElementById("stackroom-session").textContent);
+const CAN_EDIT = SESSION.role === "controller";
 const t = (key) => (Object.prototype.hasOwnProperty.call(WORDS, key) ? WORDS[key] : key);
 const page = document.getElementById("page");
 const LEVEL = /^\d{1,9}$/;
@@ -27,6 +31,14 @@ async function request(method, url, payload) {
   try {
     const response = await fetch(url, init);
     const body = await response.json();
+    if (body && body.ok === false && body.reason === "signed-out") {
+      // Signed out elsewhere in this browser: sign in again, then come back here.
+      location.assign(`/login?next=${encodeURIComponent(location.pathname + location.search)}`);
+      return { ok: false, body: { error: t("msg.failed") } };
+    }
+    if (body && body.ok === false && body.reason === "forbidden") {
+      return { ok: false, body: { error: t("access.notice") } };
+    }
     return { ok: response.ok, body };
   } catch (_) {
     // The page navigated away mid-request, or the server could not be reached.
@@ -123,19 +135,25 @@ function adjustHref(sku, at) {
 function gridRow(item, at) {
   const sku = escapeHtml(item.sku);
   const archived = item.status === "archived";
+  const pick = CAN_EDIT
+    ? `<td><input id="pick-${sku}" name="pick" type="checkbox" value="${sku}"${grid.picked.has(item.sku) ? " checked" : ""}></td>
+      <td><label for="pick-${sku}">${sku}</label></td>`
+    : `<td>${sku}</td>`;
+  const edit = CAN_EDIT
+    ? `<td><label for="stock-${sku}">${escapeHtml(t("field.set_stock"))}</label>
+        <input id="stock-${sku}" name="stock_inline" type="number" min="0" max="999999999" step="1"
+          inputmode="numeric" autocomplete="off" data-sku="${sku}">
+        <span class="tick" id="saved-${sku}" aria-live="polite"></span></td>
+      <td><a id="adjust-${sku}" href="${escapeHtml(adjustHref(item.sku, at))}">${escapeHtml(t("act.adjust"))}</a></td>`
+    : "";
   return `<tr${archived ? ' class="archived"' : ""}>
-      <td><input id="pick-${sku}" name="pick" type="checkbox" value="${sku}"${grid.picked.has(item.sku) ? " checked" : ""}></td>
-      <td><label for="pick-${sku}">${sku}</label></td>
+      ${pick}
       <td>${escapeHtml(item.name)}</td>
       <td class="c-category">${escapeHtml(item.category)}</td>
       <td class="c-location">${escapeHtml(item.location)}</td>
       <td><output id="qty-${sku}">${escapeHtml(item.stock)}</output></td>
       <td class="c-status">${escapeHtml(t(`status.${item.status}`))}</td>
-      <td><label for="stock-${sku}">${escapeHtml(t("field.set_stock"))}</label>
-        <input id="stock-${sku}" name="stock_inline" type="number" min="0" max="999999999" step="1"
-          inputmode="numeric" autocomplete="off" data-sku="${sku}">
-        <span class="tick" id="saved-${sku}" aria-live="polite"></span></td>
-      <td><a id="adjust-${sku}" href="${escapeHtml(adjustHref(item.sku, at))}">${escapeHtml(t("act.adjust"))}</a></td>
+      ${edit}
     </tr>`;
 }
 
@@ -166,19 +184,19 @@ function renderGrid() {
     </div>
     <div id="columns-menu" class="menu" role="group" aria-label="${escapeHtml(t("title.columns"))}"${grid.menuOpen ? "" : " hidden"}>${columnChoices}</div>
     <p class="count"><output id="match-count">${escapeHtml(data.total)}</output> ${escapeHtml(t("label.matching"))}</p>
-    <div class="bulkbar">
+    ${CAN_EDIT ? `<div class="bulkbar">
       <input id="pick-all" name="pick_all" type="checkbox"${everyPicked ? " checked" : ""}>
       <label for="pick-all">${escapeHtml(t("label.select_all"))}</label>
       <label for="bulk-action">${escapeHtml(t("field.bulk"))}</label>
       <select id="bulk-action" name="bulk_action">${bulkOptions}</select>
       <button id="bulk-apply" class="strong" type="button">${escapeHtml(t("act.apply"))}</button>
       <output id="bulk-status">${escapeHtml(grid.note)}</output>
-    </div>
+    </div>` : `<p class="note">${escapeHtml(t("label.read_only"))}</p>`}
     <table class="grid ${hiddenClasses}" id="stock-grid">
-      <thead><tr><th></th><th>${sortButton("sku")}</th><th>${sortButton("name")}</th>
+      <thead><tr>${CAN_EDIT ? "<th></th>" : ""}<th>${sortButton("sku")}</th><th>${sortButton("name")}</th>
         <th class="c-category">${escapeHtml(t("col.category"))}</th><th class="c-location">${escapeHtml(t("col.location"))}</th>
         <th>${sortButton("stock")}</th><th class="c-status">${escapeHtml(t("col.status"))}</th>
-        <th>${escapeHtml(t("col.set"))}</th><th></th></tr></thead>
+        ${CAN_EDIT ? `<th>${escapeHtml(t("col.set"))}</th><th></th>` : ""}</tr></thead>
       <tbody id="grid-rows">${rows}</tbody>
     </table>
     ${data.rows.length ? "" : `<p id="grid-empty" class="empty">${escapeHtml(t("msg.empty"))}</p>`}
@@ -217,6 +235,7 @@ function wireGrid() {
   byId("page-next").addEventListener("click", () => {
     loadGrid({ ...grid.state, page: Math.min(grid.data.pages, grid.state.page + 1) });
   });
+  if (!CAN_EDIT) { return; }
   byId("pick-all").addEventListener("change", (e) => {
     grid.data.rows.forEach((item) => (e.target.checked ? grid.picked.add(item.sku) : grid.picked.delete(item.sku)));
     page.querySelectorAll('input[name="pick"]').forEach((box) => { box.checked = e.target.checked; });
@@ -273,6 +292,7 @@ async function showAdjust(sku) {
   if (!ok) { page.innerHTML = `<p class="error">${escapeHtml(t("msg.not_found"))}</p>`; return; }
   const item = body.item;
   const backTo = `/stock?${gridSearch({ ...ref.view, page: Math.floor(ref.at / 10) + 1 })}`;
+  if (!CAN_EDIT) { return showAccessNotice(backTo); }
   page.innerHTML = `
     <h1>${escapeHtml(t("title.adjust"))}</h1>
     <section class="panel">
@@ -302,7 +322,19 @@ async function showAdjust(sku) {
   });
 }
 
+function showAccessNotice(backTo) {
+  page.innerHTML = `
+    <h1>${escapeHtml(t("access.title"))}</h1>
+    <p id="access-notice" class="notice" role="status">${escapeHtml(t("access.notice"))}</p>
+    <p class="actions"><a id="access-back" href="${escapeHtml(backTo)}">${escapeHtml(t("act.back_grid"))}</a></p>`;
+}
+
 // -- item page -------------------------------------------------------------------------------------
+
+function onOrderText(item) {
+  if (!item.on_order) { return t("label.none_on_order"); }
+  return `${item.on_order} ${t("label.units_due")} ${item.on_order_due}`;
+}
 
 async function showItem(sku) {
   const { ok, body } = await request("GET", `/api/items/${encodeURIComponent(sku)}?notice=take`);
@@ -319,7 +351,12 @@ async function showItem(sku) {
       <dt>${escapeHtml(t("col.location"))}</dt><dd>${escapeHtml(item.location)}</dd>
       <dt>${escapeHtml(t("col.status"))}</dt><dd><span id="item-status">${escapeHtml(t(`status.${item.status}`))}</span></dd>
       <dt>${escapeHtml(t("col.stock"))}</dt><dd><output id="item-stock">${escapeHtml(item.stock)}</output></dd>
+      <dt>${escapeHtml(t("label.reorder"))}</dt><dd>${escapeHtml(item.reorder_level)}</dd>
+      <dt>${escapeHtml(t("label.supplier"))}</dt><dd>${escapeHtml(item.supplier)} (${escapeHtml(item.lead_days)} ${escapeHtml(t("label.lead_days"))})</dd>
+      <dt>${escapeHtml(t("label.on_order"))}</dt><dd>${escapeHtml(onOrderText(item))}</dd>
     </dl>
+    <h2>${escapeHtml(t("title.recent"))}</h2>
+    <ol class="journal">${item.history.length ? item.history.map(journalLine).join("") : `<li>${escapeHtml(t("log.empty"))}</li>`}</ol>
     <p class="actions"><a id="back-to-grid" href="${escapeHtml(gridHref())}">${escapeHtml(t("act.back_grid"))}</a></p>`;
 }
 
@@ -329,7 +366,7 @@ function journalLine(entry) {
   const what = entry.kind === "archive"
     ? t("log.archived")
     : `${t("log.stock")} ${entry.before} → ${entry.after}`;
-  return `<li>${escapeHtml(entry.stamp)} — ${escapeHtml(entry.sku)} ${escapeHtml(what)} (${escapeHtml(t(`log.${entry.origin}`))})</li>`;
+  return `<li>${escapeHtml(entry.stamp)} — ${escapeHtml(entry.sku)} ${escapeHtml(what)} (${escapeHtml(t(`log.${entry.origin}`))}, ${escapeHtml(entry.by)})</li>`;
 }
 
 async function showLog() {
@@ -357,9 +394,21 @@ async function start() {
   return loadGrid(gridStateFrom(location.search), true);
 }
 
+// The account menu: Sign out is one step behind it, so a stray click never signs out.
+function wireAccount() {
+  const toggle = document.getElementById("nav-account");
+  const menu = document.getElementById("account-menu");
+  toggle.addEventListener("click", () => {
+    const open = menu.hidden;
+    menu.hidden = !open;
+    toggle.setAttribute("aria-expanded", String(open));
+  });
+}
+
 // A page restored from the back/forward cache would show data (and one-time notices) as they
 // were when it was left; load it afresh instead.
 window.addEventListener("pageshow", (event) => { if (event.persisted) { location.reload(); } });
 
 document.title = t("app.title");
+wireAccount();
 start();

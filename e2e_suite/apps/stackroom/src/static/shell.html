@@ -7,11 +7,19 @@
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/assets/stackroom.css">
   <script id="stackroom-words" type="application/json">{{WORDS}}</script>
+  <script id="stackroom-session" type="application/json">{{SESSION}}</script>
 </head>
 <body>
   <header class="masthead">
     <strong class="wordmark">{{TITLE}}</strong>
     <nav id="site-nav" aria-label="Sections"></nav>
+    <div class="account">
+      <span id="signed-in-as">{{SIGNED_IN_AS}}</span>
+      <button id="nav-account" type="button" aria-expanded="false" aria-controls="account-menu">{{ACCOUNT}}</button>
+      <div id="account-menu" class="menu account-menu" hidden>
+        <form method="post" action="/logout"><button id="sign-out" type="submit">{{SIGN_OUT}}</button></form>
+      </div>
+    </div>
   </header>
   <main id="page" tabindex="-1"></main>
   <script src="/assets/stackroom.js" defer></script>

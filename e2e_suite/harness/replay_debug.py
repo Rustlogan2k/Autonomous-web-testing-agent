@@ -25,7 +25,7 @@ def main() -> None:
     oracle_app = app.oracle_app()
     directory = variants.build_variant(app, variant)
     with Server(app, directory) as server:
-        runner = _runner(server.url)
+        runner = _runner(server.url, app.login_steps)
         for i in range(runs):
             observed = runner.run(list(fault["trigger_trace"]))
             if fault.get("oracle", "existing") == "existing":

@@ -8,6 +8,13 @@
 Writes `e2e_suite/admission/<app>.json`, `suite.json` and `suite.md`. An app is admitted
 only when every check that was run passed; checks not run are reported as not run, never
 as passed. No RL code is imported or run here.
+
+Suite v2 adds, for every app: the v2 contract (a database server and a sign-in); for a
+database app, the HTTP sign-in, the data-model contract, the session cost and the session
+cap (always run, no browser needed); with `--browser`, the sign-in, sign-out and role checks
+and the response times of the clean walk; with `--docker`, the sign-in round trip and the
+seed state inside the container; and at the end, that every database home the run created
+was released.
 """
 
 from __future__ import annotations
@@ -22,8 +29,8 @@ import time
 from pathlib import Path
 
 from . import diversity, static_checks, variants
-from .launcher import Server, serve
-from .manifest import ADMISSION_ROOT, AppManifest, discover, load, validate_manifest
+from .launcher import Server, leftover_homes, serve
+from .manifest import ADMISSION_ROOT, AppManifest, discover, load, suite_v2_contract, validate_manifest
 
 
 def _check(name: str, passed: bool, detail=None) -> dict:
@@ -64,6 +71,9 @@ def validate(app: AppManifest, *, browser: bool, docker: bool, walk_steps: int) 
 
     problems = validate_manifest(app)
     add(_check("manifest_well_formed", not problems, problems))
+    v2_problems = suite_v2_contract(app)
+    add(_check("suite_v2_contract", not v2_problems, v2_problems))
+    has_login = bool(app.login_steps) and not problems
     static = static_checks.run_all(app)
     for name, result in static.items():
         add(_check(name, result["passed"], result["detail"]))
@@ -85,6 +95,22 @@ def validate(app: AppManifest, *, browser: bool, docker: bool, walk_steps: int) 
             add(_check("api_tests_pass", api["passed"], api))
         except Exception as exc:  # noqa: BLE001
             add(_check("api_tests_pass", False, f"{type(exc).__name__}: {exc}"))
+
+    seed_sha = None
+    if builds is not None and app.database and has_login:
+        from . import db_checks
+
+        database = db_checks.check_database(app, builds["clean"])
+        seed_sha = database["seed_sha"]
+        add(_check("login_http_round_trip", database["sign_in"]["passed"], database["sign_in"]))
+        model = database["data_model"]
+        add(_check("data_model_contract", model["passed"], model["failures"]))
+        add(_check("session_seed_cost", database["sessions"]["cost"]["passed"],
+                   database["sessions"]["cost"]))
+        add(_check("session_cap_honoured", database["sessions"]["cap"]["passed"],
+                   database["sessions"]["cap"]))
+        report["sections"]["data_model"] = model
+        report["sections"]["sessions"] = database["sessions"]
 
     if builds is not None and browser:
         from . import browser_checks as bc
@@ -122,19 +148,35 @@ def validate(app: AppManifest, *, browser: bool, docker: bool, walk_steps: int) 
             network = [w for w in workflows if w.get("foreign_requests")]
             add(_check("no_external_network_at_runtime", not network and not walk["foreign_requests"],
                        network[:3]))
+            if has_login:
+                add(_check("responses_fast", walk["responses"]["passed"], walk["responses"]))
+                for name, result in bc.check_login(app, urls["clean"], seed_sha).items():
+                    add(_check(name, result["passed"], result))
+                sign_out = bc.check_sign_out(app, urls["clean"])
+                add(_check("login_sign_out_sound", sign_out["passed"], sign_out))
+                roles = bc.check_role_restrictions(app, urls["clean"])
+                add(_check("role_restrictions_sound", all(r["passed"] for r in roles), roles))
+                report["sections"]["roles"] = roles
 
     if builds is not None and docker:
         from . import docker_checks as dc
 
         if app.has_dockerfile:
             if dc.docker_available():
-                result = dc.build_and_run(app, builds["clean"])
+                result = dc.build_and_run(app, builds["clean"], seed_sha=seed_sha)
                 add(_check("docker_offline_build_and_health", result["passed"], result))
+                if app.database and has_login:
+                    add(_check("docker_sign_in_and_seed_state", result.get("sign_in", {}).get("passed"),
+                               result.get("sign_in")))
             else:
                 add(_check("docker_offline_build_and_health", False, "docker daemon unavailable"))
         intake = dc.product_intake(app, builds["clean"])
         add(_check("product_intake_matches_expectation", intake["matches_expectation"], intake))
         report["sections"]["product_intake"] = intake
+
+    if app.database:
+        leftovers = leftover_homes(app.app_id)
+        add(_check("variant_storage_released", not leftovers, leftovers))
 
     report["admitted"] = all(c["passed"] for c in report["checks"])
     report["checks_run"] = len(report["checks"])

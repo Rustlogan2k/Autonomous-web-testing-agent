@@ -1,343 +1,581 @@
 {
  "page_size": 10,
+ "categories": [
+  {
+   "id": "fasteners",
+   "name": "Fasteners",
+   "position": 1
+  },
+  {
+   "id": "lighting",
+   "name": "Lighting",
+   "position": 2
+  },
+  {
+   "id": "paint",
+   "name": "Paint",
+   "position": 3
+  },
+  {
+   "id": "tools",
+   "name": "Tools",
+   "position": 4
+  }
+ ],
+ "locations": [
+  {
+   "code": "A1",
+   "label": "Aisle 1",
+   "aisle": 1
+  },
+  {
+   "code": "A2",
+   "label": "Aisle 2",
+   "aisle": 2
+  },
+  {
+   "code": "A3",
+   "label": "Aisle 3",
+   "aisle": 3
+  },
+  {
+   "code": "A4",
+   "label": "Aisle 4",
+   "aisle": 4
+  }
+ ],
+ "suppliers": [
+  {
+   "id": "fixings",
+   "name": "Fixings Direct",
+   "lead_days": 2
+  },
+  {
+   "id": "ironside",
+   "name": "Ironside Tools",
+   "lead_days": 5
+  },
+  {
+   "id": "lumen",
+   "name": "Lumen Wholesale",
+   "lead_days": 3
+  },
+  {
+   "id": "brightway",
+   "name": "Brightway Electrical",
+   "lead_days": 7
+  },
+  {
+   "id": "coverall",
+   "name": "Coverall Paints",
+   "lead_days": 4
+  },
+  {
+   "id": "harbour",
+   "name": "Harbour Trade Supplies",
+   "lead_days": 6
+  }
+ ],
  "items": [
   {
    "sku": "SKU-101",
    "name": "Hex bolt M8 x 40 (box)",
-   "category": "Fasteners",
-   "location": "Aisle 1",
+   "category_id": "fasteners",
+   "location_code": "A1",
+   "supplier_id": "fixings",
    "stock": 12,
+   "reorder_level": 20,
    "status": "active"
   },
   {
    "sku": "SKU-102",
    "name": "Hex nut M8 (box)",
-   "category": "Fasteners",
-   "location": "Aisle 1",
+   "category_id": "fasteners",
+   "location_code": "A1",
+   "supplier_id": "fixings",
    "stock": 85,
+   "reorder_level": 20,
    "status": "active"
   },
   {
    "sku": "SKU-103",
    "name": "Wood screw 4 x 30",
-   "category": "Fasteners",
-   "location": "Aisle 1",
+   "category_id": "fasteners",
+   "location_code": "A1",
+   "supplier_id": "fixings",
    "stock": 30,
+   "reorder_level": 20,
    "status": "active"
   },
   {
    "sku": "SKU-104",
    "name": "Coach screw 8 x 60",
-   "category": "Fasteners",
-   "location": "Aisle 1",
+   "category_id": "fasteners",
+   "location_code": "A1",
+   "supplier_id": "fixings",
    "stock": 7,
+   "reorder_level": 20,
    "status": "active"
   },
   {
    "sku": "SKU-105",
    "name": "Penny washer M10",
-   "category": "Fasteners",
-   "location": "Aisle 1",
+   "category_id": "fasteners",
+   "location_code": "A1",
+   "supplier_id": "fixings",
    "stock": 64,
+   "reorder_level": 20,
    "status": "active"
   },
   {
    "sku": "SKU-106",
    "name": "Plasterboard fixing",
-   "category": "Fasteners",
-   "location": "Aisle 1",
+   "category_id": "fasteners",
+   "location_code": "A1",
+   "supplier_id": "fixings",
    "stock": 150,
+   "reorder_level": 100,
    "status": "active"
   },
   {
    "sku": "SKU-107",
    "name": "Masonry anchor 10 mm",
-   "category": "Fasteners",
-   "location": "Aisle 1",
+   "category_id": "fasteners",
+   "location_code": "A1",
+   "supplier_id": "fixings",
    "stock": 23,
+   "reorder_level": 20,
    "status": "active"
   },
   {
    "sku": "SKU-108",
    "name": "Threaded rod M10 1 m",
-   "category": "Fasteners",
-   "location": "Aisle 1",
+   "category_id": "fasteners",
+   "location_code": "A1",
+   "supplier_id": "fixings",
    "stock": 9,
+   "reorder_level": 20,
    "status": "active"
   },
   {
    "sku": "SKU-109",
    "name": "Panel pin 25 mm",
-   "category": "Fasteners",
-   "location": "Aisle 1",
+   "category_id": "fasteners",
+   "location_code": "A1",
+   "supplier_id": "fixings",
    "stock": 310,
+   "reorder_level": 150,
    "status": "active"
   },
   {
    "sku": "SKU-110",
    "name": "Cable tie 300 mm",
-   "category": "Fasteners",
-   "location": "Aisle 1",
+   "category_id": "fasteners",
+   "location_code": "A1",
+   "supplier_id": "harbour",
    "stock": 56,
+   "reorder_level": 20,
    "status": "active"
   },
   {
    "sku": "SKU-111",
    "name": "Rivet 4 mm (legacy)",
-   "category": "Fasteners",
-   "location": "Aisle 1",
+   "category_id": "fasteners",
+   "location_code": "A1",
+   "supplier_id": "fixings",
    "stock": 20,
+   "reorder_level": 20,
    "status": "archived"
   },
   {
    "sku": "SKU-112",
    "name": "Wing nut M6",
-   "category": "Fasteners",
-   "location": "Aisle 1",
+   "category_id": "fasteners",
+   "location_code": "A1",
+   "supplier_id": "fixings",
    "stock": 18,
+   "reorder_level": 20,
    "status": "active"
   },
   {
    "sku": "SKU-113",
    "name": "Spring washer M8",
-   "category": "Fasteners",
-   "location": "Aisle 1",
+   "category_id": "fasteners",
+   "location_code": "A1",
+   "supplier_id": "fixings",
    "stock": 75,
+   "reorder_level": 20,
    "status": "active"
   },
   {
    "sku": "SKU-114",
    "name": "Eye bolt M10",
-   "category": "Fasteners",
-   "location": "Aisle 1",
+   "category_id": "fasteners",
+   "location_code": "A1",
+   "supplier_id": "harbour",
    "stock": 27,
+   "reorder_level": 20,
    "status": "active"
   },
   {
    "sku": "SKU-115",
    "name": "Claw hammer 16 oz",
-   "category": "Tools",
-   "location": "Aisle 2",
+   "category_id": "tools",
+   "location_code": "A2",
+   "supplier_id": "ironside",
    "stock": 14,
+   "reorder_level": 5,
    "status": "active"
   },
   {
    "sku": "SKU-116",
    "name": "Spirit level 600 mm",
-   "category": "Tools",
-   "location": "Aisle 2",
+   "category_id": "tools",
+   "location_code": "A2",
+   "supplier_id": "ironside",
    "stock": 6,
+   "reorder_level": 5,
    "status": "active"
   },
   {
    "sku": "SKU-117",
    "name": "Mitre saw 250 mm",
-   "category": "Tools",
-   "location": "Aisle 2",
+   "category_id": "tools",
+   "location_code": "A2",
+   "supplier_id": "ironside",
    "stock": 3,
+   "reorder_level": 5,
    "status": "active"
   },
   {
    "sku": "SKU-118",
    "name": "Screwdriver set",
-   "category": "Tools",
-   "location": "Aisle 2",
+   "category_id": "tools",
+   "location_code": "A2",
+   "supplier_id": "ironside",
    "stock": 38,
+   "reorder_level": 5,
    "status": "active"
   },
   {
    "sku": "SKU-119",
    "name": "Tape measure 5 m",
-   "category": "Tools",
-   "location": "Aisle 2",
+   "category_id": "tools",
+   "location_code": "A2",
+   "supplier_id": "ironside",
    "stock": 11,
+   "reorder_level": 5,
    "status": "active"
   },
   {
    "sku": "SKU-120",
    "name": "Utility knife",
-   "category": "Tools",
-   "location": "Aisle 2",
+   "category_id": "tools",
+   "location_code": "A2",
+   "supplier_id": "ironside",
    "stock": 18,
+   "reorder_level": 5,
    "status": "active"
   },
   {
    "sku": "SKU-121",
    "name": "Spare blades (10)",
-   "category": "Tools",
-   "location": "Aisle 2",
+   "category_id": "tools",
+   "location_code": "A2",
+   "supplier_id": "harbour",
    "stock": 52,
+   "reorder_level": 5,
    "status": "active"
   },
   {
    "sku": "SKU-122",
    "name": "Cordless drill 18 V",
-   "category": "Tools",
-   "location": "Aisle 2",
+   "category_id": "tools",
+   "location_code": "A2",
+   "supplier_id": "ironside",
    "stock": 5,
+   "reorder_level": 5,
    "status": "active"
   },
   {
    "sku": "SKU-123",
    "name": "Hacksaw 300 mm",
-   "category": "Tools",
-   "location": "Aisle 2",
+   "category_id": "tools",
+   "location_code": "A2",
+   "supplier_id": "ironside",
    "stock": 29,
+   "reorder_level": 5,
    "status": "active"
   },
   {
    "sku": "SKU-124",
    "name": "Brace and bit (legacy)",
-   "category": "Tools",
-   "location": "Aisle 2",
+   "category_id": "tools",
+   "location_code": "A2",
+   "supplier_id": "ironside",
    "stock": 31,
+   "reorder_level": 5,
    "status": "archived"
   },
   {
    "sku": "SKU-125",
    "name": "Adjustable spanner",
-   "category": "Tools",
-   "location": "Aisle 2",
+   "category_id": "tools",
+   "location_code": "A2",
+   "supplier_id": "ironside",
    "stock": 16,
+   "reorder_level": 5,
    "status": "active"
   },
   {
    "sku": "SKU-126",
    "name": "Pipe wrench 14 in",
-   "category": "Tools",
-   "location": "Aisle 2",
+   "category_id": "tools",
+   "location_code": "A2",
+   "supplier_id": "ironside",
    "stock": 8,
+   "reorder_level": 5,
    "status": "active"
   },
   {
    "sku": "SKU-127",
    "name": "LED bulb E27 warm",
-   "category": "Lighting",
-   "location": "Aisle 3",
+   "category_id": "lighting",
+   "location_code": "A3",
+   "supplier_id": "lumen",
    "stock": 21,
+   "reorder_level": 10,
    "status": "active"
   },
   {
    "sku": "SKU-128",
    "name": "LED bulb GU10",
-   "category": "Lighting",
-   "location": "Aisle 3",
+   "category_id": "lighting",
+   "location_code": "A3",
+   "supplier_id": "lumen",
    "stock": 35,
+   "reorder_level": 10,
    "status": "active"
   },
   {
    "sku": "SKU-129",
    "name": "Batten fitting 1.2 m",
-   "category": "Lighting",
-   "location": "Aisle 3",
+   "category_id": "lighting",
+   "location_code": "A3",
+   "supplier_id": "lumen",
    "stock": 13,
+   "reorder_level": 10,
    "status": "active"
   },
   {
    "sku": "SKU-130",
    "name": "Outdoor wall lantern",
-   "category": "Lighting",
-   "location": "Aisle 3",
+   "category_id": "lighting",
+   "location_code": "A3",
+   "supplier_id": "brightway",
    "stock": 60,
+   "reorder_level": 10,
    "status": "active"
   },
   {
    "sku": "SKU-131",
    "name": "PIR floodlight",
-   "category": "Lighting",
-   "location": "Aisle 3",
+   "category_id": "lighting",
+   "location_code": "A3",
+   "supplier_id": "brightway",
    "stock": 4,
+   "reorder_level": 10,
    "status": "active"
   },
   {
    "sku": "SKU-132",
    "name": "Pendant set",
-   "category": "Lighting",
-   "location": "Aisle 3",
+   "category_id": "lighting",
+   "location_code": "A3",
+   "supplier_id": "lumen",
    "stock": 19,
+   "reorder_level": 10,
    "status": "active"
   },
   {
    "sku": "SKU-133",
    "name": "Under-cabinet strip",
-   "category": "Lighting",
-   "location": "Aisle 3",
+   "category_id": "lighting",
+   "location_code": "A3",
+   "supplier_id": "lumen",
    "stock": 26,
+   "reorder_level": 10,
    "status": "active"
   },
   {
    "sku": "SKU-134",
    "name": "Trade emulsion white 10 L",
-   "category": "Paint",
-   "location": "Aisle 4",
+   "category_id": "paint",
+   "location_code": "A4",
+   "supplier_id": "coverall",
    "stock": 33,
+   "reorder_level": 8,
    "status": "active"
   },
   {
    "sku": "SKU-135",
    "name": "Gloss brilliant white 2.5 L",
-   "category": "Paint",
-   "location": "Aisle 4",
+   "category_id": "paint",
+   "location_code": "A4",
+   "supplier_id": "coverall",
    "stock": 15,
+   "reorder_level": 8,
    "status": "active"
   },
   {
    "sku": "SKU-136",
    "name": "Masonry paint grey 5 L",
-   "category": "Paint",
-   "location": "Aisle 4",
+   "category_id": "paint",
+   "location_code": "A4",
+   "supplier_id": "coverall",
    "stock": 47,
+   "reorder_level": 8,
    "status": "active"
   },
   {
    "sku": "SKU-137",
    "name": "Primer undercoat 1 L",
-   "category": "Paint",
-   "location": "Aisle 4",
+   "category_id": "paint",
+   "location_code": "A4",
+   "supplier_id": "coverall",
    "stock": 10,
+   "reorder_level": 8,
    "status": "active"
   },
   {
    "sku": "SKU-138",
    "name": "Lead-free enamel (legacy)",
-   "category": "Paint",
-   "location": "Aisle 4",
+   "category_id": "paint",
+   "location_code": "A4",
+   "supplier_id": "coverall",
    "stock": 17,
+   "reorder_level": 8,
    "status": "archived"
   },
   {
    "sku": "SKU-139",
    "name": "Roller kit 9 in",
-   "category": "Paint",
-   "location": "Aisle 4",
+   "category_id": "paint",
+   "location_code": "A4",
+   "supplier_id": "harbour",
    "stock": 24,
+   "reorder_level": 8,
    "status": "active"
   },
   {
    "sku": "SKU-140",
    "name": "Dust sheet 3.6 m",
-   "category": "Paint",
-   "location": "Aisle 4",
+   "category_id": "paint",
+   "location_code": "A4",
+   "supplier_id": "harbour",
    "stock": 58,
+   "reorder_level": 8,
    "status": "active"
   }
  ],
  "journal": [
   {
+   "seq": 1,
    "stamp": "2026-06-09 16:30",
    "sku": "SKU-120",
    "kind": "stock",
    "before": "15",
    "after": "18",
-   "origin": "import"
+   "origin": "import",
+   "user_id": "dev"
   },
   {
+   "seq": 2,
    "stamp": "2026-06-09 16:35",
    "sku": "SKU-138",
    "kind": "archive",
    "before": "active",
    "after": "archived",
-   "origin": "bulk"
+   "origin": "bulk",
+   "user_id": "dev"
+  }
+ ],
+ "purchase_orders": [
+  {
+   "number": "PO-0418",
+   "supplier_id": "fixings",
+   "raised_on": "2026-06-04",
+   "due_on": "2026-06-08",
+   "status": "received",
+   "raised_by": "dev"
+  },
+  {
+   "number": "PO-0421",
+   "supplier_id": "ironside",
+   "raised_on": "2026-06-08",
+   "due_on": "2026-06-13",
+   "status": "open",
+   "raised_by": "dev"
+  },
+  {
+   "number": "PO-0422",
+   "supplier_id": "brightway",
+   "raised_on": "2026-06-09",
+   "due_on": "2026-06-16",
+   "status": "open",
+   "raised_by": "dev"
+  },
+  {
+   "number": "PO-0423",
+   "supplier_id": "coverall",
+   "raised_on": "2026-06-09",
+   "due_on": "2026-06-13",
+   "status": "cancelled",
+   "raised_by": "dev"
+  }
+ ],
+ "order_lines": [
+  {
+   "order_number": "PO-0418",
+   "line_no": 1,
+   "sku": "SKU-104",
+   "quantity": 40
+  },
+  {
+   "order_number": "PO-0418",
+   "line_no": 2,
+   "sku": "SKU-112",
+   "quantity": 25
+  },
+  {
+   "order_number": "PO-0421",
+   "line_no": 1,
+   "sku": "SKU-117",
+   "quantity": 6
+  },
+  {
+   "order_number": "PO-0421",
+   "line_no": 2,
+   "sku": "SKU-122",
+   "quantity": 4
+  },
+  {
+   "order_number": "PO-0421",
+   "line_no": 3,
+   "sku": "SKU-116",
+   "quantity": 5
+  },
+  {
+   "order_number": "PO-0422",
+   "line_no": 1,
+   "sku": "SKU-131",
+   "quantity": 12
+  },
+  {
+   "order_number": "PO-0423",
+   "line_no": 1,
+   "sku": "SKU-137",
+   "quantity": 20
   }
  ]
 }

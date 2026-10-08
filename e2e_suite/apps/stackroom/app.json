@@ -2,22 +2,153 @@
   "app_id": "stackroom",
   "name": "Stackroom",
   "domain": "inventory administration (hardware wholesaler's stockroom)",
-  "user_goal": "Find stock lines in a paged, filterable grid; restock or archive them in bulk; set stock levels inline or through the adjust page; review every change in the audit log.",
+  "user_goal": "Sign in as a stock controller; find stock lines in a paged, filterable grid; restock or archive them in bulk; set stock levels inline or through the adjust page; review every change in the audit log.",
   "architecture": "data-grid+json-api(server-side paging)",
-  "stack": "python-stdlib+sqlite",
-  "persistence": "sqlite rows partitioned by session; the grid's state lives in its query string (history.replaceState); column visibility is client-only",
+  "stack": "python-stdlib+pg8000+postgresql",
+  "persistence": "postgresql schema per signed-in session (copied from a seeded template at sign-in); the grid's state lives in its query string (history.replaceState); column visibility is client-only",
   "entry": "/",
   "start": [
     "python",
     "src/server.py"
   ],
   "dockerfile": true,
+  "database": {
+    "engine": "postgres",
+    "isolation": "schema-per-session",
+    "schema": "src/schema.sql",
+    "entities": [
+      "users",
+      "categories",
+      "locations",
+      "suppliers",
+      "items",
+      "journal",
+      "purchase_orders",
+      "order_lines"
+    ],
+    "auxiliary": [
+      "counters",
+      "notices"
+    ],
+    "references": [],
+    "probes": [
+      {
+        "name": "an item in a category that does not exist",
+        "kind": "foreign_key",
+        "sql": "INSERT INTO items (sku, name, category_id, location_code, supplier_id, stock, reorder_level, status) VALUES ('SKU-900', 'Probe line', 'garden', 'A1', 'fixings', 1, 0, 'active')"
+      },
+      {
+        "name": "a journal line by an unknown user",
+        "kind": "foreign_key",
+        "sql": "INSERT INTO journal (seq, stamp, sku, kind, before, after, origin, user_id) VALUES (99, '2026-06-10 09:00', 'SKU-101', 'stock', '12', '13', 'inline', 'nobody')"
+      },
+      {
+        "name": "a negative stock level",
+        "kind": "check",
+        "sql": "UPDATE items SET stock = -1 WHERE sku = 'SKU-101'"
+      },
+      {
+        "name": "an item status outside active/archived",
+        "kind": "check",
+        "sql": "UPDATE items SET status = 'lost' WHERE sku = 'SKU-102'"
+      },
+      {
+        "name": "a second category named Fasteners",
+        "kind": "unique",
+        "sql": "INSERT INTO categories (id, name, position) VALUES ('fixings', 'Fasteners', 9)"
+      }
+    ],
+    "absent_constraints": [
+      {
+        "fault_id": "STK-3",
+        "constraint": "an audit trigger on items (AFTER UPDATE OF stock, inserting the journal line)",
+        "reason": "every journal line is written by the application next to the change it records; a trigger would journal the inline save even when the application forgets to, so STK-3 could not exist"
+      }
+    ]
+  },
+  "login": {
+    "path": "/login",
+    "protected": [
+      "/",
+      "/stock",
+      "/items/SKU-101",
+      "/items/SKU-101/adjust",
+      "/log"
+    ],
+    "public": [
+      "/help/sign-in"
+    ],
+    "users": [
+      {
+        "username": "dev.malik",
+        "name": "Dev Malik",
+        "roles": [
+          "controller"
+        ],
+        "macro": true
+      },
+      {
+        "username": "lee.ward",
+        "name": "Lee Ward",
+        "roles": [
+          "viewer"
+        ]
+      }
+    ],
+    "password_value": "Stackroom-aisle-26",
+    "steps": [
+      {
+        "type": "TYPE",
+        "id": "login-username",
+        "params": {
+          "value": "dev.malik"
+        }
+      },
+      {
+        "type": "TYPE",
+        "id": "login-password",
+        "params": {
+          "value": "Stackroom-aisle-26"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "login-submit"
+      }
+    ],
+    "form": {
+      "action": "/login",
+      "username_field": "username",
+      "password_field": "password"
+    },
+    "signed_in_region": "signed_in_as",
+    "error_region": "login_error",
+    "sign_out": [
+      {
+        "type": "CLICK",
+        "id": "nav-account"
+      },
+      {
+        "type": "CLICK",
+        "id": "sign-out"
+      }
+    ],
+    "restricted": [
+      {
+        "user": "lee.ward",
+        "path": "/items/SKU-101/adjust",
+        "region": "access_notice"
+      }
+    ]
+  },
   "workflow_graph": {
     "kind": [
       "data-grid",
       "hub-and-spoke"
     ],
     "nodes": [
+      "sign-in",
+      "sign-in-help",
       "stock-grid",
       "columns-menu",
       "item-adjust",
@@ -25,6 +156,22 @@
       "audit-log"
     ],
     "edges": [
+      [
+        "sign-in",
+        "stock-grid"
+      ],
+      [
+        "sign-in",
+        "sign-in-help"
+      ],
+      [
+        "sign-in-help",
+        "sign-in"
+      ],
+      [
+        "stock-grid",
+        "sign-in"
+      ],
       [
         "stock-grid",
         "stock-grid"
@@ -79,7 +226,8 @@
     "server-state",
     "client-state",
     "enable-disable",
-    "cross-page-state"
+    "cross-page-state",
+    "multi-role"
   ],
   "vocabulary": {
     "progress_keys": [
@@ -102,7 +250,10 @@
     "stock_sku_102": "#qty-SKU-102",
     "stock_sku_111": "#qty-SKU-111",
     "stock_sku_120": "#qty-SKU-120",
-    "stock_sku_127": "#qty-SKU-127"
+    "stock_sku_127": "#qty-SKU-127",
+    "signed_in_as": "#signed-in-as",
+    "login_error": "#login-error",
+    "access_notice": "#access-notice"
   },
   "workflows": [
     {
@@ -447,7 +598,7 @@
       "fault_class": "state_corruption",
       "subtype": "wrong-target",
       "oracle": "existing",
-      "description": "Committing an adjustment resolves the item from the row position the Adjust link carries, but looks that position up in the listing's default (SKU) order instead of the order the user was looking at. After sorting, the new level lands on a different item and the item the user adjusted keeps its old stock.",
+      "description": "Committing an adjustment resolves the item from the row position the Adjust link carries, but looks that position up in the listing's default order (ORDER BY sku ... OFFSET at) instead of the order the user was looking at. After sorting, the new level lands on a different item and the item the user adjusted keeps its old stock.",
       "trigger_condition": "Sort the grid by stock, open Adjust on the second row, enter a new stock level and commit.",
       "expected_behaviour": "Right after a commit, the adjusted item's page shows the stock level that was entered for it.",
       "observable_violation": "SKU-131's page says 'Saved SKU-102' and still shows a stock of 4 after 42 was committed for it.",
@@ -496,8 +647,8 @@
       ],
       "patch": {
         "file": "src/inventory.py",
-        "find": "    return find_item(conn, sid, ref.sku)  # the SKU names the item; `at` is only the way back\n",
-        "replace": "    rows = matching_items(conn, sid, replace(ref.view, sort=\"sku\", direction=\"asc\"))  # the row the link pointed at\n    return rows[ref.at] if ref.at < len(rows) else None\n"
+        "find": "    return find_item(db, ref.sku)  # the SKU names the item; `at` is only the way back\n",
+        "replace": "    rows = page_of_items(db, replace(ref.view, sort=\"sku\", direction=\"asc\"), ref.at, 1)  # the row the link pointed at\n    return rows[0] if rows else None\n"
       }
     },
     {
@@ -539,7 +690,7 @@
       ],
       "patch": {
         "file": "src/inventory.py",
-        "find": "    _journal(conn, sid, stamp, sku, \"stock\", before, level, \"inline\")  # audited like every other change\n",
+        "find": "    _journal(db, stamp, user, sku, \"stock\", before, level, \"inline\")  # audited like every other change\n",
         "replace": ""
       }
     }

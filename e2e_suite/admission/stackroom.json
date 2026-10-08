@@ -7,6 +7,11 @@
       "detail": []
     },
     {
+      "name": "suite_v2_contract",
+      "passed": true,
+      "detail": []
+    },
+    {
       "name": "no_external_urls",
       "passed": true,
       "detail": []
@@ -27,6 +32,16 @@
       "detail": []
     },
     {
+      "name": "database_url_from_environment",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "dockerfile_copies_vendor",
+      "passed": true,
+      "detail": []
+    },
+    {
       "name": "patches_apply_exactly_once",
       "passed": true,
       "detail": null
@@ -42,11 +57,78 @@
       "detail": {
         "passed": true,
         "summary": [
-          "Ran 9 tests in 0.573s",
+          "Ran 17 tests in 2.631s",
           "OK"
         ],
         "pass_lines": null,
         "tail": []
+      }
+    },
+    {
+      "name": "login_http_round_trip",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "status": 303,
+        "location": "/stock",
+        "cookie": true,
+        "entry_status": 200,
+        "entry_path": "/stock",
+        "user": "dev.malik"
+      }
+    },
+    {
+      "name": "data_model_contract",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "session_seed_cost",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "warn": false,
+        "samples": 20,
+        "p50_ms": 79.9,
+        "p95_ms": 101.8,
+        "max_ms": 127.9,
+        "limit_ms": 300.0,
+        "refused": 0,
+        "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
+      }
+    },
+    {
+      "name": "session_cap_honoured",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "cap": 4,
+        "max_live_partitions": 4,
+        "live_after_each": [
+          2,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "evicted_session_state": null,
+        "evicted_session_lands_on": "/login",
+        "every_new_session_starts_from_the_seed": true
       }
     },
     {
@@ -69,10 +151,10 @@
       "passed": true,
       "detail": {
         "passed": true,
-        "seed_sha": "7e95c24711c9a74cc090144e4f057675b8f596966533a6119f5978f4b6314c2d",
+        "seed_sha": "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6",
         "fresh_context_sha": [
-          "7e95c24711c9a74cc090144e4f057675b8f596966533a6119f5978f4b6314c2d",
-          "7e95c24711c9a74cc090144e4f057675b8f596966533a6119f5978f4b6314c2d"
+          "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6",
+          "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6"
         ]
       }
     },
@@ -119,7 +201,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 50.4
+        "seconds": 82.5
       }
     },
     {
@@ -148,7 +230,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 50.1
+        "seconds": 78.5
       }
     },
     {
@@ -165,7 +247,7 @@
         "witness_silent_on_clean": true,
         "witness_needs_its_own_patch": true,
         "buggy_detail": [
-          "echoes_input: violated=True inconclusive=False 2026-06-09 16:35 \u2014 SKU-138 archived (bulk action) 2026-06-09 16:30 \u2014 SKU-120 sto"
+          "echoes_input: violated=True inconclusive=False 2026-06-09 16:35 \u2014 SKU-138 archived (bulk action, Dev Malik) 2026-06-09 16:30 \u2014 "
         ],
         "confirmed": true,
         "rejected_because": "",
@@ -176,7 +258,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 23.9
+        "seconds": 44.5
       }
     },
     {
@@ -193,6 +275,44 @@
         "raw_candidates": {},
         "errors": [],
         "foreign_requests": [],
+        "responses": {
+          "count": 201,
+          "p50_ms": 10.3,
+          "p95_ms": 18.4,
+          "max_ms": 45.7,
+          "slowest": [
+            [
+              "POST",
+              "/api/bulk",
+              45.7
+            ],
+            [
+              "POST",
+              "/api/bulk",
+              39.6
+            ],
+            [
+              "POST",
+              "/api/bulk",
+              33.9
+            ],
+            [
+              "POST",
+              "/api/bulk",
+              30.3
+            ],
+            [
+              "POST",
+              "/api/bulk",
+              27.0
+            ]
+          ],
+          "limits_ms": {
+            "p95": 150.0,
+            "max": 1000.0
+          },
+          "passed": true
+        },
         "passed": true
       }
     },
@@ -202,21 +322,183 @@
       "detail": []
     },
     {
+      "name": "responses_fast",
+      "passed": true,
+      "detail": {
+        "count": 201,
+        "p50_ms": 10.3,
+        "p95_ms": 18.4,
+        "max_ms": 45.7,
+        "slowest": [
+          [
+            "POST",
+            "/api/bulk",
+            45.7
+          ],
+          [
+            "POST",
+            "/api/bulk",
+            39.6
+          ],
+          [
+            "POST",
+            "/api/bulk",
+            33.9
+          ],
+          [
+            "POST",
+            "/api/bulk",
+            30.3
+          ],
+          [
+            "POST",
+            "/api/bulk",
+            27.0
+          ]
+        ],
+        "limits_ms": {
+          "p95": 150.0,
+          "max": 1000.0
+        },
+        "passed": true
+      }
+    },
+    {
+      "name": "login_protected",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "landing": {
+          "entry": "/login",
+          "/": "/login",
+          "/stock": "/login",
+          "/items/SKU-101": "/login",
+          "/items/SKU-101/adjust": "/login",
+          "/log": "/login"
+        },
+        "public": {
+          "/help/sign-in": {
+            "status": 200,
+            "redirected": false,
+            "path": "/help/sign-in"
+          }
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "login_macro_signs_in",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "steps_completed": 3,
+        "steps": 3,
+        "path": "/stock",
+        "signed_in_as": "Dev Malik \u00b7 Stock controller",
+        "sha_equals_seed": true
+      }
+    },
+    {
+      "name": "login_wrong_password_refused",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "path": "/login",
+        "error_region": "That username and password do not match an account.",
+        "session": null,
+        "errors": []
+      }
+    },
+    {
+      "name": "login_sign_out_sound",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "workflow": "restock two fastener lines in bulk",
+        "workflow_misses": 0,
+        "sign_out_misses": 0,
+        "landed_on": "/login",
+        "user_after_sign_out": null,
+        "entry_lands_on": "/login",
+        "sign_in_again_steps": 3,
+        "sha_resumed": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "role_restrictions_sound",
+      "passed": true,
+      "detail": [
+        {
+          "user": "lee.ward",
+          "path": "/items/SKU-101/adjust",
+          "passed": true,
+          "signed_in_as": "Lee Ward \u00b7 Viewer",
+          "status": 200,
+          "access_region": "Your role can look at stock but not change it.",
+          "state_unchanged": true,
+          "errors": []
+        }
+      ]
+    },
+    {
       "name": "docker_offline_build_and_health",
       "passed": true,
       "detail": {
         "image": "e2e-suite/stackroom:clean",
         "build_ok": true,
-        "build_seconds": 1.0,
+        "build_seconds": 1.1,
         "build_tail": [
-          "#10 naming to docker.io/e2e-suite/stackroom:clean done",
-          "#10 unpacking to docker.io/e2e-suite/stackroom:clean 0.1s done",
-          "#10 DONE 0.2s"
+          "#11 naming to docker.io/e2e-suite/stackroom:clean done",
+          "#11 unpacking to docker.io/e2e-suite/stackroom:clean 0.0s done",
+          "#11 DONE 0.1s"
+        ],
+        "route": "host",
+        "attempts": [
+          {
+            "route": "host",
+            "healthy": true,
+            "detail": "{'ok': True, 'app': 'stackroom'}",
+            "sign_in": {
+              "passed": true,
+              "status": 303,
+              "cookie": true,
+              "entry_status": 200,
+              "entry_path": "/stock",
+              "container_sha": "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6",
+              "host_sha": "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6",
+              "sign_in_ms": 46.1
+            }
+          }
         ],
         "container_healthy": true,
         "detail": "{'ok': True, 'app': 'stackroom'}",
-        "image_mb": 43.3,
+        "sign_in": {
+          "passed": true,
+          "status": 303,
+          "cookie": true,
+          "entry_status": 200,
+          "entry_path": "/stock",
+          "container_sha": "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6",
+          "host_sha": "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6",
+          "sign_in_ms": 46.1
+        },
+        "image_mb": 44.5,
         "passed": true
+      }
+    },
+    {
+      "name": "docker_sign_in_and_seed_state",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "status": 303,
+        "cookie": true,
+        "entry_status": 200,
+        "entry_path": "/stock",
+        "container_sha": "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6",
+        "host_sha": "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6",
+        "sign_in_ms": 46.1
       }
     },
     {
@@ -226,40 +508,46 @@
         "profile": {
           "languages": [
             {
-              "language": "JSON",
-              "files": 4,
-              "bytes": 25793,
-              "share": 0.3553
+              "language": "Python",
+              "files": 3,
+              "bytes": 39506,
+              "share": 0.3495
             },
             {
-              "language": "Python",
-              "files": 2,
-              "bytes": 20957,
-              "share": 0.2887
+              "language": "JSON",
+              "files": 5,
+              "bytes": 36328,
+              "share": 0.3214
             },
             {
               "language": "JavaScript",
               "files": 1,
-              "bytes": 18894,
-              "share": 0.2603
+              "bytes": 21400,
+              "share": 0.1893
             },
             {
               "language": "Markdown",
               "files": 1,
-              "bytes": 3248,
-              "share": 0.0447
+              "bytes": 5265,
+              "share": 0.0466
+            },
+            {
+              "language": "SQL",
+              "files": 1,
+              "bytes": 4048,
+              "share": 0.0358
             },
             {
               "language": "CSS",
               "files": 1,
-              "bytes": 3106,
-              "share": 0.0428
+              "bytes": 3731,
+              "share": 0.033
             },
             {
               "language": "HTML",
-              "files": 1,
-              "bytes": 590,
-              "share": 0.0081
+              "files": 3,
+              "bytes": 2746,
+              "share": 0.0243
             }
           ],
           "frameworks": [],
@@ -271,19 +559,24 @@
         },
         "build_plan": {
           "kind": "dockerfile",
-          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\stackroom\\clean\\Dockerfile"
+          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\stackroom\\clean\\Dockerfile"
         },
         "product_can_build": true,
         "matches_expectation": true,
         "expectation": "buildable by the current intake"
       }
+    },
+    {
+      "name": "variant_storage_released",
+      "passed": true,
+      "detail": []
     }
   ],
   "sections": {
     "vocabulary": {
-      "keys": 56,
-      "keys_used_by_source": 49,
-      "action_keys": 9,
+      "keys": 79,
+      "keys_used_by_source": 72,
+      "action_keys": 14,
       "unused_keys": [
         "col.name",
         "log.adjust",
@@ -294,25 +587,35 @@
         "status.archived"
       ],
       "default_action_labels": {
+        "act.account": "Account",
         "act.adjust": "Adjust",
         "act.apply": "Apply",
         "act.back_grid": "Back to stock list",
+        "act.back_sign_in": "Back to sign in",
         "act.columns": "Columns",
         "act.commit": "Commit changes",
         "act.discard": "Discard",
+        "act.forgot": "Forgot password?",
         "act.next": "Next page",
         "act.prev": "Previous page",
+        "act.sign_in": "Sign in",
+        "act.sign_out": "Sign out",
         "act.sync": "Sync"
       },
       "alt_action_labels": {
+        "act.account": "Your account",
         "act.adjust": "Change level",
         "act.apply": "Run",
         "act.back_grid": "Return to inventory",
+        "act.back_sign_in": "Return to log-in",
         "act.columns": "Show fields",
         "act.commit": "Save adjustment",
         "act.discard": "Abandon",
+        "act.forgot": "Can't log in?",
         "act.next": "Later rows",
         "act.prev": "Earlier rows",
+        "act.sign_in": "Log in",
+        "act.sign_out": "Log out",
         "act.sync": "Reload list"
       }
     },
@@ -327,13 +630,351 @@
         "file": "src/inventory.py",
         "lines_removed": 2,
         "lines_added": 3,
-        "chars_changed": 159
+        "chars_changed": 149
       },
       "STK-3": {
         "file": "src/inventory.py",
         "lines_removed": 2,
         "lines_added": 1,
-        "chars_changed": 105
+        "chars_changed": 104
+      }
+    },
+    "data_model": {
+      "passed": true,
+      "failures": [],
+      "description": {
+        "partition": "s_000001",
+        "tables": [
+          "categories",
+          "counters",
+          "items",
+          "journal",
+          "locations",
+          "notices",
+          "order_lines",
+          "purchase_orders",
+          "suppliers",
+          "users"
+        ],
+        "entities_found": [
+          "categories",
+          "items",
+          "journal",
+          "locations",
+          "order_lines",
+          "purchase_orders",
+          "suppliers",
+          "users"
+        ],
+        "table_count": 8,
+        "foreign_keys": [
+          {
+            "table": "items",
+            "name": "items_category_id_fkey",
+            "columns": [
+              3
+            ],
+            "definition": "FOREIGN KEY (category_id) REFERENCES s_000001.categories(id)",
+            "indexed": true
+          },
+          {
+            "table": "items",
+            "name": "items_location_code_fkey",
+            "columns": [
+              4
+            ],
+            "definition": "FOREIGN KEY (location_code) REFERENCES s_000001.locations(code)",
+            "indexed": true
+          },
+          {
+            "table": "items",
+            "name": "items_supplier_id_fkey",
+            "columns": [
+              5
+            ],
+            "definition": "FOREIGN KEY (supplier_id) REFERENCES s_000001.suppliers(id)",
+            "indexed": true
+          },
+          {
+            "table": "journal",
+            "name": "journal_sku_fkey",
+            "columns": [
+              3
+            ],
+            "definition": "FOREIGN KEY (sku) REFERENCES s_000001.items(sku)",
+            "indexed": true
+          },
+          {
+            "table": "journal",
+            "name": "journal_user_id_fkey",
+            "columns": [
+              8
+            ],
+            "definition": "FOREIGN KEY (user_id) REFERENCES s_000001.users(id)",
+            "indexed": true
+          },
+          {
+            "table": "order_lines",
+            "name": "order_lines_order_number_fkey",
+            "columns": [
+              1
+            ],
+            "definition": "FOREIGN KEY (order_number) REFERENCES s_000001.purchase_orders(number)",
+            "indexed": true
+          },
+          {
+            "table": "order_lines",
+            "name": "order_lines_sku_fkey",
+            "columns": [
+              3
+            ],
+            "definition": "FOREIGN KEY (sku) REFERENCES s_000001.items(sku)",
+            "indexed": true
+          },
+          {
+            "table": "purchase_orders",
+            "name": "purchase_orders_raised_by_fkey",
+            "columns": [
+              6
+            ],
+            "definition": "FOREIGN KEY (raised_by) REFERENCES s_000001.users(id)",
+            "indexed": true
+          },
+          {
+            "table": "purchase_orders",
+            "name": "purchase_orders_supplier_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (supplier_id) REFERENCES s_000001.suppliers(id)",
+            "indexed": true
+          }
+        ],
+        "foreign_key_count": 9,
+        "foreign_keys_indexed": 9,
+        "checks": [
+          {
+            "table": "categories",
+            "name": "categories_position_check",
+            "definition": "CHECK ((\"position\" >= 1))"
+          },
+          {
+            "table": "items",
+            "name": "items_name_check",
+            "definition": "CHECK (((length(name) >= 1) AND (length(name) <= 80)))"
+          },
+          {
+            "table": "items",
+            "name": "items_reorder_level_check",
+            "definition": "CHECK ((reorder_level >= 0))"
+          },
+          {
+            "table": "items",
+            "name": "items_sku_check",
+            "definition": "CHECK ((sku ~ '^SKU-[0-9]{3}$'::text))"
+          },
+          {
+            "table": "items",
+            "name": "items_status_check",
+            "definition": "CHECK ((status = ANY (ARRAY['active'::text, 'archived'::text])))"
+          },
+          {
+            "table": "items",
+            "name": "items_stock_check",
+            "definition": "CHECK (((stock >= 0) AND (stock <= 999999999)))"
+          },
+          {
+            "table": "journal",
+            "name": "journal_kind_check",
+            "definition": "CHECK ((kind = ANY (ARRAY['stock'::text, 'archive'::text])))"
+          },
+          {
+            "table": "journal",
+            "name": "journal_origin_check",
+            "definition": "CHECK ((origin = ANY (ARRAY['inline'::text, 'adjust'::text, 'bulk'::text, 'import'::text])))"
+          },
+          {
+            "table": "journal",
+            "name": "journal_seq_check",
+            "definition": "CHECK ((seq >= 1))"
+          },
+          {
+            "table": "locations",
+            "name": "locations_aisle_check",
+            "definition": "CHECK (((aisle >= 1) AND (aisle <= 4)))"
+          },
+          {
+            "table": "locations",
+            "name": "locations_code_check",
+            "definition": "CHECK ((code ~ '^A[1-4]$'::text))"
+          },
+          {
+            "table": "order_lines",
+            "name": "order_lines_line_no_check",
+            "definition": "CHECK (((line_no >= 1) AND (line_no <= 20)))"
+          },
+          {
+            "table": "order_lines",
+            "name": "order_lines_quantity_check",
+            "definition": "CHECK ((quantity >= 1))"
+          },
+          {
+            "table": "purchase_orders",
+            "name": "purchase_orders_check",
+            "definition": "CHECK ((due_on >= raised_on))"
+          },
+          {
+            "table": "purchase_orders",
+            "name": "purchase_orders_number_check",
+            "definition": "CHECK ((number ~ '^PO-[0-9]{4}$'::text))"
+          },
+          {
+            "table": "purchase_orders",
+            "name": "purchase_orders_status_check",
+            "definition": "CHECK ((status = ANY (ARRAY['open'::text, 'received'::text, 'cancelled'::text])))"
+          },
+          {
+            "table": "suppliers",
+            "name": "suppliers_lead_days_check",
+            "definition": "CHECK ((lead_days >= 0))"
+          },
+          {
+            "table": "users",
+            "name": "users_role_check",
+            "definition": "CHECK ((role = ANY (ARRAY['controller'::text, 'viewer'::text])))"
+          }
+        ],
+        "check_count": 18,
+        "enumerations": [
+          "items.items_status_check",
+          "journal.journal_kind_check",
+          "journal.journal_origin_check",
+          "purchase_orders.purchase_orders_status_check",
+          "users.users_role_check"
+        ],
+        "unique_indexes": [
+          "categories.categories_name_key",
+          "categories.categories_position_key",
+          "locations.locations_label_key",
+          "order_lines.order_lines_order_number_sku_key",
+          "suppliers.suppliers_name_key",
+          "users.users_username_key"
+        ],
+        "secondary_indexes": [
+          "items.items_by_category",
+          "items.items_by_location",
+          "items.items_by_name",
+          "items.items_by_stock",
+          "items.items_by_supplier",
+          "journal.journal_by_item",
+          "journal.journal_by_user",
+          "order_lines.order_lines_by_item",
+          "purchase_orders.purchase_orders_by_raiser",
+          "purchase_orders.purchase_orders_by_supplier"
+        ],
+        "columns": 39,
+        "not_null_columns": 39,
+        "not_null_ratio": 1.0,
+        "rows": {
+          "categories": 4,
+          "counters": 1,
+          "items": 40,
+          "journal": 2,
+          "locations": 4,
+          "notices": 0,
+          "order_lines": 7,
+          "purchase_orders": 4,
+          "suppliers": 6,
+          "users": 2
+        },
+        "seed_rows": 69,
+        "non_empty_tables": 8,
+        "user_triggers": [],
+        "rules": [],
+        "event_triggers": [],
+        "volatile_defaults": [],
+        "identity_columns": []
+      },
+      "probes": [
+        {
+          "name": "an item in a category that does not exist",
+          "kind": "foreign_key",
+          "expected": "23503",
+          "got": "23503",
+          "passed": true
+        },
+        {
+          "name": "a journal line by an unknown user",
+          "kind": "foreign_key",
+          "expected": "23503",
+          "got": "23503",
+          "passed": true
+        },
+        {
+          "name": "a negative stock level",
+          "kind": "check",
+          "expected": "23514",
+          "got": "23514",
+          "passed": true
+        },
+        {
+          "name": "an item status outside active/archived",
+          "kind": "check",
+          "expected": "23514",
+          "got": "23514",
+          "passed": true
+        },
+        {
+          "name": "a second category named Fasteners",
+          "kind": "unique",
+          "expected": "23505",
+          "got": "23505",
+          "passed": true
+        }
+      ],
+      "references": []
+    },
+    "sessions": {
+      "cost": {
+        "passed": true,
+        "warn": false,
+        "samples": 20,
+        "p50_ms": 79.9,
+        "p95_ms": 101.8,
+        "max_ms": 127.9,
+        "limit_ms": 300.0,
+        "refused": 0,
+        "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
+      },
+      "cap": {
+        "passed": true,
+        "cap": 4,
+        "max_live_partitions": 4,
+        "live_after_each": [
+          2,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "evicted_session_state": null,
+        "evicted_session_lands_on": "/login",
+        "every_new_session_starts_from_the_seed": true
       }
     },
     "workflows": [
@@ -557,7 +1198,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 50.4
+        "seconds": 82.5
       },
       {
         "fault_id": "STK-2",
@@ -603,7 +1244,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 50.1
+        "seconds": 78.5
       },
       {
         "fault_id": "STK-3",
@@ -616,7 +1257,7 @@
         "witness_silent_on_clean": true,
         "witness_needs_its_own_patch": true,
         "buggy_detail": [
-          "echoes_input: violated=True inconclusive=False 2026-06-09 16:35 \u2014 SKU-138 archived (bulk action) 2026-06-09 16:30 \u2014 SKU-120 sto"
+          "echoes_input: violated=True inconclusive=False 2026-06-09 16:35 \u2014 SKU-138 archived (bulk action, Dev Malik) 2026-06-09 16:30 \u2014 "
         ],
         "confirmed": true,
         "rejected_because": "",
@@ -640,7 +1281,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 23.9
+        "seconds": 44.5
       }
     ],
     "benign": [
@@ -693,46 +1334,102 @@
       "raw_candidates": {},
       "errors": [],
       "foreign_requests": [],
+      "responses": {
+        "count": 201,
+        "p50_ms": 10.3,
+        "p95_ms": 18.4,
+        "max_ms": 45.7,
+        "slowest": [
+          [
+            "POST",
+            "/api/bulk",
+            45.7
+          ],
+          [
+            "POST",
+            "/api/bulk",
+            39.6
+          ],
+          [
+            "POST",
+            "/api/bulk",
+            33.9
+          ],
+          [
+            "POST",
+            "/api/bulk",
+            30.3
+          ],
+          [
+            "POST",
+            "/api/bulk",
+            27.0
+          ]
+        ],
+        "limits_ms": {
+          "p95": 150.0,
+          "max": 1000.0
+        },
+        "passed": true
+      },
       "passed": true
     },
+    "roles": [
+      {
+        "user": "lee.ward",
+        "path": "/items/SKU-101/adjust",
+        "passed": true,
+        "signed_in_as": "Lee Ward \u00b7 Viewer",
+        "status": 200,
+        "access_region": "Your role can look at stock but not change it.",
+        "state_unchanged": true,
+        "errors": []
+      }
+    ],
     "product_intake": {
       "profile": {
         "languages": [
           {
-            "language": "JSON",
-            "files": 4,
-            "bytes": 25793,
-            "share": 0.3553
+            "language": "Python",
+            "files": 3,
+            "bytes": 39506,
+            "share": 0.3495
           },
           {
-            "language": "Python",
-            "files": 2,
-            "bytes": 20957,
-            "share": 0.2887
+            "language": "JSON",
+            "files": 5,
+            "bytes": 36328,
+            "share": 0.3214
           },
           {
             "language": "JavaScript",
             "files": 1,
-            "bytes": 18894,
-            "share": 0.2603
+            "bytes": 21400,
+            "share": 0.1893
           },
           {
             "language": "Markdown",
             "files": 1,
-            "bytes": 3248,
-            "share": 0.0447
+            "bytes": 5265,
+            "share": 0.0466
+          },
+          {
+            "language": "SQL",
+            "files": 1,
+            "bytes": 4048,
+            "share": 0.0358
           },
           {
             "language": "CSS",
             "files": 1,
-            "bytes": 3106,
-            "share": 0.0428
+            "bytes": 3731,
+            "share": 0.033
           },
           {
             "language": "HTML",
-            "files": 1,
-            "bytes": 590,
-            "share": 0.0081
+            "files": 3,
+            "bytes": 2746,
+            "share": 0.0243
           }
         ],
         "frameworks": [],
@@ -744,7 +1441,7 @@
       },
       "build_plan": {
         "kind": "dockerfile",
-        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\stackroom\\clean\\Dockerfile"
+        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\stackroom\\clean\\Dockerfile"
       },
       "product_can_build": true,
       "matches_expectation": true,
@@ -752,9 +1449,9 @@
     }
   },
   "admitted": true,
-  "checks_run": 22,
+  "checks_run": 37,
   "checks_failed": [],
   "browser_checks_run": true,
   "docker_checks_run": true,
-  "wall_clock_s": 285.4
+  "wall_clock_s": 487.2
 }

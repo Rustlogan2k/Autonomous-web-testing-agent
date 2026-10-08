@@ -14,6 +14,8 @@ import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from web_testing_agent.envs.input_values import generate_input_value
+from web_testing_agent.envs.types import InputValueCategory
 from web_testing_agent.oracle.faults import AssertionKind, BenchmarkApp, FaultClass
 
 #: The suite this harness admits. `WTA_SUITE_ROOT` points it at another suite laid out the same
@@ -34,6 +36,21 @@ SUBTYPES = {
 }
 #: Extension assertion kinds (`ext_oracle`); everything else must be a primary kind.
 EXTENSION_KINDS = {"region_stable_across_reload", "input_absent", "region_arithmetic"}
+#: Suite v2 database engines and the session isolation each may declare (plan §2, D1).
+ISOLATION = {"postgres": {"schema-per-session"},
+             "mongodb": {"database-per-session", "tenant-field"}}
+#: The data-model probes each engine's manifest may declare, and the kinds it must cover:
+#: PostgreSQL refuses them with SQLSTATE 23503 / 23514 / 23505, MongoDB with 121 / 121 / 11000.
+PROBE_KINDS = {"postgres": {"foreign_key", "check", "unique"},
+               "mongodb": {"required", "enum", "duplicate", "validation"}}
+REQUIRED_PROBE_KINDS = {"postgres": {"foreign_key", "check", "unique"},
+                        "mongodb": {"required", "enum", "duplicate"}}
+MIN_PROBES = 3
+MIN_MONGO_REFERENCES = 4
+#: Every HTML input type the tester may type into: the credentials must equal none of the
+#: values it generates for any of them (decision D4), or exploration could sign in again.
+TYPABLE_INPUT_TYPES = ("text", "email", "number", "tel", "url", "password", "date", "search",
+                       "textarea", "datetime-local", "month", "time", "week", "color", "range")
 
 
 @dataclass
@@ -74,15 +91,47 @@ class AppManifest:
 
     @property
     def database(self) -> str:
-        """The database engine the app stores its data in: "postgres" (suite v2) or "" (the
-        v1 apps' embedded SQLite or JSON files, which need nothing from the harness)."""
+        """The database engine the app stores its data in: "postgres" or "mongodb" (suite
+        v2), or "" (the v1 apps' embedded SQLite or JSON files, which need nothing from the
+        harness)."""
         return str((self.data.get("database") or {}).get("engine", ""))
+
+    @property
+    def database_spec(self) -> dict:
+        """The manifest's `database` block (engine, isolation, entities, probes, ...)."""
+        return dict(self.data.get("database") or {})
+
+    @property
+    def login(self) -> dict:
+        """The manifest's `login` block; empty for an app without a sign-in."""
+        return dict(self.data.get("login") or {})
 
     @property
     def login_steps(self) -> list[dict]:
         """The sign-in macro every browser session runs first (suite v2), in the replay
         schema; a TYPE step carries its literal text as `params.value`. Empty: no login."""
-        return [dict(step) for step in (self.data.get("login") or {}).get("steps", [])]
+        return [dict(step) for step in self.login.get("steps", [])]
+
+    @property
+    def macro_user(self) -> dict:
+        """The seeded user the sign-in macro signs in as (`macro: true`)."""
+        return next((dict(u) for u in self.login.get("users", []) if u.get("macro")), {})
+
+    def user(self, username: str) -> dict:
+        return next((dict(u) for u in self.login.get("users", []) if u.get("username") == username), {})
+
+    def login_steps_as(self, username: str) -> list[dict]:
+        """The sign-in macro with the macro user's name replaced by `username`: a role check
+        signs in as another seeded user exactly the way the tester signs in."""
+        macro = self.macro_user.get("username")
+        return [dict(step, params={**step["params"], "value": username})
+                if (step.get("params") or {}).get("value") == macro else dict(step)
+                for step in self.login_steps]
+
+    @property
+    def language(self) -> str:
+        """`python` or `node`: the runtime the app's start command names."""
+        return str((self.data.get("start") or [""])[0])
 
     @property
     def has_dockerfile(self) -> bool:
@@ -188,18 +237,190 @@ def validate_manifest(app: AppManifest) -> list[str]:
             problems.append(f"{fid}: no trigger_trace")
         _check_trace(f.get("trigger_trace", []), f"{fid}.trigger_trace", problems)
     if "login" in d:
-        login = d["login"] or {}
-        _check_trace(login.get("steps"), "login.steps", problems)
-        if not login.get("steps"):
-            problems.append("login: declares no steps")
-        if not login.get("users"):
-            problems.append("login: lists no seeded users")
-        if not login.get("path"):
-            problems.append("login: names no sign-in path")
-    engine = (d.get("database") or {}).get("engine")
-    if "database" in d and engine != "postgres":
-        problems.append(f"database: engine must be 'postgres', got {engine!r}")
+        problems += validate_login(d.get("login") or {}, d.get("regions", {}))
+    if "database" in d:
+        problems += validate_database(app)
     for name, selector in d.get("regions", {}).items():
         if not (selector.startswith("#") or selector.startswith('[id="')):
             problems.append(f"region {name}: use an #id selector, got {selector!r}")
+    return problems
+
+
+def suite_v2_contract(app: AppManifest) -> list[str]:
+    """What keeps an app from being a suite v2 app at all: every app stores its data in a
+    database server and sits behind a sign-in (plan §1b)."""
+    problems = []
+    if app.database not in ISOLATION:
+        problems.append("declares no database block with engine postgres or mongodb")
+    if not app.login_steps:
+        problems.append("declares no login block with a sign-in macro")
+    return problems
+
+
+def tester_values() -> set[str]:
+    """Every value the tester's action registry can type (`envs/input_values.py`),
+    normalised the way the credential comparison normalises (stripped, case-folded)."""
+    return {generate_input_value(kind, category).strip().casefold()
+            for kind in TYPABLE_INPUT_TYPES for category in InputValueCategory}
+
+
+def _is_path(value) -> bool:
+    return isinstance(value, str) and value.startswith("/") and not value.startswith("//")
+
+
+def validate_login(login: dict, regions: dict) -> list[str]:  # noqa: PLR0912 - one rule per line
+    """Problems with a `login` block (CONVENTIONS.md §4, §5); empty means well formed."""
+    problems: list[str] = []
+    path = login.get("path")
+    if not _is_path(path):
+        problems.append(f"login.path must be a same-origin path, got {path!r}")
+    protected, public = login.get("protected"), login.get("public", [])
+    if not isinstance(protected, list) or not protected or not all(map(_is_path, protected)):
+        problems.append("login.protected must list at least one path")
+        protected = []
+    if not isinstance(public, list) or not all(map(_is_path, public)):
+        problems.append("login.public must be a list of paths")
+        public = []
+    if path in protected or path in public:
+        problems.append("login.path cannot itself be listed as protected or public")
+    if set(protected) & set(public):
+        problems.append(f"paths both protected and public: {sorted(set(protected) & set(public))}")
+
+    users = login.get("users")
+    if not isinstance(users, list) or not users:
+        problems.append("login.users lists no seeded users")
+        users = []
+    names = [u.get("username") for u in users if isinstance(u, dict)]
+    for user in users:
+        if not isinstance(user, dict) or not all(isinstance(user.get(k), str) and user[k].strip()
+                                                 for k in ("username", "name")):
+            problems.append(f"login.users: {user!r} needs a username and a name")
+        elif not isinstance(user.get("roles"), list) or not user["roles"]:
+            problems.append(f"login.users: {user['username']} declares no roles")
+    if len(set(names)) != len(names):
+        problems.append("login.users: usernames repeat")
+    macros = [u for u in users if isinstance(u, dict) and u.get("macro") is True]
+    if len(macros) != 1:
+        problems.append(f"login.users: exactly one user must be `macro: true`, found {len(macros)}")
+    macro = macros[0].get("username") if len(macros) == 1 else None
+
+    password = login.get("password_value")
+    if not isinstance(password, str) or not password:
+        problems.append("login.password_value is missing")
+        password = None
+    generated = tester_values()
+    for credential in [password, *names]:
+        if isinstance(credential, str) and credential.strip().casefold() in generated:
+            problems.append(f"login: {credential!r} equals a value the tester types "
+                            "(credentials must be unguessable by exploration, decision D4)")
+
+    steps = login.get("steps")
+    _check_trace(steps, "login.steps", problems)
+    if isinstance(steps, list):
+        typed = [(s.get("params") or {}).get("value") for s in steps
+                 if isinstance(s, dict) and s.get("type") == "TYPE"]
+        if len(steps) != 3 or len(typed) != 2 or not isinstance(steps[-1], dict) \
+                or steps[-1].get("type") != "CLICK":
+            problems.append("login.steps must be the 3-step macro: two TYPEs, then the CLICK "
+                            "that submits")
+        if password is not None and typed.count(password) != 1:
+            problems.append("login.steps must TYPE the password (params.value) exactly once")
+        if macro is not None and typed.count(macro) != 1:
+            problems.append("login.steps must TYPE the macro user's username exactly once")
+        if any(isinstance(s, dict) and s.get("type") == "TYPE" and not s.get("id") for s in steps):
+            problems.append("login.steps: every TYPE step names its field by id")
+
+    form = login.get("form")
+    if not isinstance(form, dict) or not _is_path(form.get("action")) or not all(
+            isinstance(form.get(k), str) and form[k] for k in ("username_field", "password_field")):
+        problems.append("login.form needs action (a path), username_field and password_field")
+    for key in ("signed_in_region", "error_region"):
+        if login.get(key) not in regions:
+            problems.append(f"login.{key} {login.get(key)!r} is not a declared region")
+    sign_out = login.get("sign_out")
+    _check_trace(sign_out, "login.sign_out", problems)
+    if not isinstance(sign_out, list) or len(sign_out) != 2 or any(
+            not isinstance(s, dict) or s.get("type") != "CLICK" for s in sign_out):
+        problems.append("login.sign_out must be two CLICKs: the account control, then Sign out "
+                        "(decision D3)")
+    restricted = login.get("restricted")
+    if not isinstance(restricted, list):
+        problems.append("login.restricted must be a list (empty when the app has no roles)")
+        restricted = []
+    for entry in restricted:
+        if not isinstance(entry, dict) or entry.get("user") not in names \
+                or not _is_path(entry.get("path")) or entry.get("region") not in regions:
+            problems.append(f"login.restricted: {entry!r} needs a listed user, a path and a "
+                            "declared region")
+    return problems
+
+
+def validate_database(app: AppManifest) -> list[str]:  # noqa: PLR0912 - one rule per line
+    """Problems with a `database` block (CONVENTIONS.md §5, §9); empty means well formed."""
+    spec = app.database_spec
+    problems: list[str] = []
+    engine = spec.get("engine")
+    if engine not in ISOLATION:
+        return [f"database.engine must be one of {sorted(ISOLATION)}, got {engine!r}"]
+    if spec.get("isolation") not in ISOLATION[engine]:
+        problems.append(f"database.isolation must be one of {sorted(ISOLATION[engine])} for "
+                        f"{engine}, got {spec.get('isolation')!r}")
+    schema = spec.get("schema")
+    if not isinstance(schema, str) or not (app.root / schema).is_file():
+        problems.append(f"database.schema {schema!r} must name the app's schema file "
+                        "(src/schema.sql, or the module that defines the validators)")
+    entities, auxiliary = spec.get("entities"), spec.get("auxiliary", [])
+    if not isinstance(entities, list) or not entities or not all(isinstance(e, str) for e in entities):
+        problems.append("database.entities must list the business tables or collections")
+        entities = []
+    if not isinstance(auxiliary, list) or not all(isinstance(e, str) for e in auxiliary):
+        problems.append("database.auxiliary must be a list of names")
+        auxiliary = []
+    if len(set(entities)) != len(entities) or set(entities) & set(auxiliary):
+        problems.append("database.entities repeat a name or overlap database.auxiliary")
+
+    references = spec.get("references", [])
+    if not isinstance(references, list):
+        problems.append("database.references must be a list")
+        references = []
+    for reference in references:
+        if not isinstance(reference, dict) or not all(
+                isinstance(reference.get(k), str) and "." in reference[k] for k in ("from", "to")):
+            problems.append(f"database.references: {reference!r} needs `from` and `to` paths "
+                            "such as cards.project_id and projects._id")
+        elif reference["from"].split(".")[0] not in entities \
+                or reference["to"].split(".")[0] not in entities:
+            problems.append(f"database.references: {reference!r} names an undeclared collection")
+    if engine == "mongodb" and len(references) < MIN_MONGO_REFERENCES:
+        problems.append(f"database.references: a MongoDB app declares at least "
+                        f"{MIN_MONGO_REFERENCES}, found {len(references)}")
+
+    probes = spec.get("probes")
+    if not isinstance(probes, list) or len(probes) < MIN_PROBES:
+        problems.append(f"database.probes: at least {MIN_PROBES} required")
+        probes = []
+    for probe in probes:
+        if not isinstance(probe, dict) or probe.get("kind") not in PROBE_KINDS[engine]:
+            problems.append(f"database.probes: {probe!r} needs a kind in "
+                            f"{sorted(PROBE_KINDS[engine])}")
+        elif engine == "postgres" and not (isinstance(probe.get("sql"), str) and probe["sql"].strip()):
+            problems.append(f"database.probes: {probe.get('name')!r} has no sql statement")
+        elif engine == "mongodb" and (probe.get("collection") not in entities or not (
+                isinstance(probe.get("insert"), dict) or isinstance(probe.get("update"), dict))):
+            problems.append(f"database.probes: {probe.get('name')!r} needs a declared collection "
+                            "and an insert document or an update {filter, update}")
+    missing = REQUIRED_PROBE_KINDS[engine] - {p.get("kind") for p in probes if isinstance(p, dict)}
+    if missing:
+        problems.append(f"database.probes: no probe of kind {sorted(missing)}")
+
+    absent = spec.get("absent_constraints")
+    fault_ids = {f.get("fault_id") for f in app.faults}
+    if not isinstance(absent, list):
+        problems.append("database.absent_constraints must be a list (empty when no fault needs one)")
+        absent = []
+    for entry in absent:
+        if not isinstance(entry, dict) or entry.get("fault_id") not in fault_ids or not all(
+                isinstance(entry.get(k), str) and entry[k].strip() for k in ("constraint", "reason")):
+            problems.append(f"database.absent_constraints: {entry!r} needs one of this app's "
+                            "fault ids, the constraint left out and the reason")
     return problems
