@@ -38,13 +38,18 @@ _RESOURCES_JS = "() => performance.getEntriesByType('resource').map(e => e.name)
 
 
 class Session:
-    """One fresh browser context on one variant: drive traces, read state, watch traffic."""
+    """One fresh browser context on one variant: drive traces, read state, watch traffic.
 
-    def __init__(self, url: str) -> None:
+    `login` is the app's sign-in macro (suite v2), run by the tester's own session bootstrap
+    (`setup_actions`) before the first observation, as for any login-protected site.
+    """
+
+    def __init__(self, url: str, login: list[dict] | None = None) -> None:
         self.url = url
         self.origin = "{0.scheme}://{0.netloc}".format(urlsplit(url))
-        self.env = make_env(url, SETTINGS, max_steps=1000)
+        self.env = make_env(url, SETTINGS, max_steps=1000, setup_actions=list(login or []) or None)
         self.observation, self.info = self.env.reset()
+        self.signed_in_steps = self.env._bootstrap_steps  # noqa: SLF001 - read-only
         self.records = [observed_record(self.info)]
         self.foreign: list[str] = []
         self.errors: list[str] = []
@@ -109,9 +114,11 @@ class Session:
         self.env.close()
 
 
-def _runner(url: str) -> PlaywrightTrajectoryRunner:
-    return PlaywrightTrajectoryRunner(lambda: make_env(url, SETTINGS, max_steps=REPLAY_MAX_STEPS),
-                                      max_steps=REPLAY_MAX_STEPS)
+def _runner(url: str, login: list[dict] | None = None) -> PlaywrightTrajectoryRunner:
+    setup = list(login or []) or None
+    return PlaywrightTrajectoryRunner(
+        lambda: make_env(url, SETTINGS, max_steps=REPLAY_MAX_STEPS, setup_actions=setup),
+        max_steps=REPLAY_MAX_STEPS)
 
 
 def _contains(text: str | None, wanted: str) -> bool:
@@ -125,7 +132,7 @@ def check_workflows(app: AppManifest, url: str, label: str) -> list[dict]:
     regions = app.data["regions"]
     out = []
     for workflow in app.data["workflows"]:
-        session = Session(url)
+        session = Session(url, app.login_steps)
         try:
             before = session.state()["sha"]
             misses = session.run(workflow["trace"])
@@ -155,7 +162,7 @@ def check_state_dependent(app: AppManifest, url: str) -> list[dict]:
     for item in app.data["state_dependent"]:
         result = {"name": item["name"]}
         for side in ("useless", "useful"):
-            session = Session(url)
+            session = Session(url, app.login_steps)
             try:
                 prefix_misses = session.run(item[side]["trace"])
                 before = session.state()["sha"]
@@ -177,7 +184,7 @@ def check_state_dependent(app: AppManifest, url: str) -> list[dict]:
 def check_decoys(app: AppManifest, url: str) -> list[dict]:
     out = []
     for decoy in app.data["decoys"]:
-        session = Session(url)
+        session = Session(url, app.login_steps)
         try:
             prefix_misses = session.run(decoy.get("trace", []))
             before = session.state()["sha"]
@@ -191,17 +198,59 @@ def check_decoys(app: AppManifest, url: str) -> list[dict]:
     return out
 
 
+# -- sign-in (suite v2) ----------------------------------------------------------------------------
+
+
+def check_login(app: AppManifest, url: str) -> dict:
+    """The app is behind its sign-in page, the macro signs in, a wrong password is refused."""
+    login = app.data["login"]
+    steps = app.login_steps
+    path = login["path"]
+
+    def on_sign_in_page(session: Session) -> bool:
+        return urlsplit(session.page.url).path == path
+
+    anonymous = Session(url)
+    try:
+        redirected = on_sign_in_page(anonymous)
+        landing = anonymous.page.url
+    finally:
+        anonymous.close()
+    signed = Session(url, steps)
+    try:
+        completed, left = signed.signed_in_steps, not on_sign_in_page(signed)
+        signed_url = signed.page.url
+    finally:
+        signed.close()
+    wrong = [dict(step, params={**step.get("params", {}), "value": "not-the-password-1"})
+             if (step.get("params") or {}).get("value") == login.get("password_value") else step
+             for step in steps]
+    refused_session = Session(url, wrong)
+    try:
+        refused = on_sign_in_page(refused_session)
+        refused_url = refused_session.page.url
+    finally:
+        refused_session.close()
+    return {
+        "protected": {"passed": redirected, "landing": landing},
+        "macro_signs_in": {"passed": completed == len(steps) and left,
+                           "steps_completed": completed, "steps": len(steps), "url": signed_url},
+        "wrong_password_refused": {"passed": refused and "password_value" in login,
+                                   "url": refused_url},
+    }
+
+
 # -- reset, isolation, determinism -----------------------------------------------------------------
 
 
 def check_reset_isolation_determinism(app: AppManifest, url: str) -> dict:
     workflow = next(w for w in app.data["workflows"] if w.get("commits", True))
-    first = Session(url)
+    first = Session(url, app.login_steps)
     try:
         seed_sha = first.state()["sha"]
         first.run(workflow["trace"])
         mutated_sha = first.state()["sha"]
-        second = Session(url)  # concurrent, separate browser context
+        second = Session(url, app.login_steps)  # concurrent, separate browser context
         try:
             second_initial = second.state()["sha"]
             second.run(workflow["trace"])
@@ -213,7 +262,7 @@ def check_reset_isolation_determinism(app: AppManifest, url: str) -> dict:
             second.close()
     finally:
         first.close()
-    third = Session(url)
+    third = Session(url, app.login_steps)
     try:
         third_initial = third.state()["sha"]
     finally:
@@ -235,8 +284,9 @@ def check_reset_isolation_determinism(app: AppManifest, url: str) -> dict:
 
 def check_faults(app: AppManifest, urls: dict[str, str], *, max_trials: int = 30) -> dict:
     oracle_app = app.oracle_app()
-    faulty, clean = _runner(urls["buggy"]), _runner(urls["clean"])
-    controls = {f["fault_id"]: _runner(urls[f"without-{f['fault_id']}"]) for f in app.faults}
+    faulty, clean = _runner(urls["buggy"], app.login_steps), _runner(urls["clean"], app.login_steps)
+    controls = {f["fault_id"]: _runner(urls[f"without-{f['fault_id']}"], app.login_steps)
+                for f in app.faults}
     # The primary pipeline refuses an app with no primary-grammar faults (wayfarer's are all
     # extension faults), so it is built only when there is something for it to verify.
     pipeline = VerificationPipeline(oracle_app, faulty, control_runner=clean,
@@ -316,7 +366,7 @@ def check_benign(app: AppManifest, urls: dict[str, str]) -> list[dict]:
     out = []
     for number, trace in enumerate(app.data["benign_traces"]):
         for build in ("clean", "buggy"):
-            observed = _runner(urls[build]).run(list(trace))
+            observed = _runner(urls[build], app.login_steps).run(list(trace))
             fired = [v.fault_id for v in verify_all(oracle_app, observed) if v.violated]
             fired += [f["fault_id"] for f in ext
                       if ext_oracle.verify(f, regions, oracle_app, observed).violated]
@@ -338,7 +388,7 @@ def random_walk_clean(app: AppManifest, url: str, *, steps: int = 150, seed: int
     foreign: list[str] = []
     taken = 0
     while taken < steps:
-        session = Session(url)
+        session = Session(url, app.login_steps)
         try:
             for _ in range(min(episode_steps, steps - taken)):
                 available = list(session.info.get("action_specs") or [])

@@ -56,6 +56,7 @@ class Server:
         self.port = 0
         self.process: subprocess.Popen | None = None
         self.data_dir = ""
+        self.database = ""  # this variant's own PostgreSQL database (suite v2 apps)
         self.log_path = self.directory / f"server-{vocab}.log"
 
     @property
@@ -69,6 +70,12 @@ class Server:
                "WTA_FIXED_NOW": self.now, "WTA_DATA_DIR": self.data_dir,
                "PYTHONDONTWRITEBYTECODE": "1", "PYTHONUNBUFFERED": "1"}
         env.pop("WTA_TEST_HOOKS", None)
+        env.pop("DATABASE_URL", None)
+        if self.app.database == "postgres":
+            from . import postgres
+
+            self.database = postgres.database_name(self.app.app_id, self.port)
+            env["DATABASE_URL"] = postgres.create_database(self.database)
         if self.test_hooks:
             env["WTA_TEST_HOOKS"] = "1"
         log = self.log_path.open("w", encoding="utf-8")
@@ -102,6 +109,11 @@ class Server:
                 self.process.kill()
                 self.process.wait(timeout=10)
         self.process = None
+        if self.database:
+            from . import postgres
+
+            postgres.drop_database(self.database)
+            self.database = ""
         if self.data_dir:
             shutil.rmtree(self.data_dir, ignore_errors=True)
             self.data_dir = ""

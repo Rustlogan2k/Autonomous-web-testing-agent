@@ -73,6 +73,18 @@ class AppManifest:
         })
 
     @property
+    def database(self) -> str:
+        """The database engine the app stores its data in: "postgres" (suite v2) or "" (the
+        v1 apps' embedded SQLite or JSON files, which need nothing from the harness)."""
+        return str((self.data.get("database") or {}).get("engine", ""))
+
+    @property
+    def login_steps(self) -> list[dict]:
+        """The sign-in macro every browser session runs first (suite v2), in the replay
+        schema; a TYPE step carries its literal text as `params.value`. Empty: no login."""
+        return [dict(step) for step in (self.data.get("login") or {}).get("steps", [])]
+
+    @property
     def has_dockerfile(self) -> bool:
         return (self.root / "Dockerfile").is_file()
 
@@ -175,6 +187,18 @@ def validate_manifest(app: AppManifest) -> list[str]:
         if not f.get("trigger_trace"):
             problems.append(f"{fid}: no trigger_trace")
         _check_trace(f.get("trigger_trace", []), f"{fid}.trigger_trace", problems)
+    if "login" in d:
+        login = d["login"] or {}
+        _check_trace(login.get("steps"), "login.steps", problems)
+        if not login.get("steps"):
+            problems.append("login: declares no steps")
+        if not login.get("users"):
+            problems.append("login: lists no seeded users")
+        if not login.get("path"):
+            problems.append("login: names no sign-in path")
+    engine = (d.get("database") or {}).get("engine")
+    if "database" in d and engine != "postgres":
+        problems.append(f"database: engine must be 'postgres', got {engine!r}")
     for name, selector in d.get("regions", {}).items():
         if not (selector.startswith("#") or selector.startswith('[id="')):
             problems.append(f"region {name}: use an #id selector, got {selector!r}")
