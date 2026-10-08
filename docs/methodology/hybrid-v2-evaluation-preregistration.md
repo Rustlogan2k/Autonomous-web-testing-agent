@@ -6,7 +6,7 @@ rounds and before any agent has run on any validation application; the only cont
 the validation set so far is its admission (`validation_suite/admission/*.json`: browser
 checks, scripted witnesses and a clean random walk, no tester arm).
 
-Owner's approval: **[pending]**
+Owner's approval: **approved 2026-10-08**, with one addition: v1's best-performing AC-DQN arm as a fourth arm (H4).
 
 History: this replaces the 2026-10-06 draft (git history of this file), which named the
 e2e suite as held out and seven arms. Amendment §12 of `2026-10-06-hybrid-v2-plan.md` made
@@ -23,6 +23,7 @@ experiment or the contextual diagnostic.
 | **H1 (primary)** | Does the hybrid tester find a verified seeded fault sooner than uniform random exploration on applications it has never seen? | `hybrid_nolearn` − `random` |
 | H2 | Does the learned decision layer help, over the same tester choosing uniformly? | `hybrid_bandit` − `hybrid_nolearn` |
 | H3 | Does the hybrid with the learner beat random? | `hybrid_bandit` − `random` |
+| H4 | Does the v2 hybrid beat v1's best AC-DQN on unseen applications? | `hybrid_nolearn` − `v1_dqn_pretrained` |
 
 Why these arms: across five development rounds (42 matched runs on 14 applications)
 `hybrid_nolearn` verified a fault in the most runs (32/42) and `hybrid_bandit` was tied with
@@ -45,6 +46,15 @@ primary arm because it found the most and is the simpler; H2 tests the learner d
 | `random` | uniform over the page's valid actions |
 | `hybrid_nolearn` | hybrid pipeline (page abstraction, archive with exact returns, test operators with follow-through); untried operators chosen uniformly |
 | `hybrid_bandit` | the same with the Thompson-sampling decision layer over semantic keys |
+| `v1_dqn_pretrained` | v1's best AC-DQN arm in the frozen transfer experiment (lowest restricted mean time, 1,402): `dqn_pretrained_nollm`, the action-conditioned dueling double DQN pretrained on benchmark applications without the LLM term, residual head adapting on the target, ε 0.5 → 0.05 over half the budget (the frozen v1 schedule) |
+
+`v1_dqn_pretrained` uses the transfer experiment's own pretraining checkpoints, each
+pretrained on five of the six benchmark applications; every validation application is
+outside all of them. Hunt seed *s* uses fold `V1_FOLDS[s]` (alphabetical) with pretraining
+seed *s* mod 3 (`hybrid/run.py: v1_checkpoint`), so the five seeds use five distinct
+networks (sha256 prefixes): 0 account_hub/seed-0 `4aa490cc3685c0f1`; 1 admin_records/seed-1
+`9a5c23914e3e14e2`; 2 booking_desk/seed-2 `90df7e1c2ba10e2c`; 3 media_library/seed-0
+`7c94955f875ca20f`; 4 shop_catalog/seed-1 `11b42e1a101a448a`.
 
 - **Hybrid configuration**, identical in both hybrid arms, as at the freeze commit:
   weighted free exploration, `depth_bias` 2.0, six free steps between operators, cells =
@@ -56,8 +66,8 @@ primary arm because it found the most and is the simpler; H2 tests the learner d
   exploration, alternative outcome signals).
 - **Budget:** 2,000 interactions per hunt (every browser action counts, replays included);
   40-step episodes; 80 ms settle window; seeds 0–4 for every arm on every application
-  (120 hunts). Clean-build controls: every arm once per application on its clean build
-  (24 hunts).
+  (160 hunts). Clean-build controls: every arm once per application on its clean build
+  (32 hunts).
 - **Execution:** local machine, 4 workers, no other workload (no application builds running).
   A job that fails for infrastructure reasons (e.g. a page-load timeout) is rerun unchanged
   and the rerun is reported.
@@ -69,7 +79,7 @@ primary arm because it found the most and is the simpler; H2 tests the learner d
 - Per application: restricted mean time over seeds. Paired difference per application;
   **median over the eight applications** with a 95% percentile bootstrap over applications;
   stratified log-rank test (strata = application) as secondary.
-- **Decision rule for H1–H3:** *supported* if the median difference is negative and its
+- **Decision rule for H1–H4:** *supported* if the median difference is negative and its
   interval excludes 0; *refuted* if positive and excluding 0; otherwise *inconclusive*.
   Reported with the per-application differences and the number of applications favouring
   each arm.

@@ -44,7 +44,11 @@ PROTOCOLS: dict[str, tuple] = {
     "draft": (PRIMARY, SECONDARY, EXPLORATORY),
     "freeze-2026-10-08": (
         ("hybrid_nolearn", "random"),
-        (("hybrid_bandit", "hybrid_nolearn"), ("hybrid_bandit", "random")),
+        (
+            ("hybrid_bandit", "hybrid_nolearn"),
+            ("hybrid_bandit", "random"),
+            ("hybrid_nolearn", "v1_dqn_pretrained"),
+        ),
         (),
     ),
 }

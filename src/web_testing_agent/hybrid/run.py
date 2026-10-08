@@ -45,6 +45,10 @@ ARMS: dict[str, dict] = {
     # v1's DQN from scratch, as in the primary's dqn_scratch_nollm arm: the primary found no
     # benefit from the LLM reward, so the v1 learner is compared without it.
     "v1_dqn": {"kind": "v1_dqn"},
+    # v1's best AC-DQN arm in the frozen transfer experiment (lowest restricted mean time):
+    # dqn_pretrained_nollm - pretrained on benchmark apps without the LLM term, residual head
+    # adapting on the target. Checkpoints are the transfer run's own (`V1_CHECKPOINTS`).
+    "v1_dqn_pretrained": {"kind": "v1_dqn", "pretrained": True},
     "hybrid_nolearn": {**HYBRID, "planner": "count"},
     "hybrid_bandit": {**HYBRID, "planner": "bandit"},
     # Exploratory: labeller v3's labels, which failed their accuracy gates (owner's option A).
@@ -126,6 +130,26 @@ def _settings(config: HybridConfig):
     )
 
 
+#: The frozen transfer experiment's `dqn_nollm` pretraining checkpoints: one per (held-out
+#: fold, seed), each pretrained on the other five benchmark applications.
+V1_CHECKPOINT_DIRS = tuple(
+    REPO_ROOT / "runs" / f"final-cpu-{i}" / "checkpoints" for i in range(1, 5)
+)
+V1_FOLDS = ("account_hub", "admin_records", "booking_desk", "media_library", "shop_catalog",
+            "support_portal")
+
+
+def v1_checkpoint(seed: int) -> Path:
+    """The pretrained network for hunt seed `seed` on an application outside the benchmark:
+    fold `V1_FOLDS[seed % 6]`, pretraining seed `seed % 3`, so seeds 0-4 get five distinct
+    networks, each pretrained on five benchmark applications."""
+    name = f"dqn_nollm__fold-{V1_FOLDS[seed % len(V1_FOLDS)]}__seed-{seed % 3}.pt"
+    for directory in V1_CHECKPOINT_DIRS:
+        if (directory / name).is_file():
+            return directory / name
+    raise FileNotFoundError(f"v1 checkpoint {name} not found under runs/final-cpu-*/checkpoints")
+
+
 def _policy(job: HybridJob, app_name: str, config: HybridConfig):
     spec = ARMS[job.arm]
     if spec["kind"] == "random":
@@ -151,7 +175,12 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
             **_epsilon_config(primary.target_epsilon, config.budget),
         )
         rewarder = RewardComposer(RewardConfig(llm_weight=0.0, shaping_gamma=agent_config.gamma))
-        agent = QAgent(agent_config, rewarder=rewarder)
+        if spec.get("pretrained"):
+            # As the transfer experiment's dqn_pretrained_nollm hunts: load, then adapt.
+            agent = QAgent.load(v1_checkpoint(job.seed), agent_config, rewarder=rewarder)
+            agent.enable_adaptation()
+        else:
+            agent = QAgent(agent_config, rewarder=rewarder)
         agent.set_application(job.app, app_name)
         return agent, None
     if spec["kind"] == "curiosity_rl":
