@@ -37,6 +37,18 @@ SECONDARY = (
 )
 EXPLORATORY = (("hybrid_bandit_llm", "hybrid_bandit"),)
 
+#: The comparisons of each pre-registered protocol: (primary, secondary, exploratory).
+#: "draft" is the 2026-10-06 draft; "freeze-2026-10-08" is the evaluation the owner chose to
+#: run on the current validation set (docs/methodology/hybrid-v2-evaluation-preregistration.md).
+PROTOCOLS: dict[str, tuple] = {
+    "draft": (PRIMARY, SECONDARY, EXPLORATORY),
+    "freeze-2026-10-08": (
+        ("hybrid_nolearn", "random"),
+        (("hybrid_bandit", "hybrid_nolearn"), ("hybrid_bandit", "random")),
+        (),
+    ),
+}
+
 
 def load(run_dirs: list[Path]) -> list[dict]:
     records = []
@@ -76,7 +88,8 @@ def _comparison(runs: list[Run], treatment: str, control: str, budget: int) -> d
     }
 
 
-def analyze(records: list[dict]) -> dict:
+def analyze(records: list[dict], protocol: str = "draft") -> dict:
+    primary, secondary, exploratory = PROTOCOLS[protocol]
     buggy = [r for r in records if r["job"].get("build", "buggy") == "buggy"]
     clean = [r for r in records if r["job"].get("build", "buggy") == "clean"]
     budget = max((r["hunt"]["budget"] for r in buggy), default=2000)
@@ -152,9 +165,10 @@ def analyze(records: list[dict]) -> dict:
         "budget": budget,
         "apps": sorted({r.fold for r in runs}),
         "per_arm": per_arm,
-        "primary": _comparison(runs, *PRIMARY, budget),
-        "secondary": [_comparison(runs, t, c, budget) for t, c in SECONDARY],
-        "exploratory": [_comparison(runs, t, c, budget) for t, c in EXPLORATORY],
+        "protocol": protocol,
+        "primary": _comparison(runs, *primary, budget),
+        "secondary": [_comparison(runs, t, c, budget) for t, c in secondary],
+        "exploratory": [_comparison(runs, t, c, budget) for t, c in exploratory],
         "clean_build_controls": clean_controls,
     }
 
@@ -213,8 +227,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--runs", nargs="+", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--protocol", choices=sorted(PROTOCOLS), default="draft")
     arguments = parser.parse_args(argv)
-    result = analyze(load(arguments.runs))
+    result = analyze(load(arguments.runs), arguments.protocol)
     arguments.out.parent.mkdir(parents=True, exist_ok=True)
     arguments.out.with_suffix(".json").write_text(
         json.dumps(result, indent=2, default=str) + "\n", encoding="utf-8"
