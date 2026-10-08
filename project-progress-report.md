@@ -1,6 +1,6 @@
 # Project Progress Report — RL-based Automated Web Testing
 
-**Status as of 8 October 2026.** Deadline: around 27 October 2026.
+**Status as of 8 October 2026 (afternoon).** Deadline: around 27 October 2026.
 
 This report covers:
 
@@ -242,11 +242,13 @@ The learners tend to be faster, but every interval includes zero, and changing w
 3. **The option space is small.** About 28 abstract pages × 8 operators can mostly be covered in about 135 decisions per run, so systematically trying untried options already does most of the work.
 4. **Techniques with many targets crowd out the rest.** "Invalid input" took 30% of all decisions simply because pages have many fields.
 
-**What we are doing about it** (development round 4, running now):
+**What we tried** (development round 4, result below):
 
 - the **pairwise operator** (combinatorial testing), aimed at the faults no single deviation reaches; it also makes the option space too large to cover blindly, which is where a learner should earn its place;
 - **choose the technique first, then its target**, so the learner's job becomes allocating attention across test techniques per application;
 - then more seeds (5 instead of 3), so a real difference can be told apart from noise.
+
+**Round 4 result:** the bundle was worse (26/40 runs without the learner, 25/40 with it, against 30/40 and 28/40 for the round-2 arms on the same 40 runs), so it was not adopted. Within it, the learner recovered part of the loss (faster on 7 apps, slower on 5; −63 interactions, 95% interval [−303, +169]), the pattern expected if the learner helps most when the fixed allocation is poor, but again not significant. Across four rounds the learner has never been distinguishable from no learner.
 
 If the learner still adds nothing, the report will say plainly that the gains come from the structure (abstraction, archive, operators), not from learning. That is consistent with the literature (the Humanoid authors found their learned model "was not the main reason" for their gains [li2019humanoid]) and with Experiment 1. The held-out evaluation tests it either way.
 
@@ -328,8 +330,8 @@ The same agent was run with parts of its input masked, so each arm answers "what
 | `dev_bandit_search_deep` | v1 search score plus depth preference | separates the two changes above | 10 / 18; the depth preference, not the search score, made the difference |
 | `dev_bandit_novelty` | the bandit is rewarded only for genuinely new pages | the default rewards any error message, which rewards *expected* validation messages | 31 / 42; no difference (§4.6) |
 | `dev_bandit_surprise` | the bandit is rewarded for *unexpected* responses (invalid input accepted silently, a valid step refused) | the response that points to a bug, by test-oracle reasoning | 31 / 42; no difference; the reward is not the bottleneck |
-| `dev_pairwise_nolearn` | pairwise operator + technique-first choice + form-submitting buttons; no learner | reach the faults that need two deviations | **running** (suite round 4) |
-| `dev_pairwise_bandit` | the same, with the learner | does the learner help once it has real choices to make? | **running** (suite round 4) |
+| `dev_pairwise_nolearn` | pairwise operator + technique-first choice + form-submitting buttons; no learner | reach the faults that need two deviations | 26 / 40, **worse** than without the bundle (slower on 9 of 14 apps); not adopted |
+| `dev_pairwise_bandit` | the same, with the learner | does the learner help once it has real choices to make? | 25 / 40; the learner recovers part of the loss (faster on 7 apps, slower on 5) but not significantly; not adopted |
 
 All development arms are options on the same code, so every earlier result stays reproducible. Whatever is adopted goes into all hybrid arms equally before the code freeze.
 
@@ -359,7 +361,7 @@ All rounds use 2,000 interactions per run and seeds 0–2.
 | Suite 1 (`v2-suite-dev1`; 8 suite apps) | bandit vs no learner | 18/24 vs 19/24; bagstreet 0/6 | diagnosis: the header link "Express checkout" (a deliberate decoy) was labelled a submit action and came first on every page; "Update bag" always preceded "Go to checkout". **Fix: site navigation never submits; operators take a page's submit actions in turn** |
 | Suite 2 (`v2-suite-dev2`; 14 apps) | the same two arms after the fix | 30/42 vs 32/42; bagstreet 0 → 2/6; benchmark apps no worse | fix kept; the learner still not ahead, and found to value invalid input highest because validation messages counted as success |
 | Suite 3 (`v2-suite-dev3`; 14 apps) | two corrected reward signals (§5.4) | 31/42 each; no difference from either earlier arm | **the reward is not the bottleneck**; diagnosis in §4.6 |
-| Suite 4 (`v2-suite-dev4`; 14 apps; **running**) | pairwise operator + technique-first choice, with and without the learner | 5 of 84 runs done | — |
+| Suite 4 (`v2-suite-dev4`; 14 apps) | pairwise operator + technique-first choice + form-submitting buttons, with and without the learner | 26/40 and 25/40 vs 30/40 and 28/40 for the round-2 arms on the same runs; the hard faults still unfound; 2 runs lost to page-load timeouts while the machine was also running app builds | **not adopted**: giving every technique an equal share moved ~40% of decisions to back/reload/complete steps, which rarely find faults here, and halved the productive invalid-input and dropdown probes; the pairs rarely hit the one combination a fault needs |
 
 ---
 
