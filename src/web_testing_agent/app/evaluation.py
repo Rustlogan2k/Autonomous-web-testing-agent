@@ -74,7 +74,7 @@ ROUNDS: dict[str, dict[str, str]] = {
                       "decision": "Worse; not adopted."},
     "v2-suite-dev5": {"label": "Suite 5", "apps": "suite + benchmark",
                       "what": "Curiosity Q-learning (in the hybrid, and standalone) and random.",
-                      "decision": "In progress."},
+                      "decision": "Neither curiosity arm adopted: inside the hybrid no better; standalone no better than random."},
 }
 
 #: What each arm is (progress report §5).

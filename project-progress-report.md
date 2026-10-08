@@ -1,6 +1,6 @@
 # Project Progress Report — RL-based Automated Web Testing
 
-**Status as of 8 October 2026 (afternoon).** Deadline: around 27 October 2026.
+**Status as of 8 October 2026 (evening).** Deadline: around 27 October 2026.
 
 This report covers:
 
@@ -250,6 +250,8 @@ The learners tend to be faster, but every interval includes zero, and changing w
 
 **Round 4 result:** the bundle was worse (26/40 runs without the learner, 25/40 with it, against 30/40 and 28/40 for the round-2 arms on the same 40 runs), so it was not adopted. Within it, the learner recovered part of the loss (faster on 7 apps, slower on 5; −63 interactions, 95% interval [−303, +169]), the pattern expected if the learner helps most when the fixed allocation is poor, but again not significant. Across four rounds the learner has never been distinguishable from no learner.
 
+**Round 5 (the literature's approach):** curiosity-driven Q-learning, the design behind WebExplor and WebRLED, was tried both inside the hybrid (choosing its exploration steps, learning from every step) and as a standalone tester. Inside the hybrid it was no better than no learner (29/42 vs 32/42). Standalone it was significantly worse than the hybrid and level with random (17/42 vs random's 18/42): it finds shallow faults fast but never the deep ones, which need the right test actions, not new pages. **Conclusion across five rounds and seven learner variants: on functional faults, the structure (abstraction, archive with exact returns, test operators) does the work; no learning component has beaten it, and standard curiosity-driven RL performs at random level.**
+
 If the learner still adds nothing, the report will say plainly that the gains come from the structure (abstraction, archive, operators), not from learning. That is consistent with the literature (the Humanoid authors found their learned model "was not the main reason" for their gains [li2019humanoid]) and with Experiment 1. The held-out evaluation tests it either way.
 
 ### 4.7 Checking: two oracles
@@ -332,6 +334,8 @@ The same agent was run with parts of its input masked, so each arm answers "what
 | `dev_bandit_surprise` | the bandit is rewarded for *unexpected* responses (invalid input accepted silently, a valid step refused) | the response that points to a bug, by test-oracle reasoning | 31 / 42; no difference; the reward is not the bottleneck |
 | `dev_pairwise_nolearn` | pairwise operator + technique-first choice + form-submitting buttons; no learner | reach the faults that need two deviations | 26 / 40, **worse** than without the bundle (slower on 9 of 14 apps); not adopted |
 | `dev_pairwise_bandit` | the same, with the learner | does the learner help once it has real choices to make? | 25 / 40; the learner recovers part of the loss (faster on 7 apps, slower on 5) but not significantly; not adopted |
+| `dev_hybrid_curiosity` | curiosity-driven tabular Q-learning (transition-count curiosity [zheng2021webexplor] + episodic novelty [gu2025webrled], γ 0.9) chooses the hybrid's free exploration steps; learns from every step | give the learner the job the RL web-testing literature gives it (exploration, dense reward) | 29 / 42 vs 32 / 42; +89 [−38, +202], slower on 9 of 14 apps; not adopted |
+| `dev_curiosity_rl` | a standalone tester built only from the literature's components: the same Q-learner plus guidance back to the most curious known state (WebExplor's automaton); no operators | does the published approach work on our faults? | 17 / 42, **significantly worse** than the hybrid (+423 [+142, +744]) and level with `random` (18 / 42): fast on shallow faults, never finds the deep ones |
 
 All development arms are options on the same code, so every earlier result stays reproducible. Whatever is adopted goes into all hybrid arms equally before the code freeze.
 
@@ -361,6 +365,7 @@ All rounds use 2,000 interactions per run and seeds 0–2.
 | Suite 1 (`v2-suite-dev1`; 8 suite apps) | bandit vs no learner | 18/24 vs 19/24; bagstreet 0/6 | diagnosis: the header link "Express checkout" (a deliberate decoy) was labelled a submit action and came first on every page; "Update bag" always preceded "Go to checkout". **Fix: site navigation never submits; operators take a page's submit actions in turn** |
 | Suite 2 (`v2-suite-dev2`; 14 apps) | the same two arms after the fix | 30/42 vs 32/42; bagstreet 0 → 2/6; benchmark apps no worse | fix kept; the learner still not ahead, and found to value invalid input highest because validation messages counted as success |
 | Suite 3 (`v2-suite-dev3`; 14 apps) | two corrected reward signals (§5.4) | 31/42 each; no difference from either earlier arm | **the reward is not the bottleneck**; diagnosis in §4.6 |
+| Suite 5 (`v2-suite-dev5`; 14 apps) | curiosity Q-learning inside the hybrid, a standalone literature-style curiosity RL tester, and `random` | 29/42, 17/42 and 18/42 vs 32/42 for the hybrid without a learner | **neither adopted**: learning exploration on top of the structure did not help; curiosity RL alone performs at random level on functional faults, as the 2026 study's warning (coverage is weakly tied to failures) predicts |
 | Suite 4 (`v2-suite-dev4`; 14 apps) | pairwise operator + technique-first choice + form-submitting buttons, with and without the learner | 26/40 and 25/40 vs 30/40 and 28/40 for the round-2 arms on the same runs; the hard faults still unfound; 2 runs lost to page-load timeouts while the machine was also running app builds | **not adopted**: giving every technique an equal share moved ~40% of decisions to back/reload/complete steps, which rarely find faults here, and halved the productive invalid-input and dropdown probes; the pairs rarely hit the one combination a fault needs |
 
 ---
