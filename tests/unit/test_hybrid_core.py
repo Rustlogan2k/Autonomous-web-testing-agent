@@ -143,6 +143,68 @@ def test_outcomes_reward_the_unexpected_response_not_any_alert():
     assert finished("novelty", "complete_step", submitted=True, alerted=True, page=view) == 0.0
 
 
+PAIR_HTML = (
+    '<form><select id="method" name="method"><option value="standard" selected>Standard'
+    '</option><option value="express">Express</option></select>'
+    '<input id="address" name="address" type="text" value="">'
+    '<input id="name" name="name" type="text" value="">'
+    '<button id="use">Use voucher</button></form>'
+)
+PAIR_SPECS = [
+    _spec(0, ActionType.NO_OP),
+    _spec(1, ActionType.SELECT, "method", "method", option="standard"),
+    _spec(2, ActionType.SELECT, "method", "method", option="express"),
+    _spec(3, ActionType.TYPE, "address", "address", category="valid_typical"),
+    _spec(4, ActionType.TYPE, "address", "address", category="empty_string"),
+    _spec(5, ActionType.TYPE, "name", "name", category="valid_typical"),
+    _spec(6, ActionType.CLICK, "use", "Use voucher"),
+]
+
+
+def _pair_view(html=PAIR_HTML, *, form_submit=True):
+    labels = deterministic_labels("http://h:1/checkout", html, PAIR_SPECS, form_submit=form_submit)
+    return PageView("http://h:1/checkout", labels, form_signature(html), False, PAIR_SPECS,
+                    html=html)
+
+
+def test_a_button_that_submits_its_form_is_a_submit_control_when_asked():
+    assert _pair_view().labels.roles['[id="use"]'] == "submit"
+    assert _pair_view(form_submit=False).labels.roles['[id="use"]'] == "other"
+    outside = PAIR_HTML.replace("</form>", "") + "</form>"  # still inside: unchanged
+    assert _pair_view(outside).labels.roles['[id="use"]'] == "submit"
+    loose = PAIR_HTML.replace("<form>", "").replace("</form>", "")
+    assert _pair_view(loose).labels.roles['[id="use"]'] == "other"
+
+
+def test_pairwise_operator_sets_two_deviations_then_completes_and_submits():
+    view = _pair_view()
+    assert not [o for o in options(view) if o[0] == "combine"]  # off by default
+    pairs = [t for op, t in options(view, pairwise=True) if op == "combine"]
+    target = '[id="method"]|express&[id="address"]|empty_string'
+    assert target in pairs
+    assert not any("&[id=\"method\"]" in t for t in pairs)  # a select is not paired with itself
+    op = Operator("combine", target)
+    assert [op.next(view).index for _ in range(3)] == [2, 4, 5]  # express, empty, then the name
+    named = _pair_view(PAIR_HTML.replace('id="name" name="name" type="text" value=""',
+                                         'id="name" name="name" type="text" value="A"'))
+    assert op.next(named).index == 6  # the address stays empty; submit
+
+
+def test_family_choice_offers_one_candidate_per_technique():
+    from web_testing_agent.hybrid.archive import Cell
+    from web_testing_agent.hybrid.policy import Planner
+
+    planner = Planner(Archive(), seed=0)
+    cell = Cell("k", [], "form", 0)
+    choices = [("invalid_input", f"f{i}") for i in range(30)] + [("reload_and_resume", "")]
+    assert planner.candidates(cell, choices) == choices
+    planner.family_choice = True
+    picked = planner.candidates(cell, choices)
+    assert [c[0] for c in picked] == ["invalid_input", "reload_and_resume"]
+    cell.tried = {c for c in choices if c[0] == "invalid_input" and c[1] != "f7"}
+    assert planner.candidates(cell, choices)[0] == ("invalid_input", "f7")  # untried first
+
+
 def test_archive_keeps_the_shortest_walk_and_discounts_deep_cells():
     archive = Archive(episode_steps=40)
     cell, created = archive.visit("a", [{"type": "CLICK"}] * 5, "form", 0)

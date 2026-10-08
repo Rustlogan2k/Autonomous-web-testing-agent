@@ -58,6 +58,22 @@ ARMS: dict[str, dict] = {
     # Development variants of the bandit's outcome signal (suite round 3, 2026-10-08).
     "dev_bandit_novelty": {**HYBRID, "planner": "bandit", "outcome": "novelty"},
     "dev_bandit_surprise": {**HYBRID, "planner": "bandit", "outcome": "surprise"},
+    # Development variants (suite round 4, 2026-10-08): pairwise operators, technique-first
+    # choice and form-submitting buttons as submit controls, with and without the learner.
+    "dev_pairwise_nolearn": {
+        **HYBRID,
+        "planner": "count",
+        "pairwise": True,
+        "family_choice": True,
+        "form_submit": True,
+    },
+    "dev_pairwise_bandit": {
+        **HYBRID,
+        "planner": "bandit",
+        "pairwise": True,
+        "family_choice": True,
+        "form_submit": True,
+    },
 }
 
 
@@ -157,6 +173,9 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
         explore=spec.get("explore", "weighted"),
         depth_bias=float(spec.get("depth_bias", 0.0)),
         outcome=spec.get("outcome", "alert"),
+        pairwise=bool(spec.get("pairwise", False)),
+        family_choice=bool(spec.get("family_choice", False)),
+        form_submit=bool(spec.get("form_submit", False)),
     )
     return policy, labeller
 

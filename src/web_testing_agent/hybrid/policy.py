@@ -61,9 +61,28 @@ class Decision:
 class Planner:
     """Where to return and what to try: count-weighted cells, uniform untried operators."""
 
+    #: Choose a technique (operator family) first, then its target: one candidate per family,
+    #: so a family's chance does not grow with how many targets the page gives it.
+    family_choice = False
+
     def __init__(self, archive: Archive, seed: int = 0) -> None:
         self.archive = archive
         self.rng = np.random.default_rng(seed + 1)
+
+    def candidates(self, cell: Cell, choices: list[tuple[str, str]]) -> list[tuple[str, str]]:
+        """The choices to decide among: all of them, or with `family_choice` one per family
+        (an untried target if the family has one), families in a stable order."""
+        if not self.family_choice:
+            return choices
+        families: dict[str, list[tuple[str, str]]] = {}
+        for choice in choices:
+            families.setdefault(choice[0], []).append(choice)
+        out = []
+        for name in sorted(families):
+            members = families[name]
+            pool = [c for c in members if c not in cell.tried] or members
+            out.append(pool[int(self.rng.integers(len(pool)))])
+        return out
 
     def choose_cell(self, offered: dict[str, list[tuple[str, str]]]) -> Cell | None:
         weights = {
@@ -77,6 +96,7 @@ class Planner:
     ) -> Decision | None:
         if not choices:
             return None
+        choices = self.candidates(cell, choices)
         untried = [c for c in choices if c not in cell.tried]
         pool = untried or choices
         operator, target = pool[int(self.rng.integers(len(pool)))]
@@ -102,10 +122,16 @@ class HybridPolicy:
         explore: str = "weighted",
         depth_bias: float = 0.0,
         outcome: str = "alert",
+        pairwise: bool = False,
+        family_choice: bool = False,
+        form_submit: bool = False,
     ) -> None:
         if outcome not in OUTCOMES:
             raise ValueError(f"unknown outcome {outcome!r}; expected one of {OUTCOMES}")
         self.outcome = outcome
+        #: Development options (suite round 4): pairwise operators, technique-first choice,
+        #: form-submitting buttons as submit controls. Off: the behaviour of rounds 1-3.
+        self.pairwise, self.form_submit = pairwise, form_submit
         self.labeller = labeller
         self.context = context
         self.archive = Archive(seed, episode_steps=episode_steps, depth_bias=depth_bias)
@@ -118,6 +144,7 @@ class HybridPolicy:
 
             self.search = FeatureSearchPolicy(seed=seed, epsilon=0.05)
         self.planner = (planner_factory or Planner)(self.archive, seed)
+        self.planner.family_choice = family_choice
         self.rng = np.random.default_rng(seed)
         self.offered: dict[str, list[tuple[str, str]]] = {}
         self.global_step = 0
@@ -190,7 +217,7 @@ class HybridPolicy:
             self.stats["new_cells"] += 1
         self.base_cells.add(_without_alert(view.cell))
         if cell.key not in self.offered:
-            self.offered[cell.key] = options(view)
+            self.offered[cell.key] = options(view, pairwise=self.pairwise)
             self.planner.register(cell, self.offered[cell.key], view)
 
         spec = None
@@ -373,7 +400,7 @@ class HybridPolicy:
     def _view(self, info: dict) -> PageView:
         if self._view_cache is not None and self._view_cache[0] == id(info):
             return self._view_cache[1]
-        view = observe(info, self.labeller, context=self.context)
+        view = observe(info, self.labeller, context=self.context, form_submit=self.form_submit)
         if self.labeller is not None and view.labels.source == "deterministic":
             self.stats["label_fallbacks"] += 1
         self._view_cache = (id(info), view)

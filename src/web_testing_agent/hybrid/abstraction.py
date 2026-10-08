@@ -188,6 +188,41 @@ def chrome_ids(html: str) -> frozenset[str]:
     return frozenset(parser.ids)
 
 
+class _SubmitParser(HTMLParser):
+    """Ids of the controls that submit a form: a button of type submit (the default) or an
+    input of type submit or image, inside a form or naming one with `form=`."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.ids: set[str] = set()
+        self._forms = 0
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = {k: (v or "") for k, v in attrs}
+        if tag == "form":
+            self._forms += 1
+            return
+        kind = values.get("type", "").lower()
+        submits = (tag == "button" and kind in ("", "submit")) or (
+            tag == "input" and kind in ("submit", "image")
+        )
+        if submits and (self._forms or values.get("form")) and values.get("id"):
+            self.ids.add(values["id"])
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "form" and self._forms:
+            self._forms -= 1
+
+
+def submit_ids(html: str) -> frozenset[str]:
+    parser = _SubmitParser()
+    try:
+        parser.feed(html or "")
+    except Exception:  # noqa: BLE001 - unreadable markup submits nothing
+        return frozenset()
+    return frozenset(parser.ids)
+
+
 def toggles_of(html: str) -> list[Toggle]:
     parser = _ToggleParser()
     try:
@@ -292,12 +327,17 @@ def _dom_id(identity: str) -> str:
     return identity[5:-2] if identity.startswith('[id="') and identity.endswith('"]') else ""
 
 
-def deterministic_labels(url: str, html: str, specs: list[ActionSpec]) -> PageLabels:
+def deterministic_labels(
+    url: str, html: str, specs: list[ActionSpec], *, form_submit: bool = False
+) -> PageLabels:
+    """Roles from English cues; with `form_submit`, a button that submits its form and has
+    no cue ("Use voucher", "Go") is a submit control: a markup fact, not a word."""
     facts = page_facts(specs, html)
     controls = facts.controls
     labels = PageLabels(key="", kind="other", model="deterministic", source="deterministic")
     labels.kind = facts.kind or ("home" if path_template(url) in ("/", "/index.html") else "other")
     chrome = chrome_ids(html)
+    submitting = submit_ids(html) if form_submit else frozenset()
     for control in controls:
         if control.kind == "field":
             labels.meanings[control.identity] = control.deterministic or "other"
@@ -307,6 +347,8 @@ def deterministic_labels(url: str, html: str, specs: list[ActionSpec]) -> PageLa
         is_link = text.startswith("link")
         label = control.line.split('"')[1].lower() if '"' in control.line else ""
         role = next((r for r, cues in _ROLE_CUES if any(_has_cue(label, cue) for cue in cues)), "")
+        if not role and not is_link and _dom_id(control.identity) in submitting:
+            role = "submit"
         # A link is a submission only when it moves a task on ("Continue to checkout");
         # a link reading "Store" or "Save" is navigation.
         if is_link and role == "submit" and not any(_has_cue(label, c) for c in _LINK_SUBMIT_CUES):
@@ -389,7 +431,9 @@ class PageView:
         return out
 
 
-def observe(info: dict, labeller=None, *, context: str = "") -> PageView:
+def observe(
+    info: dict, labeller=None, *, context: str = "", form_submit: bool = False
+) -> PageView:
     """The `PageView` for an env `info`, labelled by `labeller` or deterministically."""
     page = info.get("page") or {}
     url, html = page.get("url", ""), page.get("html", "")
@@ -400,7 +444,7 @@ def observe(info: dict, labeller=None, *, context: str = "") -> PageView:
             url, html, specs, context=context, visible_text=page.get("visible_text")
         )
     if labels is None:
-        labels = deterministic_labels(url, html, specs)
+        labels = deterministic_labels(url, html, specs, form_submit=form_submit)
     return PageView(
         url,
         labels,

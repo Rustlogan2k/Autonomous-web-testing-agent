@@ -7,7 +7,10 @@ standard test-design techniques rather than from any application's faults:
   empty or wrong-format value while the others are valid, then submits;
 - state-transition testing: `edit_after_review`, `back_and_resume`, `reload_and_resume`,
   `double_submit`, `collection_churn`;
-- `complete_step` is the valid path through one step, needed to get deep at all.
+- `complete_step` is the valid path through one step, needed to get deep at all;
+- pairwise (combinatorial) testing: `combine` sets one select's option together with a second
+  deviation on another field of the same form (a deviant value or another select's option),
+  for faults that need two choices at once (optional; `options(pairwise=True)`).
 
 An operator never sees the oracle; it only says which action to take next, step by step,
 reading the page's labels, and stops when its sequence is done.
@@ -34,6 +37,7 @@ OPERATORS = (
     "reload_and_resume",
     "double_submit",
     "collection_churn",
+    "combine",
 )
 #: Operators whose probe submits a value the page should refuse: the expected response is
 #: a validation message, so its absence is the surprise (see `HybridPolicy` outcomes).
@@ -181,15 +185,7 @@ class Operator:
         field_id, option = self.target.rsplit("|", 1)
         if self.stage == 0:
             self.stage = 1
-            spec = next(
-                (
-                    a
-                    for a in view.fields().get(field_id, [])
-                    if a.action_type is ActionType.SELECT
-                    and str((a.params or {}).get("option")) == option
-                ),
-                None,
-            )
+            spec = _option(view, field_id, option)
             if spec is not None:
                 return spec
         if self.stage == 1:
@@ -235,6 +231,32 @@ class Operator:
         if self.stage == 3:
             self.stage = 4
             return self._submit(view, roles=SUBMIT_ROLES)
+        return None
+
+    def _combine(self, view: PageView) -> ActionSpec | None:
+        """Pairwise testing: a select's option, then a second field's deviant value or option,
+        the rest of the form completed (the second field left as set), then submit."""
+        first, second = self.target.split("&", 1)
+        field_a, option = first.rsplit("|", 1)
+        field_b, value = second.rsplit("|", 1)
+        if self.stage == 0:
+            self.stage = 1
+            spec = _option(view, field_a, option)
+            if spec is not None:
+                return spec
+        if self.stage == 1:
+            self.stage = 2
+            spec = _option(view, field_b, value) or next(
+                (a for a in view.fields().get(field_b, []) if _category(a) == value), None
+            )
+            if spec is not None:
+                return spec
+        if self.stage == 2:
+            spec = fill_step(view, skip=field_b)
+            if spec is not None:
+                return spec
+            self.stage = 3
+            return self._submit(view)
         return None
 
     def _back_and_resume(self, view: PageView) -> ActionSpec | None:
@@ -297,7 +319,19 @@ class Operator:
         return None
 
 
-def options(view: PageView) -> list[tuple[str, str]]:
+def _option(view: PageView, field_id: str, option: str) -> ActionSpec | None:
+    """The action choosing `option` in select `field_id`, if the page offers it."""
+    return next(
+        (
+            a
+            for a in view.fields().get(field_id, [])
+            if a.action_type is ActionType.SELECT and str((a.params or {}).get("option")) == option
+        ),
+        None,
+    )
+
+
+def options(view: PageView, *, pairwise: bool = False) -> list[tuple[str, str]]:
     """Every (operator, target) this page offers, in a stable order."""
     out: list[tuple[str, str]] = []
     fields = view.fields()
@@ -332,4 +366,38 @@ def options(view: PageView) -> list[tuple[str, str]]:
         for action in actions:
             if action.action_type is ActionType.SELECT and "option" in (action.params or {}):
                 out.append(("choose_option", f"{identity}|{action.params['option']}"))
+    if pairwise:
+        out += _pairs(fields)
+    return out
+
+
+def _select_options(actions: list[ActionSpec]) -> list[str]:
+    return [
+        str(a.params["option"])
+        for a in actions
+        if a.action_type is ActionType.SELECT and "option" in (a.params or {})
+    ]
+
+
+def _pairs(fields: dict[str, list[ActionSpec]]) -> list[tuple[str, str]]:
+    """Every pair of a select's option with another field's deviation: that field's deviant
+    values, or (each unordered pair of selects once) its options."""
+    out: list[tuple[str, str]] = []
+    names = list(fields)
+    for i, first in enumerate(names):
+        for option in _select_options(fields[first]):
+            for j, second in enumerate(names):
+                if second == first:
+                    continue
+                others = _select_options(fields[second])
+                if others:
+                    if j > i:
+                        out += [("combine", f"{first}|{option}&{second}|{o}") for o in others]
+                    continue
+                categories = {_category(a) for a in fields[second]}
+                out += [
+                    ("combine", f"{first}|{option}&{second}|{c}")
+                    for c in INVALID_CATEGORIES
+                    if c in categories
+                ]
     return out

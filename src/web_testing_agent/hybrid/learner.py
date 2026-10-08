@@ -24,6 +24,7 @@ import numpy as np
 
 from .abstraction import PageView
 from .archive import Archive, Cell
+from .operators import INVALID_CATEGORIES
 from .policy import Decision, Planner
 
 #: Weight of each more general key's evidence in a specific key's prior.
@@ -40,6 +41,9 @@ def target_type(operator: str, target: str, view: PageView | None) -> str:
         return f"{meaning}:{category}"
     if operator == "edit_after_review":
         return target.rsplit("|", 1)[1]
+    if operator == "combine":
+        second = target.split("&", 1)[1].rsplit("|", 1)[1]
+        return f"pair:{second if second in INVALID_CATEGORIES else 'option'}"
     return ""
 
 
@@ -103,6 +107,7 @@ class BanditPlanner(Planner):
         if not choices:
             return None
         self.decisions += 1
+        choices = self.candidates(cell, choices)
         draws = []
         for operator, target in choices:
             alpha, beta = self._posterior(cell.kind, operator, self._ttype(cell, operator, target))
