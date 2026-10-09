@@ -1,0 +1,373 @@
+{
+  "budget": 2000,
+  "apps": [
+    "dutyday",
+    "fosterly",
+    "larder",
+    "markbook",
+    "quizcraft",
+    "sideline",
+    "skylark",
+    "tally"
+  ],
+  "per_arm": {
+    "hybrid_bandit": {
+      "runs": 40,
+      "discovery_rate": 0.85,
+      "restricted_mean_time": 768.975,
+      "mean_faults_verified_per_run": 1.225,
+      "distinct_faults_verified": 19,
+      "distinct_faults_by_app": {
+        "dutyday": [
+          "DUTY-1",
+          "DUTY-2"
+        ],
+        "fosterly": [
+          "FOST-1",
+          "FOST-3"
+        ],
+        "larder": [
+          "LARD-1",
+          "LARD-2",
+          "LARD-3"
+        ],
+        "markbook": [
+          "MARK-1",
+          "MARK-2",
+          "MARK-3"
+        ],
+        "quizcraft": [
+          "QUIZ-1",
+          "QUIZ-2"
+        ],
+        "sideline": [
+          "SIDE-1",
+          "SIDE-2",
+          "SIDE-3"
+        ],
+        "skylark": [
+          "SKY-1",
+          "SKY-2",
+          "SKY-3"
+        ],
+        "tally": [
+          "TALLY-1"
+        ]
+      },
+      "specless": {
+        "candidates": 3,
+        "reproduced": 3,
+        "reproduced_on_clean_build_too": 3,
+        "seeded_faults_flagged": 0,
+        "flagged_by_app": {
+          "markbook": [],
+          "quizcraft": []
+        }
+      },
+      "returns": 1960,
+      "failed_returns": 27
+    },
+    "hybrid_nolearn": {
+      "runs": 40,
+      "discovery_rate": 0.75,
+      "restricted_mean_time": 737.125,
+      "mean_faults_verified_per_run": 1.15,
+      "distinct_faults_verified": 18,
+      "distinct_faults_by_app": {
+        "dutyday": [
+          "DUTY-2",
+          "DUTY-3"
+        ],
+        "fosterly": [
+          "FOST-1",
+          "FOST-3"
+        ],
+        "larder": [
+          "LARD-1",
+          "LARD-2",
+          "LARD-3"
+        ],
+        "markbook": [
+          "MARK-1",
+          "MARK-2",
+          "MARK-3"
+        ],
+        "quizcraft": [
+          "QUIZ-1",
+          "QUIZ-2",
+          "QUIZ-3"
+        ],
+        "sideline": [
+          "SIDE-1",
+          "SIDE-2",
+          "SIDE-3"
+        ],
+        "skylark": [],
+        "tally": [
+          "TALLY-1",
+          "TALLY-2"
+        ]
+      },
+      "specless": {
+        "candidates": 9,
+        "reproduced": 9,
+        "reproduced_on_clean_build_too": 9,
+        "seeded_faults_flagged": 0,
+        "flagged_by_app": {
+          "markbook": [],
+          "quizcraft": []
+        }
+      },
+      "returns": 1960,
+      "failed_returns": 14
+    },
+    "random": {
+      "runs": 40,
+      "discovery_rate": 0.8,
+      "restricted_mean_time": 978.25,
+      "mean_faults_verified_per_run": 1.0,
+      "distinct_faults_verified": 13,
+      "distinct_faults_by_app": {
+        "dutyday": [
+          "DUTY-1",
+          "DUTY-2"
+        ],
+        "fosterly": [
+          "FOST-1"
+        ],
+        "larder": [
+          "LARD-1",
+          "LARD-2",
+          "LARD-3"
+        ],
+        "markbook": [
+          "MARK-3"
+        ],
+        "quizcraft": [
+          "QUIZ-1"
+        ],
+        "sideline": [
+          "SIDE-2",
+          "SIDE-3"
+        ],
+        "skylark": [
+          "SKY-2",
+          "SKY-3"
+        ],
+        "tally": [
+          "TALLY-1"
+        ]
+      },
+      "specless": {
+        "candidates": 0,
+        "reproduced": 0,
+        "reproduced_on_clean_build_too": 0,
+        "seeded_faults_flagged": 0,
+        "flagged_by_app": {}
+      },
+      "returns": 0,
+      "failed_returns": 0
+    },
+    "v1_dqn_pretrained": {
+      "runs": 40,
+      "discovery_rate": 0.85,
+      "restricted_mean_time": 595.475,
+      "mean_faults_verified_per_run": 1.175,
+      "distinct_faults_verified": 17,
+      "distinct_faults_by_app": {
+        "dutyday": [
+          "DUTY-1",
+          "DUTY-2",
+          "DUTY-3"
+        ],
+        "fosterly": [
+          "FOST-1",
+          "FOST-3"
+        ],
+        "larder": [
+          "LARD-2"
+        ],
+        "markbook": [
+          "MARK-2",
+          "MARK-3"
+        ],
+        "quizcraft": [
+          "QUIZ-1",
+          "QUIZ-2",
+          "QUIZ-3"
+        ],
+        "sideline": [
+          "SIDE-2"
+        ],
+        "skylark": [
+          "SKY-1",
+          "SKY-2",
+          "SKY-3"
+        ],
+        "tally": [
+          "TALLY-1",
+          "TALLY-2"
+        ]
+      },
+      "specless": {
+        "candidates": 0,
+        "reproduced": 0,
+        "reproduced_on_clean_build_too": 0,
+        "seeded_faults_flagged": 0,
+        "flagged_by_app": {}
+      },
+      "returns": 0,
+      "failed_returns": 0
+    }
+  },
+  "protocol": "freeze-2026-10-08",
+  "primary": {
+    "verdict": "inconclusive",
+    "treatment": "hybrid_nolearn",
+    "control": "random",
+    "available": true,
+    "median_difference": -323.79999999999995,
+    "ci": [
+      -664.6000000000001,
+      147.6
+    ],
+    "apps_favouring_treatment": 6,
+    "apps": 8,
+    "per_app": {
+      "dutyday": -429.4,
+      "fosterly": -581.4000000000001,
+      "larder": -200.39999999999998,
+      "markbook": -664.6000000000001,
+      "quizcraft": -218.2,
+      "sideline": -1003.0,
+      "skylark": 1020.4,
+      "tally": 147.6
+    },
+    "logrank": {
+      "arm_a": "hybrid_nolearn",
+      "arm_b": "random",
+      "chi2": 1.9864,
+      "p_value": 0.15871,
+      "observed_minus_expected_a": 5.045,
+      "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+    }
+  },
+  "secondary": [
+    {
+      "verdict": "inconclusive",
+      "treatment": "hybrid_bandit",
+      "control": "hybrid_nolearn",
+      "available": true,
+      "median_difference": 86.19999999999996,
+      "ci": [
+        -303.79999999999995,
+        284.8
+      ],
+      "apps_favouring_treatment": 4,
+      "apps": 8,
+      "per_app": {
+        "dutyday": -9.800000000000068,
+        "fosterly": -310.6,
+        "larder": 182.2,
+        "markbook": 301.60000000000014,
+        "quizcraft": 284.8,
+        "sideline": 202.20000000000005,
+        "skylark": -303.79999999999995,
+        "tally": -91.80000000000001
+      },
+      "logrank": {
+        "arm_a": "hybrid_bandit",
+        "arm_b": "hybrid_nolearn",
+        "chi2": 0.0775,
+        "p_value": 0.78072,
+        "observed_minus_expected_a": -1.041,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "verdict": "inconclusive",
+      "treatment": "hybrid_bandit",
+      "control": "random",
+      "available": true,
+      "median_difference": -190.6,
+      "ci": [
+        -800.8,
+        66.60000000000002
+      ],
+      "apps_favouring_treatment": 5,
+      "apps": 8,
+      "per_app": {
+        "dutyday": -439.20000000000005,
+        "fosterly": -892.0000000000001,
+        "larder": -18.19999999999999,
+        "markbook": -363.0,
+        "quizcraft": 66.60000000000002,
+        "sideline": -800.8,
+        "skylark": 716.6,
+        "tally": 55.79999999999998
+      },
+      "logrank": {
+        "arm_a": "hybrid_bandit",
+        "arm_b": "random",
+        "chi2": 1.7975,
+        "p_value": 0.18002,
+        "observed_minus_expected_a": 4.912,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    },
+    {
+      "verdict": "inconclusive",
+      "treatment": "hybrid_nolearn",
+      "control": "v1_dqn_pretrained",
+      "available": true,
+      "median_difference": 41.7,
+      "ci": [
+        -196.0,
+        573.9999999999999
+      ],
+      "apps_favouring_treatment": 4,
+      "apps": 8,
+      "per_app": {
+        "dutyday": 506.40000000000003,
+        "fosterly": -82.0,
+        "larder": -196.0,
+        "markbook": 573.9999999999999,
+        "quizcraft": -16.400000000000006,
+        "sideline": -1139.0,
+        "skylark": 1386.4,
+        "tally": 99.80000000000001
+      },
+      "logrank": {
+        "arm_a": "hybrid_nolearn",
+        "arm_b": "v1_dqn_pretrained",
+        "chi2": 1.1872,
+        "p_value": 0.27589,
+        "observed_minus_expected_a": -4.085,
+        "reading": "positive O-E for arm_a = arm_a confirms faults sooner than expected"
+      }
+    }
+  ],
+  "exploratory": [],
+  "clean_build_controls": {
+    "hybrid_bandit": {
+      "jobs": 8,
+      "verified_seeded": 0,
+      "reproduced_invariant_candidates": 1
+    },
+    "hybrid_nolearn": {
+      "jobs": 8,
+      "verified_seeded": 0,
+      "reproduced_invariant_candidates": 2
+    },
+    "random": {
+      "jobs": 8,
+      "verified_seeded": 0,
+      "reproduced_invariant_candidates": 0
+    },
+    "v1_dqn_pretrained": {
+      "jobs": 8,
+      "verified_seeded": 0,
+      "reproduced_invariant_candidates": 0
+    }
+  }
+}
