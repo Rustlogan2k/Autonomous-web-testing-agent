@@ -57,7 +57,7 @@ applications, no pre-registered comparison reached a verdict: with eight applica
 intervals are wide, the held-out faults turned out easier for random exploration than the
 development ones (random verified a fault in 80% of runs), and the hybrid had one clear
 blind spot (list paging, §7.6). Descriptively, the hybrid arms verified the most distinct
-faults (19 and 18 of 24, against random's 13), including several no random run found, and
+faults (19 and 18 of 24, against random's 13), including 9 that no random run found, and
 v1's pretrained AC-DQN had the lowest mean time to a first fault.
 
 ---
@@ -427,7 +427,7 @@ intervals; no comparison is supported or refuted.
 
 22 of the 24 faults were verified by at least one arm; FOST-2 and TALLY-3 by none. Faults
 verified by a hybrid arm and by no random run: DUTY-3, FOST-3, MARK-1, MARK-2, QUIZ-2,
-QUIZ-3, SIDE-1, TALLY-2 (8). Faults random verified more often than either hybrid arm:
+QUIZ-3, SIDE-1, SKY-1, TALLY-2 (9). Faults random verified more often than either hybrid arm:
 SKY-2, SKY-3, and DUTY-1 against `hybrid_nolearn`.
 
 ### 7.6 What the held-out data shows (descriptive)
@@ -436,10 +436,10 @@ SKY-2, SKY-3, and DUTY-1 against `hybrid_nolearn`.
    Random verified a fault in 80% of runs here, against 43% on the development apps (18/42).
    Several faults sit one or two interactions from a page random visits constantly
    (LARD-2, QUIZ-1, TALLY-1: 5/5 for every arm), which compresses every difference.
-2. **The hybrid arms reached the deeper faults.** Of the 11 faults random verified in at
-   most 1 of 5 runs, the two hybrid arms verified 9 at least once (MARK-1, MARK-2, SIDE-1,
-   SIDE-3, LARD-1, LARD-3, QUIZ-2, QUIZ-3, FOST-3). That is where test operators help:
-   completing forms validly, invalid input, edits after review.
+2. **The hybrid arms reached the deeper faults.** Of the 16 faults random verified in at
+   most 1 of 5 runs, the two hybrid arms together verified 14 at least once (all but FOST-2
+   and TALLY-3, which no arm found); `v1_dqn_pretrained` verified 9 of them. That is where
+   test operators help: completing forms validly, invalid input, edits after review.
 3. **One clear blind spot: list paging.** All three skylark faults sit behind its feed's
    "Load more" button (load every page; flag an item on page 2 and reload that page). Random
    presses it often by chance; the hybrid's operators work on forms and have no "page through
@@ -480,7 +480,7 @@ SKY-2, SKY-3, and DUTY-1 against `hybrid_nolearn`.
   learning component added to it; curiosity-driven RL built from the literature's components
   performed at random level on these functional faults.
 - On held-out applications: the hybrid arms verified the most distinct faults (19 and 18
-  of 24), including 8 faults no random run found; zero false positives in 32 clean-build
+  of 24), including 9 faults no random run found; zero false positives in 32 clean-build
   controls.
 
 **Cannot claim:**
