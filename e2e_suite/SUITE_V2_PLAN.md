@@ -690,3 +690,37 @@ Builder **A** is the Python specialist and owns the harness. Builder **B** is th
 - c:\Users\reach\OneDrive\Code files\SEM7\rlwt-suite-v2\e2e_suite\harness\manifest.py
 - c:\Users\reach\OneDrive\Code files\SEM7\rlwt-suite-v2\e2e_suite\harness\browser_checks.py
 - c:\Users\reach\OneDrive\Code files\SEM7\RL web tester\e2e_suite\CONVENTIONS.md
+
+---
+
+## 8. Addendum 2026-10-17: the five remaining development apps are rebuilt *and enlarged*
+
+Owner's decision, 2026-10-17: finish only the five remaining development apps (clinicflow,
+wayfarer, ledgerly, bagstreet, helpline); the eight validation apps stay as evaluated
+(their rebuild is future work). The development apps are also made larger and more varied,
+so that a tester tuned on them meets the breadth of interaction found in real open-source
+web applications.
+
+**Independence rule (extends the existing one).** The enlargement is generic, chosen from
+common web-application patterns and the blind spots our own evaluations found (list paging,
+non-form interaction). Nobody building or tuning on these apps may look at, fetch, or read
+about the subject applications of the external benchmark (WebExplor / WebRLED: dimeshift,
+pagekit, splittypie, phoenix-trello, retroboard, petclinic, timeoff, realworld, 4gaBoards,
+parabank, gadael, agilefant). The external benchmark is the evaluation of the re-tuned tester.
+
+**Size and breadth, per app (in addition to §1 and CONVENTIONS v2):**
+- at least **12 distinct views** (routes or screens), at least **3 entity types** with full
+  create / read / update / delete reachable from the UI;
+- at least **5 of these interaction patterns**: pagination or "load more"; sort and filter on
+  lists; search; modal dialogs; tabs; inline (click-to-edit) editing; a multi-step wizard;
+  reordering or moving items between groups (buttons, and drag where natural); bulk selection
+  with a bulk action; undo; client-side routing with working Back/Forward;
+- client-side behaviour of real size in the Node / SPA apps (the tester's breadth matters most
+  there); the ≤ 40-controls-per-view rule still holds;
+- the clean build still raises **no console errors or failed requests** (existing check).
+
+**Faults.** Every existing fault keeps its design. Each app gains **two new faults** in
+interaction types other than form submission (paging, sorting/filtering, inline edit,
+reordering, modal or tab state, client-side routing / Back), with designs from standard fault
+classes, admitted under the same rules (witness fires on buggy, silent on clean and on its
+control, minimised, benign traces silent).
