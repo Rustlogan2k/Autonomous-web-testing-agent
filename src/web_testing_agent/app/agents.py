@@ -1,27 +1,21 @@
-"""Which exploration policies the product offers, and how one is built.
+"""Which exploration policies the product offers.
 
-**This module is the seam the finalized RL agent plugs into.** `pipeline.run_pipeline`
-takes a `policy_factory` returning anything satisfying `evaluation.rollout.Policy`; this
-file is the only place that knows which policies exist. Adding the finished RL model means
-adding an `AgentChoice` and a branch in `build_policy` — no route, template, JavaScript or
-data model changes, because the UI renders whatever `available_agents()` returns.
+The product offers exactly the four agents of the held-out evaluation, so what a user runs
+is what was measured. Each is built by `tester.session.build_agent` from the frozen
+evaluation's own configuration and checkpoints; the UI renders whatever
+`available_agents()` returns.
 
 **Honesty rules enforced here, not in the templates.**
 
-* A research checkpoint that is not on disk is offered as *unavailable* with the reason,
+* An agent whose checkpoint is not on disk is offered as *unavailable* with the reason,
   rather than being listed and then failing when chosen.
-* Every entry carries `research_stage`, and the UI renders a badge from it. The two
-  checkpoint-backed agents were trained on one fixture at a 4,000-step budget and their
-  learned policy is specific to it; running them against an arbitrary uploaded application
-  is legitimate but is not the same claim as "a trained agent for your app", and the
-  summary says so.
+* Each summary states the agent's held-out result, so the choice is an informed one.
 * Nothing here trains. Training is an experiment, runs for hours, and is not something a
   web request may start.
 """
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any, Callable
 
 from ..utils.logging import get_logger
@@ -29,109 +23,85 @@ from .models import AgentChoice
 
 logger = get_logger(__name__)
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-CHECKPOINTS = REPO_ROOT / "models" / "checkpoints"
-
-#: Checkpoint used when a research agent is selected. Seed 0 of the canonical post-Markov
-#: run for AC-DQN and of the contextual-bandit run — the same artifacts
-#: `reports/offline_eval_25ep.md` reports, loaded read-only and never written.
-_AC_DQN_CHECKPOINT = CHECKPOINTS / "postmarkov_baseline" / "ac_dqn_seed0_final.zip"
-_BANDIT_CHECKPOINT = CHECKPOINTS / "contextual_bandit" / "contextual_bandit_seed0_final.zip"
-
-AGENT_RL = "rl"
+AGENT_HYBRID = "hybrid_nolearn"
+AGENT_HYBRID_BANDIT = "hybrid_bandit"
+AGENT_V1_DQN = "v1_dqn_pretrained"
 AGENT_RANDOM = "random"
-AGENT_SEARCH = "search"
-AGENT_AC_DQN = "ac_dqn"
-AGENT_BANDIT = "contextual_bandit"
 
-#: The learning tester is the product's agent. It needs no checkpoint to run -- without one
-#: it learns from scratch on the target and the report says so.
-DEFAULT_AGENT = AGENT_RL
-TESTER_CHECKPOINT = REPO_ROOT / "models" / "tester" / "tester_all_apps.pt"
+#: The product offers exactly the agents of the held-out evaluation
+#: (docs/methodology/hybrid-v2-evaluation-preregistration.md, tag `v2-eval-freeze`), built by
+#: `tester.session.build_agent` as that evaluation built them. The default is the hybrid tester
+#: without a learner: it verified a fault in the most development runs and is the simplest.
+DEFAULT_AGENT = AGENT_HYBRID
 
-#: Agents that run through the test-session path (`tester.run_session`), and the
-#: session's name for each. The two research checkpoints predate it and run through the
-#: original pipeline only.
-SESSION_AGENTS = {AGENT_RL: "rl", AGENT_SEARCH: "search", AGENT_RANDOM: "random"}
+#: Every offered agent runs through the test-session path (`tester.run_session`); the key is
+#: also the session's name for it.
+SESSION_AGENTS = {key: key for key in (AGENT_HYBRID, AGENT_HYBRID_BANDIT, AGENT_V1_DQN,
+                                       AGENT_RANDOM)}
 
 
 def _torch_available() -> bool:
     try:
-        import stable_baselines3  # noqa: F401
         import torch  # noqa: F401
     except Exception:  # noqa: BLE001 - a partial install is as unusable as none
         return False
     return True
 
 
-def available_agents() -> list[AgentChoice]:
-    """Every policy the product can run right now, resolved against the filesystem."""
-    torch_ok = _torch_available()
-    missing_torch = "Requires the deep-learning stack (torch, stable-baselines3)."
+def _v1_checkpoint_ok() -> tuple[bool, str]:
+    try:
+        from ..hybrid.run import v1_checkpoint
 
-    has_weights = TESTER_CHECKPOINT.is_file()
-    choices = [
+        v1_checkpoint(0)
+    except Exception as exc:  # noqa: BLE001 - absent checkpoints make the agent unavailable
+        return False, f"{exc}"
+    return True, ""
+
+
+def available_agents() -> list[AgentChoice]:
+    """The held-out evaluation's four agents, resolved against this machine."""
+    torch_ok = _torch_available()
+    checkpoint_ok, why = _v1_checkpoint_ok()
+    v1_ok = torch_ok and checkpoint_ok
+    return [
         AgentChoice(
-            key=AGENT_RL,
-            name="Learning tester (RL + LLM reward)",
-            summary=("Action-conditioned Double DQN pretrained on the six benchmark "
-                     "applications, adapting online to this one through a residual head, "
-                     "rewarded for novelty and for functional progress as judged by a local "
-                     "language model. Findings are verified by replay and minimized."
-                     if has_weights else
-                     "Action-conditioned Double DQN with the LLM progress reward. No "
-                     "pretrained weights are on this machine, so it learns from scratch on "
-                     "the target; the report states this."),
-            available=torch_ok,
-            unavailable_reason="" if torch_ok else missing_torch,
+            key=AGENT_HYBRID,
+            name="Hybrid tester (recommended)",
+            summary="Structured exploration: pages abstracted by function, an archive of "
+                    "reached states it returns to exactly, and test operators from standard "
+                    "test design (complete the step, each dropdown option, invalid input, edit "
+                    "after review, back/reload and resume, double submit). Held-out "
+                    "evaluation: verified a fault in 30 of 40 runs, 18 of 24 distinct faults.",
         ),
         AgentChoice(
-            key=AGENT_SEARCH,
-            name="Search (hand priority)",
-            summary="Non-learning search over the same features the learning tester reads, "
-                    "with a hand-designed, application-agnostic priority: newly revealed "
-                    "controls, then form fields, then navigation, avoiding anything already "
-                    "tried. No training required.",
+            key=AGENT_HYBRID_BANDIT,
+            name="Hybrid tester + learner",
+            summary="The hybrid tester with a Thompson-sampling bandit that learns, inside "
+                    "this application, which test operators pay off where. Held-out "
+                    "evaluation: 34 of 40 runs, 19 of 24 distinct faults; not distinguishable "
+                    "from the tester without the learner.",
+        ),
+        AgentChoice(
+            key=AGENT_V1_DQN,
+            name="AC-DQN, pretrained (v1)",
+            summary="Action-conditioned dueling double DQN pretrained on the benchmark "
+                    "applications, adapting online through a residual head. Held-out "
+                    "evaluation: 34 of 40 runs, the lowest mean time to a first fault, 17 of "
+                    "24 distinct faults.",
+            research_stage=True,
+            available=v1_ok,
+            unavailable_reason=("" if v1_ok else
+                                "Requires torch." if not torch_ok else
+                                f"Pretraining checkpoints not on this machine ({why})."),
         ),
         AgentChoice(
             key=AGENT_RANDOM,
-            name="Random (masked baseline)",
-            summary="Uniform-random over the currently valid actions. The reference "
-                    "baseline every experiment in this project is measured against.",
-        ),
-        AgentChoice(
-            key=AGENT_AC_DQN,
-            name="AC-DQN (research checkpoint)",
-            summary="Action-conditioned Double DQN with a dueling head, prioritised replay "
-                    "and 3-step returns. Research stage: the checkpoint was trained on the "
-                    "bundled deep-flow fixture at a 4,000-step budget, so its learned "
-                    "preferences are specific to that application.",
-            research_stage=True,
-            available=torch_ok and _AC_DQN_CHECKPOINT.is_file(),
-            unavailable_reason=(
-                missing_torch if not torch_ok
-                else "" if _AC_DQN_CHECKPOINT.is_file()
-                else "No trained checkpoint on this machine (models/checkpoints/ is "
-                     "gitignored and absent from a fresh clone)."
-            ),
-        ),
-        AgentChoice(
-            key=AGENT_BANDIT,
-            name="Contextual Bandit (research checkpoint)",
-            summary="Myopic control that predicts immediate reward only, with no "
-                    "bootstrapped future. Research stage: same fixture-specific training "
-                    "caveat as AC-DQN.",
-            research_stage=True,
-            available=torch_ok and _BANDIT_CHECKPOINT.is_file(),
-            unavailable_reason=(
-                missing_torch if not torch_ok
-                else "" if _BANDIT_CHECKPOINT.is_file()
-                else "No trained checkpoint on this machine (models/checkpoints/ is "
-                     "gitignored and absent from a fresh clone)."
-            ),
+            name="Random (baseline)",
+            summary="Uniform-random over the currently valid actions; the floor every "
+                    "experiment is measured against. Held-out evaluation: 32 of 40 runs, 13 "
+                    "of 24 distinct faults.",
         ),
     ]
-    return choices
 
 
 def agent_by_key(key: str) -> AgentChoice | None:
@@ -156,72 +126,20 @@ def resolve(key: str) -> AgentChoice:
 
 
 def build_policy(key: str, settings) -> Callable[[Any], Any]:  # noqa: ANN001
-    """A `policy_factory` for `pipeline.run_pipeline`, for the named agent.
+    """A `policy_factory` for the original `pipeline.run_pipeline` path.
 
-    Returns a callable taking `RunSettings` — the signature the pipeline already expects —
-    so this drops into `PipelineDependencies(policy_factory=...)` unchanged.
+    Builds the same agent as the test-session path (`tester.session.build_agent`), so there
+    is one definition of each. The pipeline path has no learning hook, so a learning agent
+    acts there without updating; the test-session path, which every route uses, is where it
+    learns and verifies.
     """
     choice = resolve(key)
 
-    if choice.key == AGENT_RL:
-        def factory(run_settings):  # noqa: ANN001, ANN202
-            # The original pipeline has no learning hook, so here the tester acts from its
-            # weights without adapting. The test-session path is where it learns online.
-            from ..rl import AgentConfig, QAgent
+    def factory(run_settings):  # noqa: ANN001, ANN202
+        from ..tester.session import SessionSettings, build_agent
 
-            config = AgentConfig(learn=False, seed=run_settings.seed)
-            if TESTER_CHECKPOINT.is_file():
-                return QAgent.load(TESTER_CHECKPOINT, config)
-            return QAgent(config)
-        return factory
-
-    if choice.key == AGENT_RANDOM:
-        def factory(run_settings):  # noqa: ANN001, ANN202
-            from ..envs.types import MAX_ACTIONS
-            from ..evaluation import RandomPolicy
-            return RandomPolicy(MAX_ACTIONS, seed=run_settings.seed, valid_only=True)
-        return factory
-
-    if choice.key == AGENT_SEARCH:
-        def factory(run_settings):  # noqa: ANN001, ANN202
-            from ..agents.hand_priority import HandPriorityPolicy
-            # Epsilon matches the evaluation value used throughout the research
-            # protocol, and counters carry across episodes because that is what makes
-            # this a search rather than a greedy loop.
-            return HandPriorityPolicy(
-                epsilon=0.05, seed=run_settings.seed,
-                carry_counts_across_episodes=True,
-            )
-        return factory
-
-    checkpoint = _AC_DQN_CHECKPOINT if choice.key == AGENT_AC_DQN else _BANDIT_CHECKPOINT
-
-    def trained_factory(run_settings):  # noqa: ANN001, ANN202
-        """Load the checkpoint read-only and wrap it in the research evaluation adapter.
-
-        Uses `scripts/compare_agents.TrainedPolicy` — the same wrapper every published
-        evaluation used — so a policy driven from the UI is driven exactly as it is in the
-        experiments. The file is opened for reading and never written.
-        """
-        import sys
-
-        scripts = str(REPO_ROOT / "scripts")
-        if scripts not in sys.path:
-            sys.path.insert(0, scripts)
-        from compare_agents import TrainedPolicy  # noqa: PLC0415
-
-        from ..agents.action_features import ActionFeatureExtractor
-        from ..perception.vec_wrapper import default_encoders
-
-        if choice.key == AGENT_AC_DQN:
-            from ..agents.ac_dqn import ActionConditionedDQN as cls
-        else:
-            from ..agents.contextual_bandit import ContextualBandit as cls
-
-        model = cls.load(str(checkpoint), device="cpu")
-        return TrainedPolicy(
-            model, default_encoders(), epsilon=0.05, masked=True,
-            seed=run_settings.seed, action_features=ActionFeatureExtractor(),
-        )
-
-    return trained_factory
+        session = SessionSettings(agent=SESSION_AGENTS[choice.key], seed=run_settings.seed,
+                                  llm_reward=False, llm_review=False)
+        policy, _description = build_agent(session, "target", [])
+        return policy
+    return factory

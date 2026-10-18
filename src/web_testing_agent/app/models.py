@@ -148,7 +148,7 @@ class TestSettings:
 
     episodes: int = 2
     steps: int = 25
-    agent: str = "rl"
+    agent: str = "hybrid_nolearn"
     seed: int = 0
     #: Browser interactions for a test session (the learning tester's unit of effort).
     budget: int = 400

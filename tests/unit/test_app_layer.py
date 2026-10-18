@@ -290,12 +290,11 @@ def test_an_unavailable_agent_falls_back_rather_than_raising():
     assert agent_registry.resolve("no-such-agent").key == agent_registry.DEFAULT_AGENT
 
 
-def test_research_agents_are_labelled_as_such():
-    by_key = {a.key: a for a in agent_registry.available_agents()}
-    assert by_key["ac_dqn"].research_stage
-    assert by_key["contextual_bandit"].research_stage
-    assert not by_key["search"].research_stage
-    assert not by_key["random"].research_stage
+def test_the_product_offers_exactly_the_held_out_evaluation_agents():
+    keys = [a.key for a in agent_registry.available_agents()]
+    assert keys == ["hybrid_nolearn", "hybrid_bandit", "v1_dqn_pretrained", "random"]
+    assert agent_registry.DEFAULT_AGENT == "hybrid_nolearn"
+    assert set(agent_registry.SESSION_AGENTS) == set(keys)
 
 
 def test_an_unavailable_agent_explains_why():
@@ -304,12 +303,17 @@ def test_an_unavailable_agent_explains_why():
             assert agent.unavailable_reason, f"{agent.key} is unavailable with no reason"
 
 
-def test_the_non_learning_policies_build_and_satisfy_the_policy_protocol():
-    from web_testing_agent.pipeline import RunSettings
+def test_every_offered_agent_builds_through_the_session_path():
+    from web_testing_agent.tester.session import SessionSettings, build_agent
 
-    for key in (agent_registry.AGENT_RANDOM, agent_registry.AGENT_SEARCH):
-        policy = agent_registry.build_policy(key, TestSettings())(RunSettings())
+    for agent in agent_registry.available_agents():
+        if not agent.available:
+            continue
+        degradations: list[str] = []
+        policy, description = build_agent(
+            SessionSettings(agent=agent.key, budget=200), "app", degradations)
         assert callable(policy.act) and callable(policy.reset)
+        assert description["agent"] == agent.key
 
 
 # -- settings ---------------------------------------------------------------------------------

@@ -95,6 +95,55 @@ def _llm_available(model: str) -> tuple[bool, str]:
         return False, str(exc)
 
 
+#: The hybrid arms of the held-out evaluation, built here exactly as the evaluation built them:
+#: their configuration is read from `hybrid.run.ARMS` at the freeze, never restated.
+FROZEN_HYBRID_AGENTS = ("hybrid_nolearn", "hybrid_bandit")
+
+
+def _hybrid_agent(settings: SessionSettings, app_name: str):
+    from ..hybrid.learner import BanditPlanner
+    from ..hybrid.policy import HybridPolicy
+    from ..hybrid.run import ARMS
+
+    spec = ARMS[settings.agent]
+    policy = HybridPolicy(
+        context=app_name,
+        seed=settings.seed,
+        planner_factory=BanditPlanner if spec["planner"] == "bandit" else None,
+        episode_steps=settings.episode_steps,
+        explore=spec.get("explore", "weighted"),
+        depth_bias=float(spec.get("depth_bias", 0.0)),
+    )
+    return policy, {"agent": settings.agent, "mode": "held-out evaluation configuration"}
+
+
+def _v1_pretrained_agent(settings: SessionSettings, app_name: str, degradations: list[str]):
+    """v1's best AC-DQN as the held-out evaluation ran it: the transfer experiment's
+    pretraining checkpoint, residual head adapting, the frozen v1 exploration schedule, no
+    LLM reward."""
+    from ..experiments.transfer import ExperimentConfig, _epsilon_config
+    from ..hybrid.run import v1_checkpoint
+    from ..rl import AgentConfig, QAgent, RewardComposer, RewardConfig
+
+    config = AgentConfig(algorithm="dqn", seed=settings.seed, total_steps=settings.budget,
+                         gamma=0.95, learn=True,
+                         **_epsilon_config(ExperimentConfig().target_epsilon, settings.budget))
+    rewarder = RewardComposer(RewardConfig(llm_weight=0.0, shaping_gamma=config.gamma))
+    try:
+        checkpoint = v1_checkpoint(settings.seed)
+    except FileNotFoundError as exc:
+        degradations.append(f"{exc}; the AC-DQN learns from scratch on this application")
+        agent = QAgent(config, rewarder=rewarder)
+        description = {"agent": "v1_dqn_pretrained", "checkpoint": None, "mode": "from scratch"}
+    else:
+        agent = QAgent.load(checkpoint, config, rewarder=rewarder)
+        agent.enable_adaptation()
+        description = {"agent": "v1_dqn_pretrained", "checkpoint": str(checkpoint),
+                       "mode": "pretrained + adapting"}
+    agent.set_application("target", app_name)
+    return agent, description
+
+
 def build_agent(settings: SessionSettings, app_name: str, degradations: list[str],
                 log_path: Path | None = None):
     """The exploring policy for a session, and a description of it."""
@@ -104,6 +153,10 @@ def build_agent(settings: SessionSettings, app_name: str, degradations: list[str
 
     if settings.agent == "random":
         return RandomPolicy(MAX_ACTIONS, seed=settings.seed, valid_only=True), {"agent": "random"}
+    if settings.agent in FROZEN_HYBRID_AGENTS:
+        return _hybrid_agent(settings, app_name)
+    if settings.agent == "v1_dqn_pretrained":
+        return _v1_pretrained_agent(settings, app_name, degradations)
     if settings.agent == "search":
         policy = FeatureSearchPolicy(seed=settings.seed)
         return policy, policy.to_dict()
