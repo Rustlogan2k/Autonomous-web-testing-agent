@@ -1,0 +1,8 @@
+<li class="note editing">
+  <form class="stack" method="post" action="/patients/{{ pid }}/notes/{{ nid }}" autocomplete="off">
+    <label for="note-text-{{ nid }}">{{ t("field.note") }}</label>
+    <textarea id="note-text-{{ nid }}" name="note_body" rows="3">{{ body }}</textarea>
+    <p class="actions"><a id="cancel-note-edit" href="/patients/{{ pid }}?tab=notes">{{ t("act.back") }}</a>
+      <button id="save-note-{{ nid }}" type="submit">{{ t("act.save_note") }}</button></p>
+  </form>
+</li>

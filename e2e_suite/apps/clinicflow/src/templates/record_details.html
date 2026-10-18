@@ -1,0 +1,28 @@
+<dl class="summary">
+  <dt>{{ t("field.dob") }}</dt><dd><span id="record-dob">{{ dob }}</span></dd>
+  <dt>{{ t("field.email") }}</dt><dd><span id="record-email">{{ email }}</span></dd>
+  <dt>{{ t("field.phone") }}</dt><dd><span id="record-phone">{{ phone }}</span></dd>
+  <dt>{{ t("record.queues") }}</dt><dd><ul id="record-queues" class="plain">{{ queues|raw }}</ul></dd>
+</dl>
+<p class="actions">
+  <a id="edit-patient" class="button" href="/patients/{{ pid }}/edit">{{ t("act.edit_patient") }}</a>
+  <button id="delete-patient" class="quiet" type="button" data-dialog="delete-patient-dialog">{{ t("act.delete_patient") }}</button>
+</p>
+<dialog id="delete-patient-dialog" class="confirm-dialog" aria-labelledby="delete-patient-title">
+  <form method="post" action="/patients/{{ pid }}/delete">
+    <h2 id="delete-patient-title">{{ t("dialog.delete_patient") }}</h2>
+    <p>{{ t("dialog.delete_patient_body") }}</p>
+    <p class="actions">
+      <button id="keep-patient" type="button" data-close>{{ t("act.keep") }}</button>
+      <button id="confirm-delete-patient" class="danger" type="submit">{{ t("act.confirm_delete") }}</button>
+    </p>
+  </form>
+</dialog>
+<form class="panel stack" method="post" action="/patients/{{ pid }}/waiting" autocomplete="off">
+  <h2>{{ t("record.add_waiting") }}</h2>
+  <label for="waiting-service">{{ t("label.service") }}</label>
+  <select id="waiting-service" name="waiting_service">{{ services|raw }}</select>
+  <label for="waiting-note">{{ t("field.waiting_note") }}</label>
+  <input id="waiting-note" name="waiting_note" type="text">
+  <p class="actions"><button id="join-waiting" type="submit">{{ t("act.join_waiting") }}</button></p>
+</form>

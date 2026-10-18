@@ -308,3 +308,42 @@ def test_every_suite_v2_manifest_in_the_suite_is_well_formed():
         if app.database:
             assert manifest.validate_manifest(app) == [], app.app_id
             json.dumps(app.data)  # serialisable for the admission report
+
+
+# -- plan §8: declared breadth ----------------------------------------------------------------------
+
+
+def _breadth_app(tmp_path, **breadth) -> AppManifest:
+    workflows = [{"name": f"w{n}", "trace": [], "expect": [{}]} for n in range(6)]
+    spec = {"views": [{"name": f"v{n}", "path": f"/v{n}"} for n in range(12)],
+            "entities": {e: {op: "w0" for op in manifest.CRUD} for e in ("a", "b", "c")},
+            "patterns": {p: "w1" for p in ("pagination", "tabs", "search", "modal", "undo")}}
+    spec.update(breadth)
+    return AppManifest(root=tmp_path, data={"app_id": "x", "workflows": workflows, "login": LOGIN, "breadth": spec})
+
+
+def test_a_declared_breadth_at_the_minimum_passes(tmp_path):
+    assert manifest.breadth_problems(_breadth_app(tmp_path)) == []
+
+
+def test_breadth_names_each_shortfall(tmp_path):
+    small = _breadth_app(tmp_path, views=[{"name": "v", "path": "/v"}])
+    assert any("1 views declared" in p for p in manifest.breadth_problems(small))
+    partial = _breadth_app(tmp_path, entities={"a": {"create": "w0", "read": "w0"}})
+    assert any("0 entities with create" in p for p in manifest.breadth_problems(partial))
+    few = _breadth_app(tmp_path, patterns={"tabs": "w1"})
+    assert any("1 interaction patterns" in p for p in manifest.breadth_problems(few))
+    unknown = _breadth_app(tmp_path, patterns={"carousel": "w1", "tabs": "nope"})
+    problems = manifest.breadth_problems(unknown, structural_only=True)
+    assert any("'carousel' is not one of" in p for p in problems) and any("'nope'" in p for p in problems)
+
+
+def test_breadth_views_open_as_a_listed_user_or_come_from_a_workflow(tmp_path):
+    views = [{"name": f"v{n}", "path": f"/v{n}"} for n in range(10)] + [
+        {"name": "as someone else", "path": "/x", "as": "zed"},
+        {"name": "from a workflow", "workflow": "missing", "where": "/y"}]
+    problems = manifest.breadth_problems(_breadth_app(tmp_path, views=views), structural_only=True)
+    assert any("'zed' is not a listed user" in p for p in problems)
+    assert any("needs a path, or a workflow" in p for p in problems)
+    anonymous = [{"name": f"v{n}", "path": f"/v{n}", "as": None} for n in range(12)]
+    assert manifest.breadth_problems(_breadth_app(tmp_path, views=anonymous)) == []

@@ -1,0 +1,7 @@
+<h1>{{ t("use.title") }}</h1>
+<table class="ledger">
+  <thead><tr><th scope="col">{{ t("label.with") }}</th><th scope="col">{{ t("use.room") }}</th>
+    <th scope="col">{{ t("use.booked") }}</th><th scope="col">{{ t("use.shown") }}</th>
+    <th scope="col">{{ t("use.share") }}</th></tr></thead>
+  <tbody id="utilisation-rows">{{ rows|raw }}</tbody>
+</table>

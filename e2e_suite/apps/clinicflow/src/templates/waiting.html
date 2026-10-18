@@ -1,0 +1,11 @@
+<h1>{{ t("waiting.title") }}</h1>
+<nav class="tabs" aria-label="{{ t("waiting.lists") }}">{{ tabs|raw }}</nav>
+{{ undo|raw }}
+<p class="lede">{{ service }}: <output id="waiting-count">{{ count }}</output> {{ t("waiting.people") }}</p>
+<p>{{ t("waiting.next") }} <strong id="waiting-next">{{ first }}</strong></p>
+<table class="ledger waiting">
+  <thead><tr><th scope="col">#</th><th scope="col">{{ t("label.patient") }}</th><th scope="col">{{ t("waiting.note") }}</th>
+    <th scope="col">{{ t("waiting.since") }}</th><th scope="col"></th></tr></thead>
+  <tbody id="waiting-rows">{{ rows|raw }}</tbody>
+</table>
+<p class="muted">{{ t("waiting.hint") }}</p>

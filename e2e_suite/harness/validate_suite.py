@@ -30,7 +30,8 @@ from pathlib import Path
 
 from . import diversity, static_checks, variants
 from .launcher import Server, leftover_homes, serve
-from .manifest import ADMISSION_ROOT, AppManifest, discover, load, suite_v2_contract, validate_manifest
+from .manifest import (ADMISSION_ROOT, AppManifest, breadth_problems, discover, load, suite_v2_contract,
+                       validate_manifest)
 
 
 def _check(name: str, passed: bool, detail=None) -> dict:
@@ -73,6 +74,9 @@ def validate(app: AppManifest, *, browser: bool, docker: bool, walk_steps: int) 
     add(_check("manifest_well_formed", not problems, problems))
     v2_problems = suite_v2_contract(app)
     add(_check("suite_v2_contract", not v2_problems, v2_problems))
+    if "breadth" in app.data:  # plan §8: the enlarged development apps declare their breadth
+        breadth = breadth_problems(app)
+        add(_check("breadth_declared", not breadth, breadth))
     has_login = bool(app.login_steps) and not problems
     static = static_checks.run_all(app)
     for name, result in static.items():
@@ -157,6 +161,12 @@ def validate(app: AppManifest, *, browser: bool, docker: bool, walk_steps: int) 
                 roles = bc.check_role_restrictions(app, urls["clean"])
                 add(_check("role_restrictions_sound", all(r["passed"] for r in roles), roles))
                 report["sections"]["roles"] = roles
+            if "breadth" in app.data:
+                breadth = bc.check_breadth(app, urls["clean"], workflows)
+                add(_check("breadth_exercised", breadth["passed"],
+                           {k: v for k, v in breadth.items() if k != "views"}
+                           | {"views_failing": [x for x in breadth["views"] if not x["passed"]]}))
+                report["sections"]["breadth"] = breadth
 
     if builds is not None and docker:
         from . import docker_checks as dc

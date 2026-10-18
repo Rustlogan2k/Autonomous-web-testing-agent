@@ -2,3 +2,8 @@
 <p class="lede">{{ t("home.body") }}</p>
 <p><a id="start-booking" class="button primary" href="/book">{{ t("act.start") }}</a></p>
 {{ resume|raw }}
+<section class="panel">
+  <h2>{{ t("home.waiting") }}</h2>
+  <ul class="plain">{{ queues|raw }}</ul>
+  <p><a id="home-waiting" href="/waiting">{{ t("act.open_waiting") }}</a> · <a id="home-patients" href="/patients">{{ t("act.open_patients") }}</a></p>
+</section>

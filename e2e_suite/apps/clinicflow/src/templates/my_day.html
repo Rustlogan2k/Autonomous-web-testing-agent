@@ -1,0 +1,7 @@
+<h1>{{ t("day.title") }}</h1>
+<p class="lede">{{ name }} · {{ room }}</p>
+<table class="ledger">
+  <thead><tr><th scope="col">{{ t("label.when") }}</th><th scope="col">{{ t("label.patient") }}</th>
+    <th scope="col">{{ t("label.service") }}</th><th scope="col">{{ t("label.reference") }}</th></tr></thead>
+  <tbody id="day-rows">{{ rows|raw }}</tbody>
+</table>

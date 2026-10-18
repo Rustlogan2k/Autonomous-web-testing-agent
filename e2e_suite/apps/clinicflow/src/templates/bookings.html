@@ -1,4 +1,11 @@
 <h1>{{ t("bookings.title") }}</h1>
+<form class="filters" method="get" action="/bookings">
+  <label for="bookings-with">{{ t("filter.with") }}</label>
+  <select id="bookings-with" name="with">{{ with_options|raw }}</select>
+  <label for="bookings-sort">{{ t("filter.sort") }}</label>
+  <select id="bookings-sort" name="sort">{{ sort_options|raw }}</select>
+  <button id="bookings-apply" type="submit">{{ t("act.apply") }}</button>
+</form>
 <h2>{{ t("bookings.upcoming") }}</h2>
 <table class="ledger">
   <thead><tr><th scope="col">{{ t("label.reference") }}</th><th scope="col">{{ t("label.when") }}</th>

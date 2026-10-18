@@ -7,6 +7,16 @@
       "detail": []
     },
     {
+      "name": "suite_v2_contract",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "breadth_declared",
+      "passed": true,
+      "detail": []
+    },
+    {
       "name": "no_external_urls",
       "passed": true,
       "detail": []
@@ -27,6 +37,16 @@
       "detail": []
     },
     {
+      "name": "database_url_from_environment",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "dockerfile_copies_vendor",
+      "passed": true,
+      "detail": []
+    },
+    {
       "name": "patches_apply_exactly_once",
       "passed": true,
       "detail": null
@@ -42,11 +62,78 @@
       "detail": {
         "passed": true,
         "summary": [
-          "Ran 11 tests in 3.388s",
+          "Ran 22 tests in 9.922s",
           "OK"
         ],
         "pass_lines": null,
         "tail": []
+      }
+    },
+    {
+      "name": "login_http_round_trip",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "status": 303,
+        "location": "/",
+        "cookie": true,
+        "entry_status": 200,
+        "entry_path": "/",
+        "user": "rhiannon.price"
+      }
+    },
+    {
+      "name": "data_model_contract",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "session_seed_cost",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "warn": true,
+        "samples": 20,
+        "p50_ms": 123.0,
+        "p95_ms": 152.2,
+        "max_ms": 154.2,
+        "limit_ms": 300.0,
+        "refused": 0,
+        "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
+      }
+    },
+    {
+      "name": "session_cap_honoured",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "cap": 4,
+        "max_live_partitions": 4,
+        "live_after_each": [
+          2,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "evicted_session_state": null,
+        "evicted_session_lands_on": "/login",
+        "every_new_session_starts_from_the_seed": true
       }
     },
     {
@@ -69,10 +156,10 @@
       "passed": true,
       "detail": {
         "passed": true,
-        "seed_sha": "aaa19b0fe1627125c3d5baf3e66b767295f956de2db8c5686b2f51723881876d",
+        "seed_sha": "14a728ae94382cba3231da1488ace4bd142be9c53bbe47a027e3de01667273ae",
         "fresh_context_sha": [
-          "aaa19b0fe1627125c3d5baf3e66b767295f956de2db8c5686b2f51723881876d",
-          "aaa19b0fe1627125c3d5baf3e66b767295f956de2db8c5686b2f51723881876d"
+          "14a728ae94382cba3231da1488ace4bd142be9c53bbe47a027e3de01667273ae",
+          "14a728ae94382cba3231da1488ace4bd142be9c53bbe47a027e3de01667273ae"
         ]
       }
     },
@@ -118,7 +205,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 556.4
+        "seconds": 594.1
       }
     },
     {
@@ -148,7 +235,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 419.4
+        "seconds": 486.3
       }
     },
     {
@@ -176,7 +263,63 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 140.3
+        "seconds": 183.3
+      }
+    },
+    {
+      "name": "fault CLIN-4",
+      "passed": true,
+      "detail": {
+        "fault_id": "CLIN-4",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 2,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'last': 50.0, 'total': 45.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 2,
+        "minimization_trials": 2,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 66.3
+      }
+    },
+    {
+      "name": "fault CLIN-5",
+      "passed": true,
+      "detail": {
+        "fault_id": "CLIN-5",
+        "subtype": "persistence",
+        "oracle": "extension",
+        "fault_class": "persistence_failure",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='Test User Input' after='Mornings only.'"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 151.3
       }
     },
     {
@@ -193,6 +336,44 @@
         "raw_candidates": {},
         "errors": [],
         "foreign_requests": [],
+        "responses": {
+          "count": 291,
+          "p50_ms": 3.5,
+          "p95_ms": 14.1,
+          "max_ms": 19.2,
+          "slowest": [
+            [
+              "GET",
+              "/patients/21",
+              19.2
+            ],
+            [
+              "GET",
+              "/patients",
+              19.1
+            ],
+            [
+              "GET",
+              "/patients/1",
+              16.5
+            ],
+            [
+              "GET",
+              "/waiting",
+              16.3
+            ],
+            [
+              "GET",
+              "/book/2/who",
+              15.5
+            ]
+          ],
+          "limits_ms": {
+            "p95": 150.0,
+            "max": 1000.0
+          },
+          "passed": true
+        },
         "passed": true
       }
     },
@@ -202,21 +383,229 @@
       "detail": []
     },
     {
+      "name": "responses_fast",
+      "passed": true,
+      "detail": {
+        "count": 291,
+        "p50_ms": 3.5,
+        "p95_ms": 14.1,
+        "max_ms": 19.2,
+        "slowest": [
+          [
+            "GET",
+            "/patients/21",
+            19.2
+          ],
+          [
+            "GET",
+            "/patients",
+            19.1
+          ],
+          [
+            "GET",
+            "/patients/1",
+            16.5
+          ],
+          [
+            "GET",
+            "/waiting",
+            16.3
+          ],
+          [
+            "GET",
+            "/book/2/who",
+            15.5
+          ]
+        ],
+        "limits_ms": {
+          "p95": 150.0,
+          "max": 1000.0
+        },
+        "passed": true
+      }
+    },
+    {
+      "name": "login_protected",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "landing": {
+          "entry": "/login",
+          "/": "/login",
+          "/book": "/login",
+          "/bookings": "/login",
+          "/patients": "/login",
+          "/waiting": "/login",
+          "/my/day": "/login"
+        },
+        "public": {
+          "/help/sign-in": {
+            "status": 200,
+            "redirected": false,
+            "path": "/help/sign-in"
+          }
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "login_macro_signs_in",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "steps_completed": 3,
+        "steps": 3,
+        "path": "/",
+        "signed_in_as": "Rhiannon Price \u00b7 Receptionist",
+        "sha_equals_seed": true
+      }
+    },
+    {
+      "name": "login_wrong_password_refused",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "path": "/login",
+        "error_region": "That username and password do not match a staff account.",
+        "session": null,
+        "errors": []
+      }
+    },
+    {
+      "name": "login_sign_out_sound",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "workflow": "a new patient books a GP and pays themselves",
+        "workflow_misses": 0,
+        "sign_out_misses": 0,
+        "landed_on": "/login",
+        "user_after_sign_out": null,
+        "entry_lands_on": "/login",
+        "sign_in_again_steps": 3,
+        "sha_resumed": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "role_restrictions_sound",
+      "passed": true,
+      "detail": [
+        {
+          "user": "amara.okafor",
+          "path": "/book",
+          "passed": true,
+          "signed_in_as": "Dr Amara Okafor \u00b7 Practitioner",
+          "status": 200,
+          "access_region": "Your role does not include this part of the front desk.",
+          "state_unchanged": true,
+          "errors": []
+        },
+        {
+          "user": "grace.holloway",
+          "path": "/patients",
+          "passed": true,
+          "signed_in_as": "Grace Holloway \u00b7 Practice manager",
+          "status": 200,
+          "access_region": "Your role does not include this part of the front desk.",
+          "state_unchanged": true,
+          "errors": []
+        },
+        {
+          "user": "rhiannon.price",
+          "path": "/admin/utilisation",
+          "passed": true,
+          "signed_in_as": "Rhiannon Price \u00b7 Receptionist",
+          "status": 200,
+          "access_region": "Your role does not include this part of the front desk.",
+          "state_unchanged": true,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "name": "breadth_exercised",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "size_problems": [],
+        "workflows_failing": [],
+        "counts": {
+          "views": 20,
+          "entities": 4,
+          "patterns": [
+            "inline-edit",
+            "modal",
+            "pagination",
+            "reorder",
+            "search",
+            "sort-filter",
+            "tabs",
+            "undo",
+            "wizard"
+          ]
+        },
+        "views_failing": []
+      }
+    },
+    {
       "name": "docker_offline_build_and_health",
       "passed": true,
       "detail": {
         "image": "e2e-suite/clinicflow:clean",
         "build_ok": true,
-        "build_seconds": 0.8,
+        "build_seconds": 1.1,
         "build_tail": [
-          "#10 naming to docker.io/e2e-suite/clinicflow:clean done",
-          "#10 unpacking to docker.io/e2e-suite/clinicflow:clean 0.1s done",
-          "#10 DONE 0.2s"
+          "#11 naming to docker.io/e2e-suite/clinicflow:clean done",
+          "#11 unpacking to docker.io/e2e-suite/clinicflow:clean 0.1s done",
+          "#11 DONE 0.2s"
+        ],
+        "route": "host",
+        "attempts": [
+          {
+            "route": "host",
+            "healthy": true,
+            "detail": "{'ok': True, 'app': 'clinicflow'}",
+            "sign_in": {
+              "passed": true,
+              "status": 303,
+              "cookie": true,
+              "entry_status": 200,
+              "entry_path": "/",
+              "container_sha": "14a728ae94382cba3231da1488ace4bd142be9c53bbe47a027e3de01667273ae",
+              "host_sha": "14a728ae94382cba3231da1488ace4bd142be9c53bbe47a027e3de01667273ae",
+              "sign_in_ms": 78.0
+            }
+          }
         ],
         "container_healthy": true,
         "detail": "{'ok': True, 'app': 'clinicflow'}",
-        "image_mb": 43.3,
+        "sign_in": {
+          "passed": true,
+          "status": 303,
+          "cookie": true,
+          "entry_status": 200,
+          "entry_path": "/",
+          "container_sha": "14a728ae94382cba3231da1488ace4bd142be9c53bbe47a027e3de01667273ae",
+          "host_sha": "14a728ae94382cba3231da1488ace4bd142be9c53bbe47a027e3de01667273ae",
+          "sign_in_ms": 78.0
+        },
+        "image_mb": 44.5,
         "passed": true
+      }
+    },
+    {
+      "name": "docker_sign_in_and_seed_state",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "status": 303,
+        "cookie": true,
+        "entry_status": 200,
+        "entry_path": "/",
+        "container_sha": "14a728ae94382cba3231da1488ace4bd142be9c53bbe47a027e3de01667273ae",
+        "host_sha": "14a728ae94382cba3231da1488ace4bd142be9c53bbe47a027e3de01667273ae",
+        "sign_in_ms": 78.0
       }
     },
     {
@@ -226,40 +615,46 @@
         "profile": {
           "languages": [
             {
-              "language": "JSON",
-              "files": 4,
-              "bytes": 46105,
-              "share": 0.4169
+              "language": "Python",
+              "files": 5,
+              "bytes": 89129,
+              "share": 0.4052
             },
             {
-              "language": "Python",
-              "files": 4,
-              "bytes": 45404,
-              "share": 0.4105
+              "language": "JSON",
+              "files": 5,
+              "bytes": 87893,
+              "share": 0.3996
             },
             {
               "language": "HTML",
-              "files": 15,
-              "bytes": 9210,
-              "share": 0.0833
+              "files": 33,
+              "bytes": 20694,
+              "share": 0.0941
+            },
+            {
+              "language": "SQL",
+              "files": 1,
+              "bytes": 7958,
+              "share": 0.0362
+            },
+            {
+              "language": "JavaScript",
+              "files": 2,
+              "bytes": 5362,
+              "share": 0.0244
+            },
+            {
+              "language": "CSS",
+              "files": 1,
+              "bytes": 5094,
+              "share": 0.0232
             },
             {
               "language": "Markdown",
               "files": 1,
               "bytes": 3835,
-              "share": 0.0347
-            },
-            {
-              "language": "CSS",
-              "files": 1,
-              "bytes": 3717,
-              "share": 0.0336
-            },
-            {
-              "language": "JavaScript",
-              "files": 1,
-              "bytes": 2329,
-              "share": 0.0211
+              "share": 0.0174
             }
           ],
           "frameworks": [],
@@ -271,23 +666,35 @@
         },
         "build_plan": {
           "kind": "dockerfile",
-          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\clinicflow\\clean\\Dockerfile"
+          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\clinicflow\\clean\\Dockerfile"
         },
         "product_can_build": true,
         "matches_expectation": true,
         "expectation": "buildable by the current intake"
       }
+    },
+    {
+      "name": "variant_storage_released",
+      "passed": true,
+      "detail": []
     }
   ],
   "sections": {
     "vocabulary": {
-      "keys": 103,
-      "keys_used_by_source": 81,
-      "action_keys": 18,
+      "keys": 217,
+      "keys_used_by_source": 175,
+      "action_keys": 51,
       "unused_keys": [
+        "act.first",
+        "act.last",
+        "act.next",
+        "act.prev",
         "cell.booked",
         "cell.free",
         "cell.held",
+        "event.booked",
+        "event.cancelled",
+        "event.moved",
         "missing.body",
         "msg.answers_needed",
         "msg.cancel_tick",
@@ -298,55 +705,134 @@
         "msg.name_needed",
         "msg.no_longer_active",
         "msg.not_found",
+        "msg.note_needed",
+        "msg.patient_in_use",
         "msg.payment_needed",
+        "msg.phone_bad",
+        "msg.service_needed",
         "msg.slot_taken",
         "msg.slot_unknown",
         "msg.slot_yours",
-        "msg.too_long",
+        "nav.book",
+        "nav.bookings",
+        "nav.patients",
+        "nav.waiting",
         "replaced.body",
+        "role.manager",
+        "role.practitioner",
+        "role.receptionist",
         "status.answered",
         "status.not_answered",
-        "status.not_needed"
+        "status.not_needed",
+        "tab.appointments",
+        "tab.details",
+        "tab.notes"
       ],
       "default_action_labels": {
+        "act.account": "Account",
+        "act.add_note": "Add note",
+        "act.add_patient": "Add a patient",
+        "act.all_patients": "All patients",
+        "act.apply": "Show",
+        "act.back": "Back",
+        "act.back_sign_in": "Back to sign in",
         "act.book": "Book visit",
         "act.cancel": "Cancel visit",
+        "act.cancel_edit": "Cancel",
         "act.change_time": "Change time",
+        "act.confirm_delete": "Yes, delete",
+        "act.delete": "Delete",
+        "act.delete_patient": "Delete record",
+        "act.edit": "Edit",
+        "act.edit_note": "Edit note",
+        "act.edit_patient": "Edit details",
         "act.find_record": "Find my record",
+        "act.first": "First",
+        "act.forgot": "Forgot password?",
         "act.hold": "Hold slot",
+        "act.home": "Back to the front desk",
+        "act.join_waiting": "Add to waiting list",
+        "act.keep": "Keep",
+        "act.last": "Last",
         "act.manage": "Manage booking",
+        "act.move_down": "Move down",
+        "act.move_up": "Move up",
         "act.new_patient": "New patient",
+        "act.next": "Next",
         "act.next_free": "Next available",
+        "act.open_patients": "Patient directory",
+        "act.open_waiting": "Waiting lists",
+        "act.prev": "Previous",
         "act.print": "Print summary",
+        "act.remove": "Remove",
         "act.reschedule": "Reschedule",
         "act.resume": "Carry on with your booking",
         "act.returning": "Returning patient",
         "act.save_answers": "Save answers",
         "act.save_details": "Choose time",
+        "act.save_note": "Save note",
+        "act.save_patient": "Save patient",
+        "act.search": "Search",
+        "act.sign_in": "Sign in",
+        "act.sign_out": "Sign out",
         "act.start": "Book an appointment",
         "act.start_over": "Start a new booking",
         "act.to_questions": "Answer questions",
-        "act.to_review": "Review booking"
+        "act.to_review": "Review booking",
+        "act.undo": "Undo"
       },
       "alt_action_labels": {
+        "act.account": "Me",
+        "act.add_note": "Save to record",
+        "act.add_patient": "Register someone",
+        "act.all_patients": "Back to the directory",
+        "act.apply": "Update list",
+        "act.back": "Go back",
+        "act.back_sign_in": "Return to log-in",
         "act.book": "Lock in appointment",
         "act.cancel": "Call off visit",
+        "act.cancel_edit": "Leave unchanged",
         "act.change_time": "Pick another time",
+        "act.confirm_delete": "Remove for good",
+        "act.delete": "Remove note",
+        "act.delete_patient": "Remove patient",
+        "act.edit": "Change",
+        "act.edit_note": "Change note",
+        "act.edit_patient": "Update record",
         "act.find_record": "Look me up",
+        "act.first": "Start",
+        "act.forgot": "Can't sign in?",
         "act.hold": "Reserve time",
+        "act.home": "Home page",
+        "act.join_waiting": "Put on the list",
+        "act.keep": "No, go back",
+        "act.last": "End",
         "act.manage": "View appointment",
+        "act.move_down": "Lower",
+        "act.move_up": "Raise",
         "act.new_patient": "First visit here",
+        "act.next": "Forward a page",
         "act.next_free": "First free time",
+        "act.open_patients": "Find a patient",
+        "act.open_waiting": "See who is waiting",
+        "act.prev": "Back a page",
         "act.print": "Printable view",
+        "act.remove": "Take off list",
         "act.reschedule": "Move appointment",
         "act.resume": "Return to your booking",
         "act.returning": "I have been before",
         "act.save_answers": "Keep answers",
         "act.save_details": "Pick a time",
+        "act.save_note": "Keep note",
+        "act.save_patient": "Store details",
+        "act.search": "Look up",
+        "act.sign_in": "Log in",
+        "act.sign_out": "Log out",
         "act.start": "Make an appointment",
         "act.start_over": "Begin again",
         "act.to_questions": "Pre-visit form",
-        "act.to_review": "Check appointment"
+        "act.to_review": "Check appointment",
+        "act.undo": "Put back"
       }
     },
     "patch_sizes": {
@@ -354,7 +840,7 @@
         "file": "src/store.py",
         "lines_removed": 4,
         "lines_added": 4,
-        "chars_changed": 217
+        "chars_changed": 226
       },
       "CLIN-2": {
         "file": "src/assets/booking.js",
@@ -367,6 +853,567 @@
         "lines_removed": 1,
         "lines_added": 1,
         "chars_changed": 23
+      },
+      "CLIN-4": {
+        "file": "src/store.py",
+        "lines_removed": 2,
+        "lines_added": 2,
+        "chars_changed": 72
+      },
+      "CLIN-5": {
+        "file": "src/assets/desk.js",
+        "lines_removed": 2,
+        "lines_added": 2,
+        "chars_changed": 1
+      }
+    },
+    "data_model": {
+      "passed": true,
+      "failures": [],
+      "description": {
+        "partition": "s_000001",
+        "tables": [
+          "booking_events",
+          "bookings",
+          "counters",
+          "drafts",
+          "flashes",
+          "injury_areas",
+          "occupancy",
+          "patient_notes",
+          "patients",
+          "practitioners",
+          "questionnaires",
+          "services",
+          "slots",
+          "users",
+          "waiting_entries"
+        ],
+        "entities_found": [
+          "booking_events",
+          "bookings",
+          "drafts",
+          "injury_areas",
+          "occupancy",
+          "patient_notes",
+          "patients",
+          "practitioners",
+          "questionnaires",
+          "services",
+          "slots",
+          "users",
+          "waiting_entries"
+        ],
+        "table_count": 13,
+        "foreign_keys": [
+          {
+            "table": "booking_events",
+            "name": "booking_events_by_user_fkey",
+            "columns": [
+              5
+            ],
+            "definition": "FOREIGN KEY (by_user) REFERENCES s_000001.users(id)",
+            "indexed": true
+          },
+          {
+            "table": "booking_events",
+            "name": "booking_events_ref_fkey",
+            "columns": [
+              1
+            ],
+            "definition": "FOREIGN KEY (ref) REFERENCES s_000001.bookings(ref)",
+            "indexed": true
+          },
+          {
+            "table": "bookings",
+            "name": "bookings_booked_by_fkey",
+            "columns": [
+              11
+            ],
+            "definition": "FOREIGN KEY (booked_by) REFERENCES s_000001.users(id)",
+            "indexed": true
+          },
+          {
+            "table": "bookings",
+            "name": "bookings_draft_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (draft_id) REFERENCES s_000001.drafts(id)",
+            "indexed": true
+          },
+          {
+            "table": "bookings",
+            "name": "bookings_patient_id_fkey",
+            "columns": [
+              3
+            ],
+            "definition": "FOREIGN KEY (patient_id) REFERENCES s_000001.patients(id)",
+            "indexed": true
+          },
+          {
+            "table": "bookings",
+            "name": "bookings_practitioner_id_slot_at_fkey",
+            "columns": [
+              5,
+              6
+            ],
+            "definition": "FOREIGN KEY (practitioner_id, slot_at) REFERENCES s_000001.slots(practitioner_id, at)",
+            "indexed": true
+          },
+          {
+            "table": "bookings",
+            "name": "bookings_service_id_fkey",
+            "columns": [
+              4
+            ],
+            "definition": "FOREIGN KEY (service_id) REFERENCES s_000001.services(id)",
+            "indexed": true
+          },
+          {
+            "table": "drafts",
+            "name": "drafts_booking_fk",
+            "columns": [
+              11
+            ],
+            "definition": "FOREIGN KEY (booking_ref) REFERENCES s_000001.bookings(ref)",
+            "indexed": true
+          },
+          {
+            "table": "drafts",
+            "name": "drafts_created_by_fkey",
+            "columns": [
+              12
+            ],
+            "definition": "FOREIGN KEY (created_by) REFERENCES s_000001.users(id)",
+            "indexed": true
+          },
+          {
+            "table": "drafts",
+            "name": "drafts_patient_id_fkey",
+            "columns": [
+              5
+            ],
+            "definition": "FOREIGN KEY (patient_id) REFERENCES s_000001.patients(id)",
+            "indexed": true
+          },
+          {
+            "table": "drafts",
+            "name": "drafts_practitioner_id_slot_at_fkey",
+            "columns": [
+              6,
+              7
+            ],
+            "definition": "FOREIGN KEY (practitioner_id, slot_at) REFERENCES s_000001.slots(practitioner_id, at)",
+            "indexed": true
+          },
+          {
+            "table": "drafts",
+            "name": "drafts_service_id_fkey",
+            "columns": [
+              4
+            ],
+            "definition": "FOREIGN KEY (service_id) REFERENCES s_000001.services(id)",
+            "indexed": true
+          },
+          {
+            "table": "occupancy",
+            "name": "occupancy_booking_ref_fkey",
+            "columns": [
+              5
+            ],
+            "definition": "FOREIGN KEY (booking_ref) REFERENCES s_000001.bookings(ref)",
+            "indexed": true
+          },
+          {
+            "table": "occupancy",
+            "name": "occupancy_draft_id_fkey",
+            "columns": [
+              4
+            ],
+            "definition": "FOREIGN KEY (draft_id) REFERENCES s_000001.drafts(id)",
+            "indexed": true
+          },
+          {
+            "table": "occupancy",
+            "name": "occupancy_practitioner_id_slot_at_fkey",
+            "columns": [
+              1,
+              2
+            ],
+            "definition": "FOREIGN KEY (practitioner_id, slot_at) REFERENCES s_000001.slots(practitioner_id, at)",
+            "indexed": true
+          },
+          {
+            "table": "patient_notes",
+            "name": "patient_notes_patient_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (patient_id) REFERENCES s_000001.patients(id)",
+            "indexed": true
+          },
+          {
+            "table": "patient_notes",
+            "name": "patient_notes_written_by_fkey",
+            "columns": [
+              5
+            ],
+            "definition": "FOREIGN KEY (written_by) REFERENCES s_000001.users(id)",
+            "indexed": true
+          },
+          {
+            "table": "practitioners",
+            "name": "practitioners_service_id_fkey",
+            "columns": [
+              3
+            ],
+            "definition": "FOREIGN KEY (service_id) REFERENCES s_000001.services(id)",
+            "indexed": true
+          },
+          {
+            "table": "questionnaires",
+            "name": "questionnaires_area_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (area_id) REFERENCES s_000001.injury_areas(id)",
+            "indexed": true
+          },
+          {
+            "table": "questionnaires",
+            "name": "questionnaires_draft_id_fkey",
+            "columns": [
+              1
+            ],
+            "definition": "FOREIGN KEY (draft_id) REFERENCES s_000001.drafts(id)",
+            "indexed": true
+          },
+          {
+            "table": "slots",
+            "name": "slots_practitioner_id_fkey",
+            "columns": [
+              1
+            ],
+            "definition": "FOREIGN KEY (practitioner_id) REFERENCES s_000001.practitioners(id)",
+            "indexed": true
+          },
+          {
+            "table": "users",
+            "name": "users_practitioner_id_fkey",
+            "columns": [
+              5
+            ],
+            "definition": "FOREIGN KEY (practitioner_id) REFERENCES s_000001.practitioners(id)",
+            "indexed": true
+          },
+          {
+            "table": "waiting_entries",
+            "name": "waiting_entries_added_by_fkey",
+            "columns": [
+              8
+            ],
+            "definition": "FOREIGN KEY (added_by) REFERENCES s_000001.users(id)",
+            "indexed": true
+          },
+          {
+            "table": "waiting_entries",
+            "name": "waiting_entries_patient_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (patient_id) REFERENCES s_000001.patients(id)",
+            "indexed": true
+          },
+          {
+            "table": "waiting_entries",
+            "name": "waiting_entries_service_id_fkey",
+            "columns": [
+              3
+            ],
+            "definition": "FOREIGN KEY (service_id) REFERENCES s_000001.services(id)",
+            "indexed": true
+          }
+        ],
+        "foreign_key_count": 25,
+        "foreign_keys_indexed": 25,
+        "checks": [
+          {
+            "table": "booking_events",
+            "name": "booking_events_kind_check",
+            "definition": "CHECK ((kind = ANY (ARRAY['booked'::text, 'moved'::text, 'cancelled'::text])))"
+          },
+          {
+            "table": "booking_events",
+            "name": "booking_events_seq_check",
+            "definition": "CHECK ((seq >= 1))"
+          },
+          {
+            "table": "bookings",
+            "name": "booking_insurer_only_when_insured",
+            "definition": "CHECK (((pay_mode = 'insurer'::text) OR (insurer IS NULL)))"
+          },
+          {
+            "table": "bookings",
+            "name": "bookings_pay_mode_check",
+            "definition": "CHECK ((pay_mode = ANY (ARRAY['self'::text, 'insurer'::text])))"
+          },
+          {
+            "table": "bookings",
+            "name": "bookings_ref_check",
+            "definition": "CHECK ((ref ~ '^CF-[0-9]{4}$'::text))"
+          },
+          {
+            "table": "bookings",
+            "name": "bookings_state_check",
+            "definition": "CHECK ((state = ANY (ARRAY['active'::text, 'cancelled'::text])))"
+          },
+          {
+            "table": "drafts",
+            "name": "draft_insurer_only_when_insured",
+            "definition": "CHECK (((pay_mode = 'insurer'::text) OR (insurer IS NULL)))"
+          },
+          {
+            "table": "drafts",
+            "name": "drafts_kind_check",
+            "definition": "CHECK ((kind = ANY (ARRAY['pending'::text, 'new'::text, 'returning'::text, 'reschedule'::text])))"
+          },
+          {
+            "table": "drafts",
+            "name": "drafts_pay_mode_check",
+            "definition": "CHECK ((pay_mode = ANY (ARRAY['self'::text, 'insurer'::text])))"
+          },
+          {
+            "table": "drafts",
+            "name": "drafts_state_check",
+            "definition": "CHECK ((state = ANY (ARRAY['open'::text, 'booked'::text, 'done'::text, 'replaced'::text])))"
+          },
+          {
+            "table": "occupancy",
+            "name": "occupancy_holder_kind_check",
+            "definition": "CHECK ((holder_kind = ANY (ARRAY['draft'::text, 'booking'::text])))"
+          },
+          {
+            "table": "occupancy",
+            "name": "occupancy_one_holder",
+            "definition": "CHECK ((((holder_kind = 'draft'::text) = (draft_id IS NOT NULL)) AND ((holder_kind = 'booking'::text) = (booking_ref IS NOT NULL))))"
+          },
+          {
+            "table": "patient_notes",
+            "name": "patient_notes_body_check",
+            "definition": "CHECK (((length(body) >= 1) AND (length(body) <= 5000)))"
+          },
+          {
+            "table": "patients",
+            "name": "patients_origin_check",
+            "definition": "CHECK ((origin = ANY (ARRAY['record'::text, 'registered'::text])))"
+          },
+          {
+            "table": "patients",
+            "name": "patients_phone_check",
+            "definition": "CHECK ((phone ~ '^[0-9 +()-]{6,20}$'::text))"
+          },
+          {
+            "table": "questionnaires",
+            "name": "questionnaires_notes_check",
+            "definition": "CHECK (((length(notes) >= 1) AND (length(notes) <= 10000)))"
+          },
+          {
+            "table": "services",
+            "name": "services_minutes_check",
+            "definition": "CHECK ((minutes > 0))"
+          },
+          {
+            "table": "users",
+            "name": "practitioner_has_diary",
+            "definition": "CHECK (((role <> 'practitioner'::text) OR (practitioner_id IS NOT NULL)))"
+          },
+          {
+            "table": "users",
+            "name": "users_role_check",
+            "definition": "CHECK ((role = ANY (ARRAY['receptionist'::text, 'practitioner'::text, 'manager'::text])))"
+          },
+          {
+            "table": "waiting_entries",
+            "name": "waiting_entries_id_check",
+            "definition": "CHECK ((id ~ '^w[0-9]+$'::text))"
+          },
+          {
+            "table": "waiting_entries",
+            "name": "waiting_entries_note_check",
+            "definition": "CHECK ((length(note) <= 5000))"
+          },
+          {
+            "table": "waiting_entries",
+            "name": "waiting_entries_position_check",
+            "definition": "CHECK ((\"position\" >= 1))"
+          },
+          {
+            "table": "waiting_entries",
+            "name": "waiting_entries_state_check",
+            "definition": "CHECK ((state = ANY (ARRAY['waiting'::text, 'removed'::text])))"
+          }
+        ],
+        "check_count": 23,
+        "enumerations": [
+          "booking_events.booking_events_kind_check",
+          "bookings.bookings_pay_mode_check",
+          "bookings.bookings_state_check",
+          "drafts.drafts_kind_check",
+          "drafts.drafts_pay_mode_check",
+          "drafts.drafts_state_check",
+          "occupancy.occupancy_holder_kind_check",
+          "patients.patients_origin_check",
+          "users.users_role_check",
+          "waiting_entries.waiting_entries_state_check"
+        ],
+        "unique_indexes": [
+          "injury_areas.injury_areas_name_key",
+          "practitioners.practitioners_position_key",
+          "services.services_name_key",
+          "services.services_position_key",
+          "users.users_username_key",
+          "waiting_entries.waiting_position_unique"
+        ],
+        "secondary_indexes": [
+          "booking_events.booking_events_user_idx",
+          "bookings.bookings_booker_idx",
+          "bookings.bookings_draft_idx",
+          "bookings.bookings_patient_idx",
+          "bookings.bookings_service_idx",
+          "bookings.bookings_slot_idx",
+          "drafts.drafts_booking_idx",
+          "drafts.drafts_creator_idx",
+          "drafts.drafts_patient_idx",
+          "drafts.drafts_service_idx",
+          "drafts.drafts_slot_idx",
+          "occupancy.occupancy_booking_idx",
+          "occupancy.occupancy_draft_idx",
+          "patient_notes.patient_notes_author_idx",
+          "patient_notes.patient_notes_patient_idx",
+          "patients.patients_email_idx",
+          "patients.patients_name_idx",
+          "practitioners.practitioners_service_idx",
+          "questionnaires.questionnaires_area_idx",
+          "users.users_practitioner_idx",
+          "waiting_entries.waiting_adder_idx",
+          "waiting_entries.waiting_patient_idx"
+        ],
+        "columns": 75,
+        "not_null_columns": 61,
+        "not_null_ratio": 0.813,
+        "rows": {
+          "booking_events": 22,
+          "bookings": 22,
+          "counters": 5,
+          "drafts": 0,
+          "flashes": 0,
+          "injury_areas": 5,
+          "occupancy": 22,
+          "patient_notes": 4,
+          "patients": 45,
+          "practitioners": 5,
+          "questionnaires": 0,
+          "services": 3,
+          "slots": 100,
+          "users": 4,
+          "waiting_entries": 9
+        },
+        "seed_rows": 241,
+        "non_empty_tables": 11,
+        "user_triggers": [],
+        "rules": [],
+        "event_triggers": [],
+        "volatile_defaults": [],
+        "identity_columns": []
+      },
+      "probes": [
+        {
+          "name": "a booking for a patient who does not exist",
+          "kind": "foreign_key",
+          "expected": "23503",
+          "got": "23503",
+          "passed": true
+        },
+        {
+          "name": "a time held that is not on the schedule",
+          "kind": "foreign_key",
+          "expected": "23503",
+          "got": "23503",
+          "passed": true
+        },
+        {
+          "name": "a self-paid booking naming an insurer",
+          "kind": "check",
+          "expected": "23514",
+          "got": "23514",
+          "passed": true
+        },
+        {
+          "name": "a member of staff with an unknown role",
+          "kind": "check",
+          "expected": "23514",
+          "got": "23514",
+          "passed": true
+        },
+        {
+          "name": "a second holder for a taken time",
+          "kind": "unique",
+          "expected": "23505",
+          "got": "23505",
+          "passed": true
+        },
+        {
+          "name": "a second account with the same username",
+          "kind": "unique",
+          "expected": "23505",
+          "got": "23505",
+          "passed": true
+        }
+      ],
+      "references": []
+    },
+    "sessions": {
+      "cost": {
+        "passed": true,
+        "warn": true,
+        "samples": 20,
+        "p50_ms": 123.0,
+        "p95_ms": 152.2,
+        "max_ms": 154.2,
+        "limit_ms": 300.0,
+        "refused": 0,
+        "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
+      },
+      "cap": {
+        "passed": true,
+        "cap": 4,
+        "max_live_partitions": 4,
+        "live_after_each": [
+          2,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "evicted_session_state": null,
+        "evicted_session_lands_on": "/login",
+        "every_new_session_starts_from_the_seed": true
       }
     },
     "workflows": [
@@ -379,7 +1426,17 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/book",
+          "http://127.0.0.1:55558/book/1/booked",
+          "http://127.0.0.1:55558/book/1/confirm",
+          "http://127.0.0.1:55558/book/1/details",
+          "http://127.0.0.1:55558/book/1/slots",
+          "http://127.0.0.1:55558/book/1/slots?with=okafor",
+          "http://127.0.0.1:55558/book/1/who"
+        ]
       },
       {
         "name": "a new patient books physiotherapy through an insurer [default vocabulary]",
@@ -390,7 +1447,18 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/book",
+          "http://127.0.0.1:55558/book/1/booked",
+          "http://127.0.0.1:55558/book/1/confirm",
+          "http://127.0.0.1:55558/book/1/details",
+          "http://127.0.0.1:55558/book/1/questions",
+          "http://127.0.0.1:55558/book/1/slots",
+          "http://127.0.0.1:55558/book/1/slots?with=natarajan",
+          "http://127.0.0.1:55558/book/1/who"
+        ]
       },
       {
         "name": "a returning patient books the practice nurse [default vocabulary]",
@@ -401,7 +1469,17 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/book",
+          "http://127.0.0.1:55558/book/1/booked",
+          "http://127.0.0.1:55558/book/1/confirm",
+          "http://127.0.0.1:55558/book/1/lookup",
+          "http://127.0.0.1:55558/book/1/slots",
+          "http://127.0.0.1:55558/book/1/slots?with=bevan",
+          "http://127.0.0.1:55558/book/1/who"
+        ]
       },
       {
         "name": "book a GP, then move the appointment [default vocabulary]",
@@ -412,7 +1490,21 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/book",
+          "http://127.0.0.1:55558/book/1/booked",
+          "http://127.0.0.1:55558/book/1/confirm",
+          "http://127.0.0.1:55558/book/1/lookup",
+          "http://127.0.0.1:55558/book/1/slots",
+          "http://127.0.0.1:55558/book/1/slots?with=okafor",
+          "http://127.0.0.1:55558/book/1/who",
+          "http://127.0.0.1:55558/book/2/confirm",
+          "http://127.0.0.1:55558/book/2/slots",
+          "http://127.0.0.1:55558/book/2/slots?with=okafor",
+          "http://127.0.0.1:55558/bookings/CF-1001"
+        ]
       },
       {
         "name": "book the nurse, then cancel [default vocabulary]",
@@ -423,7 +1515,19 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/book",
+          "http://127.0.0.1:55558/book/1/booked",
+          "http://127.0.0.1:55558/book/1/confirm",
+          "http://127.0.0.1:55558/book/1/lookup",
+          "http://127.0.0.1:55558/book/1/slots",
+          "http://127.0.0.1:55558/book/1/slots?with=bevan",
+          "http://127.0.0.1:55558/book/1/who",
+          "http://127.0.0.1:55558/bookings",
+          "http://127.0.0.1:55558/bookings/CF-1001"
+        ]
       },
       {
         "name": "choose the other GP's week [default vocabulary]",
@@ -434,7 +1538,17 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/book",
+          "http://127.0.0.1:55558/book/1/booked",
+          "http://127.0.0.1:55558/book/1/confirm",
+          "http://127.0.0.1:55558/book/1/lookup",
+          "http://127.0.0.1:55558/book/1/slots",
+          "http://127.0.0.1:55558/book/1/slots?with=lindqvist",
+          "http://127.0.0.1:55558/book/1/who"
+        ]
       },
       {
         "name": "answer the physio questions and book from the same page [default vocabulary]",
@@ -445,7 +1559,238 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/book",
+          "http://127.0.0.1:55558/book/1/booked",
+          "http://127.0.0.1:55558/book/1/lookup",
+          "http://127.0.0.1:55558/book/1/questions",
+          "http://127.0.0.1:55558/book/1/slots",
+          "http://127.0.0.1:55558/book/1/slots?with=natarajan",
+          "http://127.0.0.1:55558/book/1/who"
+        ]
+      },
+      {
+        "name": "browse the patient directory to its last page [default vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/patients",
+          "http://127.0.0.1:55558/patients?q=&sort=name&page=5"
+        ]
+      },
+      {
+        "name": "list the newest patient records first [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/patients",
+          "http://127.0.0.1:55558/patients?q=&sort=newest"
+        ]
+      },
+      {
+        "name": "search the directory for a name nobody has [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/patients",
+          "http://127.0.0.1:55558/patients?q=search+query&sort=name"
+        ]
+      },
+      {
+        "name": "add a note to a patient's record [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/patients",
+          "http://127.0.0.1:55558/patients/1",
+          "http://127.0.0.1:55558/patients/1?tab=notes"
+        ]
+      },
+      {
+        "name": "correct a note on a patient's record [default vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/patients",
+          "http://127.0.0.1:55558/patients/1",
+          "http://127.0.0.1:55558/patients/1?tab=notes",
+          "http://127.0.0.1:55558/patients/1?tab=notes&edit=1"
+        ]
+      },
+      {
+        "name": "delete a note after confirming [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/patients",
+          "http://127.0.0.1:55558/patients/1",
+          "http://127.0.0.1:55558/patients/1?tab=notes"
+        ]
+      },
+      {
+        "name": "update a patient's phone number [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/patients",
+          "http://127.0.0.1:55558/patients/1",
+          "http://127.0.0.1:55558/patients/1/edit"
+        ]
+      },
+      {
+        "name": "add a patient, then delete the record [default vocabulary]",
+        "steps": 8,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/patients",
+          "http://127.0.0.1:55558/patients/46",
+          "http://127.0.0.1:55558/patients/new"
+        ]
+      },
+      {
+        "name": "put a patient on the nurse waiting list [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/patients",
+          "http://127.0.0.1:55558/patients/1",
+          "http://127.0.0.1:55558/waiting?service=nurse"
+        ]
+      },
+      {
+        "name": "move a patient up the GP waiting list [default vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/waiting",
+          "http://127.0.0.1:55558/waiting?service=gp"
+        ]
+      },
+      {
+        "name": "remove someone from a waiting list, then undo [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/waiting",
+          "http://127.0.0.1:55558/waiting?service=gp"
+        ]
+      },
+      {
+        "name": "edit a waiting-list note in place [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/waiting"
+        ]
+      },
+      {
+        "name": "see one practitioner's appointments [default vocabulary]",
+        "steps": 12,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55558/",
+          "http://127.0.0.1:55558/book",
+          "http://127.0.0.1:55558/book/1/booked",
+          "http://127.0.0.1:55558/book/1/confirm",
+          "http://127.0.0.1:55558/book/1/lookup",
+          "http://127.0.0.1:55558/book/1/slots",
+          "http://127.0.0.1:55558/book/1/slots?with=okafor",
+          "http://127.0.0.1:55558/book/1/who",
+          "http://127.0.0.1:55558/bookings",
+          "http://127.0.0.1:55558/bookings?with=okafor&sort=when"
+        ]
       },
       {
         "name": "a new patient books a GP and pays themselves [alt vocabulary]",
@@ -456,7 +1801,17 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/book",
+          "http://127.0.0.1:58720/book/1/booked",
+          "http://127.0.0.1:58720/book/1/confirm",
+          "http://127.0.0.1:58720/book/1/details",
+          "http://127.0.0.1:58720/book/1/slots",
+          "http://127.0.0.1:58720/book/1/slots?with=okafor",
+          "http://127.0.0.1:58720/book/1/who"
+        ]
       },
       {
         "name": "a new patient books physiotherapy through an insurer [alt vocabulary]",
@@ -467,7 +1822,18 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/book",
+          "http://127.0.0.1:58720/book/1/booked",
+          "http://127.0.0.1:58720/book/1/confirm",
+          "http://127.0.0.1:58720/book/1/details",
+          "http://127.0.0.1:58720/book/1/questions",
+          "http://127.0.0.1:58720/book/1/slots",
+          "http://127.0.0.1:58720/book/1/slots?with=natarajan",
+          "http://127.0.0.1:58720/book/1/who"
+        ]
       },
       {
         "name": "a returning patient books the practice nurse [alt vocabulary]",
@@ -478,7 +1844,17 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/book",
+          "http://127.0.0.1:58720/book/1/booked",
+          "http://127.0.0.1:58720/book/1/confirm",
+          "http://127.0.0.1:58720/book/1/lookup",
+          "http://127.0.0.1:58720/book/1/slots",
+          "http://127.0.0.1:58720/book/1/slots?with=bevan",
+          "http://127.0.0.1:58720/book/1/who"
+        ]
       },
       {
         "name": "book a GP, then move the appointment [alt vocabulary]",
@@ -489,7 +1865,21 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/book",
+          "http://127.0.0.1:58720/book/1/booked",
+          "http://127.0.0.1:58720/book/1/confirm",
+          "http://127.0.0.1:58720/book/1/lookup",
+          "http://127.0.0.1:58720/book/1/slots",
+          "http://127.0.0.1:58720/book/1/slots?with=okafor",
+          "http://127.0.0.1:58720/book/1/who",
+          "http://127.0.0.1:58720/book/2/confirm",
+          "http://127.0.0.1:58720/book/2/slots",
+          "http://127.0.0.1:58720/book/2/slots?with=okafor",
+          "http://127.0.0.1:58720/bookings/CF-1001"
+        ]
       },
       {
         "name": "book the nurse, then cancel [alt vocabulary]",
@@ -500,7 +1890,19 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/book",
+          "http://127.0.0.1:58720/book/1/booked",
+          "http://127.0.0.1:58720/book/1/confirm",
+          "http://127.0.0.1:58720/book/1/lookup",
+          "http://127.0.0.1:58720/book/1/slots",
+          "http://127.0.0.1:58720/book/1/slots?with=bevan",
+          "http://127.0.0.1:58720/book/1/who",
+          "http://127.0.0.1:58720/bookings",
+          "http://127.0.0.1:58720/bookings/CF-1001"
+        ]
       },
       {
         "name": "choose the other GP's week [alt vocabulary]",
@@ -511,7 +1913,17 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/book",
+          "http://127.0.0.1:58720/book/1/booked",
+          "http://127.0.0.1:58720/book/1/confirm",
+          "http://127.0.0.1:58720/book/1/lookup",
+          "http://127.0.0.1:58720/book/1/slots",
+          "http://127.0.0.1:58720/book/1/slots?with=lindqvist",
+          "http://127.0.0.1:58720/book/1/who"
+        ]
       },
       {
         "name": "answer the physio questions and book from the same page [alt vocabulary]",
@@ -522,7 +1934,238 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/book",
+          "http://127.0.0.1:58720/book/1/booked",
+          "http://127.0.0.1:58720/book/1/lookup",
+          "http://127.0.0.1:58720/book/1/questions",
+          "http://127.0.0.1:58720/book/1/slots",
+          "http://127.0.0.1:58720/book/1/slots?with=natarajan",
+          "http://127.0.0.1:58720/book/1/who"
+        ]
+      },
+      {
+        "name": "browse the patient directory to its last page [alt vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/patients",
+          "http://127.0.0.1:58720/patients?q=&sort=name&page=5"
+        ]
+      },
+      {
+        "name": "list the newest patient records first [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/patients",
+          "http://127.0.0.1:58720/patients?q=&sort=newest"
+        ]
+      },
+      {
+        "name": "search the directory for a name nobody has [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/patients",
+          "http://127.0.0.1:58720/patients?q=search+query&sort=name"
+        ]
+      },
+      {
+        "name": "add a note to a patient's record [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/patients",
+          "http://127.0.0.1:58720/patients/1",
+          "http://127.0.0.1:58720/patients/1?tab=notes"
+        ]
+      },
+      {
+        "name": "correct a note on a patient's record [alt vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/patients",
+          "http://127.0.0.1:58720/patients/1",
+          "http://127.0.0.1:58720/patients/1?tab=notes",
+          "http://127.0.0.1:58720/patients/1?tab=notes&edit=1"
+        ]
+      },
+      {
+        "name": "delete a note after confirming [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/patients",
+          "http://127.0.0.1:58720/patients/1",
+          "http://127.0.0.1:58720/patients/1?tab=notes"
+        ]
+      },
+      {
+        "name": "update a patient's phone number [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/patients",
+          "http://127.0.0.1:58720/patients/1",
+          "http://127.0.0.1:58720/patients/1/edit"
+        ]
+      },
+      {
+        "name": "add a patient, then delete the record [alt vocabulary]",
+        "steps": 8,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/patients",
+          "http://127.0.0.1:58720/patients/46",
+          "http://127.0.0.1:58720/patients/new"
+        ]
+      },
+      {
+        "name": "put a patient on the nurse waiting list [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/patients",
+          "http://127.0.0.1:58720/patients/1",
+          "http://127.0.0.1:58720/waiting?service=nurse"
+        ]
+      },
+      {
+        "name": "move a patient up the GP waiting list [alt vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/waiting",
+          "http://127.0.0.1:58720/waiting?service=gp"
+        ]
+      },
+      {
+        "name": "remove someone from a waiting list, then undo [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/waiting",
+          "http://127.0.0.1:58720/waiting?service=gp"
+        ]
+      },
+      {
+        "name": "edit a waiting-list note in place [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/waiting"
+        ]
+      },
+      {
+        "name": "see one practitioner's appointments [alt vocabulary]",
+        "steps": 12,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58720/",
+          "http://127.0.0.1:58720/book",
+          "http://127.0.0.1:58720/book/1/booked",
+          "http://127.0.0.1:58720/book/1/confirm",
+          "http://127.0.0.1:58720/book/1/lookup",
+          "http://127.0.0.1:58720/book/1/slots",
+          "http://127.0.0.1:58720/book/1/slots?with=okafor",
+          "http://127.0.0.1:58720/book/1/who",
+          "http://127.0.0.1:58720/bookings",
+          "http://127.0.0.1:58720/bookings?with=okafor&sort=when"
+        ]
       }
     ],
     "state_dependent": [
@@ -662,7 +2305,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 556.4
+        "seconds": 594.1
       },
       {
         "fault_id": "CLIN-2",
@@ -760,7 +2403,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 419.4
+        "seconds": 486.3
       },
       {
         "fault_id": "CLIN-3",
@@ -824,7 +2467,89 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 140.3
+        "seconds": 183.3
+      },
+      {
+        "fault_id": "CLIN-4",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 2,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'last': 50.0, 'total': 45.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 2,
+        "minimization_trials": 2,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-patients"
+          },
+          {
+            "type": "CLICK",
+            "id": "page-last"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 66.3
+      },
+      {
+        "fault_id": "CLIN-5",
+        "subtype": "persistence",
+        "oracle": "extension",
+        "fault_class": "persistence_failure",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='Test User Input' after='Mornings only.'"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-waiting"
+          },
+          {
+            "type": "CLICK",
+            "id": "edit-note-w2"
+          },
+          {
+            "type": "TYPE",
+            "id": "note-input-w2",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-note-w2"
+          },
+          {
+            "type": "REFRESH"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 151.3
       }
     ],
     "benign": [
@@ -883,6 +2608,34 @@
         "resolves": true,
         "fired": [],
         "passed": true
+      },
+      {
+        "trace": 4,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 4,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 5,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 5,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
       }
     ],
     "random_walk_clean": {
@@ -891,46 +2644,317 @@
       "raw_candidates": {},
       "errors": [],
       "foreign_requests": [],
+      "responses": {
+        "count": 291,
+        "p50_ms": 3.5,
+        "p95_ms": 14.1,
+        "max_ms": 19.2,
+        "slowest": [
+          [
+            "GET",
+            "/patients/21",
+            19.2
+          ],
+          [
+            "GET",
+            "/patients",
+            19.1
+          ],
+          [
+            "GET",
+            "/patients/1",
+            16.5
+          ],
+          [
+            "GET",
+            "/waiting",
+            16.3
+          ],
+          [
+            "GET",
+            "/book/2/who",
+            15.5
+          ]
+        ],
+        "limits_ms": {
+          "p95": 150.0,
+          "max": 1000.0
+        },
+        "passed": true
+      },
       "passed": true
+    },
+    "roles": [
+      {
+        "user": "amara.okafor",
+        "path": "/book",
+        "passed": true,
+        "signed_in_as": "Dr Amara Okafor \u00b7 Practitioner",
+        "status": 200,
+        "access_region": "Your role does not include this part of the front desk.",
+        "state_unchanged": true,
+        "errors": []
+      },
+      {
+        "user": "grace.holloway",
+        "path": "/patients",
+        "passed": true,
+        "signed_in_as": "Grace Holloway \u00b7 Practice manager",
+        "status": 200,
+        "access_region": "Your role does not include this part of the front desk.",
+        "state_unchanged": true,
+        "errors": []
+      },
+      {
+        "user": "rhiannon.price",
+        "path": "/admin/utilisation",
+        "passed": true,
+        "signed_in_as": "Rhiannon Price \u00b7 Receptionist",
+        "status": 200,
+        "access_region": "Your role does not include this part of the front desk.",
+        "state_unchanged": true,
+        "errors": []
+      }
+    ],
+    "breadth": {
+      "passed": true,
+      "size_problems": [],
+      "workflows_failing": [],
+      "views": [
+        {
+          "name": "new or returning",
+          "workflow": "a new patient books a GP and pays themselves",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:55558/book/1/who"
+          ]
+        },
+        {
+          "name": "registration",
+          "workflow": "a new patient books a GP and pays themselves",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:55558/book/1/details"
+          ]
+        },
+        {
+          "name": "record lookup",
+          "workflow": "a returning patient books the practice nurse",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:55558/book/1/lookup"
+          ]
+        },
+        {
+          "name": "slot table",
+          "workflow": "a new patient books a GP and pays themselves",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:55558/book/1/slots",
+            "http://127.0.0.1:55558/book/1/slots?with=okafor"
+          ]
+        },
+        {
+          "name": "pre-visit questions",
+          "workflow": "a new patient books physiotherapy through an insurer",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:55558/book/1/questions"
+          ]
+        },
+        {
+          "name": "booking check",
+          "workflow": "a new patient books physiotherapy through an insurer",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:55558/book/1/confirm"
+          ]
+        },
+        {
+          "name": "confirmation",
+          "workflow": "a new patient books a GP and pays themselves",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:55558/book/1/booked"
+          ]
+        },
+        {
+          "name": "manage an appointment",
+          "workflow": "book a GP, then move the appointment",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:55558/bookings/CF-1001"
+          ]
+        },
+        {
+          "name": "sign-in page",
+          "path": "/login",
+          "as": null,
+          "status": 200,
+          "landed": "/login",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "sign-in help",
+          "path": "/help/sign-in",
+          "as": null,
+          "status": 200,
+          "landed": "/help/sign-in",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "front desk home",
+          "path": "/",
+          "as": "rhiannon.price",
+          "status": 200,
+          "landed": "/",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "choose a service",
+          "path": "/book",
+          "as": "rhiannon.price",
+          "status": 200,
+          "landed": "/book",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "your appointments",
+          "path": "/bookings",
+          "as": "rhiannon.price",
+          "status": 200,
+          "landed": "/bookings",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "patient directory",
+          "path": "/patients",
+          "as": "rhiannon.price",
+          "status": 200,
+          "landed": "/patients",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "patient record",
+          "path": "/patients/1",
+          "as": "rhiannon.price",
+          "status": 200,
+          "landed": "/patients/1",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "new patient form",
+          "path": "/patients/new",
+          "as": "rhiannon.price",
+          "status": 200,
+          "landed": "/patients/new",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "edit patient form",
+          "path": "/patients/1/edit",
+          "as": "rhiannon.price",
+          "status": 200,
+          "landed": "/patients/1/edit",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "waiting lists",
+          "path": "/waiting",
+          "as": "rhiannon.price",
+          "status": 200,
+          "landed": "/waiting",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "practitioner's day",
+          "path": "/my/day",
+          "as": "amara.okafor",
+          "status": 200,
+          "landed": "/my/day",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "utilisation report",
+          "path": "/admin/utilisation",
+          "as": "grace.holloway",
+          "status": 200,
+          "landed": "/admin/utilisation",
+          "errors": [],
+          "passed": true
+        }
+      ],
+      "counts": {
+        "views": 20,
+        "entities": 4,
+        "patterns": [
+          "inline-edit",
+          "modal",
+          "pagination",
+          "reorder",
+          "search",
+          "sort-filter",
+          "tabs",
+          "undo",
+          "wizard"
+        ]
+      }
     },
     "product_intake": {
       "profile": {
         "languages": [
           {
-            "language": "JSON",
-            "files": 4,
-            "bytes": 46105,
-            "share": 0.4169
+            "language": "Python",
+            "files": 5,
+            "bytes": 89129,
+            "share": 0.4052
           },
           {
-            "language": "Python",
-            "files": 4,
-            "bytes": 45404,
-            "share": 0.4105
+            "language": "JSON",
+            "files": 5,
+            "bytes": 87893,
+            "share": 0.3996
           },
           {
             "language": "HTML",
-            "files": 15,
-            "bytes": 9210,
-            "share": 0.0833
+            "files": 33,
+            "bytes": 20694,
+            "share": 0.0941
+          },
+          {
+            "language": "SQL",
+            "files": 1,
+            "bytes": 7958,
+            "share": 0.0362
+          },
+          {
+            "language": "JavaScript",
+            "files": 2,
+            "bytes": 5362,
+            "share": 0.0244
+          },
+          {
+            "language": "CSS",
+            "files": 1,
+            "bytes": 5094,
+            "share": 0.0232
           },
           {
             "language": "Markdown",
             "files": 1,
             "bytes": 3835,
-            "share": 0.0347
-          },
-          {
-            "language": "CSS",
-            "files": 1,
-            "bytes": 3717,
-            "share": 0.0336
-          },
-          {
-            "language": "JavaScript",
-            "files": 1,
-            "bytes": 2329,
-            "share": 0.0211
+            "share": 0.0174
           }
         ],
         "frameworks": [],
@@ -942,7 +2966,7 @@
       },
       "build_plan": {
         "kind": "dockerfile",
-        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\clinicflow\\clean\\Dockerfile"
+        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\clinicflow\\clean\\Dockerfile"
       },
       "product_can_build": true,
       "matches_expectation": true,
@@ -950,9 +2974,9 @@
     }
   },
   "admitted": true,
-  "checks_run": 22,
+  "checks_run": 41,
   "checks_failed": [],
   "browser_checks_run": true,
   "docker_checks_run": true,
-  "wall_clock_s": 1457.2
+  "wall_clock_s": 2146.5
 }

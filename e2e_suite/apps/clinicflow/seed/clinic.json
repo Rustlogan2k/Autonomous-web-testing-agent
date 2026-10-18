@@ -2,33 +2,546 @@
   "clinic": "Harbourside Health",
   "address": "2 Pilot Street, Harbourside",
   "days_shown": 5,
-  "times": ["09:00", "11:00", "14:00", "16:00"],
+  "times": [
+    "09:00",
+    "11:00",
+    "14:00",
+    "16:00"
+  ],
   "services": [
-    {"id": "gp", "name": "GP appointment", "minutes": 15, "questions": false},
-    {"id": "physio", "name": "Physiotherapy", "minutes": 40, "questions": true},
-    {"id": "nurse", "name": "Practice nurse", "minutes": 20, "questions": false}
+    {
+      "id": "gp",
+      "name": "GP appointment",
+      "minutes": 15,
+      "questions": false
+    },
+    {
+      "id": "physio",
+      "name": "Physiotherapy",
+      "minutes": 40,
+      "questions": true
+    },
+    {
+      "id": "nurse",
+      "name": "Practice nurse",
+      "minutes": 20,
+      "questions": false
+    }
   ],
   "practitioners": [
-    {"id": "okafor", "name": "Dr Amara Okafor", "service": "gp",
-     "booked_by_others": [[0, "09:00"], [0, "14:00"], [1, "11:00"], [2, "09:00"], [3, "16:00"], [4, "11:00"]]},
-    {"id": "lindqvist", "name": "Dr Ben Lindqvist", "service": "gp",
-     "booked_by_others": [[0, "11:00"], [1, "09:00"], [2, "14:00"], [4, "16:00"]]},
-    {"id": "natarajan", "name": "Priya Natarajan", "service": "physio",
-     "booked_by_others": [[0, "09:00"], [1, "14:00"], [2, "11:00"], [3, "09:00"], [4, "14:00"]]},
-    {"id": "whitlock", "name": "Tom Whitlock", "service": "physio",
-     "booked_by_others": [[1, "16:00"], [3, "11:00"], [4, "09:00"]]},
-    {"id": "bevan", "name": "Carys Bevan", "service": "nurse",
-     "booked_by_others": [[0, "16:00"], [2, "09:00"], [3, "14:00"], [4, "11:00"]]}
+    {
+      "id": "okafor",
+      "name": "Dr Amara Okafor",
+      "service": "gp",
+      "booked_by_others": [
+        [
+          0,
+          "09:00"
+        ],
+        [
+          0,
+          "14:00"
+        ],
+        [
+          1,
+          "11:00"
+        ],
+        [
+          2,
+          "09:00"
+        ],
+        [
+          3,
+          "16:00"
+        ],
+        [
+          4,
+          "11:00"
+        ]
+      ],
+      "room": "Room 1"
+    },
+    {
+      "id": "lindqvist",
+      "name": "Dr Ben Lindqvist",
+      "service": "gp",
+      "booked_by_others": [
+        [
+          0,
+          "11:00"
+        ],
+        [
+          1,
+          "09:00"
+        ],
+        [
+          2,
+          "14:00"
+        ],
+        [
+          4,
+          "16:00"
+        ]
+      ],
+      "room": "Room 2"
+    },
+    {
+      "id": "natarajan",
+      "name": "Priya Natarajan",
+      "service": "physio",
+      "booked_by_others": [
+        [
+          0,
+          "09:00"
+        ],
+        [
+          1,
+          "14:00"
+        ],
+        [
+          2,
+          "11:00"
+        ],
+        [
+          3,
+          "09:00"
+        ],
+        [
+          4,
+          "14:00"
+        ]
+      ],
+      "room": "Physio suite A"
+    },
+    {
+      "id": "whitlock",
+      "name": "Tom Whitlock",
+      "service": "physio",
+      "booked_by_others": [
+        [
+          1,
+          "16:00"
+        ],
+        [
+          3,
+          "11:00"
+        ],
+        [
+          4,
+          "09:00"
+        ]
+      ],
+      "room": "Physio suite B"
+    },
+    {
+      "id": "bevan",
+      "name": "Carys Bevan",
+      "service": "nurse",
+      "booked_by_others": [
+        [
+          0,
+          "16:00"
+        ],
+        [
+          2,
+          "09:00"
+        ],
+        [
+          3,
+          "14:00"
+        ],
+        [
+          4,
+          "11:00"
+        ]
+      ],
+      "room": "Treatment room"
+    }
   ],
   "patients": [
-    {"name": "Alex Morgan", "dob": "1984-03-02", "email": "tester@example.com"},
-    {"name": "Sam Ellery", "dob": "1990-11-23", "email": "sam.ellery@example.org"}
+    {
+      "name": "Alex Morgan",
+      "dob": "1984-03-02",
+      "email": "tester@example.com",
+      "phone": "01632 960001"
+    },
+    {
+      "name": "Sam Ellery",
+      "dob": "1990-11-23",
+      "email": "sam.ellery@example.org",
+      "phone": null
+    },
+    {
+      "name": "Nadia Brooks",
+      "dob": "1977-05-14",
+      "email": "nadia.brooks@example.org",
+      "phone": null
+    },
+    {
+      "name": "Owen Pryce",
+      "dob": "1962-09-30",
+      "email": "owen.pryce@example.org",
+      "phone": null
+    },
+    {
+      "name": "Lucia Ferrante",
+      "dob": "1995-01-08",
+      "email": "lucia.ferrante@example.org",
+      "phone": null
+    },
+    {
+      "name": "Hamid Rahimi",
+      "dob": "1988-07-21",
+      "email": "hamid.rahimi@example.org",
+      "phone": null
+    },
+    {
+      "name": "Ellen Marsh",
+      "dob": "1950-12-02",
+      "email": "ellen.marsh@example.org",
+      "phone": null
+    },
+    {
+      "name": "Tomasz Wolski",
+      "dob": "2001-04-17",
+      "email": "tomasz.wolski@example.org",
+      "phone": null
+    },
+    {
+      "name": "Bea Okonjo",
+      "dob": "1969-10-11",
+      "email": "bea.okonjo@example.org",
+      "phone": null
+    },
+    {
+      "name": "Aled Hughes",
+      "dob": "1940-01-01",
+      "email": "aled.hughes@example.net",
+      "phone": null
+    },
+    {
+      "name": "Bryony Price",
+      "dob": "1947-02-06",
+      "email": "bryony.price@example.net",
+      "phone": "01632 901037"
+    },
+    {
+      "name": "Cian Evans",
+      "dob": "1954-03-11",
+      "email": "cian.evans@example.net",
+      "phone": "01632 902074"
+    },
+    {
+      "name": "Delyth Rowlands",
+      "dob": "1961-04-16",
+      "email": "delyth.rowlands@example.net",
+      "phone": null
+    },
+    {
+      "name": "Emrys Bowen",
+      "dob": "1968-05-21",
+      "email": "emrys.bowen@example.net",
+      "phone": "01632 904148"
+    },
+    {
+      "name": "Ffion Pugh",
+      "dob": "1975-06-26",
+      "email": "ffion.pugh@example.net",
+      "phone": "01632 905185"
+    },
+    {
+      "name": "Gareth Lloyd",
+      "dob": "1982-07-03",
+      "email": "gareth.lloyd@example.net",
+      "phone": null
+    },
+    {
+      "name": "Hana Morgan",
+      "dob": "1989-08-08",
+      "email": "hana.morgan@example.net",
+      "phone": "01632 907259"
+    },
+    {
+      "name": "Idris Jenkins",
+      "dob": "1996-09-13",
+      "email": "idris.jenkins@example.net",
+      "phone": "01632 908296"
+    },
+    {
+      "name": "Jodie Watkins",
+      "dob": "1941-10-18",
+      "email": "jodie.watkins@example.net",
+      "phone": null
+    },
+    {
+      "name": "Kofi Mensah",
+      "dob": "1948-11-23",
+      "email": "kofi.mensah@example.net",
+      "phone": "01632 910370"
+    },
+    {
+      "name": "Leah Davies",
+      "dob": "1955-12-28",
+      "email": "leah.davies@example.net",
+      "phone": "01632 911407"
+    },
+    {
+      "name": "Macsen Griffiths",
+      "dob": "1962-01-05",
+      "email": "macsen.griffiths@example.net",
+      "phone": null
+    },
+    {
+      "name": "Nia Thomas",
+      "dob": "1969-02-10",
+      "email": "nia.thomas@example.net",
+      "phone": "01632 913481"
+    },
+    {
+      "name": "Osian Parry",
+      "dob": "1976-03-15",
+      "email": "osian.parry@example.net",
+      "phone": "01632 914518"
+    },
+    {
+      "name": "Priti Shah",
+      "dob": "1983-04-20",
+      "email": "priti.shah@example.net",
+      "phone": null
+    },
+    {
+      "name": "Quinn Rees",
+      "dob": "1990-05-25",
+      "email": "quinn.rees@example.net",
+      "phone": "01632 916592"
+    },
+    {
+      "name": "Rhys Owen",
+      "dob": "1997-06-02",
+      "email": "rhys.owen@example.net",
+      "phone": "01632 917629"
+    },
+    {
+      "name": "Seren Vaughan",
+      "dob": "1942-07-07",
+      "email": "seren.vaughan@example.net",
+      "phone": null
+    },
+    {
+      "name": "Tegan Powell",
+      "dob": "1949-08-12",
+      "email": "tegan.powell@example.net",
+      "phone": "01632 919703"
+    },
+    {
+      "name": "Umar Iqbal",
+      "dob": "1956-09-17",
+      "email": "umar.iqbal@example.net",
+      "phone": "01632 920740"
+    },
+    {
+      "name": "Vera Novak",
+      "dob": "1963-10-22",
+      "email": "vera.novak@example.net",
+      "phone": null
+    },
+    {
+      "name": "Wyn Harries",
+      "dob": "1970-11-27",
+      "email": "wyn.harries@example.net",
+      "phone": "01632 922814"
+    },
+    {
+      "name": "Xin Liu",
+      "dob": "1977-12-04",
+      "email": "xin.liu@example.net",
+      "phone": "01632 923851"
+    },
+    {
+      "name": "Yusuf Ahmed",
+      "dob": "1984-01-09",
+      "email": "yusuf.ahmed@example.net",
+      "phone": null
+    },
+    {
+      "name": "Zara Khan",
+      "dob": "1991-02-14",
+      "email": "zara.khan@example.net",
+      "phone": "01632 925925"
+    },
+    {
+      "name": "Alys Roberts",
+      "dob": "1998-03-19",
+      "email": "alys.roberts@example.net",
+      "phone": "01632 926962"
+    },
+    {
+      "name": "Bethan James",
+      "dob": "1943-04-24",
+      "email": "bethan.james@example.net",
+      "phone": null
+    },
+    {
+      "name": "Caio Silva",
+      "dob": "1950-05-01",
+      "email": "caio.silva@example.net",
+      "phone": "01632 928036"
+    },
+    {
+      "name": "Dafydd Edwards",
+      "dob": "1957-06-06",
+      "email": "dafydd.edwards@example.net",
+      "phone": "01632 929073"
+    },
+    {
+      "name": "Elin Phillips",
+      "dob": "1964-07-11",
+      "email": "elin.phillips@example.net",
+      "phone": null
+    },
+    {
+      "name": "Fraser Reid",
+      "dob": "1971-08-16",
+      "email": "fraser.reid@example.net",
+      "phone": "01632 931147"
+    },
+    {
+      "name": "Gwen Llewellyn",
+      "dob": "1978-09-21",
+      "email": "gwen.llewellyn@example.net",
+      "phone": "01632 932184"
+    },
+    {
+      "name": "Harri Probert",
+      "dob": "1985-10-26",
+      "email": "harri.probert@example.net",
+      "phone": null
+    },
+    {
+      "name": "Ines Garcia",
+      "dob": "1992-11-03",
+      "email": "ines.garcia@example.net",
+      "phone": "01632 934258"
+    },
+    {
+      "name": "Jac Tudor",
+      "dob": "1999-12-08",
+      "email": "jac.tudor@example.net",
+      "phone": "01632 935295"
+    }
   ],
   "injury_areas": [
-    {"id": "back", "name": "Lower back"},
-    {"id": "knee", "name": "Knee"},
-    {"id": "shoulder", "name": "Shoulder"},
-    {"id": "neck", "name": "Neck"},
-    {"id": "ankle", "name": "Ankle"}
+    {
+      "id": "back",
+      "name": "Lower back"
+    },
+    {
+      "id": "knee",
+      "name": "Knee"
+    },
+    {
+      "id": "shoulder",
+      "name": "Shoulder"
+    },
+    {
+      "id": "neck",
+      "name": "Neck"
+    },
+    {
+      "id": "ankle",
+      "name": "Ankle"
+    }
+  ],
+  "insurers_on_record": {
+    "CF-0903": [
+      "Brightcover",
+      "100234"
+    ],
+    "CF-0911": [
+      "Northshore Mutual",
+      "77812"
+    ]
+  },
+  "notes": [
+    {
+      "patient": 1,
+      "body": "Prefers morning appointments.",
+      "written_on": "2026-05-12",
+      "by": "tom"
+    },
+    {
+      "patient": 1,
+      "body": "Allergic to latex: tell the nurse.",
+      "written_on": "2026-06-02",
+      "by": "rhiannon"
+    },
+    {
+      "patient": 2,
+      "body": "Moved house in April; address updated.",
+      "written_on": "2026-04-28",
+      "by": "tom"
+    },
+    {
+      "patient": 5,
+      "body": "Hearing aid: speak clearly at the desk.",
+      "written_on": "2026-03-09",
+      "by": "tom"
+    }
+  ],
+  "waiting": [
+    {
+      "patient": 12,
+      "service": "gp",
+      "note": "Any cancellation this week.",
+      "added_on": "2026-06-01"
+    },
+    {
+      "patient": 15,
+      "service": "gp",
+      "note": "Mornings only.",
+      "added_on": "2026-06-03"
+    },
+    {
+      "patient": 21,
+      "service": "gp",
+      "note": "Prefers Dr Lindqvist.",
+      "added_on": "2026-06-05"
+    },
+    {
+      "patient": 30,
+      "service": "gp",
+      "note": "Can come at short notice.",
+      "added_on": "2026-06-08"
+    },
+    {
+      "patient": 17,
+      "service": "physio",
+      "note": "Knee, post-op review.",
+      "added_on": "2026-06-02"
+    },
+    {
+      "patient": 24,
+      "service": "physio",
+      "note": "Shoulder; afternoons.",
+      "added_on": "2026-06-06"
+    },
+    {
+      "patient": 33,
+      "service": "physio",
+      "note": "Lower back.",
+      "added_on": "2026-06-09"
+    },
+    {
+      "patient": 19,
+      "service": "nurse",
+      "note": "Dressing change.",
+      "added_on": "2026-06-04"
+    },
+    {
+      "patient": 40,
+      "service": "nurse",
+      "note": "Travel vaccines.",
+      "added_on": "2026-06-07"
+    }
   ]
 }

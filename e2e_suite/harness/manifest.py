@@ -51,6 +51,14 @@ MIN_MONGO_REFERENCES = 4
 #: values it generates for any of them (decision D4), or exploration could sign in again.
 TYPABLE_INPUT_TYPES = ("text", "email", "number", "tel", "url", "password", "date", "search",
                        "textarea", "datetime-local", "month", "time", "week", "color", "range")
+#: Plan §8 (the enlarged development apps): the interaction patterns an app may claim, and
+#: the minimum breadth it must declare in its `breadth` block and exercise at admission.
+PATTERNS = {"pagination", "sort-filter", "search", "modal", "tabs", "inline-edit", "wizard",
+            "reorder", "bulk-action", "undo", "client-routing"}
+CRUD = ("create", "read", "update", "delete")
+MIN_VIEWS = 12
+MIN_CRUD_ENTITIES = 3
+MIN_PATTERNS = 5
 
 
 @dataclass
@@ -240,6 +248,8 @@ def validate_manifest(app: AppManifest) -> list[str]:
         problems += validate_login(d.get("login") or {}, d.get("regions", {}))
     if "database" in d:
         problems += validate_database(app)
+    if "breadth" in d:
+        problems += [f"breadth: {p}" for p in breadth_problems(app, structural_only=True)]
     for name, selector in d.get("regions", {}).items():
         if not (selector.startswith("#") or selector.startswith('[id="')):
             problems.append(f"region {name}: use an #id selector, got {selector!r}")
@@ -254,6 +264,66 @@ def suite_v2_contract(app: AppManifest) -> list[str]:
         problems.append("declares no database block with engine postgres or mongodb")
     if not app.login_steps:
         problems.append("declares no login block with a sign-in macro")
+    return problems
+
+
+def breadth_problems(app: AppManifest, *, structural_only: bool = False) -> list[str]:
+    """Problems with an app's `breadth` block (plan §8). Structural problems always; with
+    `structural_only=False` also the size rules (12 views, 3 full-CRUD entities, 5 patterns).
+
+    ```json
+    "breadth": {
+      "views": [{"name": "patient directory", "path": "/patients"},
+                {"name": "my day", "path": "/my/day", "as": "amara.okafor"},
+                {"name": "sign-in page", "path": "/login", "as": null},
+                {"name": "slot table", "workflow": "<workflow name>", "where": "/book/\\d+/slots"}],
+      "entities": {"patient": {"create": "<workflow>", "read": "...", "update": "...", "delete": "..."}},
+      "patterns": {"pagination": "<workflow>", "tabs": "<workflow>", ...}
+    }
+    ```
+    A path view is opened directly by the browser check as the macro user (or `as` a listed
+    user, or anonymously for `null`); a workflow view is satisfied when that workflow passes
+    and visits a URL matching `where`. Entities and patterns name the workflows that prove them.
+    """
+    spec = app.data.get("breadth") or {}
+    workflows = {w.get("name") for w in app.data.get("workflows", [])}
+    users = {u.get("username") for u in app.login.get("users", [])}
+    problems: list[str] = []
+    views = spec.get("views") if isinstance(spec.get("views"), list) else []
+    names = [v.get("name") for v in views if isinstance(v, dict)]
+    if len(set(names)) != len(names):
+        problems.append("view names repeat")
+    for view in views:
+        if not isinstance(view, dict) or not view.get("name"):
+            problems.append(f"view {view!r} has no name")
+        elif "path" in view:
+            if not _is_path(view["path"]):
+                problems.append(f"view {view['name']!r}: path must be a same-origin path")
+            if view.get("as") is not None and view.get("as") not in users:
+                problems.append(f"view {view['name']!r}: `as` {view.get('as')!r} is not a listed user")
+        elif view.get("workflow") not in workflows or not isinstance(view.get("where"), str):
+            problems.append(f"view {view['name']!r} needs a path, or a workflow and a `where` regex")
+    entities = spec.get("entities") if isinstance(spec.get("entities"), dict) else {}
+    patterns = spec.get("patterns") if isinstance(spec.get("patterns"), dict) else {}
+    for entity, operations in entities.items():
+        for operation, workflow in (operations or {}).items():
+            if operation not in CRUD or workflow not in workflows:
+                problems.append(f"entity {entity!r}: {operation} -> {workflow!r} is not a declared workflow")
+    for pattern, workflow in patterns.items():
+        if pattern not in PATTERNS:
+            problems.append(f"pattern {pattern!r} is not one of {sorted(PATTERNS)}")
+        elif workflow not in workflows:
+            problems.append(f"pattern {pattern!r}: {workflow!r} is not a declared workflow")
+    if structural_only:
+        return problems
+    if len(views) < MIN_VIEWS:
+        problems.append(f"{len(views)} views declared, at least {MIN_VIEWS} required")
+    full = [e for e, ops in entities.items() if set(CRUD) <= set(ops or {})]
+    if len(full) < MIN_CRUD_ENTITIES:
+        problems.append(f"{len(full)} entities with create, read, update and delete, at least "
+                        f"{MIN_CRUD_ENTITIES} required")
+    if len(set(patterns) & PATTERNS) < MIN_PATTERNS:
+        problems.append(f"{len(set(patterns) & PATTERNS)} interaction patterns, at least {MIN_PATTERNS} required")
     return problems
 
 

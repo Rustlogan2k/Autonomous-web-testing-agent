@@ -5,25 +5,31 @@ import json
 import os
 import re
 import unittest
+import urllib.error
 import urllib.parse
 import urllib.request
 from html import unescape
 
 BASE = os.environ.get("E2E_BASE_URL", "http://127.0.0.1:8080/").rstrip("/")
+PASSWORD = "Harbourside-clinic-26"  # every demo account (README)
 
 
-class Patient:
-    """One browser: a cookie jar, the last page and its URL."""
+class Desk:
+    """One browser: a cookie jar, the last page and its URL; signed in as `who` unless None."""
 
-    def __init__(self):
-        self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+    def __init__(self, who="rhiannon.price"):
+        self.jar = http.cookiejar.CookieJar()
+        self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.jar))
         self.url, self.html = "", ""
+        if who:
+            self.post("/login", username=who, password=PASSWORD)
+            assert "/login" not in self.url, self.url
 
     def _open(self, request):
         with self.opener.open(request, timeout=10) as response:
-            self.url = urllib.parse.urlsplit(response.geturl()).path
-            query = urllib.parse.urlsplit(response.geturl()).query
-            self.url += f"?{query}" if query else ""
+            parts = urllib.parse.urlsplit(response.geturl())
+            self.url = parts.path + (f"?{parts.query}" if parts.query else "")
+            self.status = response.status
             self.html = unescape(response.read().decode("utf-8"))
             return self.html
 
@@ -33,12 +39,22 @@ class Patient:
     def post(self, path, **fields):
         return self._open(urllib.request.Request(BASE + path, data=urllib.parse.urlencode(fields).encode()))
 
+    def post_json(self, path, payload):
+        request = urllib.request.Request(BASE + path, data=json.dumps(payload).encode(),
+                                         headers={"Content-Type": "application/json"})
+        with self.opener.open(request, timeout=10) as response:
+            return json.loads(response.read())
+
     def state(self):
         return json.loads(self.get("/__wta/state"))
 
     def region(self, ident):
-        match = re.search(rf'id="{ident}"[^>]*>(.*?)</', self.html, re.S)
-        return " ".join(re.sub(r"<[^>]+>", " ", match.group(1)).split()) if match else None
+        """A region's text, read as the tester's oracle reads it: up to the element's own closing tag."""
+        match = re.search(rf'<([a-zA-Z][\w-]*)[^>]*\bid="{ident}"[^>]*>(.*?)</\1>', self.html, re.S)
+        return " ".join(re.sub(r"<[^>]+>", " ", match.group(2)).split()) if match else None
+
+    def ids(self, prefix):
+        return re.findall(rf'id="{prefix}([\w-]+)"', self.html)
 
     @property
     def draft(self):
@@ -75,20 +91,72 @@ class Patient:
     def book(self, draft, **answers):
         return self.post(f"/book/{draft}/book", **answers)
 
+    def own_occupancy(self):
+        """Who holds which time, apart from the appointments booked before the first morning."""
+        return [(o["practitioner_id"], o["slot_at"], o["holder_kind"], o["booking_ref"])
+                for o in self.state()["committed"]["occupancy"] if not (o["booking_ref"] or "").startswith("CF-09")]
 
-class Clinicflow(unittest.TestCase):
-    def setUp(self):
-        self.p = Patient()
 
-    def test_health_and_session_isolation(self):
+class SignIn(unittest.TestCase):
+    def test_health(self):
         with urllib.request.urlopen(BASE + "/healthz", timeout=5) as response:
             self.assertEqual(json.loads(response.read()), {"ok": True, "app": "clinicflow"})
-        other = Patient()
+
+    def test_everything_is_behind_the_sign_in(self):
+        stranger = Desk(who=None)
+        for path in ("/", "/book", "/patients", "/waiting", "/bookings"):
+            stranger.get(path)
+            self.assertTrue(stranger.url.startswith("/login"), path)
+        stranger.get("/help/sign-in")
+        self.assertEqual(stranger.url, "/help/sign-in")
+        self.assertIsNone(stranger.state()["session"])
+
+    def test_a_refused_sign_in_is_one_message_and_no_session(self):
+        for username, password in (("rhiannon.price", "wrong"), ("nobody", PASSWORD)):
+            stranger = Desk(who=None)
+            stranger.post("/login", username=username, password=password)
+            self.assertEqual(stranger.url, "/login")
+            self.assertIsNotNone(stranger.region("login-error"))
+            self.assertIsNone(stranger.state()["session"])
+
+    def test_sign_out_keeps_the_session_and_resumes_it(self):
+        desk = Desk()
+        desk.returning()
+        before = desk.state()
+        desk.post("/logout")
+        self.assertEqual(desk.url, "/login")
+        self.assertEqual((desk.state()["user"], desk.state()["sha"]), (None, before["sha"]))
+        desk.post("/login", username="rhiannon.price", password=PASSWORD)
+        self.assertEqual(desk.state()["sha"], before["sha"])
+
+    def test_each_role_sees_its_own_pages_and_a_notice_elsewhere(self):
+        doctor = Desk("amara.okafor")
+        doctor.get("/my/day")
+        self.assertEqual(len(re.findall(r"CF-09\d\d", doctor.html)), 6)  # Dr Okafor's six seeded visits
+        doctor.get("/book")
+        self.assertEqual((doctor.status, doctor.url), (200, "/book"))
+        self.assertIsNotNone(doctor.region("access-notice"))
+        manager = Desk("grace.holloway")
+        manager.get("/admin/utilisation")
+        self.assertIn("Dr Amara Okafor", manager.html)
+        manager.get("/patients")
+        self.assertIsNotNone(manager.region("access-notice"))
+        desk = Desk()
+        desk.get("/admin/utilisation")
+        self.assertIsNotNone(desk.region("access-notice"))
+
+
+class Booking(unittest.TestCase):
+    def setUp(self):
+        self.p = Desk()
+
+    def test_sessions_are_isolated(self):
+        other = Desk()
         seed = other.state()["sha"]
         self.p.returning()
         self.assertNotEqual(self.p.state()["sha"], seed)
         self.assertEqual(other.state()["sha"], seed)
-        self.assertEqual(Patient().state()["sha"], seed)
+        self.assertEqual(Desk().state()["sha"], seed)
 
     def test_branching_routes(self):
         draft = self.p.begin("gp", "new")
@@ -176,12 +244,12 @@ class Clinicflow(unittest.TestCase):
                  ({"payment": "insurer", "payment_mode": "", "insurer_name": "Mutual",  # no script
                    "insurer_member": "7"}, "Insurer: Mutual (member 7)")]
         for payment, shown in cases:
-            p = Patient()
+            p = Desk()
             draft = p.register(**payment)
             p.hold(draft, "0611-1100")
             p.book(draft)
             self.assertEqual(p.region("paid-by"), shown)
-        p = Patient()
+        p = Desk()
         draft = p.begin("gp", "new")
         p.post(f"/book/{draft}/details", full_name="X", dob="1990-01-01", email="x@y.zz", payment="insurer",
                payment_mode="insurer", insurer_name="Mutual", insurer_member="abc")
@@ -195,7 +263,7 @@ class Clinicflow(unittest.TestCase):
         self.p.get(f"/book/{draft}/booked")
         self.assertIsNone(self.p.region("booked-banner"))
         self.p.book(draft)  # pressed again: no second appointment
-        self.assertEqual(len(self.p.state()["committed"]["bookings"]), 1)
+        self.assertEqual(len([b for b in self.p.state()["committed"]["bookings"] if b["booked_by"] == "rhiannon"]), 1)
 
     def test_reschedule_and_cancel_give_times_back(self):
         draft = self.p.returning()
@@ -211,15 +279,16 @@ class Clinicflow(unittest.TestCase):
         self.assertIn("Fri 12 Jun, 14:00", self.p.region("manage-when"))
         self.p.post("/bookings/CF-1001/reschedule")
         self.assertEqual(self.p.tally(), (7, 6, 1))
-        holders = [o for o in self.p.state()["committed"]["occupancy"] if o["holder"] != "other"]
-        self.assertEqual(holders, [{"practitioner": "okafor", "slot": "0612-1400", "holder": "booking:CF-1001"}])
+        self.assertEqual(self.p.own_occupancy(), [("okafor", "2026-06-12T14:00:00", "booking", "CF-1001")])
         before = self.p.state()["sha"]
         self.p.post("/bookings/CF-1001/cancel")  # the box was not ticked
         self.assertEqual(self.p.state()["sha"], before)
         self.p.post("/bookings/CF-1001/cancel", confirm="yes")
         self.assertIn("CF-1001", self.p.region("cancelled-list"))
         self.assertNotIn("CF-1001", self.p.region("upcoming-list"))
-        self.assertEqual([o for o in self.p.state()["committed"]["occupancy"] if o["holder"] != "other"], [])
+        self.assertEqual(self.p.own_occupancy(), [])
+        self.p.get("/bookings/CF-1001")
+        self.assertEqual(self.p.html.count("<li>"), 3)  # booked, moved, cancelled
 
     def test_one_open_draft_at_a_time(self):
         first = self.p.returning()
@@ -229,7 +298,104 @@ class Clinicflow(unittest.TestCase):
         self.assertIn("started again", self.p.html)
         drafts = self.p.state()["committed"]["drafts"]
         self.assertEqual([d["state"] for d in drafts], ["replaced", "open"])
-        self.assertEqual([o for o in self.p.state()["committed"]["occupancy"] if o["holder"] != "other"], [])
+        self.assertEqual(self.p.own_occupancy(), [])
+
+    def test_the_appointment_list_filters_by_practitioner(self):
+        draft = self.p.returning()
+        self.p.hold(draft, "0611-1100")
+        self.p.book(draft)
+        self.p.get("/bookings?with=okafor")
+        self.assertIn("CF-1001", self.p.region("upcoming-list"))
+        self.p.get("/bookings?with=lindqvist")
+        self.assertNotIn("CF-1001", self.p.region("upcoming-list"))
+        self.assertNotIn("CF-09", Desk().get("/bookings"))  # only what this receptionist booked
+
+
+class Records(unittest.TestCase):
+    def setUp(self):
+        self.p = Desk()
+
+    def test_the_directory_pages_sorts_and_searches(self):
+        self.p.get("/patients")
+        self.assertEqual((self.p.region("range-from"), self.p.region("range-to"), self.p.region("match-total")),
+                         ("1", "10", "45"))
+        self.p.get("/patients?page=5")
+        self.assertEqual((self.p.region("range-from"), self.p.region("range-to")), ("41", "45"))
+        self.assertEqual(self.p.region("page-number"), "5")
+        self.p.get("/patients?page=99")  # past the end: the last page
+        self.assertEqual(self.p.region("page-number"), "5")
+        self.p.get("/patients?sort=newest")
+        self.assertEqual(self.p.ids("open-patient-")[0], "45")
+        self.p.get("/patients?sort=dob")
+        self.assertEqual(self.p.ids("open-patient-")[0], "10")
+        self.p.get("/patients?q=MORGAN")
+        self.assertEqual(sorted(self.p.ids("open-patient-")), ["1", "17"])
+        self.p.get("/patients?q=search+query")
+        self.assertIsNotNone(self.p.region("no-matches"))
+        self.p.get("/patients?q=%25")  # typed text, never a pattern
+        self.assertIsNotNone(self.p.region("no-matches"))
+
+    def test_patient_create_update_delete(self):
+        self.p.post("/patients/new", full_name="Test User Input", dob="0001-01-01", email="tester@example.com", phone="")
+        new_id = self.p.url.rsplit("/", 1)[1]
+        self.assertEqual(self.p.region("record-name"), "Test User Input")
+        self.p.post(f"/patients/{new_id}/edit", full_name="Test User Input", dob="1990-01-01",
+                    email="tester@example.com", phone="+1-202-555-0143")
+        self.assertEqual(self.p.region("record-phone"), "+1-202-555-0143")
+        self.p.post(f"/patients/{new_id}/edit", full_name="X", dob="1990-01-01", email="x@y.zz", phone="call me")
+        self.assertIsNotNone(self.p.region("page-error"))
+        self.p.post(f"/patients/{new_id}/delete")
+        self.assertEqual(self.p.url, "/patients")
+        self.assertEqual(self.p.region("match-total"), "45")
+        self.p.post("/patients/3/delete")  # has appointments: kept
+        self.assertIsNotNone(self.p.region("page-error"))
+
+    def test_notes_add_edit_delete(self):
+        self.p.post("/patients/1/notes", note_body="Test User Input")
+        self.assertIn("Test User Input", self.p.region("record-notes"))
+        self.p.post("/patients/1/notes", note_body="  ")
+        self.assertIsNotNone(self.p.region("page-error"))
+        self.p.post("/patients/1/notes/1", note_body="Corrected")
+        self.assertIn("Corrected", self.p.region("record-notes"))
+        self.p.post("/patients/1/notes/2/delete")
+        self.assertNotIn("latex", self.p.region("record-notes"))
+        self.p.post("/patients/2/notes/1/delete")  # another patient's note: nothing happens
+        self.assertIn("Corrected", self.p.get("/patients/1?tab=notes"))
+
+    def test_waiting_lists_reorder_remove_undo_and_notes(self):
+        def order():
+            self.p.get("/waiting?service=gp")
+            return self.p.ids("patient-of-")
+        self.assertEqual(order(), ["w1", "w2", "w3", "w4"])
+        self.p.post("/waiting/w2/up")
+        self.assertEqual(order(), ["w2", "w1", "w3", "w4"])
+        self.assertEqual(self.p.region("waiting-next"), "Ffion Pugh")
+        self.p.post("/waiting/w2/up")  # already first: nothing moves
+        self.p.post("/waiting/w4/down")
+        self.assertEqual(order(), ["w2", "w1", "w3", "w4"])
+        self.p.post("/waiting/w1/remove")
+        self.assertIn("undo-remove", self.p.html)
+        self.assertEqual(self.p.ids("patient-of-"), ["w2", "w3", "w4"])
+        self.p.post("/waiting/w3/up")  # swaps with the next one still waiting
+        self.assertEqual(order(), ["w3", "w2", "w4"])
+        self.assertNotIn("undo-remove", self.p.html)  # offered once
+        self.p.post("/waiting/w1/restore")
+        self.assertEqual(order(), ["w3", "w1", "w2", "w4"])
+        self.assertEqual(self.p.post_json("/waiting/w2/note", {"note": "Test User Input"}),
+                         {"ok": True, "note": "Test User Input"})
+        order()
+        self.assertEqual(self.p.region("note-w2"), "Test User Input")
+        self.assertFalse(self.p.post_json("/waiting/w2/note", {"note": "A" * 5001})["ok"])
+        self.p.post("/patients/1/waiting", waiting_service="nurse", waiting_note="Any time")
+        self.assertEqual(self.p.url, "/waiting?service=nurse")
+        self.assertEqual(self.p.ids("patient-of-")[-1], "w10")
+
+    def test_reading_changes_nothing(self):
+        before = self.p.state()["sha"]
+        for path in ("/patients", "/patients?page=3&sort=dob", "/patients/1?tab=notes", "/patients/1/edit",
+                     "/waiting?service=physio", "/bookings?with=bevan&sort=ref", "/"):
+            self.p.get(path)
+        self.assertEqual(self.p.state()["sha"], before)
 
 
 if __name__ == "__main__":

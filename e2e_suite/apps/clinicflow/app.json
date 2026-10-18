@@ -2,16 +2,318 @@
   "app_id": "clinicflow",
   "name": "Clinicflow (Harbourside Health)",
   "domain": "healthcare appointment booking",
-  "user_goal": "Book a GP, physiotherapy or nurse appointment as a new or returning patient, answer the pre-visit questions when the service needs them, then reschedule or cancel it.",
+  "user_goal": "Sign in at the front desk; book a GP, physiotherapy or nurse appointment for a new or returning patient (answering the pre-visit questions when the service needs them), then reschedule or cancel it; keep patient records and notes; manage the waiting lists.",
   "architecture": "server-rendered-branching-wizard+client-conditionals",
-  "stack": "python-stdlib-wsgiref+sqlite",
-  "persistence": "one sqlite file per session; the booking draft is a server-side row addressed in the URL",
+  "stack": "python-stdlib-wsgiref+pg8000+postgresql",
+  "persistence": "postgresql schema per signed-in session, cloned from a seeded template; the booking draft is a server-side row addressed in the URL",
   "entry": "/",
   "start": [
     "python",
     "src/server.py"
   ],
   "dockerfile": true,
+  "database": {
+    "engine": "postgres",
+    "isolation": "schema-per-session",
+    "schema": "src/schema.sql",
+    "entities": [
+      "services",
+      "practitioners",
+      "users",
+      "slots",
+      "patients",
+      "patient_notes",
+      "injury_areas",
+      "drafts",
+      "questionnaires",
+      "bookings",
+      "occupancy",
+      "waiting_entries",
+      "booking_events"
+    ],
+    "auxiliary": [
+      "counters",
+      "flashes"
+    ],
+    "references": [],
+    "probes": [
+      {
+        "name": "a booking for a patient who does not exist",
+        "kind": "foreign_key",
+        "sql": "INSERT INTO bookings VALUES ('CF-0999', NULL, 999, 'gp', 'okafor', (SELECT min(at) FROM slots WHERE practitioner_id = 'okafor'), 'self', NULL, NULL, 'active', 'tom')"
+      },
+      {
+        "name": "a time held that is not on the schedule",
+        "kind": "foreign_key",
+        "sql": "INSERT INTO occupancy VALUES ('okafor', '2026-01-01 03:00', 'booking', NULL, 'CF-0901')"
+      },
+      {
+        "name": "a self-paid booking naming an insurer",
+        "kind": "check",
+        "sql": "UPDATE bookings SET insurer = 'Brightcover' WHERE ref = 'CF-0901'"
+      },
+      {
+        "name": "a member of staff with an unknown role",
+        "kind": "check",
+        "sql": "UPDATE users SET role = 'janitor' WHERE id = 'tom'"
+      },
+      {
+        "name": "a second holder for a taken time",
+        "kind": "unique",
+        "sql": "INSERT INTO occupancy SELECT practitioner_id, slot_at, 'booking', NULL, 'CF-0902' FROM occupancy WHERE booking_ref = 'CF-0901'"
+      },
+      {
+        "name": "a second account with the same username",
+        "kind": "unique",
+        "sql": "INSERT INTO users VALUES ('tom2', 'tom.avery', 'Tom Avery', 'receptionist', NULL)"
+      }
+    ],
+    "absent_constraints": [
+      {
+        "fault_id": "CLIN-1",
+        "constraint": "UNIQUE (occupancy.booking_ref)",
+        "reason": "a long appointment may hold two consecutive times; CLIN-1 leaves the old time held by the booking it no longer belongs to, which such a constraint would refuse"
+      },
+      {
+        "fault_id": "CLIN-3",
+        "constraint": "a CHECK or trigger requiring a questionnaire for every physiotherapy booking",
+        "reason": "CLIN-3 books physiotherapy without the questions; the rule lives in the wizard's route"
+      }
+    ]
+  },
+  "login": {
+    "path": "/login",
+    "protected": [
+      "/",
+      "/book",
+      "/bookings",
+      "/patients",
+      "/waiting",
+      "/my/day"
+    ],
+    "public": [
+      "/help/sign-in"
+    ],
+    "users": [
+      {
+        "username": "rhiannon.price",
+        "name": "Rhiannon Price",
+        "roles": [
+          "receptionist"
+        ],
+        "macro": true
+      },
+      {
+        "username": "tom.avery",
+        "name": "Tom Avery",
+        "roles": [
+          "receptionist"
+        ]
+      },
+      {
+        "username": "amara.okafor",
+        "name": "Dr Amara Okafor",
+        "roles": [
+          "practitioner"
+        ]
+      },
+      {
+        "username": "grace.holloway",
+        "name": "Grace Holloway",
+        "roles": [
+          "manager"
+        ]
+      }
+    ],
+    "password_value": "Harbourside-clinic-26",
+    "steps": [
+      {
+        "type": "TYPE",
+        "id": "login-username",
+        "params": {
+          "value": "rhiannon.price"
+        }
+      },
+      {
+        "type": "TYPE",
+        "id": "login-password",
+        "params": {
+          "value": "Harbourside-clinic-26"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "login-submit"
+      }
+    ],
+    "form": {
+      "action": "/login",
+      "username_field": "username",
+      "password_field": "password"
+    },
+    "signed_in_region": "signed_in_as",
+    "error_region": "login_error",
+    "sign_out": [
+      {
+        "type": "CLICK",
+        "id": "nav-account"
+      },
+      {
+        "type": "CLICK",
+        "id": "sign-out"
+      }
+    ],
+    "restricted": [
+      {
+        "user": "amara.okafor",
+        "path": "/book",
+        "region": "access_notice"
+      },
+      {
+        "user": "grace.holloway",
+        "path": "/patients",
+        "region": "access_notice"
+      },
+      {
+        "user": "rhiannon.price",
+        "path": "/admin/utilisation",
+        "region": "access_notice"
+      }
+    ]
+  },
+  "breadth": {
+    "views": [
+      {
+        "name": "sign-in page",
+        "path": "/login",
+        "as": null
+      },
+      {
+        "name": "sign-in help",
+        "path": "/help/sign-in",
+        "as": null
+      },
+      {
+        "name": "front desk home",
+        "path": "/"
+      },
+      {
+        "name": "choose a service",
+        "path": "/book"
+      },
+      {
+        "name": "your appointments",
+        "path": "/bookings"
+      },
+      {
+        "name": "patient directory",
+        "path": "/patients"
+      },
+      {
+        "name": "patient record",
+        "path": "/patients/1"
+      },
+      {
+        "name": "new patient form",
+        "path": "/patients/new"
+      },
+      {
+        "name": "edit patient form",
+        "path": "/patients/1/edit"
+      },
+      {
+        "name": "waiting lists",
+        "path": "/waiting"
+      },
+      {
+        "name": "practitioner's day",
+        "path": "/my/day",
+        "as": "amara.okafor"
+      },
+      {
+        "name": "utilisation report",
+        "path": "/admin/utilisation",
+        "as": "grace.holloway"
+      },
+      {
+        "name": "new or returning",
+        "workflow": "a new patient books a GP and pays themselves",
+        "where": "/book/\\d+/who$"
+      },
+      {
+        "name": "registration",
+        "workflow": "a new patient books a GP and pays themselves",
+        "where": "/book/\\d+/details$"
+      },
+      {
+        "name": "record lookup",
+        "workflow": "a returning patient books the practice nurse",
+        "where": "/book/\\d+/lookup$"
+      },
+      {
+        "name": "slot table",
+        "workflow": "a new patient books a GP and pays themselves",
+        "where": "/book/\\d+/slots"
+      },
+      {
+        "name": "pre-visit questions",
+        "workflow": "a new patient books physiotherapy through an insurer",
+        "where": "/book/\\d+/questions$"
+      },
+      {
+        "name": "booking check",
+        "workflow": "a new patient books physiotherapy through an insurer",
+        "where": "/book/\\d+/confirm$"
+      },
+      {
+        "name": "confirmation",
+        "workflow": "a new patient books a GP and pays themselves",
+        "where": "/book/\\d+/booked$"
+      },
+      {
+        "name": "manage an appointment",
+        "workflow": "book a GP, then move the appointment",
+        "where": "/bookings/CF-\\d+$"
+      }
+    ],
+    "entities": {
+      "patient": {
+        "create": "add a patient, then delete the record",
+        "read": "update a patient's phone number",
+        "update": "update a patient's phone number",
+        "delete": "add a patient, then delete the record"
+      },
+      "patient note": {
+        "create": "add a note to a patient's record",
+        "read": "add a note to a patient's record",
+        "update": "correct a note on a patient's record",
+        "delete": "delete a note after confirming"
+      },
+      "waiting-list entry": {
+        "create": "put a patient on the nurse waiting list",
+        "read": "move a patient up the GP waiting list",
+        "update": "edit a waiting-list note in place",
+        "delete": "remove someone from a waiting list, then undo"
+      },
+      "appointment": {
+        "create": "a new patient books a GP and pays themselves",
+        "read": "see one practitioner's appointments",
+        "update": "book a GP, then move the appointment",
+        "delete": "book the nurse, then cancel"
+      }
+    },
+    "patterns": {
+      "wizard": "a new patient books physiotherapy through an insurer",
+      "pagination": "browse the patient directory to its last page",
+      "sort-filter": "list the newest patient records first",
+      "search": "search the directory for a name nobody has",
+      "tabs": "add a note to a patient's record",
+      "modal": "delete a note after confirming",
+      "reorder": "move a patient up the GP waiting list",
+      "undo": "remove someone from a waiting list, then undo",
+      "inline-edit": "edit a waiting-list note in place"
+    }
+  },
   "workflow_graph": {
     "kind": [
       "branching",
@@ -19,6 +321,14 @@
       "revisit"
     ],
     "nodes": [
+      "sign-in",
+      "sign-in-help",
+      "patients",
+      "patient-record",
+      "patient-form",
+      "waiting",
+      "my-day",
+      "utilisation",
       "home",
       "service",
       "who",
@@ -33,6 +343,54 @@
       "replaced"
     ],
     "edges": [
+      [
+        "sign-in",
+        "home"
+      ],
+      [
+        "sign-in",
+        "sign-in-help"
+      ],
+      [
+        "home",
+        "patients"
+      ],
+      [
+        "patients",
+        "patients"
+      ],
+      [
+        "patients",
+        "patient-record"
+      ],
+      [
+        "patients",
+        "patient-form"
+      ],
+      [
+        "patient-form",
+        "patient-record"
+      ],
+      [
+        "patient-record",
+        "patient-record"
+      ],
+      [
+        "patient-record",
+        "waiting"
+      ],
+      [
+        "home",
+        "waiting"
+      ],
+      [
+        "waiting",
+        "waiting"
+      ],
+      [
+        "manage",
+        "patient-record"
+      ],
       [
         "home",
         "service"
@@ -126,7 +484,14 @@
     "dynamic-validation",
     "cross-page-state",
     "server-state",
-    "enable-disable"
+    "enable-disable",
+    "modal",
+    "tabs",
+    "filter",
+    "sort",
+    "multi-role",
+    "fragment-update",
+    "reload-persistence"
   ],
   "vocabulary": {
     "progress_keys": [
@@ -155,7 +520,21 @@
     "booked_answers": "#booked-answers",
     "manage_when": "#manage-when",
     "upcoming": "#upcoming-list",
-    "cancelled_list": "#cancelled-list"
+    "cancelled_list": "#cancelled-list",
+    "signed_in_as": "#signed-in-as",
+    "login_error": "#login-error",
+    "access_notice": "#access-notice",
+    "page_notice": "#page-notice",
+    "range_to": "#range-to",
+    "match_total": "#match-total",
+    "patient_page": "#page-number",
+    "patient_rows": "#patient-rows",
+    "record_notes": "#record-notes",
+    "record_phone": "#record-phone",
+    "waiting_rows": "#waiting-rows",
+    "waiting_next": "#waiting-next",
+    "waiting_count": "#waiting-count",
+    "note_w2": "#note-w2"
   },
   "workflows": [
     {
@@ -682,6 +1061,491 @@
           "contains": "Alex Morgan"
         }
       ]
+    },
+    {
+      "name": "browse the patient directory to its last page",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-patients"
+        },
+        {
+          "type": "CLICK",
+          "id": "page-last"
+        }
+      ],
+      "expect": [
+        {
+          "region": "patient_page",
+          "contains": "5"
+        },
+        {
+          "region": "range_to",
+          "contains": "45"
+        },
+        {
+          "region": "match_total",
+          "contains": "45"
+        },
+        {
+          "region": "patient_rows",
+          "contains": "Zara Khan"
+        }
+      ],
+      "commits": false
+    },
+    {
+      "name": "list the newest patient records first",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-patients"
+        },
+        {
+          "type": "SELECT",
+          "id": "patient-sort",
+          "params": {
+            "option": "newest"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "patient-search-go"
+        }
+      ],
+      "expect": [
+        {
+          "region": "patient_rows",
+          "contains": "Jac Tudor"
+        },
+        {
+          "region": "patient_rows",
+          "absent": "Aled Hughes"
+        }
+      ],
+      "commits": false
+    },
+    {
+      "name": "search the directory for a name nobody has",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-patients"
+        },
+        {
+          "type": "TYPE",
+          "id": "patient-search",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "patient-search-go"
+        }
+      ],
+      "expect": [
+        {
+          "region": "patient_rows",
+          "absent": "Alex Morgan"
+        },
+        {
+          "region": "patient_page",
+          "contains": "1"
+        }
+      ],
+      "commits": false
+    },
+    {
+      "name": "add a note to a patient's record",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-patients"
+        },
+        {
+          "type": "CLICK",
+          "id": "open-patient-1"
+        },
+        {
+          "type": "CLICK",
+          "id": "tab-notes"
+        },
+        {
+          "type": "TYPE",
+          "id": "new-note",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "add-note"
+        }
+      ],
+      "expect": [
+        {
+          "region": "record_notes",
+          "contains": "functional testing"
+        },
+        {
+          "region": "record_notes",
+          "contains": "Allergic to latex"
+        }
+      ]
+    },
+    {
+      "name": "correct a note on a patient's record",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-patients"
+        },
+        {
+          "type": "CLICK",
+          "id": "open-patient-1"
+        },
+        {
+          "type": "CLICK",
+          "id": "tab-notes"
+        },
+        {
+          "type": "CLICK",
+          "id": "edit-note-1"
+        },
+        {
+          "type": "TYPE",
+          "id": "note-text-1",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-note-1"
+        }
+      ],
+      "expect": [
+        {
+          "region": "record_notes",
+          "contains": "functional testing"
+        },
+        {
+          "region": "record_notes",
+          "absent": "Prefers morning"
+        }
+      ]
+    },
+    {
+      "name": "delete a note after confirming",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-patients"
+        },
+        {
+          "type": "CLICK",
+          "id": "open-patient-1"
+        },
+        {
+          "type": "CLICK",
+          "id": "tab-notes"
+        },
+        {
+          "type": "CLICK",
+          "id": "delete-note-1"
+        },
+        {
+          "type": "CLICK",
+          "id": "confirm-delete-note-1"
+        }
+      ],
+      "expect": [
+        {
+          "region": "record_notes",
+          "absent": "Prefers morning"
+        },
+        {
+          "region": "record_notes",
+          "contains": "Allergic to latex"
+        }
+      ]
+    },
+    {
+      "name": "update a patient's phone number",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-patients"
+        },
+        {
+          "type": "CLICK",
+          "id": "open-patient-1"
+        },
+        {
+          "type": "CLICK",
+          "id": "edit-patient"
+        },
+        {
+          "type": "TYPE",
+          "id": "patient-phone",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-patient"
+        }
+      ],
+      "expect": [
+        {
+          "region": "record_phone",
+          "contains": "202-555-0143"
+        }
+      ]
+    },
+    {
+      "name": "add a patient, then delete the record",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-patients"
+        },
+        {
+          "type": "CLICK",
+          "id": "add-patient"
+        },
+        {
+          "type": "TYPE",
+          "id": "patient-name",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "patient-dob",
+          "params": {
+            "category": "boundary_min"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "patient-email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-patient"
+        },
+        {
+          "type": "CLICK",
+          "id": "delete-patient"
+        },
+        {
+          "type": "CLICK",
+          "id": "confirm-delete-patient"
+        }
+      ],
+      "expect": [
+        {
+          "region": "page_notice",
+          "contains": "Test User Input"
+        }
+      ],
+      "commits": false
+    },
+    {
+      "name": "put a patient on the nurse waiting list",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-patients"
+        },
+        {
+          "type": "CLICK",
+          "id": "open-patient-1"
+        },
+        {
+          "type": "SELECT",
+          "id": "waiting-service",
+          "params": {
+            "option": "nurse"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "waiting-note",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "join-waiting"
+        }
+      ],
+      "expect": [
+        {
+          "region": "waiting_rows",
+          "contains": "Alex Morgan"
+        },
+        {
+          "region": "waiting_rows",
+          "contains": "Test User Input"
+        }
+      ]
+    },
+    {
+      "name": "move a patient up the GP waiting list",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-waiting"
+        },
+        {
+          "type": "CLICK",
+          "id": "move-up-w2"
+        }
+      ],
+      "expect": [
+        {
+          "region": "waiting_next",
+          "contains": "Ffion Pugh"
+        }
+      ]
+    },
+    {
+      "name": "remove someone from a waiting list, then undo",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-waiting"
+        },
+        {
+          "type": "CLICK",
+          "id": "remove-w3"
+        },
+        {
+          "type": "CLICK",
+          "id": "undo-remove"
+        }
+      ],
+      "expect": [
+        {
+          "region": "waiting_count",
+          "contains": "4"
+        },
+        {
+          "region": "waiting_rows",
+          "contains": "Leah Davies"
+        }
+      ],
+      "commits": false
+    },
+    {
+      "name": "edit a waiting-list note in place",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-waiting"
+        },
+        {
+          "type": "CLICK",
+          "id": "edit-note-w2"
+        },
+        {
+          "type": "TYPE",
+          "id": "note-input-w2",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-note-w2"
+        },
+        {
+          "type": "REFRESH"
+        }
+      ],
+      "expect": [
+        {
+          "region": "note_w2",
+          "contains": "Test User Input"
+        }
+      ]
+    },
+    {
+      "name": "see one practitioner's appointments",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-book"
+        },
+        {
+          "type": "CLICK",
+          "id": "svc-gp"
+        },
+        {
+          "type": "CLICK",
+          "id": "who-returning"
+        },
+        {
+          "type": "TYPE",
+          "id": "lookup-email",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "payment",
+          "params": {
+            "option": "self"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "find-record"
+        },
+        {
+          "type": "CLICK",
+          "id": "hold-0611-1100"
+        },
+        {
+          "type": "CLICK",
+          "id": "slots-done"
+        },
+        {
+          "type": "CLICK",
+          "id": "book-visit"
+        },
+        {
+          "type": "CLICK",
+          "id": "nav-bookings"
+        },
+        {
+          "type": "SELECT",
+          "id": "bookings-with",
+          "params": {
+            "option": "okafor"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "bookings-apply"
+        }
+      ],
+      "expect": [
+        {
+          "region": "upcoming",
+          "contains": "CF-1001"
+        }
+      ]
     }
   ],
   "state_dependent": [
@@ -1103,8 +1967,8 @@
       ],
       "patch": {
         "file": "src/store.py",
-        "find": "    leaving = booking_place(conn, ref)  # where the visit is now: read it before the booking moves\n    conn.execute(\"UPDATE bookings SET practitioner = ?, slot = ? WHERE ref = ?\",\n                 (row[\"practitioner\"], row[\"slot\"], ref))\n",
-        "replace": "    conn.execute(\"UPDATE bookings SET practitioner = ?, slot = ? WHERE ref = ?\",\n                 (row[\"practitioner\"], row[\"slot\"], ref))\n    leaving = booking_place(conn, ref)  # where the visit is now: read it before the booking moves\n"
+        "find": "    leaving = booking_place(db, ref)  # where the visit is now: read it before the booking moves\n    db.do(\"UPDATE bookings SET practitioner_id = :p, slot_at = :at WHERE ref = :ref\",\n          p=row[\"practitioner\"], at=row[\"slot_at\"], ref=ref)\n",
+        "replace": "    db.do(\"UPDATE bookings SET practitioner_id = :p, slot_at = :at WHERE ref = :ref\",\n          p=row[\"practitioner\"], at=row[\"slot_at\"], ref=ref)\n    leaving = booking_place(db, ref)  # where the visit is now: read it before the booking moves\n"
       }
     },
     {
@@ -1298,6 +2162,102 @@
         "file": "src/wizard.py",
         "find": "    \"returning\": (\"lookup\", \"slots\", \"questions\", \"confirm\"),",
         "replace": "    \"returning\": (\"lookup\", \"slots\", \"confirm\"),"
+      }
+    },
+    {
+      "fault_id": "CLIN-4",
+      "fault_class": "calculation_error",
+      "subtype": "calculation",
+      "oracle": "extension",
+      "description": "The patient directory's 'Showing a–b of n' range assumes every page is full: on a last page with fewer than ten patients it claims rows that do not exist.",
+      "trigger_condition": "Page the directory to its last page (45 patients: page 5 holds five).",
+      "expected_behaviour": "The range shown never ends past the number of matching patients.",
+      "observable_violation": "'Showing 41–50 of 45' on the last page.",
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "/patients(\\?[^#]*)?$",
+          "expression": "last <= total",
+          "operands": {
+            "last": "range_to",
+            "total": "match_total"
+          },
+          "describes": "the last row shown is never past the number of patients that match"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 0,
+      "shortest_path": 2,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-patients"
+        },
+        {
+          "type": "CLICK",
+          "id": "page-last"
+        }
+      ],
+      "patch": {
+        "file": "src/store.py",
+        "find": "    last = min(first + DIRECTORY_PAGE, total)  # the range shown: rows first+1 .. last\n",
+        "replace": "    last = first + DIRECTORY_PAGE  # the range shown: rows first+1 .. last\n"
+      }
+    },
+    {
+      "fault_id": "CLIN-5",
+      "fault_class": "persistence_failure",
+      "subtype": "persistence",
+      "oracle": "extension",
+      "description": "The waiting list's in-place note editor shows the new note at once but its dirty check is inverted: an edited note is never sent to the server (an unchanged one is), so the edit is lost on the next load of the list.",
+      "trigger_condition": "Edit a waiting-list note in place, save it, and reload the list.",
+      "expected_behaviour": "A note saved in place is the note the list shows after a reload.",
+      "observable_violation": "After saving 'Test User Input' for Ffion Pugh and reloading, the list shows 'Mornings only.'",
+      "assertions": [
+        {
+          "kind": "region_stable_across_reload",
+          "where": "/waiting(\\?[^#]*)?$",
+          "region": "note_w2",
+          "describes": "a note saved in place survives a reload of the list"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 1,
+      "shortest_path": 5,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-waiting"
+        },
+        {
+          "type": "CLICK",
+          "id": "edit-note-w2"
+        },
+        {
+          "type": "TYPE",
+          "id": "note-input-w2",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-note-w2"
+        },
+        {
+          "type": "REFRESH"
+        }
+      ],
+      "patch": {
+        "file": "src/assets/desk.js",
+        "find": "      if (text === before) return;  // unchanged: nothing to send\n",
+        "replace": "      if (text !== before) return;  // unchanged: nothing to send\n"
       }
     }
   ],
@@ -1548,6 +2508,65 @@
       {
         "type": "CLICK",
         "id": "book-visit"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "nav-patients"
+      },
+      {
+        "type": "CLICK",
+        "id": "page-next"
+      },
+      {
+        "type": "CLICK",
+        "id": "page-prev"
+      },
+      {
+        "type": "CLICK",
+        "id": "open-patient-1"
+      },
+      {
+        "type": "CLICK",
+        "id": "tab-appointments"
+      },
+      {
+        "type": "CLICK",
+        "id": "tab-notes"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "nav-waiting"
+      },
+      {
+        "type": "CLICK",
+        "id": "move-down-w1"
+      },
+      {
+        "type": "CLICK",
+        "id": "queue-physio"
+      },
+      {
+        "type": "CLICK",
+        "id": "edit-note-w5"
+      },
+      {
+        "type": "TYPE",
+        "id": "note-input-w5",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "save-note-w5"
+      },
+      {
+        "type": "CLICK",
+        "id": "queue-gp"
       }
     ]
   ]

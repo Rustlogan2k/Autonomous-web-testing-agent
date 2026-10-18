@@ -5,7 +5,9 @@
   <dt>{{ t("label.service") }}</dt><dd><span id="manage-service">{{ service }}</span></dd>
   <dt>{{ t("label.with") }}</dt><dd><span id="manage-with">{{ with_name }}</span></dd>
   <dt>{{ t("label.when") }}</dt><dd><span id="manage-when">{{ when }}</span></dd>
-  <dt>{{ t("label.patient") }}</dt><dd><span id="manage-patient">{{ patient }}</span></dd>
+  <dt>{{ t("label.patient") }}</dt><dd><a id="manage-patient" href="/patients/{{ patient_id }}">{{ patient }}</a></dd>
   <dt>{{ t("label.paid_by") }}</dt><dd><span id="manage-paid-by">{{ paid }}</span></dd>
 </dl>
 {{ actions|raw }}
+<h2>{{ t("manage.history") }}</h2>
+<ol class="plain history">{{ history|raw }}</ol>

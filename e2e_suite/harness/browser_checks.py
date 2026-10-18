@@ -191,6 +191,7 @@ def check_workflows(app: AppManifest, url: str, label: str) -> list[dict]:
                     for e in failed],
                 "committed_state_changed": changed, "expected_state_change": want_change,
                 "errors": session.errors[:5], "foreign_requests": session.foreign[:5],
+                "urls": sorted({r.get("url", "") for r in session.records if r.get("url")}),
             })
         finally:
             session.close()
@@ -337,6 +338,50 @@ def check_sign_out(app: AppManifest, url: str) -> dict:
             "user_after_sign_out": signed_out.get("user"), "entry_lands_on": protected_again,
             "sign_in_again_steps": again, "sha_resumed": after.get("sha") == before.get("sha"),
             "errors": errors[:5]}
+
+
+def check_breadth(app: AppManifest, url: str, workflows: list[dict]) -> dict:
+    """Plan §8: every declared path view renders for its user (200, no error, not redirected
+    away), every workflow view's URL pattern was visited by its passing workflow, and every
+    workflow an entity operation or a pattern names passed (default vocabulary)."""
+    import re
+
+    from .manifest import breadth_problems
+
+    spec = app.data.get("breadth") or {}
+    ran = {w["name"].rsplit(" [", 1)[0]: w for w in workflows if w["name"].endswith("[default vocabulary]")}
+    views: list[dict] = []
+    by_user: dict = {}
+    for view in spec.get("views", []):
+        if "path" in view:
+            by_user.setdefault(view.get("as", app.macro_user.get("username")), []).append(view)
+        else:
+            result = ran.get(view["workflow"])
+            seen = [u for u in (result or {}).get("urls", []) if re.search(view["where"], u)]
+            views.append({"name": view["name"], "workflow": view["workflow"],
+                          "passed": bool(result and result["passed"] and seen), "visited": seen[:2]})
+    for user, group in by_user.items():
+        steps = [] if user is None else app.login_steps_as(user)
+        session = Session(url, steps or None)
+        try:
+            for view in group:
+                before = len(session.errors)
+                response = session.goto(view["path"])
+                wanted = urlsplit(urljoin(session.origin + "/", view["path"])).path
+                status = response.status if response is not None else None
+                ok = status in (200, None) and session.path == wanted and len(session.errors) == before
+                views.append({"name": view["name"], "path": view["path"], "as": user, "status": status,
+                              "landed": session.path, "errors": session.errors[before:][:3], "passed": ok})
+        finally:
+            session.close()
+    needed = {w for ops in spec.get("entities", {}).values() for w in (ops or {}).values()}
+    needed |= set(spec.get("patterns", {}).values())
+    failing = sorted(w for w in needed if not (ran.get(w) or {}).get("passed"))
+    size = breadth_problems(app)
+    return {"passed": not size and not failing and all(v["passed"] for v in views),
+            "size_problems": size, "workflows_failing": failing, "views": views,
+            "counts": {"views": len(spec.get("views", [])), "entities": len(spec.get("entities", {})),
+                       "patterns": sorted(spec.get("patterns", {}))}}
 
 
 def check_role_restrictions(app: AppManifest, url: str) -> list[dict]:

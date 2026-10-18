@@ -457,3 +457,42 @@ sign-in of a fresh variant), over the manifest's `entities` only; exact threshol
   `responses_fast`, `login_protected`, `login_macro_signs_in` (lands on the seed sha),
   `login_wrong_password_refused`, `login_sign_out_sound`, `role_restrictions_sound`,
   `docker_sign_in_and_seed_state`, `variant_storage_released`.
+
+## 13. [v2, plan §8] Breadth of the enlarged development apps
+
+The five enlarged development apps (clinicflow, wayfarer, ledgerly, bagstreet, helpline)
+declare their breadth in `app.json`, and admission checks it. Design the enlargement from
+common web patterns only; never look at the external benchmark's subject applications.
+
+```json
+"breadth": {
+  "views": [{"name": "patient directory", "path": "/patients"},
+            {"name": "practitioner's day", "path": "/my/day", "as": "amara.okafor"},
+            {"name": "sign-in page", "path": "/login", "as": null},
+            {"name": "slot table", "workflow": "<a workflow's name>", "where": "/book/\d+/slots"}],
+  "entities": {"patient": {"create": "<workflow>", "read": "<workflow>", "update": "<workflow>",
+                           "delete": "<workflow>"}},
+  "patterns": {"pagination": "<workflow>", "tabs": "<workflow>"}
+}
+```
+
+- **At least 12 views.** A *path view* is opened directly (signed in as the macro user, or
+  `as` another listed user, or anonymously with `null`) and must answer 200 on that same path
+  with no console error or failed request. A *workflow view* (for addresses that need state,
+  such as `/book/<draft>/slots`) is satisfied when its workflow passes and visits a URL
+  matching `where`. Hash routes are paths too (`/#/trips`).
+- **At least 3 entities with full CRUD through the UI**: each of `create`, `read`, `update`,
+  `delete` names a workflow that does it and passes in the default vocabulary.
+- **At least 5 interaction patterns** from: `pagination`, `sort-filter`, `search`, `modal`,
+  `tabs`, `inline-edit`, `wizard`, `reorder`, `bulk-action`, `undo`, `client-routing`; each
+  names a passing workflow that uses it.
+- The ≤ 40-controls-per-view rule still holds; the clean build stays free of console errors
+  and failed requests.
+- **Two new faults per app** in interaction types other than form submission (paging,
+  sorting or filtering, inline edit, reordering, modal or tab state, client-side routing or
+  Back), admitted under the usual rules. Examples from clinicflow: a paging range computed
+  as a full page on the last page (`region_arithmetic`), an inline editor whose inverted
+  dirty check never saves (`region_stable_across_reload`).
+- Checks: `breadth_declared` (static: the counts and every name it refers to) and
+  `breadth_exercised` (browser: the path views render, the workflow views were visited, and
+  every workflow the block names passed).
