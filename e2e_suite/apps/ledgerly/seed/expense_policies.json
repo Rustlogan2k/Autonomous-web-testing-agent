@@ -1,0 +1,6 @@
+[
+  {"category": "travel", "receipt_over_pence": 2500, "note": "Standard class rail; taxis only when there is no train or bus."},
+  {"category": "meals", "receipt_over_pence": 1500, "note": "Up to 30 pounds a day while travelling."},
+  {"category": "hotel", "receipt_over_pence": 0, "note": "Book through the travel desk where you can."},
+  {"category": "other", "receipt_over_pence": 1000, "note": "Explain what it was for in the description."}
+]

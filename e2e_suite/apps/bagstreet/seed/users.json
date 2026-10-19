@@ -1,0 +1,5 @@
+[
+  {"_id": "jo", "username": "jo.marsh", "name": "Jo Marsh", "roles": ["customer"], "pw": {"salt": "fa5b7c7779d5cb92898d14cd96257bff", "hash": "7811d37e080a29ab875c5ebfbc25ae8205159961ca1f7bad24d6811b23f1cb7c", "iter": 20000}, "addresses": [{"key": "home", "label": "Home", "name": "Jo Marsh", "line1": "3 Weavers Row", "town": "Hebden Bridge", "postcode": "HX7 8AD"}, {"key": "work", "label": "Work", "name": "Jo Marsh", "line1": "Unit 4, Calder Works", "town": "Todmorden", "postcode": "OL14 5RT"}]},
+  {"_id": "sam", "username": "sam.adeyemi", "name": "Sam Adeyemi", "roles": ["customer"], "pw": {"salt": "57a15b3fe921af332fe68a41feb28b18", "hash": "22cb135f7c05c70b459b3c87e2919657214c2fec461bce194aeb7b6f9a6bc4fe", "iter": 20000}, "addresses": [{"key": "home", "label": "Home", "name": "Sam Adeyemi", "line1": "18 Canal Street", "town": "Halifax", "postcode": "HX1 2QP"}]},
+  {"_id": "priya", "username": "priya.shah", "name": "Priya Shah", "roles": ["staff"], "pw": {"salt": "1816c05501b9757b910c7be04b5f6065", "hash": "d0c81cee74878e3d67577f9a2ff8200430a3bbfa3b9e1becf2ababd36b6d2915", "iter": 20000}, "addresses": []}
+]

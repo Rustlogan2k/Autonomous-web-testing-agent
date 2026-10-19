@@ -1,0 +1,6 @@
+[
+  {"code": "travel", "position": 1},
+  {"code": "meals", "position": 2},
+  {"code": "hotel", "position": 3},
+  {"code": "other", "position": 4}
+]

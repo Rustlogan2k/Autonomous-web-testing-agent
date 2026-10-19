@@ -1,0 +1,5 @@
+[
+  {"claim_id": "CL-101", "revision": 1, "line_no": 1, "description": "Train to Leeds", "category": "travel", "currency": "GBP", "amount_minor": 3850},
+  {"claim_id": "CL-102", "revision": 1, "line_no": 1, "description": "Taxi from the station", "category": "travel", "currency": "GBP", "amount_minor": 1840},
+  {"claim_id": "CL-103", "revision": 1, "line_no": 1, "description": "Conference ticket", "category": "other", "currency": "GBP", "amount_minor": 6400}
+]

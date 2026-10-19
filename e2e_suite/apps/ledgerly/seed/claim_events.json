@@ -1,0 +1,9 @@
+[
+  {"claim_id": "CL-101", "seq": 1, "kind": "claim_drafted", "actor_id": "ana", "acting_for": null, "revision": 1, "at": "2026-06-02T08:10:00", "note": ""},
+  {"claim_id": "CL-101", "seq": 2, "kind": "lodged", "actor_id": "ana", "acting_for": null, "revision": 1, "at": "2026-06-02T08:30:00", "note": ""},
+  {"claim_id": "CL-101", "seq": 3, "kind": "approved", "actor_id": "ben", "acting_for": null, "revision": 1, "at": "2026-06-03T10:00:00", "note": ""},
+  {"claim_id": "CL-102", "seq": 1, "kind": "claim_drafted", "actor_id": "ana", "acting_for": null, "revision": 1, "at": "2026-06-08T17:20:00", "note": ""},
+  {"claim_id": "CL-102", "seq": 2, "kind": "lodged", "actor_id": "ana", "acting_for": null, "revision": 1, "at": "2026-06-08T17:25:00", "note": ""},
+  {"claim_id": "CL-103", "seq": 1, "kind": "claim_drafted", "actor_id": "ana", "acting_for": null, "revision": 1, "at": "2026-06-09T12:00:00", "note": ""},
+  {"claim_id": "CL-103", "seq": 2, "kind": "lodged", "actor_id": "ana", "acting_for": null, "revision": 1, "at": "2026-06-09T12:05:00", "note": ""}
+]

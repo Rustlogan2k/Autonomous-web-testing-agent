@@ -27,3 +27,23 @@ table.bag input { width: 4.5rem; }
 .actions { display: flex; gap: 1rem; align-items: center; margin-top: 1.25rem; }
 fieldset { border: 1px solid #d9cfc3; margin-top: 1rem; }
 address { font-style: normal; white-space: pre-line; }
+.who { margin: 0; font-size: .9rem; color: #6f655b; }
+.pager { display: flex; gap: 1rem; margin-top: 1rem; }
+.tabs { display: flex; gap: .25rem; margin-top: 1.5rem; border-bottom: 1px solid #d9cfc3; }
+.tabs [role="tab"] { border-bottom: none; }
+.tabs [aria-selected="true"] { background: #7a3b1d; color: #fff; }
+.panel { padding: .75rem 0; }
+.facts { display: grid; grid-template-columns: 10rem auto; gap: .25rem 1rem; }
+.facts dd { margin: 0; }
+table.sizes, #staff-orders { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+table.sizes th, table.sizes td, #staff-orders th, #staff-orders td { border-bottom: 1px solid #d9cfc3; padding: .4rem; text-align: left; }
+.reviews li { margin: .5rem 0; }
+.cards { list-style: none; padding: 0; }
+.cards li { border: 1px solid #d9cfc3; padding: .6rem .8rem; margin: .5rem 0; background: #fff; }
+.steps { display: flex; gap: 1.5rem; padding-left: 1.2rem; color: #6f655b; }
+.steps [aria-current="step"] { color: #2b2622; font-weight: bold; }
+.overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(43, 38, 34, .45); }
+.overlay[hidden] { display: none; }
+.dialog-box { background: #fbf8f3; padding: 1.25rem 1.5rem; max-width: 26rem; border: 2px solid #2b2622; }
+.danger { border-color: #9b2117; color: #9b2117; }
+.signin { max-width: 22rem; margin: 0 auto; }

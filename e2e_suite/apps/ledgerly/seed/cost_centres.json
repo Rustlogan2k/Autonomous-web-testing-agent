@@ -1,0 +1,6 @@
+[
+  {"code": "CC-01", "name": "Operations", "budget_pence": 250000},
+  {"code": "CC-02", "name": "Sales", "budget_pence": 400000},
+  {"code": "CC-03", "name": "Research", "budget_pence": 150000},
+  {"code": "CC-04", "name": "Community events", "budget_pence": 50000}
+]

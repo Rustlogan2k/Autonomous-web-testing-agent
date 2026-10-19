@@ -1,6 +1,7 @@
-// Ledgerly's domain: a claim's state is never stored, only derived. A session's event log
-// (store.js) is folded over the seed on every request; commands validate against the folded
-// state and answer with the events to append, or with the reason they were refused.
+// Ledgerly's domain: a claim's state is never stored, only derived. Its events (claim_events)
+// are folded in order on every request; its lines are the revision the latest line-carrying
+// event names. Commands validate against the folded state and answer with the events to
+// record (and the lines they carry), or with the reason they were refused.
 
 import { CURRENCIES, parseMinor, parseRates, roundToPence, sterlingHundredths } from "./static/money.js";
 
@@ -19,74 +20,67 @@ const STATUS_AFTER = {
   resubmitted: "awaiting", // back into the manager's queue
 };
 
-/** Every event that belongs to a claim's history. */
-const CLAIM_EVENTS = new Set(["claim_drafted", "draft_saved", "lodged", "approved", "sent_back", "escalated",
-                              "rejected", "resubmitted"]);
 const CARRIES_LINES = new Set(["claim_drafted", "draft_saved", "lodged", "resubmitted"]);
 
+/** The reference data every request uses, read once from the seed: people, rates, limits. */
 export function config(seed) {
+  const people = Object.fromEntries(seed.users.map((user) => [user.id, {
+    name: user.name, role: user.role, costCentre: user.cost_centre,
+  }]));
+  const manager = seed.users.find((user) => user.role === "manager");
   return {
-    people: seed.people,
-    claimant: seed.claimant,
-    rates: parseRates(seed.rates_to_gbp),
-    categories: seed.categories,
-    managerLimit: parseMinor(seed.manager_limit),
-    lineLimit: parseMinor(seed.line_limit),
-    maxLines: seed.max_lines,
+    people,
+    delegations: seed.delegations.map((d) => [d.delegate_id, d.principal_id]),
+    // Rates are numeric(8,4) in the database but have two decimals: "0.8600" -> "0.86".
+    rates: parseRates(Object.fromEntries(seed.currencies.map((c) => [c.code, Number(c.rate).toFixed(2)]))),
+    categories: seed.categories.slice().sort((a, b) => a.position - b.position).map((c) => c.code),
+    managerLimit: manager.approval_limit_pence,
+    lineLimit: 1000000,
+    maxLines: 6,
   };
 }
 
-// -- folding the log ------------------------------------------------------------------------
+// -- folding the events ---------------------------------------------------------------------
 
-export function fold(seed, events) {
-  const state = {
-    viewer: seed.claimant,
-    claims: structuredClone(seed.claims),
-    flash: null,
-    nextNumber: seed.first_claim_number,
-  };
-  for (const claim of state.claims) {
-    state.nextNumber = Math.max(state.nextNumber, Number(claim.id.slice(3)) + 1);
+/** Claims as they stand, from the rows of claims, claim_lines and claim_events. */
+export function fold(rows) {
+  const linesOf = new Map();
+  for (const line of rows.lines) {
+    const key = `${line.claim_id}:${line.revision}`;
+    if (!linesOf.has(key)) linesOf.set(key, []);
+    linesOf.get(key).push(line);
   }
-  for (const event of events) apply(state, event);
-  return state;
+  const claims = rows.claims.map((row) => ({
+    id: row.id, owner: row.owner_id, costCentre: row.cost_centre, status: "draft",
+    approved_by: "", approved_via: "", revision: 0, seq: 0, lines: [], history: [],
+  }));
+  const byId = new Map(claims.map((claim) => [claim.id, claim]));
+  const ordered = rows.events.slice().sort((a, b) => a.claim_id.localeCompare(b.claim_id) || a.seq - b.seq);
+  for (const event of ordered) {
+    const claim = byId.get(event.claim_id);
+    const by = event.acting_for ?? event.actor_id;
+    const via = event.acting_for ? event.actor_id : "";
+    if (CARRIES_LINES.has(event.kind)) {
+      claim.lines = (linesOf.get(`${claim.id}:${event.revision}`) ?? [])
+        .sort((a, b) => a.line_no - b.line_no)
+        .map((line) => ({ description: line.description, category: line.category, currency: line.currency,
+                          minor: line.amount_minor }));
+    }
+    claim.revision = Math.max(claim.revision, event.revision);
+    claim.seq = event.seq;
+    if (event.kind === "approved") {
+      claim.approved_by = by;
+      claim.approved_via = via;
+    }
+    claim.history.push({ type: event.kind, by, via, at: event.at, note: event.note });
+    const next = STATUS_AFTER[event.kind];
+    if (next) claim.status = next;
+  }
+  return claims.sort((a, b) => a.id.localeCompare(b.id));
 }
 
-function apply(state, event) {
-  if (event.type === "viewer_switched") {
-    state.viewer = event.viewer;
-    return;
-  }
-  if (event.type === "flash") {
-    state.flash = { path: event.path, notice: event.notice ?? "", error: event.error ?? "",
-                    errors: event.errors ?? [], rows: event.rows ?? null };
-    return;
-  }
-  if (event.type === "flash_cleared") {
-    state.flash = null;
-    return;
-  }
-  if (!CLAIM_EVENTS.has(event.type)) return; // session_opened, and anything from a newer build
-  let claim = findClaim(state, event.claim);
-  if (!claim) {
-    claim = { id: event.claim, owner: event.by, status: "draft", approved_by: "", lines: [], history: [] };
-    state.claims.push(claim);
-    state.nextNumber = Math.max(state.nextNumber, Number(event.claim.slice(3)) + 1);
-  }
-  if (CARRIES_LINES.has(event.type)) claim.lines = event.lines;
-  if (event.type === "approved") claim.approved_by = event.by;
-  claim.history.push({ type: event.type, by: event.by, at: event.at, note: event.note ?? "" });
-  const next = STATUS_AFTER[event.type];
-  if (next) claim.status = next;
-}
-
-export function findClaim(state, id) {
-  return state.claims.find((claim) => claim.id === id) ?? null;
-}
-
-/** What `/__wta/state` reports: the claims, not who is looking at them or what is on screen. */
-export function committed(state) {
-  return { claims: [...state.claims].sort((a, b) => a.id.localeCompare(b.id)) };
+export function findClaim(claims, id) {
+  return claims.find((claim) => claim.id === id) ?? null;
 }
 
 // -- money on a claim -----------------------------------------------------------------------
@@ -156,10 +150,15 @@ export function validateRows(rows, cfg) {
   return { lines: errors.length ? [] : lines, errors };
 }
 
-// -- commands -------------------------------------------------------------------------------
+// -- who acts, and as whom ----------------------------------------------------------------
 
 export function roleOf(cfg, person) {
   return cfg.people[person]?.role ?? "";
+}
+
+/** The people `user` may act for, in the order they were delegated (empty: only themself). */
+export function principalsOf(cfg, user) {
+  return cfg.delegations.filter(([delegate]) => delegate === user).map(([, principal]) => principal);
 }
 
 /** Who can act on a claim next, or "" when nobody can. */
@@ -189,21 +188,22 @@ export function editorActions(claim) {
   return [];
 }
 
-/** Save, lodge or resubmit from the editor. `claim` is null for a new claim. */
-export function editCommand(state, cfg, claim, action, rows, at) {
-  const by = state.viewer;
+// -- commands -------------------------------------------------------------------------------
+
+/** Save, lodge or resubmit from the editor, as `by`. `claim` is null for a new claim. */
+export function editCommand(cfg, by, claim, nextId, action, rows) {
   if (roleOf(cfg, by) !== "employee") return { refused: "msg.only_claimant" };
   if (claim && (claim.owner !== by || !editable(claim))) return { refused: "msg.not_editable" };
   if (!editorActions(claim).includes(action)) return { refused: "msg.not_editable" };
   const { lines, errors } = validateRows(rows, cfg);
   if (errors.length) return { invalid: errors };
-  const id = claim ? claim.id : `CL-${state.nextNumber}`;
+  const id = claim ? claim.id : nextId;
   const events = [];
-  if (!claim) events.push({ type: "claim_drafted", claim: id, by, at, lines });
-  if (action === "save" && claim) events.push({ type: "draft_saved", claim: id, by, at, lines });
-  if (action === "lodge") events.push({ type: "lodged", claim: id, by, at, lines });
-  if (action === "resubmit") events.push({ type: "resubmitted", claim: id, by, at, lines });
-  return { events, claim: id, notice: `msg.done_${action}` };
+  if (!claim) events.push({ type: "claim_drafted", claim: id, by, lines });
+  if (action === "save" && claim) events.push({ type: "draft_saved", claim: id, by, lines });
+  if (action === "lodge") events.push({ type: "lodged", claim: id, by, lines });
+  if (action === "resubmit") events.push({ type: "resubmitted", claim: id, by, lines });
+  return { events, claim: id, created: !claim, notice: `msg.done_${action}` };
 }
 
 /** Whether the manager may approve this claim alone. */
@@ -220,9 +220,8 @@ const DECISIONS = {
 const DECISION_EVENT = { approve: "approved", send_back: "sent_back", escalate: "escalated", reject: "rejected" };
 const NOTE_REQUIRED = new Set(["send_back", "reject"]);
 
-/** Approve, send back, escalate or reject. */
-export function decideCommand(state, cfg, claim, action, rawNote, at) {
-  const by = state.viewer;
+/** Approve, send back, escalate or reject, as `by`. */
+export function decideCommand(cfg, by, claim, action, rawNote) {
   const rule = DECISIONS[roleOf(cfg, by)];
   if (!rule || !rule.actions.includes(action)) return { refused: "msg.not_your_decision" };
   if (claim.status !== rule.from) return { refused: "msg.not_your_turn" };
@@ -232,6 +231,23 @@ export function decideCommand(state, cfg, claim, action, rawNote, at) {
   if (action === "approve" && roleOf(cfg, by) === "manager" && !withinManagerLimit(claim, cfg)) {
     return { refused: "msg.over_limit" };
   }
-  return { events: [{ type: DECISION_EVENT[action], claim: claim.id, by, at, note }],
+  return { events: [{ type: DECISION_EVENT[action], claim: claim.id, by, note }],
            notice: `msg.done_${action}` };
+}
+
+/** A draft its claimant no longer wants: it was never lodged, so it can go entirely. */
+export function discardCommand(cfg, by, claim) {
+  if (roleOf(cfg, by) !== "employee" || claim.owner !== by || claim.status !== "draft") {
+    return { refused: "msg.not_discardable" };
+  }
+  return { discard: claim.id, notice: "msg.done_discard" };
+}
+
+/** What `/__wta/state` reports about claims: business data only. */
+export function committedClaims(claims) {
+  return claims.map((claim) => ({
+    id: claim.id, owner: claim.owner, cost_centre: claim.costCentre, status: claim.status,
+    approved_by: claim.approved_by, approved_via: claim.approved_via, lines: claim.lines,
+    history: claim.history.map((entry) => [entry.type, entry.by, entry.via, entry.note]),
+  }));
 }

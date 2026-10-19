@@ -2,27 +2,100 @@
   "app_id": "bagstreet",
   "name": "Bagstreet",
   "domain": "e-commerce",
-  "user_goal": "Find products, fill a bag, use a voucher, choose delivery or collection, and place an order.",
-  "architecture": "server-rendered-multipage+html-forms",
-  "stack": "python-stdlib+sqlite",
-  "persistence": "sqlite rows partitioned by session; everything rendered from the database (post/redirect/get)",
+  "user_goal": "Find products, fill a bag, use a voucher, choose delivery or collection and place an order; keep an address book and review products; staff dispatch orders.",
+  "architecture": "server-rendered-multipage+html-forms+progressive-enhancement",
+  "stack": "python-stdlib+pymongo+mongodb",
+  "persistence": "mongodb database per signed-in session; everything rendered from the database (post/redirect/get)",
   "entry": "/",
   "start": ["python", "src/server.py"],
   "dockerfile": true,
   "workflow_graph": {
-    "kind": ["linear-wizard", "revisit"],
-    "nodes": ["home", "results", "product", "bag", "delivery", "review", "confirmation", "orders",
-              "express-info", "gift-info"],
-    "edges": [["home", "results"], ["results", "results"], ["results", "product"], ["product", "bag"],
-              ["product", "results"], ["bag", "bag"], ["bag", "delivery"], ["bag", "gift-info"],
-              ["delivery", "delivery"], ["delivery", "review"], ["delivery", "bag"], ["review", "delivery"],
-              ["review", "bag"], ["review", "confirmation"], ["confirmation", "orders"],
-              ["orders", "confirmation"], ["home", "express-info"]]
+    "kind": ["linear-wizard", "hub-and-spoke", "revisit"],
+    "nodes": [
+      "login",
+      "forgot",
+      "home",
+      "results",
+      "product",
+      "review-editor",
+      "bag",
+      "delivery",
+      "review",
+      "confirmation",
+      "orders",
+      "account",
+      "addresses",
+      "address-form",
+      "staff-orders",
+      "access-notice",
+      "express-info",
+      "gift-info"
+    ],
+    "edges": [
+      ["login", "home"],
+      ["login", "forgot"],
+      ["home", "results"],
+      ["results", "results"],
+      ["results", "product"],
+      ["product", "bag"],
+      ["product", "results"],
+      ["product", "product"],
+      ["product", "review-editor"],
+      ["review-editor", "product"],
+      ["bag", "bag"],
+      ["bag", "delivery"],
+      ["bag", "gift-info"],
+      ["delivery", "delivery"],
+      ["delivery", "review"],
+      ["delivery", "bag"],
+      ["review", "delivery"],
+      ["review", "bag"],
+      ["review", "confirmation"],
+      ["confirmation", "orders"],
+      ["orders", "confirmation"],
+      ["home", "express-info"],
+      ["home", "account"],
+      ["account", "addresses"],
+      ["account", "orders"],
+      ["addresses", "address-form"],
+      ["address-form", "addresses"],
+      ["addresses", "addresses"],
+      ["account", "login"],
+      ["home", "staff-orders"],
+      ["staff-orders", "staff-orders"],
+      ["home", "access-notice"]
+    ]
   },
-  "features": ["server-rendered", "server-state", "table", "filter", "sort", "conditional-section",
-               "cross-page-state", "dynamic-validation"],
-  "vocabulary": {"progress_keys": ["act.add", "act.checkout", "act.review_order", "act.place_order",
-                                   "act.update_bag", "act.apply_voucher"]},
+  "features": [
+    "server-rendered",
+    "server-state",
+    "login",
+    "roles",
+    "table",
+    "filter",
+    "sort",
+    "pagination",
+    "search",
+    "tabs",
+    "modal",
+    "bulk-action",
+    "conditional-section",
+    "cross-page-state",
+    "dynamic-validation"
+  ],
+  "vocabulary": {
+    "progress_keys": [
+      "act.add",
+      "act.checkout",
+      "act.review_order",
+      "act.place_order",
+      "act.update_bag",
+      "act.apply_voucher",
+      "act.save",
+      "act.post_review",
+      "act.remove_selected"
+    ]
+  },
   "regions": {
     "results_list": "#results-list",
     "bag_subtotal": "#bag-subtotal",
@@ -33,75 +106,390 @@
     "confirm_method": "#confirm-method",
     "confirm_address": "#confirm-address",
     "confirm_total": "#confirm-total",
-    "order_history": "#order-history"
+    "order_history": "#order-history",
+    "result_1_price": "#result-1-price",
+    "result_2_price": "#result-2-price",
+    "results_page": "#results-page",
+    "results_pages": "#results-pages",
+    "order_status": "#order-status",
+    "review_list": "#review-list",
+    "address_list": "#address-list",
+    "staff_orders": "#staff-orders",
+    "signed_in_as": "#signed-in-as",
+    "login_error": "#login-error",
+    "access_notice": "#access-notice"
   },
   "workflows": [
-    {"name": "buy a lantern with standard delivery",
-     "trace": [{"type": "CLICK", "id": "cat-lighting"}, {"type": "CLICK", "id": "product-lantern"},
-               {"type": "CLICK", "id": "add-to-bag"}, {"type": "CLICK", "id": "go-checkout"},
-               {"type": "TYPE", "id": "full-name", "params": {"category": "valid_typical"}},
-               {"type": "TYPE", "id": "address", "params": {"category": "valid_typical"}},
-               {"type": "CLICK", "id": "review-order"}, {"type": "CLICK", "id": "place-order"}],
-     "expect": [{"region": "confirm_total", "contains": "27.95"},
-                {"region": "confirm_address", "contains": "Test User Input"}]},
-    {"name": "use the 10% voucher on a kettle",
-     "trace": [{"type": "CLICK", "id": "cat-kitchen"}, {"type": "CLICK", "id": "product-kettle"},
-               {"type": "CLICK", "id": "add-to-bag"},
-               {"type": "SELECT", "id": "voucher", "params": {"option": "welcome10"}},
-               {"type": "CLICK", "id": "apply-voucher"}],
-     "expect": [{"region": "bag_discount", "contains": "3.60"}, {"region": "bag_total", "contains": "32.40"}]},
-    {"name": "collect a hammock from the shop",
-     "trace": [{"type": "CLICK", "id": "cat-outdoor"}, {"type": "CLICK", "id": "product-hammock"},
-               {"type": "CLICK", "id": "add-to-bag"}, {"type": "CLICK", "id": "go-checkout"},
-               {"type": "SELECT", "id": "method", "params": {"option": "collect"}},
-               {"type": "CLICK", "id": "review-order"}, {"type": "CLICK", "id": "place-order"}],
-     "expect": [{"region": "confirm_address", "contains": "14 Mill Lane"},
-                {"region": "confirm_total", "contains": "44.00"}]},
-    {"name": "search, then sort by price",
-     "trace": [{"type": "TYPE", "id": "search-q", "params": {"category": "valid_typical"}},
-               {"type": "CLICK", "id": "search-go"},
-               {"type": "SELECT", "id": "sort", "params": {"option": "price-asc"}},
-               {"type": "CLICK", "id": "apply-filters"}],
-     "expect": [{"region": "results_list", "contains": "Linen tea towel from £8.50 Solar path lights"}],
-     "commits": false},
-    {"name": "choose the large lantern",
-     "trace": [{"type": "CLICK", "id": "cat-lighting"}, {"type": "CLICK", "id": "product-lantern"},
-               {"type": "SELECT", "id": "variant", "params": {"option": "large"}},
-               {"type": "CLICK", "id": "add-to-bag"}],
-     "expect": [{"region": "bag_subtotal", "contains": "32.00"}]},
-    {"name": "buy, then find the order in the history",
-     "trace": [{"type": "CLICK", "id": "cat-kitchen"}, {"type": "CLICK", "id": "product-tea-towel"},
-               {"type": "CLICK", "id": "add-to-bag"}, {"type": "CLICK", "id": "go-checkout"},
-               {"type": "TYPE", "id": "full-name", "params": {"category": "valid_typical"}},
-               {"type": "TYPE", "id": "address", "params": {"category": "valid_typical"}},
-               {"type": "CLICK", "id": "review-order"}, {"type": "CLICK", "id": "place-order"},
-               {"type": "CLICK", "id": "all-orders"}],
-     "expect": [{"region": "order_history", "contains": "12.45"}]}
+    {
+      "name": "buy a lantern with standard delivery",
+      "trace": [
+        {"type": "CLICK", "id": "cat-lighting"},
+        {"type": "CLICK", "id": "product-lantern"},
+        {"type": "CLICK", "id": "add-to-bag"},
+        {"type": "CLICK", "id": "go-checkout"},
+        {"type": "TYPE", "id": "full-name", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "address", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "review-order"},
+        {"type": "CLICK", "id": "place-order"}
+      ],
+      "expect": [
+        {"region": "confirm_total", "contains": "27.95"},
+        {"region": "confirm_address", "contains": "Test User Input"}
+      ]
+    },
+    {
+      "name": "use the 10% voucher on a kettle",
+      "trace": [
+        {"type": "CLICK", "id": "cat-kitchen"},
+        {"type": "CLICK", "id": "product-kettle"},
+        {"type": "CLICK", "id": "add-to-bag"},
+        {"type": "SELECT", "id": "voucher", "params": {"option": "welcome10"}},
+        {"type": "CLICK", "id": "apply-voucher"}
+      ],
+      "expect": [
+        {"region": "bag_discount", "contains": "3.60"},
+        {"region": "bag_total", "contains": "32.40"}
+      ]
+    },
+    {
+      "name": "collect a hammock from the shop",
+      "trace": [
+        {"type": "CLICK", "id": "cat-outdoor"},
+        {"type": "CLICK", "id": "product-hammock"},
+        {"type": "CLICK", "id": "add-to-bag"},
+        {"type": "CLICK", "id": "go-checkout"},
+        {"type": "SELECT", "id": "method", "params": {"option": "collect"}},
+        {"type": "CLICK", "id": "review-order"},
+        {"type": "CLICK", "id": "place-order"}
+      ],
+      "expect": [
+        {"region": "confirm_address", "contains": "14 Mill Lane"},
+        {"region": "confirm_total", "contains": "44.00"}
+      ]
+    },
+    {
+      "name": "search, then sort by price",
+      "trace": [
+        {"type": "TYPE", "id": "search-q", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "search-go"},
+        {"type": "SELECT", "id": "sort", "params": {"option": "price-asc"}},
+        {"type": "CLICK", "id": "apply-filters"}
+      ],
+      "expect": [
+        {
+          "region": "results_list",
+          "contains": "Linen tea towel from £8.50 Solar path lights"
+        }
+      ],
+      "commits": false
+    },
+    {
+      "name": "choose the large lantern",
+      "trace": [
+        {"type": "CLICK", "id": "cat-lighting"},
+        {"type": "CLICK", "id": "product-lantern"},
+        {"type": "SELECT", "id": "variant", "params": {"option": "large"}},
+        {"type": "CLICK", "id": "add-to-bag"}
+      ],
+      "expect": [
+        {"region": "bag_subtotal", "contains": "32.00"}
+      ]
+    },
+    {
+      "name": "buy, then find the order in the history",
+      "trace": [
+        {"type": "CLICK", "id": "cat-kitchen"},
+        {"type": "CLICK", "id": "product-tea-towel"},
+        {"type": "CLICK", "id": "add-to-bag"},
+        {"type": "CLICK", "id": "go-checkout"},
+        {"type": "TYPE", "id": "full-name", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "address", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "review-order"},
+        {"type": "CLICK", "id": "place-order"},
+        {"type": "CLICK", "id": "all-orders"}
+      ],
+      "expect": [
+        {"region": "order_history", "contains": "12.45"}
+      ]
+    },
+    {
+      "name": "page through everything the shop sells",
+      "trace": [
+        {"type": "CLICK", "id": "cat-all"},
+        {"type": "CLICK", "id": "results-next"}
+      ],
+      "expect": [
+        {"region": "results_page", "contains": "2"},
+        {"region": "results_pages", "contains": "2"},
+        {"region": "results_list", "contains": "Folding stool"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "sort the outdoor department, dearest first",
+      "trace": [
+        {"type": "CLICK", "id": "cat-outdoor"},
+        {"type": "SELECT", "id": "sort", "params": {"option": "price-desc"}},
+        {"type": "CLICK", "id": "apply-filters"}
+      ],
+      "expect": [
+        {"region": "result_1_price", "contains": "44.00"},
+        {"region": "result_2_price", "contains": "28.00"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "narrow a search to one department",
+      "trace": [
+        {"type": "TYPE", "id": "search-q", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "search-go"},
+        {"type": "SELECT", "id": "filter-category", "params": {"option": "kitchen"}},
+        {"type": "CLICK", "id": "apply-filters"}
+      ],
+      "expect": [
+        {"region": "results_list", "contains": "Bread crock"},
+        {"region": "results_list", "absent": "Storm lantern"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "add an address to the address book",
+      "trace": [
+        {"type": "CLICK", "id": "nav-account"},
+        {"type": "CLICK", "id": "account-addresses"},
+        {"type": "CLICK", "id": "add-address"},
+        {"type": "TYPE", "id": "addr-label", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "addr-name", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "addr-line1", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "addr-town", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "addr-postcode", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "save-address"}
+      ],
+      "expect": [
+        {
+          "region": "address_list",
+          "contains": "Test User Input, Test User Input Test User Input"
+        }
+      ]
+    },
+    {
+      "name": "look up the saved addresses",
+      "trace": [
+        {"type": "CLICK", "id": "nav-account"},
+        {"type": "CLICK", "id": "account-addresses"}
+      ],
+      "expect": [
+        {"region": "address_list", "contains": "3 Weavers Row, Hebden Bridge HX7 8AD"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "change the street of the work address",
+      "trace": [
+        {"type": "CLICK", "id": "nav-account"},
+        {"type": "CLICK", "id": "account-addresses"},
+        {"type": "CLICK", "id": "edit-address-work"},
+        {"type": "TYPE", "id": "addr-line1", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "save-address"}
+      ],
+      "expect": [
+        {"region": "address_list", "contains": "Test User Input, Todmorden OL14 5RT"},
+        {"region": "address_list", "absent": "Calder Works"}
+      ]
+    },
+    {
+      "name": "delete the work address after confirming",
+      "trace": [
+        {"type": "CLICK", "id": "nav-account"},
+        {"type": "CLICK", "id": "account-addresses"},
+        {"type": "CLICK", "id": "delete-address-work"},
+        {"type": "CLICK", "id": "confirm-delete-work"}
+      ],
+      "expect": [
+        {"region": "address_list", "absent": "Todmorden"},
+        {"region": "address_list", "contains": "Hebden Bridge"}
+      ]
+    },
+    {
+      "name": "deliver to a saved address",
+      "trace": [
+        {"type": "CLICK", "id": "cat-lighting"},
+        {"type": "CLICK", "id": "product-lantern"},
+        {"type": "CLICK", "id": "add-to-bag"},
+        {"type": "CLICK", "id": "go-checkout"},
+        {"type": "SELECT", "id": "saved-address", "params": {"option": "work"}},
+        {"type": "CLICK", "id": "review-order"},
+        {"type": "CLICK", "id": "place-order"}
+      ],
+      "expect": [
+        {"region": "confirm_address", "contains": "Unit 4, Calder Works, Todmorden OL14 5RT"},
+        {"region": "confirm_total", "contains": "27.95"}
+      ]
+    },
+    {
+      "name": "read the reviews of the hammock",
+      "trace": [
+        {"type": "CLICK", "id": "cat-outdoor"},
+        {"type": "CLICK", "id": "product-hammock"},
+        {"type": "CLICK", "id": "tab-reviews"}
+      ],
+      "expect": [
+        {"region": "review_list", "contains": "Took two of us at once"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "review the lantern",
+      "trace": [
+        {"type": "CLICK", "id": "cat-lighting"},
+        {"type": "CLICK", "id": "product-lantern"},
+        {"type": "CLICK", "id": "tab-reviews"},
+        {"type": "SELECT", "id": "review-stars", "params": {"option": "4"}},
+        {"type": "TYPE", "id": "review-text", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "post-review"}
+      ],
+      "expect": [
+        {"region": "review_list", "contains": "4/5 Jo Marsh"},
+        {"region": "review_list", "contains": "comment used for functional testing"}
+      ]
+    },
+    {
+      "name": "change the rating of a review",
+      "trace": [
+        {"type": "CLICK", "id": "cat-lighting"},
+        {"type": "CLICK", "id": "product-lantern"},
+        {"type": "CLICK", "id": "tab-reviews"},
+        {"type": "SELECT", "id": "review-stars", "params": {"option": "4"}},
+        {"type": "TYPE", "id": "review-text", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "post-review"},
+        {"type": "CLICK", "id": "edit-review"},
+        {"type": "SELECT", "id": "review-stars", "params": {"option": "3"}},
+        {"type": "CLICK", "id": "save-review"}
+      ],
+      "expect": [
+        {"region": "review_list", "contains": "3/5 Jo Marsh"}
+      ]
+    },
+    {
+      "name": "delete a review after confirming",
+      "trace": [
+        {"type": "CLICK", "id": "cat-lighting"},
+        {"type": "CLICK", "id": "product-desk-lamp"},
+        {"type": "CLICK", "id": "tab-reviews"},
+        {"type": "CLICK", "id": "delete-review"},
+        {"type": "CLICK", "id": "confirm-delete-review"}
+      ],
+      "expect": [
+        {"region": "review_list", "absent": "heavy base"}
+      ]
+    },
+    {
+      "name": "check the bag from the header",
+      "trace": [
+        {"type": "CLICK", "id": "cat-kitchen"},
+        {"type": "CLICK", "id": "product-kettle"},
+        {"type": "CLICK", "id": "add-to-bag"},
+        {"type": "CLICK", "id": "nav-home"},
+        {"type": "CLICK", "id": "nav-bag"}
+      ],
+      "expect": [
+        {"region": "bag_subtotal", "contains": "36.00"}
+      ]
+    },
+    {
+      "name": "raise a quantity in the bag",
+      "trace": [
+        {"type": "CLICK", "id": "cat-lighting"},
+        {"type": "CLICK", "id": "product-lantern"},
+        {"type": "CLICK", "id": "add-to-bag"},
+        {"type": "TYPE", "id": "qty-1", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "update-bag"}
+      ],
+      "expect": [
+        {"region": "bag_subtotal", "contains": "1,008.00"}
+      ]
+    },
+    {
+      "name": "remove two items at once",
+      "trace": [
+        {"type": "CLICK", "id": "cat-lighting"},
+        {"type": "CLICK", "id": "product-lantern"},
+        {"type": "CLICK", "id": "add-to-bag"},
+        {"type": "CLICK", "id": "nav-home"},
+        {"type": "CLICK", "id": "cat-kitchen"},
+        {"type": "CLICK", "id": "product-kettle"},
+        {"type": "CLICK", "id": "add-to-bag"},
+        {"type": "CLICK", "id": "nav-home"},
+        {"type": "CLICK", "id": "cat-kitchen"},
+        {"type": "CLICK", "id": "product-tea-towel"},
+        {"type": "CLICK", "id": "add-to-bag"},
+        {"type": "CLICK", "id": "pick-1"},
+        {"type": "CLICK", "id": "pick-2"},
+        {"type": "CLICK", "id": "remove-selected"}
+      ],
+      "expect": [
+        {"region": "notice", "contains": "(2)"},
+        {"region": "bag_subtotal", "contains": "8.50"}
+      ]
+    }
   ],
   "state_dependent": [
-    {"name": "Update bag changes the bag only after a quantity was edited",
-     "useless": {"trace": [{"type": "CLICK", "id": "cat-lighting"}, {"type": "CLICK", "id": "product-lantern"},
-                           {"type": "CLICK", "id": "add-to-bag"}],
-                 "action": {"type": "CLICK", "id": "update-bag"}},
-     "useful": {"trace": [{"type": "CLICK", "id": "cat-lighting"}, {"type": "CLICK", "id": "product-lantern"},
-                          {"type": "CLICK", "id": "add-to-bag"},
-                          {"type": "TYPE", "id": "qty-1", "params": {"category": "valid_typical"}}],
-                "action": {"type": "CLICK", "id": "update-bag"}}},
-    {"name": "Use voucher changes the bag only when a voucher is chosen",
-     "useless": {"trace": [{"type": "CLICK", "id": "cat-kitchen"}, {"type": "CLICK", "id": "product-kettle"},
-                           {"type": "CLICK", "id": "add-to-bag"}],
-                 "action": {"type": "CLICK", "id": "apply-voucher"}},
-     "useful": {"trace": [{"type": "CLICK", "id": "cat-kitchen"}, {"type": "CLICK", "id": "product-kettle"},
-                          {"type": "CLICK", "id": "add-to-bag"},
-                          {"type": "SELECT", "id": "voucher", "params": {"option": "welcome10"}}],
-                "action": {"type": "CLICK", "id": "apply-voucher"}}}
+    {
+      "name": "Update bag changes the bag only after a quantity was edited",
+      "useless": {
+        "trace": [
+          {"type": "CLICK", "id": "cat-lighting"},
+          {"type": "CLICK", "id": "product-lantern"},
+          {"type": "CLICK", "id": "add-to-bag"}
+        ],
+        "action": {"type": "CLICK", "id": "update-bag"}
+      },
+      "useful": {
+        "trace": [
+          {"type": "CLICK", "id": "cat-lighting"},
+          {"type": "CLICK", "id": "product-lantern"},
+          {"type": "CLICK", "id": "add-to-bag"},
+          {"type": "TYPE", "id": "qty-1", "params": {"category": "valid_typical"}}
+        ],
+        "action": {"type": "CLICK", "id": "update-bag"}
+      }
+    },
+    {
+      "name": "Use voucher changes the bag only when a voucher is chosen",
+      "useless": {
+        "trace": [
+          {"type": "CLICK", "id": "cat-kitchen"},
+          {"type": "CLICK", "id": "product-kettle"},
+          {"type": "CLICK", "id": "add-to-bag"}
+        ],
+        "action": {"type": "CLICK", "id": "apply-voucher"}
+      },
+      "useful": {
+        "trace": [
+          {"type": "CLICK", "id": "cat-kitchen"},
+          {"type": "CLICK", "id": "product-kettle"},
+          {"type": "CLICK", "id": "add-to-bag"},
+          {"type": "SELECT", "id": "voucher", "params": {"option": "welcome10"}}
+        ],
+        "action": {"type": "CLICK", "id": "apply-voucher"}
+      }
+    }
   ],
   "decoys": [
-    {"name": "Express checkout in the header", "trace": [], "decoy": {"type": "CLICK", "id": "express-checkout"}},
-    {"name": "Gift options on the bag",
-     "trace": [{"type": "CLICK", "id": "cat-lighting"}, {"type": "CLICK", "id": "product-lantern"},
-               {"type": "CLICK", "id": "add-to-bag"}],
-     "decoy": {"type": "CLICK", "id": "gift-options"}}
+    {
+      "name": "Express checkout in the header",
+      "trace": [],
+      "decoy": {"type": "CLICK", "id": "express-checkout"}
+    },
+    {
+      "name": "Gift options on the bag",
+      "trace": [
+        {"type": "CLICK", "id": "cat-lighting"},
+        {"type": "CLICK", "id": "product-lantern"},
+        {"type": "CLICK", "id": "add-to-bag"}
+      ],
+      "decoy": {"type": "CLICK", "id": "gift-options"}
+    }
   ],
   "faults": [
     {
@@ -113,24 +501,33 @@
       "trigger_condition": "Put an item in the bag, apply the 10% voucher, then change the item's quantity and update the bag.",
       "expected_behaviour": "While the 10% voucher is applied, the bag's discount is always 10% of the items' total.",
       "observable_violation": "After raising the quantity to 42 the items total is £1,008.00 but the discount is still £2.40.",
-      "assertions": [{"kind": "region_arithmetic", "where": "/bag$",
-                      "expression": "discount == round(subtotal * 0.1, 2)",
-                      "operands": {"discount": "bag_discount", "subtotal": "bag_subtotal"},
-                      "guard": {"region": "bag_voucher", "contains": "10%"},
-                      "describes": "a 10% voucher's discount equals 10% of the bag's items"}],
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "/bag$",
+          "expression": "discount == round(subtotal * 0.1, 2)",
+          "operands": {"discount": "bag_discount", "subtotal": "bag_subtotal"},
+          "guard": {"region": "bag_voucher", "contains": "10%"},
+          "describes": "a 10% voucher's discount equals 10% of the bag's items"
+        }
+      ],
       "reproduction": {"replays": 2, "must_all_reproduce": true},
       "observation_horizon": 0,
       "shortest_path": 7,
       "trigger_trace": [
-        {"type": "CLICK", "id": "cat-lighting"}, {"type": "CLICK", "id": "product-lantern"},
+        {"type": "CLICK", "id": "cat-lighting"},
+        {"type": "CLICK", "id": "product-lantern"},
         {"type": "CLICK", "id": "add-to-bag"},
         {"type": "SELECT", "id": "voucher", "params": {"option": "welcome10"}},
         {"type": "CLICK", "id": "apply-voucher"},
         {"type": "TYPE", "id": "qty-1", "params": {"category": "valid_typical"}},
-        {"type": "CLICK", "id": "update-bag"}],
-      "patch": {"file": "src/server.py",
-                "find": "            refresh_voucher(conn, sid)  # the discount depends on what is in the bag\n",
-                "replace": ""}
+        {"type": "CLICK", "id": "update-bag"}
+      ],
+      "patch": {
+        "file": "src/server.py",
+        "find": "            refresh_voucher(self.db, bag_id)  # the discount depends on what is in the bag\n",
+        "replace": ""
+      }
     },
     {
       "fault_id": "BAG-2",
@@ -142,23 +539,40 @@
       "expected_behaviour": "The order is placed with the delivery method the customer chose and saw on the review page.",
       "observable_violation": "The confirmation says standard delivery for an order the customer placed with express delivery.",
       "assertions": [
-        {"kind": "echoes_input", "where": "/orders/BS-\\d+$", "region": "confirm_method", "input_field": "method",
-         "describes": "the confirmed order carries the delivery method the customer chose"},
-        {"kind": "text_absent", "where": "/orders/BS-\\d+$", "region": "notice", "expected": "BS-",
-         "describes": "(scope) evaluated on the confirmation shown right after placing, not on a later revisit"}],
+        {
+          "kind": "echoes_input",
+          "where": "/orders/BS-\\d+$",
+          "region": "confirm_method",
+          "input_field": "method",
+          "describes": "the confirmed order carries the delivery method the customer chose"
+        },
+        {
+          "kind": "text_absent",
+          "where": "/orders/BS-\\d+$",
+          "region": "notice",
+          "expected": "BS-",
+          "describes": "(scope) evaluated on the confirmation shown right after placing, not on a later revisit"
+        }
+      ],
       "reproduction": {"replays": 2, "must_all_reproduce": true},
       "observation_horizon": 1,
       "shortest_path": 9,
       "trigger_trace": [
-        {"type": "CLICK", "id": "cat-lighting"}, {"type": "CLICK", "id": "product-lantern"},
-        {"type": "CLICK", "id": "add-to-bag"}, {"type": "CLICK", "id": "go-checkout"},
+        {"type": "CLICK", "id": "cat-lighting"},
+        {"type": "CLICK", "id": "product-lantern"},
+        {"type": "CLICK", "id": "add-to-bag"},
+        {"type": "CLICK", "id": "go-checkout"},
         {"type": "SELECT", "id": "method", "params": {"option": "express"}},
         {"type": "TYPE", "id": "full-name", "params": {"category": "valid_typical"}},
         {"type": "TYPE", "id": "address", "params": {"category": "valid_typical"}},
-        {"type": "CLICK", "id": "review-order"}, {"type": "CLICK", "id": "place-order"}],
-      "patch": {"file": "src/pages.py",
-                "find": "  <input type=\"hidden\" name=\"method\" value=\"{e(saved[\"method\"])}\">",
-                "replace": "  <input type=\"hidden\" name=\"method\" value=\"{DEFAULT_METHOD}\">"}
+        {"type": "CLICK", "id": "review-order"},
+        {"type": "CLICK", "id": "place-order"}
+      ],
+      "patch": {
+        "file": "src/pages.py",
+        "find": "  <input type=\"hidden\" name=\"method\" value=\"{e(saved[\"method\"])}\">",
+        "replace": "  <input type=\"hidden\" name=\"method\" value=\"{DEFAULT_METHOD}\">"
+      }
     },
     {
       "fault_id": "BAG-3",
@@ -169,33 +583,305 @@
       "trigger_condition": "Choose express delivery, leave the address empty, review and place the order.",
       "expected_behaviour": "No delivered order is placed without a name and address.",
       "observable_violation": "The confirmation's delivery address is blank.",
-      "assertions": [{"kind": "region_empty", "where": "/orders/BS-\\d+$", "region": "confirm_address",
-                      "describes": "a confirmed order always shows where it is going (or the shop, for collection)"}],
+      "assertions": [
+        {
+          "kind": "region_empty",
+          "where": "/orders/BS-\\d+$",
+          "region": "confirm_address",
+          "describes": "a confirmed order always shows where it is going (or the shop, for collection)"
+        }
+      ],
       "reproduction": {"replays": 2, "must_all_reproduce": true},
       "observation_horizon": 1,
       "shortest_path": 7,
       "trigger_trace": [
-        {"type": "CLICK", "id": "cat-lighting"}, {"type": "CLICK", "id": "product-lantern"},
-        {"type": "CLICK", "id": "add-to-bag"}, {"type": "CLICK", "id": "go-checkout"},
+        {"type": "CLICK", "id": "cat-lighting"},
+        {"type": "CLICK", "id": "product-lantern"},
+        {"type": "CLICK", "id": "add-to-bag"},
+        {"type": "CLICK", "id": "go-checkout"},
         {"type": "SELECT", "id": "method", "params": {"option": "express"}},
-        {"type": "CLICK", "id": "review-order"}, {"type": "CLICK", "id": "place-order"}],
-      "patch": {"file": "src/server.py",
-                "find": "            if chosen in (\"standard\", \"express\") and not (bag[\"full_name\"] and bag[\"address\"]):",
-                "replace": "            if chosen == \"standard\" and not (bag[\"full_name\"] and bag[\"address\"]):"}
+        {"type": "CLICK", "id": "review-order"},
+        {"type": "CLICK", "id": "place-order"}
+      ],
+      "patch": {
+        "file": "src/server.py",
+        "find": "            if chosen in (\"standard\", \"express\") and not (bag[\"full_name\"] and bag[\"address\"]):",
+        "replace": "            if chosen == \"standard\" and not (bag[\"full_name\"] and bag[\"address\"]):"
+      }
+    },
+    {
+      "fault_id": "BAG-4",
+      "fault_class": "calculation_error",
+      "subtype": "calculation",
+      "oracle": "extension",
+      "description": "Sorting by price orders products by their first listed option's price, while every listing shows the cheapest option's 'from' price, so 'high to low' puts a product before a dearer one whenever a product's first option is not its cheapest.",
+      "trigger_condition": "List a department that has a product whose first option is not its cheapest (the picnic blanket in Outdoor) and sort by price, high to low.",
+      "expected_behaviour": "Sorted by price high to low, each listed 'from' price is at least the next one.",
+      "observable_violation": "The outdoor list sorted high to low starts with the picnic blanket from £26.00, followed by the hammock from £44.00.",
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "/search\\?.*\\bsort=price-desc",
+          "expression": "first >= second",
+          "operands": {"first": "result_1_price", "second": "result_2_price"},
+          "describes": "a list sorted by price, high to low, never shows a cheaper product before a dearer one"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 3,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "cat-outdoor"},
+        {"type": "SELECT", "id": "sort", "params": {"option": "price-desc"}},
+        {"type": "CLICK", "id": "apply-filters"}
+      ],
+      "patch": {
+        "file": "src/shop.py",
+        "find": "items.sort(key=from_price, reverse=sort == \"price-desc\")",
+        "replace": "items.sort(key=lambda p: p[\"variants\"][0][\"price_pence\"], reverse=sort == \"price-desc\")"
+      }
+    },
+    {
+      "fault_id": "BAG-5",
+      "fault_class": "state_corruption",
+      "subtype": "stale-state",
+      "oracle": "extension",
+      "description": "The filter form carries the page being viewed instead of starting again at page 1, so changing the department while on page 2 asks for page 2 of a list that has only one page: an empty 'page 2 of 1'.",
+      "trigger_condition": "List everything, go to the next page, then choose a department with eight products or fewer and show it.",
+      "expected_behaviour": "The page number shown never exceeds the number of pages.",
+      "observable_violation": "After switching to Lighting from page 2 the results read 'Page 2 of 1' with no products.",
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "/search\\?",
+          "expression": "page <= pages",
+          "operands": {"page": "results_page", "pages": "results_pages"},
+          "describes": "a results page is always one of the pages there are"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 4,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "cat-all"},
+        {"type": "CLICK", "id": "results-next"},
+        {"type": "SELECT", "id": "filter-category", "params": {"option": "lighting"}},
+        {"type": "CLICK", "id": "apply-filters"}
+      ],
+      "patch": {
+        "file": "src/pages.py",
+        "find": "  <input type=\"hidden\" name=\"page\" value=\"1\">",
+        "replace": "  <input type=\"hidden\" name=\"page\" value=\"{page}\">"
+      }
     }
   ],
   "benign_traces": [
-    [{"type": "CLICK", "id": "cat-lighting"}, {"type": "CLICK", "id": "product-lantern"},
-     {"type": "CLICK", "id": "add-to-bag"}, {"type": "CLICK", "id": "go-checkout"},
-     {"type": "TYPE", "id": "full-name", "params": {"category": "valid_typical"}},
-     {"type": "TYPE", "id": "address", "params": {"category": "valid_typical"}},
-     {"type": "CLICK", "id": "review-order"}, {"type": "CLICK", "id": "place-order"}],
-    [{"type": "CLICK", "id": "cat-kitchen"}, {"type": "CLICK", "id": "product-kettle"},
-     {"type": "CLICK", "id": "add-to-bag"},
-     {"type": "SELECT", "id": "voucher", "params": {"option": "welcome10"}},
-     {"type": "CLICK", "id": "apply-voucher"}, {"type": "CLICK", "id": "nav-orders"}],
-    [{"type": "CLICK", "id": "cat-lighting"}, {"type": "CLICK", "id": "product-lantern"},
-     {"type": "SELECT", "id": "variant", "params": {"option": "large"}},
-     {"type": "CLICK", "id": "add-to-bag"}, {"type": "CLICK", "id": "remove-1"}]
-  ]
+    [
+      {"type": "CLICK", "id": "cat-lighting"},
+      {"type": "CLICK", "id": "product-lantern"},
+      {"type": "CLICK", "id": "add-to-bag"},
+      {"type": "CLICK", "id": "go-checkout"},
+      {"type": "TYPE", "id": "full-name", "params": {"category": "valid_typical"}},
+      {"type": "TYPE", "id": "address", "params": {"category": "valid_typical"}},
+      {"type": "CLICK", "id": "review-order"},
+      {"type": "CLICK", "id": "place-order"}
+    ],
+    [
+      {"type": "CLICK", "id": "cat-kitchen"},
+      {"type": "CLICK", "id": "product-kettle"},
+      {"type": "CLICK", "id": "add-to-bag"},
+      {"type": "SELECT", "id": "voucher", "params": {"option": "welcome10"}},
+      {"type": "CLICK", "id": "apply-voucher"},
+      {"type": "CLICK", "id": "nav-orders"}
+    ],
+    [
+      {"type": "CLICK", "id": "cat-lighting"},
+      {"type": "CLICK", "id": "product-lantern"},
+      {"type": "SELECT", "id": "variant", "params": {"option": "large"}},
+      {"type": "CLICK", "id": "add-to-bag"},
+      {"type": "CLICK", "id": "remove-1"}
+    ],
+    [
+      {"type": "CLICK", "id": "cat-all"},
+      {"type": "CLICK", "id": "results-next"},
+      {"type": "CLICK", "id": "results-prev"},
+      {"type": "CLICK", "id": "product-lantern"},
+      {"type": "CLICK", "id": "tab-reviews"},
+      {"type": "CLICK", "id": "tab-details"}
+    ],
+    [
+      {"type": "CLICK", "id": "nav-account"},
+      {"type": "CLICK", "id": "account-addresses"},
+      {"type": "CLICK", "id": "delete-address-work"},
+      {"type": "CLICK", "id": "cancel-delete-work"},
+      {"type": "CLICK", "id": "edit-address-home"},
+      {"type": "CLICK", "id": "cancel-address"}
+    ]
+  ],
+  "login": {
+    "path": "/login",
+    "protected": ["/", "/search", "/bag", "/orders", "/account", "/account/addresses", "/staff/orders"],
+    "public": ["/login/forgot"],
+    "users": [
+      {"username": "jo.marsh", "name": "Jo Marsh", "roles": ["customer"], "macro": true},
+      {"username": "sam.adeyemi", "name": "Sam Adeyemi", "roles": ["customer"]},
+      {"username": "priya.shah", "name": "Priya Shah", "roles": ["staff"]}
+    ],
+    "password_value": "Bagstreet-shop-26",
+    "steps": [
+      {"type": "TYPE", "id": "login-username", "params": {"value": "jo.marsh"}},
+      {"type": "TYPE", "id": "login-password", "params": {"value": "Bagstreet-shop-26"}},
+      {"type": "CLICK", "id": "login-submit"}
+    ],
+    "form": {"action": "/login", "username_field": "username", "password_field": "password"},
+    "signed_in_region": "signed_in_as",
+    "error_region": "login_error",
+    "sign_out": [
+      {"type": "CLICK", "id": "nav-account"},
+      {"type": "CLICK", "id": "sign-out"}
+    ],
+    "restricted": [
+      {"user": "sam.adeyemi", "path": "/staff/orders", "region": "access_notice"}
+    ]
+  },
+  "database": {
+    "engine": "mongodb",
+    "isolation": "database-per-session",
+    "schema": "src/validators.py",
+    "entities": ["users", "categories", "products", "vouchers", "stores", "bags", "orders"],
+    "auxiliary": ["counters"],
+    "references": [
+      {"from": "products.category_id", "to": "categories._id"},
+      {"from": "products.reviews[].author_id", "to": "users._id"},
+      {"from": "bags.lines[].product_id", "to": "products._id"},
+      {"from": "bags.voucher.code", "to": "vouchers._id"},
+      {"from": "bags.store_id", "to": "stores._id"},
+      {"from": "orders.customer_id", "to": "users._id"},
+      {"from": "orders.store_id", "to": "stores._id"},
+      {"from": "orders.lines[].product_id", "to": "products._id"},
+      {"from": "orders.events[].by", "to": "users._id"}
+    ],
+    "probes": [
+      {
+        "name": "an account without a password",
+        "kind": "required",
+        "collection": "users",
+        "insert": {
+          "_id": "kim",
+          "username": "kim.lee",
+          "name": "Kim Lee",
+          "roles": ["customer"],
+          "addresses": []
+        }
+      },
+      {
+        "name": "an order in a status the shop does not have",
+        "kind": "enum",
+        "collection": "orders",
+        "update": {"filter": {"_id": "BS-0901"}, "update": {"$set": {"status": "lost"}}}
+      },
+      {
+        "name": "outdoor attributes on a lamp",
+        "kind": "validation",
+        "collection": "products",
+        "update": {
+          "filter": {"_id": "lantern"},
+          "update": {"$set": {"attributes": {"kind": "outdoor", "bulb": "LED", "lumens": 60}}}
+        }
+      },
+      {
+        "name": "a second account called jo.marsh",
+        "kind": "duplicate",
+        "collection": "users",
+        "insert": {
+          "_id": "jo-two",
+          "username": "jo.marsh",
+          "name": "Jo Marsh",
+          "roles": ["customer"],
+          "pw": {
+            "salt": "0123456789abcdef0123456789abcdef",
+            "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+            "iter": 20000
+          },
+          "addresses": []
+        }
+      },
+      {
+        "name": "two products sharing one SKU",
+        "kind": "duplicate",
+        "collection": "products",
+        "update": {"filter": {"_id": "kettle"}, "update": {"$set": {"variants.0.sku": "BS-LANTERN-SMALL"}}}
+      }
+    ],
+    "absent_constraints": [
+      {
+        "fault_id": "BAG-3",
+        "constraint": "orders: a delivered order (standard or express) has a non-empty full_name and address",
+        "reason": "That is the checkout's own rule; a validator would refuse the order BAG-3 lets through."
+      }
+    ]
+  },
+  "breadth": {
+    "views": [
+      {"name": "sign-in page", "path": "/login", "as": null},
+      {"name": "forgotten password", "path": "/login/forgot", "as": null},
+      {"name": "home", "path": "/"},
+      {"name": "product list", "path": "/search?category=all"},
+      {"name": "product page", "path": "/p/lantern"},
+      {"name": "bag", "path": "/bag"},
+      {"name": "order history", "path": "/orders"},
+      {"name": "one order", "path": "/orders/BS-0901"},
+      {"name": "account", "path": "/account"},
+      {"name": "address book", "path": "/account/addresses"},
+      {"name": "new address form", "path": "/account/addresses/new"},
+      {"name": "edit address form", "path": "/account/addresses/home/edit"},
+      {"name": "dispatch desk", "path": "/staff/orders", "as": "priya.shah"},
+      {"name": "access notice", "path": "/staff/orders", "as": "sam.adeyemi"},
+      {"name": "express checkout information", "path": "/express"},
+      {
+        "name": "delivery step",
+        "workflow": "buy a lantern with standard delivery",
+        "where": "/checkout/delivery$"
+      },
+      {
+        "name": "check-your-order step",
+        "workflow": "buy a lantern with standard delivery",
+        "where": "/checkout/review$"
+      },
+      {
+        "name": "review editor",
+        "workflow": "change the rating of a review",
+        "where": "/p/lantern/review/edit$"
+      }
+    ],
+    "entities": {
+      "address": {
+        "create": "add an address to the address book",
+        "read": "look up the saved addresses",
+        "update": "change the street of the work address",
+        "delete": "delete the work address after confirming"
+      },
+      "review": {
+        "create": "review the lantern",
+        "read": "read the reviews of the hammock",
+        "update": "change the rating of a review",
+        "delete": "delete a review after confirming"
+      },
+      "bag line": {
+        "create": "choose the large lantern",
+        "read": "check the bag from the header",
+        "update": "raise a quantity in the bag",
+        "delete": "remove two items at once"
+      }
+    },
+    "patterns": {
+      "pagination": "page through everything the shop sells",
+      "sort-filter": "sort the outdoor department, dearest first",
+      "search": "search, then sort by price",
+      "modal": "delete the work address after confirming",
+      "tabs": "read the reviews of the hammock",
+      "bulk-action": "remove two items at once",
+      "wizard": "buy a lantern with standard delivery"
+    }
+  }
 }
