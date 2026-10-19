@@ -389,6 +389,7 @@ sign-in of a fresh variant), over the manifest's `entities` only; exact threshol
     node-pg `query(text)` without values behaves the same.
 19. **[v2] Keep the seed facts.** Pinned figures (counts, ids, next numbers, a workflow's
     expected values) are listed in each app card of the plan; enrich around them.
+20. **[v2] Render a modal overlay at page level.** A `role="dialog" aria-modal="true"` overlay nested inside page content (a list item, a table row) is open on screen, but the tester's registry then offers no control at all, so its buttons cannot be reached (helpline, found at admission). Put every such dialog after `<main>`, as a sibling of the content, one per item if need be; native `<dialog>` elements opened with `showModal()` work where they are (clinicflow).
 
 ## 11. [v2] Drivers, imports and the Dockerfile
 

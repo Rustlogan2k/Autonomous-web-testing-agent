@@ -1,75 +1,129 @@
-"""Session storage: one SQLite database file per browser session.
+"""Session storage: one MongoDB database per signed-in browser.
 
-A new session gets a copy of a template database built once from the seed at start-up
-(SQLite's online backup API, so the copy is consistent and fast). Session ids come from a
-counter in a small registry database, never from time or chance, and each session has its
-own lock so concurrent requests from one browser are applied one at a time while other
-sessions proceed in parallel.
+The database named in MONGODB_URL is this server's *home*. It holds the session registry
+(`sessions`: which `wta_sid` cookie owns which database, who is signed in there, and a use
+counter for eviction) and a `counters` collection. On start the home and every session
+database left over from an earlier run are dropped.
+
+A browser's first successful sign-in creates `<home>_s000123`: every collection is created
+with its validator (`schema.py`, strict, errors refused) and its indexes, then filled from the
+seed held in memory. Signing out clears who is signed in but keeps the database, so signing in
+again in the same browser continues where it left off. Beyond WTA_SESSION_CAP databases the
+least recently used is dropped. Requests never interleave: one client, one lock.
 """
 
 from __future__ import annotations
 
 import contextlib
+import copy
 import re
-import sqlite3
+import sys
 import threading
+import time
 from pathlib import Path
 
-import desk
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "vendor" / "python"))
+import pymongo  # noqa: E402 - the suite's pinned pure-Python driver, shipped in every build
+from pymongo.errors import PyMongoError  # noqa: E402
 
-_SID = re.compile(r"h\d{6}")
+import schema  # noqa: E402
+
+_SID = re.compile(r"hl\d{6}")
 
 
 class SessionStore:
-    def __init__(self, data_dir: Path, seed: dict) -> None:
-        self.root = Path(data_dir)
-        self.sessions = self.root / "sessions"
-        self.sessions.mkdir(parents=True, exist_ok=True)
-        self._registry = self.root / "registry.sqlite3"
-        self._template = self.root / "template.sqlite3"
-        self._guard = threading.Lock()
-        self._locks: dict[str, threading.Lock] = {}
-        with contextlib.closing(sqlite3.connect(self._registry)) as conn:
-            conn.execute("CREATE TABLE IF NOT EXISTS counter (name TEXT PRIMARY KEY, value INTEGER NOT NULL)")
-            conn.commit()
-        self._template.unlink(missing_ok=True)
-        with contextlib.closing(sqlite3.connect(self._template)) as conn:
-            desk.install(conn, seed)
-            conn.commit()
+    def __init__(self, url: str, cap: int, seed: dict[str, list[dict]]) -> None:
+        self.client = pymongo.MongoClient(url, serverSelectionTimeoutMS=3000, connectTimeoutMS=3000,
+                                          appname="helpline")
+        self.home = self.client.get_default_database().name
+        self.cap = max(1, cap)
+        self.seed = seed
+        self._lock = threading.Lock()
 
-    def _path(self, sid: str) -> Path:
-        return self.sessions / f"{sid}.sqlite3"
+    @property
+    def registry(self):
+        return self.client[self.home]["sessions"]
 
-    def known(self, sid: str) -> bool:
-        return bool(_SID.fullmatch(sid or "")) and self._path(sid).is_file()
+    def _tick(self, name: str) -> int:
+        found = self.client[self.home]["counters"].find_one_and_update(
+            {"_id": name}, {"$inc": {"n": 1}}, upsert=True, return_document=pymongo.ReturnDocument.AFTER)
+        return found["n"]
 
-    def create(self) -> str:
-        with self._guard, contextlib.closing(sqlite3.connect(self._registry)) as registry:
-            row = registry.execute("SELECT value FROM counter WHERE name = 'session'").fetchone()
-            number = (row[0] if row else 0) + 1
-            registry.execute("INSERT OR REPLACE INTO counter VALUES ('session', ?)", (number,))
-            registry.commit()
-            sid = f"h{number:06d}"
-            with contextlib.closing(sqlite3.connect(self._template)) as source, \
-                    contextlib.closing(sqlite3.connect(self._path(sid))) as target:
-                source.backup(target)
-        return sid
+    def wait(self, seconds: float = 30.0) -> None:
+        """Return once the server answers, retrying while it starts."""
+        deadline = time.monotonic() + seconds
+        while True:
+            try:
+                self.client.admin.command("ping")
+                return
+            except PyMongoError:
+                if time.monotonic() > deadline:
+                    raise
+                time.sleep(0.5)
 
-    def _lock(self, sid: str) -> threading.Lock:
-        with self._guard:
-            return self._locks.setdefault(sid, threading.Lock())
+    def alive(self) -> bool:
+        try:
+            self.client.admin.command("ping")
+            return True
+        except PyMongoError:
+            return False
+
+    def reset(self) -> None:
+        """Drop the home and every session database of an earlier run."""
+        with self._lock:
+            for name in self.client.list_database_names():
+                if name == self.home or re.fullmatch(re.escape(self.home) + r"_s\d{6}", name):
+                    self.client.drop_database(name)
+            self.registry.create_index([("touched", 1)], name="touched")
+
+    def _build(self, name: str) -> None:
+        db = self.client[name]
+        for collection, validator in schema.VALIDATORS.items():
+            db.create_collection(collection, validator={"$jsonSchema": validator},
+                                 validationLevel="strict", validationAction="error")
+            for keys, options in schema.INDEXES.get(collection, []):
+                db[collection].create_index(keys, **options)
+            documents = self.seed.get(collection)
+            if documents:
+                db[collection].insert_many(copy.deepcopy(documents), ordered=True)
+
+    def sign_in(self, sid: str | None, agent_id: str) -> str:
+        """Sign `agent_id` in on this browser's database (made on its first sign-in)."""
+        with self._lock:
+            if sid and _SID.fullmatch(sid):
+                found = self.registry.find_one_and_update(
+                    {"_id": sid}, {"$set": {"agent_id": agent_id, "touched": self._tick("touches")}})
+                if found is not None:
+                    return sid
+            number = self._tick("sessions")
+            sid, name = f"hl{number:06d}", f"{self.home}_s{number:06d}"
+            try:
+                self._build(name)
+            except BaseException:
+                self.client.drop_database(name)
+                raise
+            self.registry.insert_one({"_id": sid, "partition": name, "agent_id": agent_id,
+                                      "touched": self._tick("touches")})
+            while self.registry.count_documents({}) > self.cap:
+                oldest = self.registry.find_one_and_delete({"_id": {"$ne": sid}}, sort=[("touched", 1)])
+                if oldest is None:
+                    break
+                self.client.drop_database(oldest["partition"])
+            return sid
+
+    def sign_out(self, sid: str | None) -> None:
+        if sid and _SID.fullmatch(sid):
+            with self._lock:
+                self.registry.update_one({"_id": sid}, {"$set": {"agent_id": None}})
 
     @contextlib.contextmanager
-    def open(self, sid: str):
-        """A connection to this session's database, committed on success, rolled back on error."""
-        with self._lock(sid):
-            conn = sqlite3.connect(self._path(sid), timeout=10)
-            conn.row_factory = sqlite3.Row
-            try:
-                yield conn
-                conn.commit()
-            except BaseException:
-                conn.rollback()
-                raise
-            finally:
-                conn.close()
+    def open(self, sid: str | None):
+        """(database or None, sid or None, agent id or None) for one request, under the lock."""
+        with self._lock:
+            found = None
+            if sid and _SID.fullmatch(sid):
+                found = self.registry.find_one_and_update({"_id": sid}, {"$set": {"touched": self._tick("touches")}})
+            if found is None:
+                yield None, None, None
+            else:
+                yield self.client[found["partition"]], sid, found["agent_id"]

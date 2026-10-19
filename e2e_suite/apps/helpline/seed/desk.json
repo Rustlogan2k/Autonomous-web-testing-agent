@@ -1,99 +1,1388 @@
 {
-  "tickets": [
-    {"id": 101, "subject": "Router keeps dropping Wi-Fi", "customer": "Priya Shah",
-     "email": "priya.shah@example.net", "phone": "0161 496 0101", "plan": "Fibre Plus",
-     "channel": "email", "priority": "high", "status": "new", "assignee": "",
-     "opened": "2026-06-09 18:12",
-     "conversation": [
-       {"role": "customer", "at": "2026-06-09 18:12",
-        "body": "The Wi-Fi drops every evening for a few minutes, then comes back. The router lights stay green the whole time."}
-     ]},
-    {"id": 102, "subject": "No internet since the storm", "customer": "Tom Okafor",
-     "email": "tom.okafor@example.net", "phone": "0113 496 0102", "plan": "Fibre Essential",
-     "channel": "phone", "priority": "urgent", "status": "triage", "assignee": "",
-     "opened": "2026-06-09 07:40",
-     "conversation": [
-       {"role": "customer", "at": "2026-06-09 07:40",
-        "body": "Nothing at all since the storm on Sunday night. I work from home, so this is urgent."}
-     ]},
-    {"id": 103, "subject": "Can't log in to my account", "customer": "Lena Fischer",
-     "email": "lena.fischer@example.net", "phone": "0117 496 0103", "plan": "Fibre Essential",
-     "channel": "chat", "priority": "normal", "status": "new", "assignee": "",
-     "opened": "2026-06-10 08:05",
-     "conversation": [
-       {"role": "customer", "at": "2026-06-10 08:05",
-        "body": "The password reset email never arrives, so I can't see my bills online."}
-     ]},
-    {"id": 104, "subject": "Slow speeds in the evening", "customer": "Ravi Menon",
-     "email": "ravi.menon@example.net", "phone": "0121 496 0104", "plan": "Fibre Max",
-     "channel": "email", "priority": "normal", "status": "in_progress", "assignee": "noor",
-     "opened": "2026-06-06 20:31",
-     "conversation": [
-       {"role": "customer", "at": "2026-06-06 20:31",
-        "body": "Speeds fall to almost nothing between eight and eleven every night."},
-       {"role": "agent", "author": "noor", "at": "2026-06-07 09:15",
-        "body": "Thanks Ravi. Could you run a speed test with a cable plugged in tonight and send us the result?"},
-       {"role": "customer", "at": "2026-06-08 21:02",
-        "body": "Done: wired it is just as slow. The test page says the line itself is fine."}
-     ]},
-    {"id": 105, "subject": "Charged twice in May", "customer": "Wei Chen",
-     "email": "wei.chen@example.net", "phone": "0131 496 0105", "plan": "Fibre Plus",
-     "channel": "email", "priority": "high", "status": "triage", "assignee": "noor",
-     "opened": "2026-06-08 12:44",
-     "conversation": [
-       {"role": "customer", "at": "2026-06-08 12:44",
-        "body": "My bank statement shows the monthly payment taken twice on the same day in May."}
-     ]},
-    {"id": 106, "subject": "Refund for the double charge", "customer": "Wei Chen",
-     "email": "wei.chen@example.net", "phone": "0131 496 0105", "plan": "Fibre Plus",
-     "channel": "chat", "priority": "normal", "status": "new", "assignee": "",
-     "opened": "2026-06-09 16:20",
-     "conversation": [
-       {"role": "customer", "at": "2026-06-09 16:20",
-        "body": "Following up by chat: when will the extra payment from May come back to my account?"}
-     ]},
-    {"id": 107, "subject": "Engineer visit didn't happen", "customer": "Grace O'Neill",
-     "email": "grace.oneill@example.net", "phone": "0141 496 0107", "plan": "Fibre Max",
-     "channel": "phone", "priority": "high", "status": "waiting", "assignee": "noor",
-     "opened": "2026-06-05 10:02",
-     "conversation": [
-       {"role": "customer", "at": "2026-06-05 10:02",
-        "body": "I waited in all morning and nobody came for the installation appointment."},
-       {"role": "agent", "author": "noor", "at": "2026-06-05 11:30",
-        "body": "Sorry Grace. I can rebook the visit for Thursday morning or Friday afternoon. Which suits you?"}
-     ]},
-    {"id": 108, "subject": "Upgrade to the fibre plan", "customer": "Jonas Berg",
-     "email": "jonas.berg@example.net", "phone": "0151 496 0108", "plan": "Copper Basic",
-     "channel": "email", "priority": "low", "status": "resolved", "assignee": "noor",
-     "opened": "2026-06-03 14:10",
-     "conversation": [
-       {"role": "customer", "at": "2026-06-03 14:10",
-        "body": "Fibre is now available on my street. How do I switch without losing my phone number?"},
-       {"role": "agent", "author": "noor", "at": "2026-06-04 09:05",
-        "body": "Good news Jonas: your number moves with you. I have scheduled the switch and emailed the details."}
-     ]},
-    {"id": 109, "subject": "Moving house next month", "customer": "Amara Diallo",
-     "email": "amara.diallo@example.net", "phone": "0161 496 0109", "plan": "Fibre Plus",
-     "channel": "phone", "priority": "low", "status": "in_progress", "assignee": "",
-     "opened": "2026-06-07 15:48",
-     "conversation": [
-       {"role": "customer", "at": "2026-06-07 15:48",
-        "body": "We move at the end of next month. Can the service move with us?"},
-       {"role": "agent", "author": "noor", "at": "2026-06-08 10:12",
-        "body": "Yes. What is the new address, and which day would you like the switch-over?"},
-       {"role": "customer", "at": "2026-06-09 19:30",
-        "body": "Flat 2, Orchard Court. Any day in the first week after we move is fine."}
-     ]},
-    {"id": 110, "subject": "Static IP address request", "customer": "Sofia Rossi",
-     "email": "sofia.rossi@example.net", "phone": "0191 496 0110", "plan": "Fibre Max",
-     "channel": "email", "priority": "normal", "status": "closed", "assignee": "noor",
-     "opened": "2026-05-28 09:00",
-     "conversation": [
-       {"role": "customer", "at": "2026-05-28 09:00",
-        "body": "I run a small home server and need a fixed address."},
-       {"role": "agent", "author": "noor", "at": "2026-05-28 13:45",
-        "body": "Done: the static address is active and shown in your account settings."}
-     ]}
-  ],
-  "links": [[102, 107]]
+ "agents": [
+  {
+   "_id": "sam",
+   "username": "sam.lewis",
+   "name": "Sam Lewis",
+   "roles": [
+    "agent"
+   ],
+   "on_call": false,
+   "pw": {
+    "salt": "31a7c5e9f2b4d6081a3c5e7f9b1d3f50",
+    "hash": "bf7f44b92956c84f3ea0c5f88dbd53775971180077f32540eaf6b3e89fc3f103",
+    "iter": 20000
+   }
+  },
+  {
+   "_id": "kai",
+   "username": "kai.moreno",
+   "name": "Kai Moreno",
+   "roles": [
+    "agent"
+   ],
+   "on_call": true,
+   "pw": {
+    "salt": "4b6d8f0a2c4e6a8c0e2a4c6e8a0c2e41",
+    "hash": "7d4d78617bfce831f5ced02f06feaa25f1b9d772934f0dab2e8c3982e299775d",
+    "iter": 20000
+   }
+  },
+  {
+   "_id": "noor",
+   "username": "noor.haddad",
+   "name": "Noor Haddad",
+   "roles": [
+    "agent"
+   ],
+   "on_call": false,
+   "pw": {
+    "salt": "5c7e9a1b3d5f7b9d1f3b5d7f9b1d3f62",
+    "hash": "9522086a8fd063c20424488b013c99dc68f69787c47237a29db0d1e09b268e74",
+    "iter": 20000
+   }
+  },
+  {
+   "_id": "morgan",
+   "username": "morgan.blake",
+   "name": "Morgan Blake",
+   "roles": [
+    "agent",
+    "lead"
+   ],
+   "on_call": false,
+   "pw": {
+    "salt": "6d8f0b2c4e6a8c0e2a4c6e8a0c2e4a73",
+    "hash": "ca47708df941083adb3e462db31e2ce7dd6357d0699c5bc42f38b9e3f9236145",
+    "iter": 20000
+   }
+  }
+ ],
+ "customers": [
+  {
+   "_id": "c1",
+   "name": "Priya Shah",
+   "email": "priya.shah@example.net",
+   "phone": "0161 496 0101",
+   "since": "2023-01-15",
+   "plan": {
+    "name": "Fibre Plus",
+    "speed_mbps": 500,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW048037"
+    }
+   },
+   "address": {
+    "line1": "9 Quay Road",
+    "town": "Bristol",
+    "postcode": "LS2 1AB"
+   },
+   "contacts": [
+    {
+     "name": "Arjun Shah",
+     "relation": "partner",
+     "phone": "0161 496 0199"
+    }
+   ]
+  },
+  {
+   "_id": "c2",
+   "name": "Tom Okafor",
+   "email": "tom.okafor@example.net",
+   "phone": "0113 496 0102",
+   "since": "2023-01-15",
+   "plan": {
+    "name": "Fibre Essential",
+    "speed_mbps": 150,
+    "router": {
+     "model": "Hub 4",
+     "serial": "TW048074"
+    }
+   },
+   "address": {
+    "line1": "16 Station Road",
+    "town": "Manchester",
+    "postcode": "LS3 2AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c3",
+   "name": "Lena Fischer",
+   "email": "lena.fischer@example.net",
+   "phone": "0117 496 0103",
+   "since": "2023-01-15",
+   "plan": {
+    "name": "Fibre Essential",
+    "speed_mbps": 150,
+    "router": {
+     "model": "Hub 4",
+     "serial": "TW048111"
+    }
+   },
+   "address": {
+    "line1": "23 Park Road",
+    "town": "Glasgow",
+    "postcode": "LS4 3AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c4",
+   "name": "Ravi Menon",
+   "email": "ravi.menon@example.net",
+   "phone": "0121 496 0104",
+   "since": "2023-01-15",
+   "plan": {
+    "name": "Fibre Max",
+    "speed_mbps": 900,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW048148"
+    }
+   },
+   "address": {
+    "line1": "30 Church Road",
+    "town": "Cardiff",
+    "postcode": "LS5 4AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c5",
+   "name": "Wei Chen",
+   "email": "wei.chen@example.net",
+   "phone": "0131 496 0105",
+   "since": "2023-01-15",
+   "plan": {
+    "name": "Fibre Plus",
+    "speed_mbps": 500,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW048185"
+    }
+   },
+   "address": {
+    "line1": "37 Mill Road",
+    "town": "Norwich",
+    "postcode": "LS6 5AB"
+   },
+   "contacts": [
+    {
+     "name": "Lin Chen",
+     "relation": "family",
+     "phone": "0131 496 0188"
+    }
+   ]
+  },
+  {
+   "_id": "c6",
+   "name": "Grace O'Neill",
+   "email": "grace.oneill@example.net",
+   "phone": "0141 496 0107",
+   "since": "2023-01-15",
+   "plan": {
+    "name": "Fibre Max",
+    "speed_mbps": 900,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW048222"
+    }
+   },
+   "address": {
+    "line1": "44 Quay Road",
+    "town": "York",
+    "postcode": "LS7 6AB"
+   },
+   "contacts": [
+    {
+     "name": "Moira O'Neill",
+     "relation": "carer",
+     "phone": "0141 496 0177"
+    },
+    {
+     "name": "Harbour Lettings",
+     "relation": "landlord",
+     "phone": "0141 496 0166"
+    }
+   ]
+  },
+  {
+   "_id": "c7",
+   "name": "Jonas Berg",
+   "email": "jonas.berg@example.net",
+   "phone": "0151 496 0108",
+   "since": "2023-01-15",
+   "plan": {
+    "name": "Copper Basic",
+    "speed_mbps": 36,
+    "router": {
+     "model": "Hub 3",
+     "serial": "TW048259"
+    }
+   },
+   "address": {
+    "line1": "51 Station Road",
+    "town": "Bath",
+    "postcode": "LS8 7AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c8",
+   "name": "Amara Diallo",
+   "email": "amara.diallo@example.net",
+   "phone": "0161 496 0109",
+   "since": "2023-01-15",
+   "plan": {
+    "name": "Fibre Plus",
+    "speed_mbps": 500,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW048296"
+    }
+   },
+   "address": {
+    "line1": "58 Park Road",
+    "town": "Derby",
+    "postcode": "LS9 8AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c9",
+   "name": "Sofia Rossi",
+   "email": "sofia.rossi@example.net",
+   "phone": "0191 496 0110",
+   "since": "2023-01-15",
+   "plan": {
+    "name": "Fibre Max",
+    "speed_mbps": 900,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW048333"
+    }
+   },
+   "address": {
+    "line1": "65 Church Road",
+    "town": "Hull",
+    "postcode": "LS1 0AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c10",
+   "name": "Aisha Bello",
+   "email": "aisha.bello@example.org",
+   "phone": "0113 496 0200",
+   "since": "2018-01-01",
+   "plan": {
+    "name": "Gigafast",
+    "speed_mbps": 1000,
+    "router": {
+     "model": "Hub 6",
+     "serial": "TW048370"
+    }
+   },
+   "address": {
+    "line1": "72 Mill Road",
+    "town": "Leeds",
+    "postcode": "LS2 1AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c11",
+   "name": "Ben Carter",
+   "email": "ben.carter@example.org",
+   "phone": "0114 496 0201",
+   "since": "2019-02-02",
+   "plan": {
+    "name": "Rural Wireless",
+    "speed_mbps": 80,
+    "router": {
+     "model": "Outdoor unit W2",
+     "serial": "TW048407"
+    }
+   },
+   "address": {
+    "line1": "79 Quay Road",
+    "town": "Bristol",
+    "postcode": "LS3 2AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c12",
+   "name": "Chloe Dubois",
+   "email": "chloe.dubois@example.org",
+   "phone": "0115 496 0202",
+   "since": "2020-03-03",
+   "plan": {
+    "name": "Fibre Plus",
+    "speed_mbps": 500,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW048444"
+    }
+   },
+   "address": {
+    "line1": "86 Station Road",
+    "town": "Manchester",
+    "postcode": "LS4 3AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c13",
+   "name": "Dmitri Ivanov",
+   "email": "dmitri.ivanov@example.org",
+   "phone": "0116 496 0203",
+   "since": "2021-04-04",
+   "plan": {
+    "name": "Copper Basic",
+    "speed_mbps": 36,
+    "router": {
+     "model": "Hub 3",
+     "serial": "TW048481"
+    }
+   },
+   "address": {
+    "line1": "3 Park Road",
+    "town": "Glasgow",
+    "postcode": "LS5 4AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c14",
+   "name": "Elena Garcia",
+   "email": "elena.garcia@example.org",
+   "phone": "0117 496 0204",
+   "since": "2022-05-05",
+   "plan": {
+    "name": "Fibre Max",
+    "speed_mbps": 900,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW048518"
+    }
+   },
+   "address": {
+    "line1": "10 Church Road",
+    "town": "Cardiff",
+    "postcode": "LS6 5AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c15",
+   "name": "Farah Haq",
+   "email": "farah.haq@example.org",
+   "phone": "0118 496 0205",
+   "since": "2023-06-06",
+   "plan": {
+    "name": "Fibre Essential",
+    "speed_mbps": 150,
+    "router": {
+     "model": "Hub 4",
+     "serial": "TW048555"
+    }
+   },
+   "address": {
+    "line1": "17 Mill Road",
+    "town": "Norwich",
+    "postcode": "LS7 6AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c16",
+   "name": "George Hall",
+   "email": "george.hall@example.org",
+   "phone": "0119 496 0206",
+   "since": "2024-07-07",
+   "plan": {
+    "name": "Rural Wireless",
+    "speed_mbps": 80,
+    "router": {
+     "model": "Outdoor unit W2",
+     "serial": "TW048592"
+    }
+   },
+   "address": {
+    "line1": "24 Quay Road",
+    "town": "York",
+    "postcode": "LS8 7AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c17",
+   "name": "Hannah Klein",
+   "email": "hannah.klein@example.org",
+   "phone": "0120 496 0207",
+   "since": "2018-08-08",
+   "plan": {
+    "name": "Gigafast",
+    "speed_mbps": 1000,
+    "router": {
+     "model": "Hub 6",
+     "serial": "TW048629"
+    }
+   },
+   "address": {
+    "line1": "31 Station Road",
+    "town": "Bath",
+    "postcode": "LS9 8AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c18",
+   "name": "Isaac Lee",
+   "email": "isaac.lee@example.org",
+   "phone": "0121 496 0208",
+   "since": "2019-09-09",
+   "plan": {
+    "name": "Fibre Plus",
+    "speed_mbps": 500,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW048666"
+    }
+   },
+   "address": {
+    "line1": "38 Park Road",
+    "town": "Derby",
+    "postcode": "LS1 0AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c19",
+   "name": "Julia Novak",
+   "email": "julia.novak@example.org",
+   "phone": "0122 496 0209",
+   "since": "2020-10-10",
+   "plan": {
+    "name": "Fibre Essential",
+    "speed_mbps": 150,
+    "router": {
+     "model": "Hub 4",
+     "serial": "TW048703"
+    }
+   },
+   "address": {
+    "line1": "45 Church Road",
+    "town": "Hull",
+    "postcode": "LS2 1AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c20",
+   "name": "Kwame Mensah",
+   "email": "kwame.mensah@example.org",
+   "phone": "0123 496 0210",
+   "since": "2021-11-11",
+   "plan": {
+    "name": "Fibre Max",
+    "speed_mbps": 900,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW048740"
+    }
+   },
+   "address": {
+    "line1": "52 Mill Road",
+    "town": "Leeds",
+    "postcode": "LS3 2AB"
+   },
+   "contacts": [
+    {
+     "name": "Ruth Novak",
+     "relation": "family",
+     "phone": "0122 496 0155"
+    }
+   ]
+  },
+  {
+   "_id": "c21",
+   "name": "Laura Price",
+   "email": "laura.price@example.org",
+   "phone": "0124 496 0211",
+   "since": "2022-12-12",
+   "plan": {
+    "name": "Copper Basic",
+    "speed_mbps": 36,
+    "router": {
+     "model": "Hub 3",
+     "serial": "TW048777"
+    }
+   },
+   "address": {
+    "line1": "59 Quay Road",
+    "town": "Bristol",
+    "postcode": "LS4 3AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c22",
+   "name": "Mateo Ruiz",
+   "email": "mateo.ruiz@example.org",
+   "phone": "0125 496 0212",
+   "since": "2023-01-13",
+   "plan": {
+    "name": "Fibre Plus",
+    "speed_mbps": 500,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW048814"
+    }
+   },
+   "address": {
+    "line1": "66 Station Road",
+    "town": "Manchester",
+    "postcode": "LS5 4AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c23",
+   "name": "Nina Petrova",
+   "email": "nina.petrova@example.org",
+   "phone": "0126 496 0213",
+   "since": "2024-02-14",
+   "plan": {
+    "name": "Rural Wireless",
+    "speed_mbps": 80,
+    "router": {
+     "model": "Outdoor unit W2",
+     "serial": "TW048851"
+    }
+   },
+   "address": {
+    "line1": "73 Park Road",
+    "town": "Glasgow",
+    "postcode": "LS6 5AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c24",
+   "name": "Oscar Lind",
+   "email": "oscar.lind@example.org",
+   "phone": "0127 496 0214",
+   "since": "2018-03-15",
+   "plan": {
+    "name": "Fibre Essential",
+    "speed_mbps": 150,
+    "router": {
+     "model": "Hub 4",
+     "serial": "TW048888"
+    }
+   },
+   "address": {
+    "line1": "80 Church Road",
+    "town": "Cardiff",
+    "postcode": "LS7 6AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c25",
+   "name": "Paula Costa",
+   "email": "paula.costa@example.org",
+   "phone": "0128 496 0215",
+   "since": "2019-04-16",
+   "plan": {
+    "name": "Gigafast",
+    "speed_mbps": 1000,
+    "router": {
+     "model": "Hub 6",
+     "serial": "TW048925"
+    }
+   },
+   "address": {
+    "line1": "87 Mill Road",
+    "town": "Norwich",
+    "postcode": "LS8 7AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c26",
+   "name": "Quentin Blake",
+   "email": "quentin.blake@example.org",
+   "phone": "0129 496 0216",
+   "since": "2020-05-17",
+   "plan": {
+    "name": "Fibre Plus",
+    "speed_mbps": 500,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW048962"
+    }
+   },
+   "address": {
+    "line1": "4 Quay Road",
+    "town": "York",
+    "postcode": "LS9 8AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c27",
+   "name": "Rosa Martin",
+   "email": "rosa.martin@example.org",
+   "phone": "0130 496 0217",
+   "since": "2021-06-18",
+   "plan": {
+    "name": "Fibre Max",
+    "speed_mbps": 900,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW048999"
+    }
+   },
+   "address": {
+    "line1": "11 Station Road",
+    "town": "Bath",
+    "postcode": "LS1 0AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c28",
+   "name": "Samir Patel",
+   "email": "samir.patel@example.org",
+   "phone": "0131 496 0218",
+   "since": "2022-07-19",
+   "plan": {
+    "name": "Fibre Essential",
+    "speed_mbps": 150,
+    "router": {
+     "model": "Hub 4",
+     "serial": "TW049036"
+    }
+   },
+   "address": {
+    "line1": "18 Park Road",
+    "town": "Derby",
+    "postcode": "LS2 1AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c29",
+   "name": "Tara Walsh",
+   "email": "tara.walsh@example.org",
+   "phone": "0132 496 0219",
+   "since": "2023-08-20",
+   "plan": {
+    "name": "Copper Basic",
+    "speed_mbps": 36,
+    "router": {
+     "model": "Hub 3",
+     "serial": "TW049073"
+    }
+   },
+   "address": {
+    "line1": "25 Church Road",
+    "town": "Hull",
+    "postcode": "LS3 2AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c30",
+   "name": "Umar Farouk",
+   "email": "umar.farouk@example.org",
+   "phone": "0133 496 0220",
+   "since": "2024-09-21",
+   "plan": {
+    "name": "Fibre Plus",
+    "speed_mbps": 500,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW049110"
+    }
+   },
+   "address": {
+    "line1": "32 Mill Road",
+    "town": "Leeds",
+    "postcode": "LS4 3AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c31",
+   "name": "Vera Holm",
+   "email": "vera.holm@example.org",
+   "phone": "0134 496 0221",
+   "since": "2018-10-22",
+   "plan": {
+    "name": "Rural Wireless",
+    "speed_mbps": 80,
+    "router": {
+     "model": "Outdoor unit W2",
+     "serial": "TW049147"
+    }
+   },
+   "address": {
+    "line1": "39 Quay Road",
+    "town": "Bristol",
+    "postcode": "LS5 4AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c32",
+   "name": "Will Turner",
+   "email": "will.turner@example.org",
+   "phone": "0135 496 0222",
+   "since": "2019-11-23",
+   "plan": {
+    "name": "Fibre Max",
+    "speed_mbps": 900,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW049184"
+    }
+   },
+   "address": {
+    "line1": "46 Station Road",
+    "town": "Manchester",
+    "postcode": "LS6 5AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c33",
+   "name": "Yara Nasser",
+   "email": "yara.nasser@example.org",
+   "phone": "0136 496 0223",
+   "since": "2020-12-24",
+   "plan": {
+    "name": "Fibre Essential",
+    "speed_mbps": 150,
+    "router": {
+     "model": "Hub 4",
+     "serial": "TW049221"
+    }
+   },
+   "address": {
+    "line1": "53 Park Road",
+    "town": "Glasgow",
+    "postcode": "LS7 6AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c34",
+   "name": "Zoe Adams",
+   "email": "zoe.adams@example.org",
+   "phone": "0137 496 0224",
+   "since": "2021-01-25",
+   "plan": {
+    "name": "Fibre Plus",
+    "speed_mbps": 500,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW049258"
+    }
+   },
+   "address": {
+    "line1": "60 Church Road",
+    "town": "Cardiff",
+    "postcode": "LS8 7AB"
+   },
+   "contacts": []
+  },
+  {
+   "_id": "c35",
+   "name": "Bruno Silva",
+   "email": "bruno.silva@example.org",
+   "phone": "0138 496 0225",
+   "since": "2022-02-26",
+   "plan": {
+    "name": "Fibre Max",
+    "speed_mbps": 900,
+    "router": {
+     "model": "Hub 5",
+     "serial": "TW049295"
+    }
+   },
+   "address": {
+    "line1": "67 Mill Road",
+    "town": "Norwich",
+    "postcode": "LS9 8AB"
+   },
+   "contacts": []
+  }
+ ],
+ "tickets": [
+  {
+   "_id": 101,
+   "subject": "Router keeps dropping Wi-Fi",
+   "customer_id": "c1",
+   "channel": "email",
+   "priority": "high",
+   "status": "new",
+   "assignee_id": null,
+   "merged_into": null,
+   "linked": [],
+   "tags": [
+    "wifi"
+   ],
+   "opened": "2026-06-09 18:12",
+   "entries": [
+    {
+     "role": "customer",
+     "at": "2026-06-09 18:12",
+     "body": "The Wi-Fi drops every evening for a few minutes, then comes back. The router lights stay green the whole time.",
+     "via": "email"
+    },
+    {
+     "role": "system",
+     "at": "2026-06-09 18:12",
+     "event": "acknowledged"
+    }
+   ],
+   "history": [
+    {
+     "n": 1,
+     "at": "2026-06-09 18:12",
+     "actor": "Priya Shah",
+     "event": "created",
+     "detail": "email"
+    }
+   ]
+  },
+  {
+   "_id": 102,
+   "subject": "No internet since the storm",
+   "customer_id": "c2",
+   "channel": "phone",
+   "priority": "urgent",
+   "status": "triage",
+   "assignee_id": null,
+   "merged_into": null,
+   "linked": [
+    107
+   ],
+   "tags": [
+    "outage",
+    "storm"
+   ],
+   "opened": "2026-06-09 07:40",
+   "entries": [
+    {
+     "role": "customer",
+     "at": "2026-06-09 07:40",
+     "body": "Nothing at all since the storm on Sunday night. I work from home, so this is urgent.",
+     "via": "phone"
+    },
+    {
+     "role": "system",
+     "at": "2026-06-09 07:40",
+     "event": "acknowledged"
+    }
+   ],
+   "history": [
+    {
+     "n": 1,
+     "at": "2026-06-09 07:40",
+     "actor": "Tom Okafor",
+     "event": "created",
+     "detail": "phone"
+    },
+    {
+     "n": 2,
+     "at": "2026-06-09 07:40",
+     "actor": "noor",
+     "event": "status",
+     "detail": "new>triage"
+    }
+   ]
+  },
+  {
+   "_id": 103,
+   "subject": "Can't log in to my account",
+   "customer_id": "c3",
+   "channel": "chat",
+   "priority": "normal",
+   "status": "new",
+   "assignee_id": null,
+   "merged_into": null,
+   "linked": [],
+   "tags": [],
+   "opened": "2026-06-10 08:05",
+   "entries": [
+    {
+     "role": "customer",
+     "at": "2026-06-10 08:05",
+     "body": "The password reset email never arrives, so I can't see my bills online.",
+     "via": "chat"
+    },
+    {
+     "role": "system",
+     "at": "2026-06-10 08:05",
+     "event": "acknowledged"
+    }
+   ],
+   "history": [
+    {
+     "n": 1,
+     "at": "2026-06-10 08:05",
+     "actor": "Lena Fischer",
+     "event": "created",
+     "detail": "chat"
+    }
+   ]
+  },
+  {
+   "_id": 104,
+   "subject": "Slow speeds in the evening",
+   "customer_id": "c4",
+   "channel": "email",
+   "priority": "normal",
+   "status": "in_progress",
+   "assignee_id": "noor",
+   "merged_into": null,
+   "linked": [],
+   "tags": [
+    "speed"
+   ],
+   "opened": "2026-06-06 20:31",
+   "entries": [
+    {
+     "role": "customer",
+     "at": "2026-06-06 20:31",
+     "body": "Speeds fall to almost nothing between eight and eleven every night.",
+     "via": "email"
+    },
+    {
+     "role": "system",
+     "at": "2026-06-06 20:31",
+     "event": "acknowledged"
+    },
+    {
+     "role": "agent",
+     "at": "2026-06-07 09:15",
+     "body": "Thanks Ravi. Could you run a speed test with a cable plugged in tonight and send us the result?",
+     "author_id": "noor"
+    },
+    {
+     "role": "customer",
+     "at": "2026-06-08 21:02",
+     "body": "Done: wired it is just as slow. The test page says the line itself is fine.",
+     "via": "email"
+    }
+   ],
+   "history": [
+    {
+     "n": 1,
+     "at": "2026-06-06 20:31",
+     "actor": "Ravi Menon",
+     "event": "created",
+     "detail": "email"
+    },
+    {
+     "n": 2,
+     "at": "2026-06-08 21:02",
+     "actor": "noor",
+     "event": "assigned",
+     "detail": "noor"
+    },
+    {
+     "n": 3,
+     "at": "2026-06-08 21:02",
+     "actor": "noor",
+     "event": "status",
+     "detail": "new>in_progress"
+    }
+   ]
+  },
+  {
+   "_id": 105,
+   "subject": "Charged twice in May",
+   "customer_id": "c5",
+   "channel": "email",
+   "priority": "high",
+   "status": "triage",
+   "assignee_id": "noor",
+   "merged_into": null,
+   "linked": [],
+   "tags": [
+    "billing"
+   ],
+   "opened": "2026-06-08 12:44",
+   "entries": [
+    {
+     "role": "customer",
+     "at": "2026-06-08 12:44",
+     "body": "My bank statement shows the monthly payment taken twice on the same day in May.",
+     "via": "email"
+    },
+    {
+     "role": "system",
+     "at": "2026-06-08 12:44",
+     "event": "acknowledged"
+    }
+   ],
+   "history": [
+    {
+     "n": 1,
+     "at": "2026-06-08 12:44",
+     "actor": "Wei Chen",
+     "event": "created",
+     "detail": "email"
+    },
+    {
+     "n": 2,
+     "at": "2026-06-08 12:44",
+     "actor": "noor",
+     "event": "assigned",
+     "detail": "noor"
+    },
+    {
+     "n": 3,
+     "at": "2026-06-08 12:44",
+     "actor": "noor",
+     "event": "status",
+     "detail": "new>triage"
+    }
+   ]
+  },
+  {
+   "_id": 106,
+   "subject": "Refund for the double charge",
+   "customer_id": "c5",
+   "channel": "chat",
+   "priority": "normal",
+   "status": "new",
+   "assignee_id": null,
+   "merged_into": null,
+   "linked": [],
+   "tags": [
+    "billing"
+   ],
+   "opened": "2026-06-09 16:20",
+   "entries": [
+    {
+     "role": "customer",
+     "at": "2026-06-09 16:20",
+     "body": "Following up by chat: when will the extra payment from May come back to my account?",
+     "via": "chat"
+    },
+    {
+     "role": "system",
+     "at": "2026-06-09 16:20",
+     "event": "acknowledged"
+    }
+   ],
+   "history": [
+    {
+     "n": 1,
+     "at": "2026-06-09 16:20",
+     "actor": "Wei Chen",
+     "event": "created",
+     "detail": "chat"
+    }
+   ]
+  },
+  {
+   "_id": 107,
+   "subject": "Engineer visit didn't happen",
+   "customer_id": "c6",
+   "channel": "phone",
+   "priority": "high",
+   "status": "waiting",
+   "assignee_id": "noor",
+   "merged_into": null,
+   "linked": [
+    102
+   ],
+   "tags": [
+    "engineer"
+   ],
+   "opened": "2026-06-05 10:02",
+   "entries": [
+    {
+     "role": "customer",
+     "at": "2026-06-05 10:02",
+     "body": "I waited in all morning and nobody came for the installation appointment.",
+     "via": "phone"
+    },
+    {
+     "role": "system",
+     "at": "2026-06-05 10:02",
+     "event": "acknowledged"
+    },
+    {
+     "role": "agent",
+     "at": "2026-06-05 11:30",
+     "body": "Sorry Grace. I can rebook the visit for Thursday morning or Friday afternoon. Which suits you?",
+     "author_id": "noor"
+    }
+   ],
+   "history": [
+    {
+     "n": 1,
+     "at": "2026-06-05 10:02",
+     "actor": "Grace O'Neill",
+     "event": "created",
+     "detail": "phone"
+    },
+    {
+     "n": 2,
+     "at": "2026-06-05 11:30",
+     "actor": "noor",
+     "event": "assigned",
+     "detail": "noor"
+    },
+    {
+     "n": 3,
+     "at": "2026-06-05 11:30",
+     "actor": "noor",
+     "event": "status",
+     "detail": "new>waiting"
+    }
+   ]
+  },
+  {
+   "_id": 108,
+   "subject": "Upgrade to the fibre plan",
+   "customer_id": "c7",
+   "channel": "email",
+   "priority": "low",
+   "status": "resolved",
+   "assignee_id": "noor",
+   "merged_into": null,
+   "linked": [],
+   "tags": [],
+   "opened": "2026-06-03 14:10",
+   "entries": [
+    {
+     "role": "customer",
+     "at": "2026-06-03 14:10",
+     "body": "Fibre is now available on my street. How do I switch without losing my phone number?",
+     "via": "email"
+    },
+    {
+     "role": "system",
+     "at": "2026-06-03 14:10",
+     "event": "acknowledged"
+    },
+    {
+     "role": "agent",
+     "at": "2026-06-04 09:05",
+     "body": "Good news Jonas: your number moves with you. I have scheduled the switch and emailed the details.",
+     "author_id": "noor"
+    }
+   ],
+   "history": [
+    {
+     "n": 1,
+     "at": "2026-06-03 14:10",
+     "actor": "Jonas Berg",
+     "event": "created",
+     "detail": "email"
+    },
+    {
+     "n": 2,
+     "at": "2026-06-04 09:05",
+     "actor": "noor",
+     "event": "assigned",
+     "detail": "noor"
+    },
+    {
+     "n": 3,
+     "at": "2026-06-04 09:05",
+     "actor": "noor",
+     "event": "status",
+     "detail": "new>resolved"
+    }
+   ]
+  },
+  {
+   "_id": 109,
+   "subject": "Moving house next month",
+   "customer_id": "c8",
+   "channel": "phone",
+   "priority": "low",
+   "status": "in_progress",
+   "assignee_id": null,
+   "merged_into": null,
+   "linked": [],
+   "tags": [],
+   "opened": "2026-06-07 15:48",
+   "entries": [
+    {
+     "role": "customer",
+     "at": "2026-06-07 15:48",
+     "body": "We move at the end of next month. Can the service move with us?",
+     "via": "phone"
+    },
+    {
+     "role": "system",
+     "at": "2026-06-07 15:48",
+     "event": "acknowledged"
+    },
+    {
+     "role": "agent",
+     "at": "2026-06-08 10:12",
+     "body": "Yes. What is the new address, and which day would you like the switch-over?",
+     "author_id": "noor"
+    },
+    {
+     "role": "customer",
+     "at": "2026-06-09 19:30",
+     "body": "Flat 2, Orchard Court. Any day in the first week after we move is fine.",
+     "via": "phone"
+    }
+   ],
+   "history": [
+    {
+     "n": 1,
+     "at": "2026-06-07 15:48",
+     "actor": "Amara Diallo",
+     "event": "created",
+     "detail": "phone"
+    },
+    {
+     "n": 2,
+     "at": "2026-06-09 19:30",
+     "actor": "noor",
+     "event": "status",
+     "detail": "new>in_progress"
+    }
+   ]
+  },
+  {
+   "_id": 110,
+   "subject": "Static IP address request",
+   "customer_id": "c9",
+   "channel": "email",
+   "priority": "normal",
+   "status": "closed",
+   "assignee_id": "noor",
+   "merged_into": null,
+   "linked": [],
+   "tags": [
+    "speed"
+   ],
+   "opened": "2026-05-28 09:00",
+   "entries": [
+    {
+     "role": "customer",
+     "at": "2026-05-28 09:00",
+     "body": "I run a small home server and need a fixed address.",
+     "via": "email"
+    },
+    {
+     "role": "system",
+     "at": "2026-05-28 09:00",
+     "event": "acknowledged"
+    },
+    {
+     "role": "agent",
+     "at": "2026-05-28 13:45",
+     "body": "Done: the static address is active and shown in your account settings.",
+     "author_id": "noor"
+    }
+   ],
+   "history": [
+    {
+     "n": 1,
+     "at": "2026-05-28 09:00",
+     "actor": "Sofia Rossi",
+     "event": "created",
+     "detail": "email"
+    },
+    {
+     "n": 2,
+     "at": "2026-05-28 13:45",
+     "actor": "noor",
+     "event": "assigned",
+     "detail": "noor"
+    },
+    {
+     "n": 3,
+     "at": "2026-05-28 13:45",
+     "actor": "noor",
+     "event": "status",
+     "detail": "new>closed"
+    }
+   ]
+  }
+ ],
+ "sla_policies": [
+  {
+   "_id": "urgent",
+   "first_response_min": 30,
+   "resolve_hours": 8
+  },
+  {
+   "_id": "high",
+   "first_response_min": 120,
+   "resolve_hours": 24
+  },
+  {
+   "_id": "normal",
+   "first_response_min": 480,
+   "resolve_hours": 72
+  },
+  {
+   "_id": "low",
+   "first_response_min": 1440,
+   "resolve_hours": 120
+  }
+ ],
+ "replies": [
+  {
+   "_id": "r1",
+   "title": "Thanks for your patience",
+   "body": "Thank you for bearing with us while we look into this. We will update you within one working day.",
+   "position": 1,
+   "author_id": "noor",
+   "updated": "2026-06-01"
+  },
+  {
+   "_id": "r2",
+   "title": "Router restart steps",
+   "body": "Please switch the router off at the wall, wait thirty seconds, then switch it back on and give it five minutes to reconnect.",
+   "position": 2,
+   "author_id": "noor",
+   "updated": "2026-06-01"
+  },
+  {
+   "_id": "r3",
+   "title": "Billing correction",
+   "body": "We have corrected your bill; the refund will reach your account within five working days.",
+   "position": 3,
+   "author_id": "noor",
+   "updated": "2026-06-01"
+  },
+  {
+   "_id": "r4",
+   "title": "Engineer visit booked",
+   "body": "An engineer visit is booked. You will receive a text the evening before with a two-hour arrival window.",
+   "position": 4,
+   "author_id": "noor",
+   "updated": "2026-06-01"
+  },
+  {
+   "_id": "r5",
+   "title": "Closing note",
+   "body": "We are closing this ticket now. Reply to this message if anything changes and it will reopen.",
+   "position": 5,
+   "author_id": "noor",
+   "updated": "2026-06-01"
+  }
+ ]
 }
