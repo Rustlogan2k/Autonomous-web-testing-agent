@@ -724,3 +724,23 @@ interaction types other than form submission (paging, sorting/filtering, inline 
 reordering, modal or tab state, client-side routing / Back), with designs from standard fault
 classes, admitted under the same rules (witness fires on buggy, silent on clean and on its
 control, minimised, benign traces silent).
+
+## 9. Addendum 2026-10-19: crash-type faults in the eight development apps
+
+Owner's decision: every development app also carries **two crash-type faults**, so that
+tuning sees the failures web-testing benchmarks count (console errors and failed requests),
+not only silent functional faults.
+
+- **Fault designs** from standard classes, chosen per app from its own logic: an uncaught
+  exception after a particular state change (e.g. a client handler reading a field that a
+  prior edit removed), a server error (HTTP 5xx) from an endpoint on an edge-case input or
+  state, or a broken resource / navigation target (HTTP 404) reached through a non-obvious
+  path. Each needs at least two contextual steps and must not fire on any benign trace or
+  workflow.
+- **The clean build stays free of console errors and failed requests** (the clean random walk
+  check is unchanged); only the buggy build and that fault's other controls show the error.
+- **Oracle:** a new extension assertion kind in the harness (Builder A) that fires when a
+  console error or failed request matching the fault's declared pattern occurs on a matching
+  URL; admitted under the usual rules (fires on buggy, silent on clean and on its control,
+  minimised).
+- **Independence rule unchanged:** no reference to the external benchmark's subject apps.
