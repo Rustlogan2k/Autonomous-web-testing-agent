@@ -77,6 +77,12 @@ ARMS: dict[str, dict] = {
     # standalone curiosity Q-learning tester (WebExplor / WebRLED components only).
     "dev_hybrid_curiosity": {**HYBRID, "planner": "count", "explore": "curiosity"},
     "dev_curiosity_rl": {"kind": "curiosity_rl"},
+    # Tuning round v3 (2026-10-19, rebuilt development apps): one change per arm, then
+    # combined. Each is off in every other arm.
+    "dev_v3_browse": {**HYBRID, "planner": "count", "browse": True},
+    "dev_v3_clickables": {**HYBRID, "planner": "count", "custom_clickables": True},
+    "dev_v3_curiosity": {**HYBRID, "planner": "count", "explore": "curiosity"},
+    "dev_v3_failfeedback": {**HYBRID, "planner": "count", "failure_bonus": 2.0},
     "dev_pairwise_bandit": {
         **HYBRID,
         "planner": "bandit",
@@ -121,13 +127,20 @@ class HybridJob:
         return {**asdict(self), "job_id": self.job_id}
 
 
-def _settings(config: HybridConfig):
-    from ..benchmark import EnvSettings
+def _settings(config: HybridConfig, spec: dict | None = None):
+    from dataclasses import replace
 
+    from ..benchmark import EnvSettings
+    from ..envs.action_registry import EXTENDED_OPTIONS
+
+    registry = EXTENDED_OPTIONS
+    if (spec or {}).get("custom_clickables"):
+        registry = replace(EXTENDED_OPTIONS, custom_clickables=True)
     return EnvSettings(
         max_steps=config.episode_steps,
         settle_quiet_ms=config.settle_quiet_ms,
         capture_screenshots=False,
+        registry=registry,
     )
 
 
@@ -215,6 +228,8 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
         pairwise=bool(spec.get("pairwise", False)),
         family_choice=bool(spec.get("family_choice", False)),
         form_submit=bool(spec.get("form_submit", False)),
+        browse=bool(spec.get("browse", False)),
+        failure_bonus=float(spec.get("failure_bonus", 0.0)),
     )
     return policy, labeller
 
@@ -242,7 +257,7 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
     from .invariants import attribute, verify
     from .metrics import CoverageCollector, FailureCounter
 
-    settings = _settings(config)
+    settings = _settings(config, ARMS[job.arm])
     suite = job.app not in DEVELOPMENT_APPS
     if suite:
         from e2e_suite.harness.variants import control_key as suite_control_key

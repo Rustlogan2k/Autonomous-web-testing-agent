@@ -8,6 +8,9 @@ standard test-design techniques rather than from any application's faults:
 - state-transition testing: `edit_after_review`, `back_and_resume`, `reload_and_resume`,
   `double_submit`, `collection_churn`;
 - `complete_step` is the valid path through one step, needed to get deep at all;
+- list testing: `browse_list` optionally applies one sort/filter control, pages forward
+  through the list (next page, load more) and opens an item on a later page, for faults in
+  paging, sorting and filtering (optional; `options(browse=True)`);
 - pairwise (combinatorial) testing: `combine` sets one select's option together with a second
   deviation on another field of the same form (a deviant value or another select's option),
   for faults that need two choices at once (optional; `options(pairwise=True)`).
@@ -19,6 +22,7 @@ reading the page's labels, and stops when its sequence is done.
 from __future__ import annotations
 
 from collections.abc import Callable
+import re
 from dataclasses import dataclass, field
 
 from ..envs.types import ActionSpec, ActionType
@@ -38,6 +42,7 @@ OPERATORS = (
     "double_submit",
     "collection_churn",
     "combine",
+    "browse_list",
 )
 #: Operators whose probe submits a value the page should refuse: the expected response is
 #: a validation message, so its absence is the surprise (see `HybridPolicy` outcomes).
@@ -259,6 +264,27 @@ class Operator:
             return self._submit(view)
         return None
 
+    def _browse_list(self, view: PageView) -> ActionSpec | None:
+        """Apply the target sort/filter control (if any), page forward up to twice, then open
+        an item on the later page; follow-through carries on from there."""
+        if self.stage == 0:
+            self.stage = 1
+            if self.target:
+                spec = next((s for s in view.specs if s.action_type is ActionType.CLICK
+                             and control_identity(s) == self.target), None)
+                if spec is not None:
+                    return spec
+        while self.stage in (1, 2):
+            self.stage += 1
+            controls = paging_controls(view)
+            if controls:
+                return controls[0]
+        if self.stage == 3:
+            self.stage = 4
+            items = view.controls_with_role("open", "edit")
+            return items[0] if items else None
+        return None
+
     def _back_and_resume(self, view: PageView) -> ActionSpec | None:
         if self.stage == 0:
             self.stage = 1
@@ -331,7 +357,33 @@ def _option(view: PageView, field_id: str, option: str) -> ActionSpec | None:
     )
 
 
-def options(view: PageView, *, pairwise: bool = False) -> list[tuple[str, str]]:
+#: A control that moves a list forward, in the words lists commonly use; or a link whose
+#: target carries a page / offset / cursor parameter.
+_PAGING = re.compile(
+    r"^(?:next|more|load more|show more|see more|older|next page|›|»|>|→)(?=\W|$)"
+    r"|\bpage\s*\d|^\d{1,3}$",
+    re.I,
+)
+_PAGING_HREF = re.compile(r"[?&](page|p|offset|start|cursor|after)=", re.I)
+
+
+def paging_controls(view: PageView) -> list[ActionSpec]:
+    """Clicks that move a list forward; numbered pages after the first come last."""
+    out = []
+    for spec in view.specs:
+        if spec.action_type is not ActionType.CLICK:
+            continue
+        label = (spec.element_id or "").strip()
+        href = str((spec.params or {}).get("href") or "")
+        if label in ("1",):
+            continue
+        if _PAGING.search(label) or _PAGING_HREF.search(href):
+            out.append(spec)
+    return sorted(out, key=lambda s: (s.element_id or "").strip().isdigit())
+
+
+def options(view: PageView, *, pairwise: bool = False,
+            browse: bool = False) -> list[tuple[str, str]]:
     """Every (operator, target) this page offers, in a stable order."""
     out: list[tuple[str, str]] = []
     fields = view.fields()
@@ -368,6 +420,10 @@ def options(view: PageView, *, pairwise: bool = False) -> list[tuple[str, str]]:
                 out.append(("choose_option", f"{identity}|{action.params['option']}"))
     if pairwise:
         out += _pairs(fields)
+    if browse and (paging_controls(view) or view.controls_with_role("search_or_filter")):
+        out.append(("browse_list", ""))
+        out += [("browse_list", control_identity(s))
+                for s in view.controls_with_role("search_or_filter")]
     return out
 
 

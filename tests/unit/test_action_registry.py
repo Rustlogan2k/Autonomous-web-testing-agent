@@ -253,3 +253,12 @@ def test_valid_typical_is_prioritized_over_boundary_variants_under_tight_budget(
     valid_count = sum(1 for s in type_specs if s.params["category"] == "valid_typical")
     # every field's primary (valid_typical) value should make it in before any secondary variant does
     assert valid_count == 30
+
+
+def test_custom_clickables_become_clicks_on_their_structural_selector():
+    custom = _el(tag="div", text="Card 7", custom=True, cssPath='[id="board"] > div:nth-of-type(2)')
+    with_id = _el(tag="li", id="tab-2", text="Archived", custom=True, cssPath="unused")
+    clicks = [s for s in build_action_specs([custom, with_id]) if s.action_type is ActionType.CLICK]
+    assert [s.selector for s in clicks] == ['[id="board"] > div:nth-of-type(2)', '[id="tab-2"]']
+    assert [s.element_id for s in clicks] == ["Card 7", "Archived"]
+    assert not [s for s in build_action_specs([custom]) if s.action_type is ActionType.RAPID_CLICK]
