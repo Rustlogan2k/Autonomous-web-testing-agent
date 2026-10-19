@@ -7,8 +7,11 @@
  * - The response is HTML: every top-level element with an id replaces the element on the
  *   page with the same id. An X-Desk-Url header becomes the page's address
  *   (history.replaceState), applied after the swap so address and content always agree.
- * - [data-opens=id] shows a dialog (resetting its form), [data-dismiss=id] hides it, and
- *   [data-hide=id] hides an element for this page view only.
+ *   An X-Desk-Signed-Out header sends the browser to the sign-in page.
+ * - [data-opens=id] shows a dialog (resetting its form), [data-dismiss=id] hides it,
+ *   [data-hide=id] hides an element for this page view only, [data-toggle=id] shows or hides
+ *   a menu, and [data-insert=select] copies the chosen saved reply into [data-into=textarea].
+ * - A saved reply's title is renamed in place (Rename, type, Save) without leaving the list.
  *
  * One click sends at most one request, and the page is updated as soon as it answers.
  * Requests carry X-Desk-Fragment: 1; without this script the forms post normally and the
@@ -45,6 +48,10 @@
     if (init && init.body) headers["Content-Type"] = "application/x-www-form-urlencoded";
     return fetch(url, Object.assign({ credentials: "same-origin", headers: headers }, init || {}))
       .then(function (response) {
+        if (response.headers.get("X-Desk-Signed-Out")) {
+          window.location.assign("/login");
+          return undefined;
+        }
         return response.text().then(function (markup) {
           swap(markup);
           const address = response.headers.get("X-Desk-Url");
@@ -76,6 +83,35 @@
     const dialog = document.getElementById(id);
     if (dialog) dialog.hidden = true;
     syncModal();
+  }
+
+  function renameReply(item) {
+    const id = item.getAttribute("data-title-of");
+    const shown = document.getElementById("title-" + id);
+    const editor = document.getElementById("title-editor-" + id);
+    const input = document.getElementById("title-input-" + id);
+    const status = document.getElementById("title-status-" + id);
+    const button = document.getElementById("edit-title-" + id);
+    function done() { editor.hidden = true; button.hidden = false; }
+    button.addEventListener("click", function () {
+      input.value = item.getAttribute("data-saved");
+      editor.hidden = false;
+      button.hidden = true;
+      status.textContent = "";
+    });
+    document.getElementById("cancel-title-" + id).addEventListener("click", done);
+    document.getElementById("save-title-" + id).addEventListener("click", function () {
+      fetch("/replies/" + encodeURIComponent(id) + "/title", {
+        method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: input.value })
+      }).then(function (response) { return response.json(); }).then(function (reply) {
+        if (reply.reason === "signed-out") { window.location.assign("/login"); return; }
+        if (!reply.ok) { status.textContent = reply.error || ""; return; }
+        shown.textContent = reply.title;
+        item.setAttribute("data-saved", reply.title);
+        done();
+      }).catch(function () { status.textContent = ""; });
+    });
   }
 
   document.addEventListener("submit", function (event) {
@@ -111,6 +147,23 @@
       closeDialog(dismiss.getAttribute("data-dismiss"));
       return;
     }
+    const toggle = event.target.closest("[data-toggle]");
+    if (toggle) {
+      const menu = document.getElementById(toggle.getAttribute("data-toggle"));
+      if (menu) {
+        menu.hidden = !menu.hidden;
+        toggle.setAttribute("aria-expanded", menu.hidden ? "false" : "true");
+      }
+      return;
+    }
+    const insert = event.target.closest("[data-insert]");
+    if (insert) {
+      const picker = document.getElementById(insert.getAttribute("data-insert"));
+      const target = document.getElementById(insert.getAttribute("data-into"));
+      const chosen = picker && picker.selectedOptions[0];
+      if (target && chosen && chosen.value) target.value = chosen.getAttribute("data-body");
+      return;
+    }
     const hider = event.target.closest("[data-hide]");
     if (hider) {
       const target = document.getElementById(hider.getAttribute("data-hide"));
@@ -132,5 +185,6 @@
     if (open) closeDialog(open.id);
   });
 
+  document.querySelectorAll("[data-title-of]").forEach(renameReply);
   syncModal();
 })();

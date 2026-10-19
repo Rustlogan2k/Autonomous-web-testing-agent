@@ -712,3 +712,25 @@ Budget: 2–3 hours each to build and admit (300–900 source lines, 6–9 views
   exclusion. It is staff rostering (no customer, no booking), and its architecture, interaction and
   workflow shape all differ from `clinicflow`; flagged so a reviewer can veto it (fallback: a garden
   allotment plot-allocation calendar with the same faults).
+
+## 11. Addendum 2026-10-08: suite v2 (database server, sign-in, richer data model)
+
+Owner's decision, 2026-10-08, made before any testing agent has run on any validation app.
+Every application of both sets is rebuilt on a database server with a sign-in and a richer
+data model; the design is `e2e_suite/SUITE_V2_PLAN.md` (approved as recommended).
+
+- **Engines.** PostgreSQL: dutyday, markbook, sideline (Python), tally (Node). MongoDB:
+  quizcraft (Python), fosterly, larder, skylark (Node). Languages are unchanged.
+- **Fault designs are unchanged.** All 24 keep their ID, class, subtype, trigger and
+  observable violation; only patch anchors (and, where the plan says so, the layer a fault
+  lives in: SKY-1 a query filter, LARD-3 an update operator, TALLY-1 a compare-and-set
+  predicate, MARK-3/SIDE-2/SIDE-3 SQL) change.
+- **One adaptation, TALLY-1.** A database that enforced one ballot per paper would make the
+  fault impossible, so ballots are secret: a ballot row carries no paper number, and the
+  `/ballots` audit lists ballot numbers instead of paper numbers. Witness, class and
+  observable violation ("Ballots cast 16 / Papers issued 12") are unchanged.
+- **Constraints deliberately absent**, declared in each manifest's
+  `database.absent_constraints` so that no database rule pre-empts a seeded fault: DUTY-1,
+  DUTY-3, MARK-2, SIDE-3, FOST-2, FOST-3, TALLY-1, TALLY-3.
+- Every trace starts after the sign-in macro (the manifest's `login.steps`, run as the
+  tester's session bootstrap), on the same entry page as before.

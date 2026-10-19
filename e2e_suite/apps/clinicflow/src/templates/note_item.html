@@ -1,0 +1,11 @@
+<li class="note"><p id="note-body-{{ nid }}">{{ body }}</p><span class="muted">{{ meta }}</span>
+  <a id="edit-note-{{ nid }}" href="/patients/{{ pid }}?tab=notes&amp;edit={{ nid }}">{{ t("act.edit") }}</a>
+  <button id="delete-note-{{ nid }}" class="quiet" type="button" data-dialog="note-dialog-{{ nid }}">{{ t("act.delete") }}</button>
+  <dialog id="note-dialog-{{ nid }}" class="confirm-dialog">
+    <form method="post" action="/patients/{{ pid }}/notes/{{ nid }}/delete">
+      <p>{{ t("dialog.delete_note") }}</p>
+      <p class="actions"><button id="keep-note-{{ nid }}" type="button" data-close>{{ t("act.keep") }}</button>
+        <button id="confirm-delete-note-{{ nid }}" class="danger" type="submit">{{ t("act.confirm_delete") }}</button></p>
+    </form>
+  </dialog>
+</li>

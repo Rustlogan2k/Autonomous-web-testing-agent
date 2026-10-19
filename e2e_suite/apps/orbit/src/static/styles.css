@@ -35,6 +35,29 @@ h3 { font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; color:
 
 main { padding: 20px; }
 
+/* account (the header's one control) */
+.account { margin-left: auto; position: relative; display: flex; align-items: center; gap: 10px; }
+.who { font-size: .85rem; opacity: .85; }
+.account > button { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .35); }
+.account-menu { top: 40px; left: auto; right: 0; }
+.account-menu form { margin: 0; }
+
+/* sign-in pages */
+.auth-card { max-width: 380px; margin: 48px auto; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 12px; padding: 24px; }
+.auth-card form { display: flex; flex-direction: column; gap: 6px; }
+.auth-card input { font: inherit; padding: 7px; margin-bottom: 6px; }
+.auth-card .aside { margin: 14px 0 0; font-size: .9rem; }
+.message.error { color: var(--warn); }
+
+/* access notice, board settings */
+.notice, .settings { max-width: 560px; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 12px; padding: 20px; }
+.notice p { margin: 8px 0 14px; }
+.settings .field { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0; }
+.settings .field label { min-width: 140px; }
+.settings input { font: inherit; padding: 5px; width: 80px; }
+
 button, .button {
   font: inherit; font-size: .9rem; padding: 6px 12px; border-radius: 6px; cursor: pointer;
   border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-decoration: none;
@@ -101,6 +124,10 @@ textarea { width: 100%; font: inherit; padding: 6px; margin-top: 4px; }
 .move { display: flex; align-items: center; gap: 6px; }
 .move select { font: inherit; padding: 5px; }
 .secondary { font-size: .85rem; }
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 10px 0; font-size: .9rem; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; }
+.pill.label { background: #e8ecfd; color: var(--accent); }
 
 @media (max-width: 900px) {
   .columns { grid-template-columns: repeat(2, minmax(160px, 1fr)); }

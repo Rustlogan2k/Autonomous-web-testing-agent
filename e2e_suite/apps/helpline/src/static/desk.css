@@ -50,3 +50,19 @@ table.queue { width: 100%; border-collapse: collapse; background: #fff; }
 .dialog-box { background: #fff; border-radius: 8px; padding: 1.25rem; width: min(32rem, 92vw); display: grid; gap: .5rem; }
 .dialog-box h2 { margin: 0; font-size: 1.15rem; }
 .error { color: var(--warn); min-height: 1.2em; margin: 0; }
+.account { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin: .6rem 0; position: relative; }
+#signed-in-as { font-size: .85rem; color: var(--muted); }
+.account-menu { background: #fff; border: 1px solid var(--line); padding: .4rem; border-radius: 4px; }
+.account-menu form { margin: 0; }
+.main.narrow { max-width: 28rem; margin: 2rem auto; }
+.pager { display: flex; gap: .8rem; align-items: center; margin: 1rem 0; }
+.steps { display: flex; gap: 1rem; list-style: none; padding: 0; color: var(--muted); }
+.steps [aria-current="step"] { color: var(--accent); font-weight: 700; }
+.saved-list { padding-left: 1.2rem; }
+.saved-list li { margin-bottom: 1rem; }
+.row-actions { display: inline-flex; gap: .3rem; }
+.row-actions form { margin: 0; display: inline; }
+.tag { display: inline-block; font-size: .75rem; padding: 0 .4rem; border: 1px solid var(--line); border-radius: 8px; }
+.late { color: var(--warn); }
+button.danger { color: var(--warn); border-color: var(--warn); }
+.inline-pick { display: flex; gap: .4rem; }

@@ -7,6 +7,16 @@
       "detail": []
     },
     {
+      "name": "suite_v2_contract",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "breadth_declared",
+      "passed": true,
+      "detail": []
+    },
+    {
       "name": "no_external_urls",
       "passed": true,
       "detail": []
@@ -27,6 +37,16 @@
       "detail": []
     },
     {
+      "name": "database_url_from_environment",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "dockerfile_copies_vendor",
+      "passed": true,
+      "detail": []
+    },
+    {
       "name": "patches_apply_exactly_once",
       "passed": true,
       "detail": null
@@ -42,11 +62,78 @@
       "detail": {
         "passed": true,
         "summary": [
-          "Ran 10 tests in 1.211s",
+          "Ran 16 tests in 3.022s",
           "OK"
         ],
         "pass_lines": null,
         "tail": []
+      }
+    },
+    {
+      "name": "login_http_round_trip",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "status": 303,
+        "location": "/",
+        "cookie": true,
+        "entry_status": 200,
+        "entry_path": "/",
+        "user": "jo.marsh"
+      }
+    },
+    {
+      "name": "data_model_contract",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "session_seed_cost",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "warn": false,
+        "samples": 20,
+        "p50_ms": 74.8,
+        "p95_ms": 87.4,
+        "max_ms": 87.7,
+        "limit_ms": 300.0,
+        "refused": 0,
+        "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
+      }
+    },
+    {
+      "name": "session_cap_honoured",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "cap": 4,
+        "max_live_partitions": 4,
+        "live_after_each": [
+          2,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "evicted_session_state": null,
+        "evicted_session_lands_on": "/login",
+        "every_new_session_starts_from_the_seed": true
       }
     },
     {
@@ -69,10 +156,10 @@
       "passed": true,
       "detail": {
         "passed": true,
-        "seed_sha": "e895c17238bc46904012aebaee2cdc8a9b5d922340c5810d775d330830e4ad08",
+        "seed_sha": "cfbe04baa935f8b6f857c501395a859db26213802f18e99533e46d05144d058e",
         "fresh_context_sha": [
-          "e895c17238bc46904012aebaee2cdc8a9b5d922340c5810d775d330830e4ad08",
-          "e895c17238bc46904012aebaee2cdc8a9b5d922340c5810d775d330830e4ad08"
+          "cfbe04baa935f8b6f857c501395a859db26213802f18e99533e46d05144d058e",
+          "cfbe04baa935f8b6f857c501395a859db26213802f18e99533e46d05144d058e"
         ]
       }
     },
@@ -118,7 +205,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 197.5
+        "seconds": 215.9
       }
     },
     {
@@ -147,7 +234,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 341.5
+        "seconds": 364.0
       }
     },
     {
@@ -175,7 +262,63 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 169.6
+        "seconds": 197.6
+      }
+    },
+    {
+      "name": "fault BAG-4",
+      "passed": true,
+      "detail": {
+        "fault_id": "BAG-4",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 3,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'first': 26.0, 'second': 44.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 3,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 90.5
+      }
+    },
+    {
+      "name": "fault BAG-5",
+      "passed": true,
+      "detail": {
+        "fault_id": "BAG-5",
+        "subtype": "stale-state",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'page': 2.0, 'pages': 1.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 100.0
       }
     },
     {
@@ -192,6 +335,44 @@
         "raw_candidates": {},
         "errors": [],
         "foreign_requests": [],
+        "responses": {
+          "count": 274,
+          "p50_ms": 2.6,
+          "p95_ms": 6.6,
+          "max_ms": 8.2,
+          "slowest": [
+            [
+              "GET",
+              "/search",
+              8.2
+            ],
+            [
+              "GET",
+              "/search",
+              8.0
+            ],
+            [
+              "GET",
+              "/search",
+              7.5
+            ],
+            [
+              "GET",
+              "/search",
+              7.3
+            ],
+            [
+              "POST",
+              "/bag/add",
+              6.9
+            ]
+          ],
+          "limits_ms": {
+            "p95": 150.0,
+            "max": 1000.0
+          },
+          "passed": true
+        },
         "passed": true
       }
     },
@@ -201,21 +382,208 @@
       "detail": []
     },
     {
+      "name": "responses_fast",
+      "passed": true,
+      "detail": {
+        "count": 274,
+        "p50_ms": 2.6,
+        "p95_ms": 6.6,
+        "max_ms": 8.2,
+        "slowest": [
+          [
+            "GET",
+            "/search",
+            8.2
+          ],
+          [
+            "GET",
+            "/search",
+            8.0
+          ],
+          [
+            "GET",
+            "/search",
+            7.5
+          ],
+          [
+            "GET",
+            "/search",
+            7.3
+          ],
+          [
+            "POST",
+            "/bag/add",
+            6.9
+          ]
+        ],
+        "limits_ms": {
+          "p95": 150.0,
+          "max": 1000.0
+        },
+        "passed": true
+      }
+    },
+    {
+      "name": "login_protected",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "landing": {
+          "entry": "/login",
+          "/": "/login",
+          "/search": "/login",
+          "/bag": "/login",
+          "/orders": "/login",
+          "/account": "/login",
+          "/account/addresses": "/login",
+          "/staff/orders": "/login"
+        },
+        "public": {
+          "/login/forgot": {
+            "status": 200,
+            "redirected": false,
+            "path": "/login/forgot"
+          }
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "login_macro_signs_in",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "steps_completed": 3,
+        "steps": 3,
+        "path": "/",
+        "signed_in_as": "Jo Marsh \u00b7 Customer",
+        "sha_equals_seed": true
+      }
+    },
+    {
+      "name": "login_wrong_password_refused",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "path": "/login",
+        "error_region": "That username and password don't match an account.",
+        "session": null,
+        "errors": []
+      }
+    },
+    {
+      "name": "login_sign_out_sound",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "workflow": "buy a lantern with standard delivery",
+        "workflow_misses": 0,
+        "sign_out_misses": 0,
+        "landed_on": "/login",
+        "user_after_sign_out": null,
+        "entry_lands_on": "/login",
+        "sign_in_again_steps": 3,
+        "sha_resumed": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "role_restrictions_sound",
+      "passed": true,
+      "detail": [
+        {
+          "user": "sam.adeyemi",
+          "path": "/staff/orders",
+          "passed": true,
+          "signed_in_as": "Sam Adeyemi \u00b7 Customer",
+          "status": 200,
+          "access_region": "This page is for shop staff. Your account can't open it.",
+          "state_unchanged": true,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "name": "breadth_exercised",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "size_problems": [],
+        "workflows_failing": [],
+        "counts": {
+          "views": 18,
+          "entities": 3,
+          "patterns": [
+            "bulk-action",
+            "modal",
+            "pagination",
+            "search",
+            "sort-filter",
+            "tabs",
+            "wizard"
+          ]
+        },
+        "views_failing": []
+      }
+    },
+    {
       "name": "docker_offline_build_and_health",
       "passed": true,
       "detail": {
         "image": "e2e-suite/bagstreet:clean",
         "build_ok": true,
-        "build_seconds": 2.0,
+        "build_seconds": 1.7,
         "build_tail": [
-          "#10 naming to docker.io/e2e-suite/bagstreet:clean done",
-          "#10 unpacking to docker.io/e2e-suite/bagstreet:clean 0.1s done",
-          "#10 DONE 0.5s"
+          "#11 naming to docker.io/e2e-suite/bagstreet:clean done",
+          "#11 unpacking to docker.io/e2e-suite/bagstreet:clean 0.1s done",
+          "#11 DONE 0.5s"
+        ],
+        "route": "host",
+        "attempts": [
+          {
+            "route": "host",
+            "healthy": true,
+            "detail": "{'ok': True, 'app': 'bagstreet'}",
+            "sign_in": {
+              "passed": true,
+              "status": 303,
+              "cookie": true,
+              "entry_status": 200,
+              "entry_path": "/",
+              "container_sha": "cfbe04baa935f8b6f857c501395a859db26213802f18e99533e46d05144d058e",
+              "host_sha": "cfbe04baa935f8b6f857c501395a859db26213802f18e99533e46d05144d058e",
+              "sign_in_ms": 74.4
+            }
+          }
         ],
         "container_healthy": true,
         "detail": "{'ok': True, 'app': 'bagstreet'}",
-        "image_mb": 43.3,
+        "sign_in": {
+          "passed": true,
+          "status": 303,
+          "cookie": true,
+          "entry_status": 200,
+          "entry_path": "/",
+          "container_sha": "cfbe04baa935f8b6f857c501395a859db26213802f18e99533e46d05144d058e",
+          "host_sha": "cfbe04baa935f8b6f857c501395a859db26213802f18e99533e46d05144d058e",
+          "sign_in_ms": 74.4
+        },
+        "image_mb": 44.5,
         "passed": true
+      }
+    },
+    {
+      "name": "docker_sign_in_and_seed_state",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "status": 303,
+        "cookie": true,
+        "entry_status": 200,
+        "entry_path": "/",
+        "container_sha": "cfbe04baa935f8b6f857c501395a859db26213802f18e99533e46d05144d058e",
+        "host_sha": "cfbe04baa935f8b6f857c501395a859db26213802f18e99533e46d05144d058e",
+        "sign_in_ms": 74.4
       }
     },
     {
@@ -226,33 +594,33 @@
           "languages": [
             {
               "language": "Python",
-              "files": 2,
-              "bytes": 32057,
-              "share": 0.5647
+              "files": 5,
+              "bytes": 75310,
+              "share": 0.5179
             },
             {
               "language": "JSON",
-              "files": 4,
-              "bytes": 21497,
-              "share": 0.3787
-            },
-            {
-              "language": "CSS",
-              "files": 1,
-              "bytes": 1967,
-              "share": 0.0347
+              "files": 11,
+              "bytes": 60130,
+              "share": 0.4135
             },
             {
               "language": "Markdown",
               "files": 1,
-              "bytes": 857,
-              "share": 0.0151
+              "bytes": 4120,
+              "share": 0.0283
+            },
+            {
+              "language": "CSS",
+              "files": 1,
+              "bytes": 3334,
+              "share": 0.0229
             },
             {
               "language": "JavaScript",
               "files": 1,
-              "bytes": 387,
-              "share": 0.0068
+              "bytes": 2514,
+              "share": 0.0173
             }
           ],
           "frameworks": [],
@@ -264,28 +632,69 @@
         },
         "build_plan": {
           "kind": "dockerfile",
-          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\bagstreet\\clean\\Dockerfile"
+          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\bagstreet\\clean\\Dockerfile"
         },
         "product_can_build": true,
         "matches_expectation": true,
         "expectation": "buildable by the current intake"
       }
+    },
+    {
+      "name": "variant_storage_released",
+      "passed": true,
+      "detail": []
     }
   ],
   "sections": {
     "vocabulary": {
-      "keys": 85,
-      "keys_used_by_source": 73,
-      "action_keys": 15,
+      "keys": 178,
+      "keys_used_by_source": 130,
+      "action_keys": 32,
       "unused_keys": [
+        "attr.bulb",
+        "attr.capacity",
+        "attr.lumens",
+        "attr.material",
+        "attr.max_load",
+        "attr.weatherproof",
         "express.body",
+        "field.address_label",
+        "field.line1",
+        "field.postcode",
+        "field.town",
         "gifts.body",
         "method.collect",
         "method.express",
         "method.standard",
         "missing.body",
+        "msg.added",
+        "msg.address_added",
+        "msg.address_book_full",
+        "msg.address_deleted",
+        "msg.address_fields",
+        "msg.address_needed",
+        "msg.address_saved",
+        "msg.bag_full",
+        "msg.dispatched",
+        "msg.method_unknown",
+        "msg.pick_items",
+        "msg.pick_orders",
+        "msg.placed",
+        "msg.qty_rule",
+        "msg.removed",
+        "msg.review_deleted",
+        "msg.review_empty",
+        "msg.review_exists",
+        "msg.review_long",
+        "msg.review_posted",
+        "msg.review_saved",
+        "msg.stars_rule",
+        "msg.too_long",
+        "msg.voucher_unknown",
         "orders.missing",
         "orders.missing_title",
+        "role.customer",
+        "role.staff",
         "voucher.bundle5",
         "voucher.freeship",
         "voucher.none",
@@ -293,36 +702,70 @@
       ],
       "default_action_labels": {
         "act.add": "Add to bag",
+        "act.add_address": "Add an address",
         "act.apply_filters": "Show",
         "act.apply_voucher": "Use voucher",
+        "act.back_to_sign_in": "Back to sign in",
+        "act.cancel": "Cancel",
         "act.change_delivery": "Change delivery",
         "act.checkout": "Go to checkout",
+        "act.delete": "Delete",
+        "act.delete_review": "Delete your review",
+        "act.edit": "Edit",
         "act.edit_bag": "Edit bag",
+        "act.edit_review": "Edit your review",
         "act.express": "Express checkout",
+        "act.forgot": "Forgot password?",
         "act.gift_options": "Gift options",
+        "act.keep": "Keep it",
         "act.keep_shopping": "Keep shopping",
+        "act.mark_dispatched": "Mark dispatched",
         "act.more_like_this": "More like this",
+        "act.next": "Next page",
         "act.place_order": "Place order",
+        "act.post_review": "Post review",
+        "act.previous": "Previous page",
         "act.remove": "Remove",
+        "act.remove_selected": "Remove selected",
         "act.review_order": "Review order",
+        "act.save": "Save",
         "act.search": "Search",
+        "act.sign_in": "Sign in",
+        "act.sign_out": "Sign out",
         "act.update_bag": "Update bag"
       },
       "alt_action_labels": {
         "act.add": "Put in basket",
+        "act.add_address": "New address",
         "act.apply_filters": "Refine",
         "act.apply_voucher": "Redeem",
+        "act.back_to_sign_in": "Return to sign in",
+        "act.cancel": "Never mind",
         "act.change_delivery": "Different delivery",
         "act.checkout": "Pay now",
+        "act.delete": "Remove for good",
+        "act.delete_review": "Remove my review",
+        "act.edit": "Change",
         "act.edit_bag": "Amend basket",
+        "act.edit_review": "Change my review",
         "act.express": "One-click buy",
+        "act.forgot": "Can't sign in?",
         "act.gift_options": "Wrap as a gift",
+        "act.keep": "Go back",
         "act.keep_shopping": "Back to the store",
+        "act.mark_dispatched": "Record as sent",
         "act.more_like_this": "Similar items",
+        "act.next": "More results",
         "act.place_order": "Confirm purchase",
+        "act.post_review": "Publish my review",
+        "act.previous": "Earlier results",
         "act.remove": "Take out",
+        "act.remove_selected": "Take out ticked items",
         "act.review_order": "Summarise",
+        "act.save": "Keep changes",
         "act.search": "Find",
+        "act.sign_in": "Log in",
+        "act.sign_out": "Log out",
         "act.update_bag": "Recalculate"
       }
     },
@@ -331,7 +774,7 @@
         "file": "src/server.py",
         "lines_removed": 2,
         "lines_added": 1,
-        "chars_changed": 85
+        "chars_changed": 91
       },
       "BAG-2": {
         "file": "src/pages.py",
@@ -344,6 +787,380 @@
         "lines_removed": 1,
         "lines_added": 1,
         "chars_changed": 72
+      },
+      "BAG-4": {
+        "file": "src/shop.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 70
+      },
+      "BAG-5": {
+        "file": "src/pages.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 8
+      }
+    },
+    "data_model": {
+      "passed": true,
+      "failures": [],
+      "description": {
+        "partition": "e2e_bagstreet_52335_s000001",
+        "collections": [
+          "bags",
+          "categories",
+          "counters",
+          "orders",
+          "products",
+          "stores",
+          "users",
+          "vouchers"
+        ],
+        "entities_found": [
+          "bags",
+          "categories",
+          "orders",
+          "products",
+          "stores",
+          "users",
+          "vouchers"
+        ],
+        "collection_count": 7,
+        "per_collection": {
+          "bags": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 7,
+            "additional_properties_false": true,
+            "enums": 1,
+            "one_of": 1,
+            "unique_indexes": [],
+            "secondary_indexes": [],
+            "compound_indexes": [],
+            "documents": 3,
+            "embedded_elements": 0,
+            "arrays_of_objects": 0,
+            "depth": 1,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          },
+          "categories": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 3,
+            "additional_properties_false": true,
+            "enums": 0,
+            "one_of": 0,
+            "unique_indexes": [
+              "department_order"
+            ],
+            "secondary_indexes": [],
+            "compound_indexes": [],
+            "documents": 3,
+            "embedded_elements": 0,
+            "arrays_of_objects": 0,
+            "depth": 1,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          },
+          "orders": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 11,
+            "additional_properties_false": true,
+            "enums": 3,
+            "one_of": 0,
+            "unique_indexes": [],
+            "secondary_indexes": [
+              "orders_by_customer",
+              "orders_by_status"
+            ],
+            "compound_indexes": [
+              "orders_by_customer",
+              "orders_by_status"
+            ],
+            "documents": 6,
+            "embedded_elements": 17,
+            "arrays_of_objects": 12,
+            "depth": 2,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          },
+          "products": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 8,
+            "additional_properties_false": true,
+            "enums": 3,
+            "one_of": 1,
+            "unique_indexes": [
+              "one_product_per_sku"
+            ],
+            "secondary_indexes": [
+              "products_by_department",
+              "reviews_by_author"
+            ],
+            "compound_indexes": [
+              "products_by_department"
+            ],
+            "documents": 14,
+            "embedded_elements": 23,
+            "arrays_of_objects": 18,
+            "depth": 3,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          },
+          "stores": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 4,
+            "additional_properties_false": true,
+            "enums": 0,
+            "one_of": 0,
+            "unique_indexes": [],
+            "secondary_indexes": [],
+            "compound_indexes": [],
+            "documents": 1,
+            "embedded_elements": 3,
+            "arrays_of_objects": 0,
+            "depth": 1,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          },
+          "users": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 6,
+            "additional_properties_false": true,
+            "enums": 1,
+            "one_of": 0,
+            "unique_indexes": [
+              "one_account_per_username"
+            ],
+            "secondary_indexes": [],
+            "compound_indexes": [],
+            "documents": 3,
+            "embedded_elements": 6,
+            "arrays_of_objects": 2,
+            "depth": 2,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          },
+          "vouchers": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 2,
+            "additional_properties_false": false,
+            "enums": 3,
+            "one_of": 1,
+            "unique_indexes": [],
+            "secondary_indexes": [],
+            "compound_indexes": [],
+            "documents": 3,
+            "embedded_elements": 0,
+            "arrays_of_objects": 0,
+            "depth": 1,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          }
+        },
+        "rows": {
+          "bags": 3,
+          "categories": 3,
+          "counters": 1,
+          "orders": 6,
+          "products": 14,
+          "stores": 1,
+          "users": 3,
+          "vouchers": 3
+        },
+        "validated_strict": 7,
+        "additional_properties_false": 6,
+        "enums": 11,
+        "one_of": 3,
+        "with_arrays_of_objects": 3,
+        "depth": 3,
+        "unique_indexes": 3,
+        "secondary_indexes": 7,
+        "compound_indexes": 3,
+        "object_ids": 0,
+        "volume": 82,
+        "non_empty_collections": 7
+      },
+      "probes": [
+        {
+          "name": "an account without a password",
+          "kind": "required",
+          "expected": 121,
+          "got": 121,
+          "passed": true
+        },
+        {
+          "name": "an order in a status the shop does not have",
+          "kind": "enum",
+          "expected": 121,
+          "got": 121,
+          "passed": true
+        },
+        {
+          "name": "outdoor attributes on a lamp",
+          "kind": "validation",
+          "expected": 121,
+          "got": 121,
+          "passed": true
+        },
+        {
+          "name": "a second account called jo.marsh",
+          "kind": "duplicate",
+          "expected": 11000,
+          "got": 11000,
+          "passed": true
+        },
+        {
+          "name": "two products sharing one SKU",
+          "kind": "duplicate",
+          "expected": 11000,
+          "got": 11000,
+          "passed": true
+        }
+      ],
+      "references": [
+        {
+          "from": "products.category_id",
+          "to": "categories._id",
+          "values": 14,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "products.reviews[].author_id",
+          "to": "users._id",
+          "values": 5,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "bags.lines[].product_id",
+          "to": "products._id",
+          "values": 0,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "bags.voucher.code",
+          "to": "vouchers._id",
+          "values": 0,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "bags.store_id",
+          "to": "stores._id",
+          "values": 3,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "orders.customer_id",
+          "to": "users._id",
+          "values": 6,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "orders.store_id",
+          "to": "stores._id",
+          "values": 6,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "orders.lines[].product_id",
+          "to": "products._id",
+          "values": 8,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "orders.events[].by",
+          "to": "users._id",
+          "values": 9,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        }
+      ]
+    },
+    "sessions": {
+      "cost": {
+        "passed": true,
+        "warn": false,
+        "samples": 20,
+        "p50_ms": 74.8,
+        "p95_ms": 87.4,
+        "max_ms": 87.7,
+        "limit_ms": 300.0,
+        "refused": 0,
+        "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
+      },
+      "cap": {
+        "passed": true,
+        "cap": 4,
+        "max_live_partitions": 4,
+        "live_after_each": [
+          2,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "evicted_session_state": null,
+        "evicted_session_lands_on": "/login",
+        "every_new_session_starts_from_the_seed": true
       }
     },
     "workflows": [
@@ -356,7 +1173,16 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/bag",
+          "http://127.0.0.1:58158/checkout/delivery",
+          "http://127.0.0.1:58158/checkout/review",
+          "http://127.0.0.1:58158/orders/BS-1001",
+          "http://127.0.0.1:58158/p/lantern",
+          "http://127.0.0.1:58158/search?category=lighting"
+        ]
       },
       {
         "name": "use the 10% voucher on a kettle [default vocabulary]",
@@ -367,7 +1193,13 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/bag",
+          "http://127.0.0.1:58158/p/kettle",
+          "http://127.0.0.1:58158/search?category=kitchen"
+        ]
       },
       {
         "name": "collect a hammock from the shop [default vocabulary]",
@@ -378,7 +1210,16 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/bag",
+          "http://127.0.0.1:58158/checkout/delivery",
+          "http://127.0.0.1:58158/checkout/review",
+          "http://127.0.0.1:58158/orders/BS-1001",
+          "http://127.0.0.1:58158/p/hammock",
+          "http://127.0.0.1:58158/search?category=outdoor"
+        ]
       },
       {
         "name": "search, then sort by price [default vocabulary]",
@@ -389,7 +1230,12 @@
         "committed_state_changed": false,
         "expected_state_change": false,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/search?q=search+query",
+          "http://127.0.0.1:58158/search?q=search+query&page=1&category=all&sort=price-asc"
+        ]
       },
       {
         "name": "choose the large lantern [default vocabulary]",
@@ -400,7 +1246,13 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/bag",
+          "http://127.0.0.1:58158/p/lantern",
+          "http://127.0.0.1:58158/search?category=lighting"
+        ]
       },
       {
         "name": "buy, then find the order in the history [default vocabulary]",
@@ -411,7 +1263,273 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/bag",
+          "http://127.0.0.1:58158/checkout/delivery",
+          "http://127.0.0.1:58158/checkout/review",
+          "http://127.0.0.1:58158/orders",
+          "http://127.0.0.1:58158/orders/BS-1001",
+          "http://127.0.0.1:58158/p/tea-towel",
+          "http://127.0.0.1:58158/search?category=kitchen"
+        ]
+      },
+      {
+        "name": "page through everything the shop sells [default vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/search?category=all",
+          "http://127.0.0.1:58158/search?q=&category=all&sort=relevance&page=2"
+        ]
+      },
+      {
+        "name": "sort the outdoor department, dearest first [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/search?category=outdoor",
+          "http://127.0.0.1:58158/search?q=&page=1&category=outdoor&sort=price-desc"
+        ]
+      },
+      {
+        "name": "narrow a search to one department [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/search?q=search+query",
+          "http://127.0.0.1:58158/search?q=search+query&page=1&category=kitchen&sort=relevance"
+        ]
+      },
+      {
+        "name": "add an address to the address book [default vocabulary]",
+        "steps": 9,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/account",
+          "http://127.0.0.1:58158/account/addresses",
+          "http://127.0.0.1:58158/account/addresses/new"
+        ]
+      },
+      {
+        "name": "look up the saved addresses [default vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/account",
+          "http://127.0.0.1:58158/account/addresses"
+        ]
+      },
+      {
+        "name": "change the street of the work address [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/account",
+          "http://127.0.0.1:58158/account/addresses",
+          "http://127.0.0.1:58158/account/addresses/work/edit"
+        ]
+      },
+      {
+        "name": "delete the work address after confirming [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/account",
+          "http://127.0.0.1:58158/account/addresses"
+        ]
+      },
+      {
+        "name": "deliver to a saved address [default vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/bag",
+          "http://127.0.0.1:58158/checkout/delivery",
+          "http://127.0.0.1:58158/checkout/review",
+          "http://127.0.0.1:58158/orders/BS-1001",
+          "http://127.0.0.1:58158/p/lantern",
+          "http://127.0.0.1:58158/search?category=lighting"
+        ]
+      },
+      {
+        "name": "read the reviews of the hammock [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/p/hammock",
+          "http://127.0.0.1:58158/search?category=outdoor"
+        ]
+      },
+      {
+        "name": "review the lantern [default vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/p/lantern",
+          "http://127.0.0.1:58158/p/lantern?tab=reviews",
+          "http://127.0.0.1:58158/search?category=lighting"
+        ]
+      },
+      {
+        "name": "change the rating of a review [default vocabulary]",
+        "steps": 9,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/p/lantern",
+          "http://127.0.0.1:58158/p/lantern/review/edit",
+          "http://127.0.0.1:58158/p/lantern?tab=reviews",
+          "http://127.0.0.1:58158/search?category=lighting"
+        ]
+      },
+      {
+        "name": "delete a review after confirming [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/p/desk-lamp",
+          "http://127.0.0.1:58158/p/desk-lamp?tab=reviews",
+          "http://127.0.0.1:58158/search?category=lighting"
+        ]
+      },
+      {
+        "name": "check the bag from the header [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/bag",
+          "http://127.0.0.1:58158/p/kettle",
+          "http://127.0.0.1:58158/search?category=kitchen"
+        ]
+      },
+      {
+        "name": "raise a quantity in the bag [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/bag",
+          "http://127.0.0.1:58158/p/lantern",
+          "http://127.0.0.1:58158/search?category=lighting"
+        ]
+      },
+      {
+        "name": "remove two items at once [default vocabulary]",
+        "steps": 14,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:58158/",
+          "http://127.0.0.1:58158/bag",
+          "http://127.0.0.1:58158/p/kettle",
+          "http://127.0.0.1:58158/p/lantern",
+          "http://127.0.0.1:58158/p/tea-towel",
+          "http://127.0.0.1:58158/search?category=kitchen",
+          "http://127.0.0.1:58158/search?category=lighting"
+        ]
       },
       {
         "name": "buy a lantern with standard delivery [alt vocabulary]",
@@ -422,7 +1540,16 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/bag",
+          "http://127.0.0.1:52469/checkout/delivery",
+          "http://127.0.0.1:52469/checkout/review",
+          "http://127.0.0.1:52469/orders/BS-1001",
+          "http://127.0.0.1:52469/p/lantern",
+          "http://127.0.0.1:52469/search?category=lighting"
+        ]
       },
       {
         "name": "use the 10% voucher on a kettle [alt vocabulary]",
@@ -433,7 +1560,13 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/bag",
+          "http://127.0.0.1:52469/p/kettle",
+          "http://127.0.0.1:52469/search?category=kitchen"
+        ]
       },
       {
         "name": "collect a hammock from the shop [alt vocabulary]",
@@ -444,7 +1577,16 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/bag",
+          "http://127.0.0.1:52469/checkout/delivery",
+          "http://127.0.0.1:52469/checkout/review",
+          "http://127.0.0.1:52469/orders/BS-1001",
+          "http://127.0.0.1:52469/p/hammock",
+          "http://127.0.0.1:52469/search?category=outdoor"
+        ]
       },
       {
         "name": "search, then sort by price [alt vocabulary]",
@@ -455,7 +1597,12 @@
         "committed_state_changed": false,
         "expected_state_change": false,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/search?q=search+query",
+          "http://127.0.0.1:52469/search?q=search+query&page=1&category=all&sort=price-asc"
+        ]
       },
       {
         "name": "choose the large lantern [alt vocabulary]",
@@ -466,7 +1613,13 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/bag",
+          "http://127.0.0.1:52469/p/lantern",
+          "http://127.0.0.1:52469/search?category=lighting"
+        ]
       },
       {
         "name": "buy, then find the order in the history [alt vocabulary]",
@@ -477,7 +1630,273 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/bag",
+          "http://127.0.0.1:52469/checkout/delivery",
+          "http://127.0.0.1:52469/checkout/review",
+          "http://127.0.0.1:52469/orders",
+          "http://127.0.0.1:52469/orders/BS-1001",
+          "http://127.0.0.1:52469/p/tea-towel",
+          "http://127.0.0.1:52469/search?category=kitchen"
+        ]
+      },
+      {
+        "name": "page through everything the shop sells [alt vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/search?category=all",
+          "http://127.0.0.1:52469/search?q=&category=all&sort=relevance&page=2"
+        ]
+      },
+      {
+        "name": "sort the outdoor department, dearest first [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/search?category=outdoor",
+          "http://127.0.0.1:52469/search?q=&page=1&category=outdoor&sort=price-desc"
+        ]
+      },
+      {
+        "name": "narrow a search to one department [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/search?q=search+query",
+          "http://127.0.0.1:52469/search?q=search+query&page=1&category=kitchen&sort=relevance"
+        ]
+      },
+      {
+        "name": "add an address to the address book [alt vocabulary]",
+        "steps": 9,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/account",
+          "http://127.0.0.1:52469/account/addresses",
+          "http://127.0.0.1:52469/account/addresses/new"
+        ]
+      },
+      {
+        "name": "look up the saved addresses [alt vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/account",
+          "http://127.0.0.1:52469/account/addresses"
+        ]
+      },
+      {
+        "name": "change the street of the work address [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/account",
+          "http://127.0.0.1:52469/account/addresses",
+          "http://127.0.0.1:52469/account/addresses/work/edit"
+        ]
+      },
+      {
+        "name": "delete the work address after confirming [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/account",
+          "http://127.0.0.1:52469/account/addresses"
+        ]
+      },
+      {
+        "name": "deliver to a saved address [alt vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/bag",
+          "http://127.0.0.1:52469/checkout/delivery",
+          "http://127.0.0.1:52469/checkout/review",
+          "http://127.0.0.1:52469/orders/BS-1001",
+          "http://127.0.0.1:52469/p/lantern",
+          "http://127.0.0.1:52469/search?category=lighting"
+        ]
+      },
+      {
+        "name": "read the reviews of the hammock [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/p/hammock",
+          "http://127.0.0.1:52469/search?category=outdoor"
+        ]
+      },
+      {
+        "name": "review the lantern [alt vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/p/lantern",
+          "http://127.0.0.1:52469/p/lantern?tab=reviews",
+          "http://127.0.0.1:52469/search?category=lighting"
+        ]
+      },
+      {
+        "name": "change the rating of a review [alt vocabulary]",
+        "steps": 9,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/p/lantern",
+          "http://127.0.0.1:52469/p/lantern/review/edit",
+          "http://127.0.0.1:52469/p/lantern?tab=reviews",
+          "http://127.0.0.1:52469/search?category=lighting"
+        ]
+      },
+      {
+        "name": "delete a review after confirming [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/p/desk-lamp",
+          "http://127.0.0.1:52469/p/desk-lamp?tab=reviews",
+          "http://127.0.0.1:52469/search?category=lighting"
+        ]
+      },
+      {
+        "name": "check the bag from the header [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/bag",
+          "http://127.0.0.1:52469/p/kettle",
+          "http://127.0.0.1:52469/search?category=kitchen"
+        ]
+      },
+      {
+        "name": "raise a quantity in the bag [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/bag",
+          "http://127.0.0.1:52469/p/lantern",
+          "http://127.0.0.1:52469/search?category=lighting"
+        ]
+      },
+      {
+        "name": "remove two items at once [alt vocabulary]",
+        "steps": 14,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:52469/",
+          "http://127.0.0.1:52469/bag",
+          "http://127.0.0.1:52469/p/kettle",
+          "http://127.0.0.1:52469/p/lantern",
+          "http://127.0.0.1:52469/p/tea-towel",
+          "http://127.0.0.1:52469/search?category=kitchen",
+          "http://127.0.0.1:52469/search?category=lighting"
+        ]
       }
     ],
     "state_dependent": [
@@ -585,7 +2004,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 197.5
+        "seconds": 215.9
       },
       {
         "fault_id": "BAG-2",
@@ -643,7 +2062,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 341.5
+        "seconds": 364.0
       },
       {
         "fault_id": "BAG-3",
@@ -700,7 +2119,93 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 169.6
+        "seconds": 197.6
+      },
+      {
+        "fault_id": "BAG-4",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 3,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'first': 26.0, 'second': 44.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 3,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "cat-outdoor"
+          },
+          {
+            "type": "SELECT",
+            "id": "sort",
+            "params": {
+              "option": "price-desc"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "apply-filters"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 90.5
+      },
+      {
+        "fault_id": "BAG-5",
+        "subtype": "stale-state",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 4,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'page': 2.0, 'pages': 1.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "cat-all"
+          },
+          {
+            "type": "CLICK",
+            "id": "results-next"
+          },
+          {
+            "type": "SELECT",
+            "id": "filter-category",
+            "params": {
+              "option": "lighting"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "apply-filters"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 100.0
       }
     ],
     "benign": [
@@ -745,6 +2250,34 @@
         "resolves": true,
         "fired": [],
         "passed": true
+      },
+      {
+        "trace": 3,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 3,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 4,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 4,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
       }
     ],
     "random_walk_clean": {
@@ -753,40 +2286,269 @@
       "raw_candidates": {},
       "errors": [],
       "foreign_requests": [],
+      "responses": {
+        "count": 274,
+        "p50_ms": 2.6,
+        "p95_ms": 6.6,
+        "max_ms": 8.2,
+        "slowest": [
+          [
+            "GET",
+            "/search",
+            8.2
+          ],
+          [
+            "GET",
+            "/search",
+            8.0
+          ],
+          [
+            "GET",
+            "/search",
+            7.5
+          ],
+          [
+            "GET",
+            "/search",
+            7.3
+          ],
+          [
+            "POST",
+            "/bag/add",
+            6.9
+          ]
+        ],
+        "limits_ms": {
+          "p95": 150.0,
+          "max": 1000.0
+        },
+        "passed": true
+      },
       "passed": true
+    },
+    "roles": [
+      {
+        "user": "sam.adeyemi",
+        "path": "/staff/orders",
+        "passed": true,
+        "signed_in_as": "Sam Adeyemi \u00b7 Customer",
+        "status": 200,
+        "access_region": "This page is for shop staff. Your account can't open it.",
+        "state_unchanged": true,
+        "errors": []
+      }
+    ],
+    "breadth": {
+      "passed": true,
+      "size_problems": [],
+      "workflows_failing": [],
+      "views": [
+        {
+          "name": "delivery step",
+          "workflow": "buy a lantern with standard delivery",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:58158/checkout/delivery"
+          ]
+        },
+        {
+          "name": "check-your-order step",
+          "workflow": "buy a lantern with standard delivery",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:58158/checkout/review"
+          ]
+        },
+        {
+          "name": "review editor",
+          "workflow": "change the rating of a review",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:58158/p/lantern/review/edit"
+          ]
+        },
+        {
+          "name": "sign-in page",
+          "path": "/login",
+          "as": null,
+          "status": 200,
+          "landed": "/login",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "forgotten password",
+          "path": "/login/forgot",
+          "as": null,
+          "status": 200,
+          "landed": "/login/forgot",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "home",
+          "path": "/",
+          "as": "jo.marsh",
+          "status": 200,
+          "landed": "/",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "product list",
+          "path": "/search?category=all",
+          "as": "jo.marsh",
+          "status": 200,
+          "landed": "/search",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "product page",
+          "path": "/p/lantern",
+          "as": "jo.marsh",
+          "status": 200,
+          "landed": "/p/lantern",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "bag",
+          "path": "/bag",
+          "as": "jo.marsh",
+          "status": 200,
+          "landed": "/bag",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "order history",
+          "path": "/orders",
+          "as": "jo.marsh",
+          "status": 200,
+          "landed": "/orders",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "one order",
+          "path": "/orders/BS-0901",
+          "as": "jo.marsh",
+          "status": 200,
+          "landed": "/orders/BS-0901",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "account",
+          "path": "/account",
+          "as": "jo.marsh",
+          "status": 200,
+          "landed": "/account",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "address book",
+          "path": "/account/addresses",
+          "as": "jo.marsh",
+          "status": 200,
+          "landed": "/account/addresses",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "new address form",
+          "path": "/account/addresses/new",
+          "as": "jo.marsh",
+          "status": 200,
+          "landed": "/account/addresses/new",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "edit address form",
+          "path": "/account/addresses/home/edit",
+          "as": "jo.marsh",
+          "status": 200,
+          "landed": "/account/addresses/home/edit",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "express checkout information",
+          "path": "/express",
+          "as": "jo.marsh",
+          "status": 200,
+          "landed": "/express",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "dispatch desk",
+          "path": "/staff/orders",
+          "as": "priya.shah",
+          "status": 200,
+          "landed": "/staff/orders",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "access notice",
+          "path": "/staff/orders",
+          "as": "sam.adeyemi",
+          "status": 200,
+          "landed": "/staff/orders",
+          "errors": [],
+          "passed": true
+        }
+      ],
+      "counts": {
+        "views": 18,
+        "entities": 3,
+        "patterns": [
+          "bulk-action",
+          "modal",
+          "pagination",
+          "search",
+          "sort-filter",
+          "tabs",
+          "wizard"
+        ]
+      }
     },
     "product_intake": {
       "profile": {
         "languages": [
           {
             "language": "Python",
-            "files": 2,
-            "bytes": 32057,
-            "share": 0.5647
+            "files": 5,
+            "bytes": 75310,
+            "share": 0.5179
           },
           {
             "language": "JSON",
-            "files": 4,
-            "bytes": 21497,
-            "share": 0.3787
-          },
-          {
-            "language": "CSS",
-            "files": 1,
-            "bytes": 1967,
-            "share": 0.0347
+            "files": 11,
+            "bytes": 60130,
+            "share": 0.4135
           },
           {
             "language": "Markdown",
             "files": 1,
-            "bytes": 857,
-            "share": 0.0151
+            "bytes": 4120,
+            "share": 0.0283
+          },
+          {
+            "language": "CSS",
+            "files": 1,
+            "bytes": 3334,
+            "share": 0.0229
           },
           {
             "language": "JavaScript",
             "files": 1,
-            "bytes": 387,
-            "share": 0.0068
+            "bytes": 2514,
+            "share": 0.0173
           }
         ],
         "frameworks": [],
@@ -798,7 +2560,7 @@
       },
       "build_plan": {
         "kind": "dockerfile",
-        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\bagstreet\\clean\\Dockerfile"
+        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\bagstreet\\clean\\Dockerfile"
       },
       "product_can_build": true,
       "matches_expectation": true,
@@ -806,9 +2568,9 @@
     }
   },
   "admitted": true,
-  "checks_run": 22,
+  "checks_run": 41,
   "checks_failed": [],
   "browser_checks_run": true,
   "docker_checks_run": true,
-  "wall_clock_s": 938.7
+  "wall_clock_s": 1488.5
 }

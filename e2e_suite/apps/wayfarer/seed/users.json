@@ -1,0 +1,5 @@
+[
+  {"_id": "noor", "username": "noor.haddad", "name": "Noor Haddad", "pw": {"salt": "7c2e9a41d05b83f6e1a4c7d92b5f0e38", "hash": "5e490530fca41713918e38b5d8ee3dffa160a58f691f571b76d64f0dbf72df0b", "iter": 20000}},
+  {"_id": "sam", "username": "sam.whitlock", "name": "Sam Whitlock", "pw": {"salt": "c19f04b7e3a258d6f0b14e9a7c3d2581", "hash": "7c004d9c63cf84896321361a61c4a7b88ff5234c76ae0ce9bc11fc07b82c1bc7", "iter": 20000}},
+  {"_id": "omar", "username": "omar.farouk", "name": "Omar Farouk", "pw": {"salt": "4ab8e6d1f27c905e3d81b6a0c4f97e12", "hash": "3cf01fa2ac03d09c3f4642c85c62d8af17c310a28f750ef5571133bd55cc10a0", "iter": 20000}}
+]

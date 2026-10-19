@@ -1,0 +1,11 @@
+[
+  {"_id": "k1", "trip_id": "t1", "n": 1, "text": "Walking boots", "packed": true, "added_by": "noor"},
+  {"_id": "k2", "trip_id": "t1", "n": 2, "text": "Waterproof jacket", "packed": false, "added_by": "noor"},
+  {"_id": "k3", "trip_id": "t1", "n": 3, "text": "Ordnance Survey map", "packed": false, "added_by": "noor"},
+  {"_id": "k4", "trip_id": "t1", "n": 4, "text": "Sun cream", "packed": false, "added_by": "noor"},
+  {"_id": "k5", "trip_id": "t1", "n": 5, "text": "Flask", "packed": false, "added_by": "noor"},
+  {"_id": "k6", "trip_id": "t1", "n": 6, "text": "Bus timetable", "packed": false, "added_by": "noor"},
+  {"_id": "k7", "trip_id": "t90", "n": 1, "text": "Fell boots", "packed": true, "added_by": "sam"},
+  {"_id": "k8", "trip_id": "t90", "n": 2, "text": "Midge spray", "packed": false, "added_by": "sam"},
+  {"_id": "k9", "trip_id": "t90", "n": 3, "text": "Picnic rug", "packed": true, "added_by": "sam"}
+]

@@ -1,0 +1,15 @@
+<h1>{{ title }}</h1>
+<form class="stack" method="post" action="{{ action }}" autocomplete="off">
+  <label for="patient-name">{{ t("field.full_name") }}</label>
+  <input id="patient-name" name="full_name" type="text" value="{{ name }}" required>
+  <label for="patient-dob">{{ t("field.dob") }}</label>
+  <input id="patient-dob" name="dob" type="date" value="{{ dob }}" required>
+  <label for="patient-email">{{ t("field.email") }}</label>
+  <input id="patient-email" name="email" type="email" value="{{ email }}" required>
+  <label for="patient-phone">{{ t("field.phone") }}</label>
+  <input id="patient-phone" name="phone" type="tel" value="{{ phone }}">
+  <p class="actions">
+    <a id="patient-form-cancel" href="{{ back }}">{{ t("act.back") }}</a>
+    <button id="save-patient" class="primary" type="submit">{{ t("act.save_patient") }}</button>
+  </p>
+</form>

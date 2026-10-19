@@ -1,0 +1,19 @@
+<tr data-note-entry="{{ wid }}" data-saved="{{ note }}">
+  <td>{{ number }}</td>
+  <td><a id="patient-of-{{ wid }}" href="/patients/{{ pid }}">{{ name }}</a></td>
+  <td><span id="note-{{ wid }}" class="note-text">{{ note }}</span>
+    <button id="edit-note-{{ wid }}" class="quiet" type="button">{{ t("act.edit_note") }}</button>
+    <span id="note-editor-{{ wid }}" class="note-editor" hidden>
+      <label class="inline" for="note-input-{{ wid }}">{{ t("waiting.note") }}</label>
+      <input id="note-input-{{ wid }}" name="waiting_note_{{ wid }}" type="text">
+      <button id="save-note-{{ wid }}" type="button">{{ t("act.save_note") }}</button>
+      <button id="cancel-note-{{ wid }}" class="quiet" type="button">{{ t("act.cancel_edit") }}</button>
+    </span>
+    <span id="note-status-{{ wid }}" class="muted" role="status"></span></td>
+  <td>{{ since }}</td>
+  <td class="row-actions">
+    <form method="post" action="/waiting/{{ wid }}/up"><button id="move-up-{{ wid }}" type="submit" aria-label="{{ t("act.move_up") }}">{{ t("act.move_up") }}</button></form>
+    <form method="post" action="/waiting/{{ wid }}/down"><button id="move-down-{{ wid }}" type="submit" aria-label="{{ t("act.move_down") }}">{{ t("act.move_down") }}</button></form>
+    <form method="post" action="/waiting/{{ wid }}/remove"><button id="remove-{{ wid }}" class="quiet" type="submit">{{ t("act.remove") }}</button></form>
+  </td>
+</tr>

@@ -7,6 +7,16 @@
       "detail": []
     },
     {
+      "name": "suite_v2_contract",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "breadth_declared",
+      "passed": true,
+      "detail": []
+    },
+    {
       "name": "no_external_urls",
       "passed": true,
       "detail": []
@@ -27,6 +37,16 @@
       "detail": []
     },
     {
+      "name": "database_url_from_environment",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "dockerfile_copies_vendor",
+      "passed": true,
+      "detail": []
+    },
+    {
       "name": "patches_apply_exactly_once",
       "passed": true,
       "detail": null
@@ -42,12 +62,79 @@
       "detail": {
         "passed": true,
         "summary": [
-          "# tests 12",
-          "# pass 12",
+          "# tests 23",
+          "# pass 23",
           "# fail 0"
         ],
         "pass_lines": 1,
         "tail": []
+      }
+    },
+    {
+      "name": "login_http_round_trip",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "status": 303,
+        "location": "/",
+        "cookie": true,
+        "entry_status": 200,
+        "entry_path": "/claims",
+        "user": "pat.reid"
+      }
+    },
+    {
+      "name": "data_model_contract",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "session_seed_cost",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "warn": false,
+        "samples": 20,
+        "p50_ms": 76.3,
+        "p95_ms": 98.9,
+        "max_ms": 99.1,
+        "limit_ms": 300.0,
+        "refused": 0,
+        "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
+      }
+    },
+    {
+      "name": "session_cap_honoured",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "cap": 4,
+        "max_live_partitions": 4,
+        "live_after_each": [
+          2,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "evicted_session_state": null,
+        "evicted_session_lands_on": "/login",
+        "every_new_session_starts_from_the_seed": true
       }
     },
     {
@@ -70,10 +157,10 @@
       "passed": true,
       "detail": {
         "passed": true,
-        "seed_sha": "c4c0903ece891e81c5ef4814cf23a20f90c0c9b920643381ac875d344a327348",
+        "seed_sha": "e9e95437bca1303f113f942e337706d85479386d023441c092d4001f55a4215a",
         "fresh_context_sha": [
-          "c4c0903ece891e81c5ef4814cf23a20f90c0c9b920643381ac875d344a327348",
-          "c4c0903ece891e81c5ef4814cf23a20f90c0c9b920643381ac875d344a327348"
+          "e9e95437bca1303f113f942e337706d85479386d023441c092d4001f55a4215a",
+          "e9e95437bca1303f113f942e337706d85479386d023441c092d4001f55a4215a"
         ]
       }
     },
@@ -119,7 +206,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 65.3
+        "seconds": 107.9
       }
     },
     {
@@ -137,7 +224,7 @@
         "witness_needs_its_own_patch": true,
         "buggy_detail": [
           "text_absent: violated=True inconclusive=False Sent back",
-          "text_absent: violated=True inconclusive=False Resubmitted \u2014 Ana Ruiz"
+          "text_absent: violated=True inconclusive=False Resubmitted \u2014 Ana Ruiz via Pat Reid"
         ],
         "confirmed": true,
         "rejected_because": "",
@@ -148,7 +235,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 249.6
+        "seconds": 319.3
       }
     },
     {
@@ -176,7 +263,63 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 330.2
+        "seconds": 413.2
+      }
+    },
+    {
+      "name": "fault LED-4",
+      "passed": true,
+      "detail": {
+        "fault_id": "LED-4",
+        "subtype": "displayed-vs-submitted",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='Code Name Budget Approved spending CC-01 Operations \u00a32,500.00 \u00a30.00 Dele"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 165.3
+      }
+    },
+    {
+      "name": "fault LED-5",
+      "passed": true,
+      "detail": {
+        "fault_id": "LED-5",
+        "subtype": "wrong-target",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 1,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'first': 38.5, 'second': 18.4}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 1,
+        "minimization_trials": 0,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 50.8
       }
     },
     {
@@ -193,6 +336,44 @@
         "raw_candidates": {},
         "errors": [],
         "foreign_requests": [],
+        "responses": {
+          "count": 249,
+          "p50_ms": 1.4,
+          "p95_ms": 5.8,
+          "max_ms": 17.6,
+          "slowest": [
+            [
+              "POST",
+              "/viewer",
+              17.6
+            ],
+            [
+              "POST",
+              "/viewer",
+              14.6
+            ],
+            [
+              "POST",
+              "/cost-centres/CC-04/delete",
+              14.3
+            ],
+            [
+              "POST",
+              "/claims/new",
+              12.3
+            ],
+            [
+              "POST",
+              "/viewer",
+              10.5
+            ]
+          ],
+          "limits_ms": {
+            "p95": 150.0,
+            "max": 1000.0
+          },
+          "passed": true
+        },
         "passed": true
       }
     },
@@ -202,21 +383,214 @@
       "detail": []
     },
     {
+      "name": "responses_fast",
+      "passed": true,
+      "detail": {
+        "count": 249,
+        "p50_ms": 1.4,
+        "p95_ms": 5.8,
+        "max_ms": 17.6,
+        "slowest": [
+          [
+            "POST",
+            "/viewer",
+            17.6
+          ],
+          [
+            "POST",
+            "/viewer",
+            14.6
+          ],
+          [
+            "POST",
+            "/cost-centres/CC-04/delete",
+            14.3
+          ],
+          [
+            "POST",
+            "/claims/new",
+            12.3
+          ],
+          [
+            "POST",
+            "/viewer",
+            10.5
+          ]
+        ],
+        "limits_ms": {
+          "p95": 150.0,
+          "max": 1000.0
+        },
+        "passed": true
+      }
+    },
+    {
+      "name": "login_protected",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "landing": {
+          "entry": "/login",
+          "/": "/login",
+          "/claims": "/login",
+          "/merchants": "/login"
+        },
+        "public": {
+          "/login/forgot": {
+            "status": 200,
+            "redirected": false,
+            "path": "/login/forgot"
+          }
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "login_macro_signs_in",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "steps_completed": 3,
+        "steps": 3,
+        "path": "/claims",
+        "signed_in_as": "Pat Reid \u00b7 expenses administrator",
+        "sha_equals_seed": true
+      }
+    },
+    {
+      "name": "login_wrong_password_refused",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "path": "/login",
+        "error_region": "That username and password don't match.",
+        "session": null,
+        "errors": []
+      }
+    },
+    {
+      "name": "login_sign_out_sound",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "workflow": "lodge a claim in pounds and euros",
+        "workflow_misses": 0,
+        "sign_out_misses": 0,
+        "landed_on": "/login",
+        "user_after_sign_out": null,
+        "entry_lands_on": "/login",
+        "sign_in_again_steps": 3,
+        "sha_resumed": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "role_restrictions_sound",
+      "passed": true,
+      "detail": [
+        {
+          "user": "ana.ruiz",
+          "path": "/approvals",
+          "passed": true,
+          "signed_in_as": "Ana Ruiz \u00b7 employee",
+          "status": 200,
+          "access_region": "This page belongs to another role. Choose who you are acting as, or ask the finance desk.",
+          "state_unchanged": true,
+          "errors": []
+        },
+        {
+          "user": "ana.ruiz",
+          "path": "/merchants/new",
+          "passed": true,
+          "signed_in_as": "Ana Ruiz \u00b7 employee",
+          "status": 200,
+          "access_region": "This page belongs to another role. Choose who you are acting as, or ask the finance desk.",
+          "state_unchanged": true,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "name": "breadth_exercised",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "size_problems": [],
+        "workflows_failing": [],
+        "counts": {
+          "views": 15,
+          "entities": 3,
+          "patterns": [
+            "bulk-action",
+            "inline-edit",
+            "modal",
+            "pagination",
+            "search",
+            "sort-filter",
+            "tabs"
+          ]
+        },
+        "views_failing": []
+      }
+    },
+    {
       "name": "docker_offline_build_and_health",
       "passed": true,
       "detail": {
         "image": "e2e-suite/ledgerly:clean",
         "build_ok": true,
-        "build_seconds": 1.2,
+        "build_seconds": 0.8,
         "build_tail": [
-          "#10 naming to docker.io/e2e-suite/ledgerly:clean done",
-          "#10 unpacking to docker.io/e2e-suite/ledgerly:clean 0.1s done",
-          "#10 DONE 0.3s"
+          "#11 naming to docker.io/e2e-suite/ledgerly:clean done",
+          "#11 unpacking to docker.io/e2e-suite/ledgerly:clean done",
+          "#11 DONE 0.1s"
+        ],
+        "route": "host",
+        "attempts": [
+          {
+            "route": "host",
+            "healthy": true,
+            "detail": "{'ok': True, 'app': 'ledgerly'}",
+            "sign_in": {
+              "passed": true,
+              "status": 303,
+              "cookie": true,
+              "entry_status": 200,
+              "entry_path": "/claims",
+              "container_sha": "e9e95437bca1303f113f942e337706d85479386d023441c092d4001f55a4215a",
+              "host_sha": "e9e95437bca1303f113f942e337706d85479386d023441c092d4001f55a4215a",
+              "sign_in_ms": 44.3
+            }
+          }
         ],
         "container_healthy": true,
         "detail": "{'ok': True, 'app': 'ledgerly'}",
-        "image_mb": 79.8,
+        "sign_in": {
+          "passed": true,
+          "status": 303,
+          "cookie": true,
+          "entry_status": 200,
+          "entry_path": "/claims",
+          "container_sha": "e9e95437bca1303f113f942e337706d85479386d023441c092d4001f55a4215a",
+          "host_sha": "e9e95437bca1303f113f942e337706d85479386d023441c092d4001f55a4215a",
+          "sign_in_ms": 44.3
+        },
+        "image_mb": 80.4,
         "passed": true
+      }
+    },
+    {
+      "name": "docker_sign_in_and_seed_state",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "status": 303,
+        "cookie": true,
+        "entry_status": 200,
+        "entry_path": "/claims",
+        "container_sha": "e9e95437bca1303f113f942e337706d85479386d023441c092d4001f55a4215a",
+        "host_sha": "e9e95437bca1303f113f942e337706d85479386d023441c092d4001f55a4215a",
+        "sign_in_ms": 44.3
       }
     },
     {
@@ -227,27 +601,33 @@
           "languages": [
             {
               "language": "JavaScript",
-              "files": 6,
-              "bytes": 43925,
-              "share": 0.5623
+              "files": 9,
+              "bytes": 98903,
+              "share": 0.5638
             },
             {
               "language": "JSON",
-              "files": 5,
-              "bytes": 28827,
-              "share": 0.369
+              "files": 15,
+              "bytes": 62124,
+              "share": 0.3541
+            },
+            {
+              "language": "SQL",
+              "files": 1,
+              "bytes": 5157,
+              "share": 0.0294
             },
             {
               "language": "CSS",
               "files": 1,
-              "bytes": 2889,
-              "share": 0.037
+              "bytes": 4788,
+              "share": 0.0273
             },
             {
               "language": "Markdown",
               "files": 1,
-              "bytes": 2479,
-              "share": 0.0317
+              "bytes": 4458,
+              "share": 0.0254
             }
           ],
           "frameworks": [],
@@ -259,24 +639,33 @@
         },
         "build_plan": {
           "kind": "dockerfile",
-          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\ledgerly\\clean\\Dockerfile"
+          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\ledgerly\\clean\\Dockerfile"
         },
         "product_can_build": true,
         "matches_expectation": true,
         "expectation": "buildable by the current intake"
       }
+    },
+    {
+      "name": "variant_storage_released",
+      "passed": true,
+      "detail": []
     }
   ],
   "sections": {
     "vocabulary": {
-      "keys": 107,
-      "keys_used_by_source": 62,
-      "action_keys": 16,
+      "keys": 224,
+      "keys_used_by_source": 145,
+      "action_keys": 38,
       "unused_keys": [
+        "act.confirm_delete",
+        "act.confirm_discard",
         "category.hotel",
         "category.meals",
         "category.other",
         "category.travel",
+        "dialog.delete_title",
+        "dialog.discard_title",
         "event.approved",
         "event.claim_drafted",
         "event.draft_saved",
@@ -285,9 +674,22 @@
         "event.rejected",
         "event.resubmitted",
         "event.sent_back",
-        "home.queue_empty",
+        "filter.all",
+        "filter.approved",
+        "filter.awaiting",
+        "filter.draft",
+        "filter.sent_back",
         "missing.body",
+        "msg.budget_invalid",
+        "msg.bulk_done",
+        "msg.centre_added",
+        "msg.centre_deleted",
+        "msg.centre_in_use",
+        "msg.centre_name_long",
+        "msg.centre_name_needed",
+        "msg.centre_name_taken",
         "msg.done_approve",
+        "msg.done_discard",
         "msg.done_escalate",
         "msg.done_lodge",
         "msg.done_reject",
@@ -299,7 +701,13 @@
         "msg.line_currency",
         "msg.line_description",
         "msg.line_description_long",
+        "msg.merchant_city",
+        "msg.merchant_deleted",
+        "msg.merchant_exists",
+        "msg.merchant_name",
+        "msg.merchant_saved",
         "msg.no_lines",
+        "msg.not_discardable",
         "msg.not_editable",
         "msg.not_your_decision",
         "msg.not_your_turn",
@@ -307,11 +715,22 @@
         "msg.note_needed",
         "msg.only_claimant",
         "msg.over_limit",
+        "msg.pick_first",
         "msg.template_soon",
         "msg.too_many_lines",
+        "nav.approvals",
+        "nav.claims",
+        "nav.cost_centres",
+        "nav.finance",
+        "nav.merchants",
+        "nav.reports",
+        "role.administrator",
         "role.employee",
         "role.finance",
         "role.manager",
+        "sort.city",
+        "sort.name",
+        "sort.name_desc",
         "status.approved",
         "status.awaiting",
         "status.draft",
@@ -320,39 +739,83 @@
         "status.with_finance"
       ],
       "default_action_labels": {
+        "act.add_centre": "Add cost centre",
         "act.add_line": "Add line",
         "act.approve": "Approve",
+        "act.approve_selected": "Approve selected",
         "act.attach_receipt": "Attach receipt",
         "act.back_to_claims": "Back to claims",
+        "act.back_to_merchants": "Back to merchants",
+        "act.back_to_sign_in": "Back to sign in",
+        "act.cancel": "Cancel",
+        "act.confirm_delete": "Delete",
+        "act.confirm_discard": "Discard",
+        "act.delete_centre": "Delete",
+        "act.delete_merchant": "Delete merchant",
+        "act.discard_claim": "Discard draft",
         "act.edit_claim": "Edit claim",
+        "act.edit_merchant": "Edit merchant",
         "act.escalate": "Escalate",
+        "act.forgot_password": "Forgot password?",
         "act.lodge": "Lodge claim",
         "act.new_claim": "New claim",
+        "act.new_merchant": "Add merchant",
+        "act.next": "Next",
+        "act.previous": "Previous",
         "act.reject": "Reject",
         "act.remove_line": "Remove",
         "act.resubmit": "Resubmit",
         "act.save_changes": "Save changes",
         "act.save_draft": "Save draft",
+        "act.save_merchant": "Save merchant",
+        "act.save_name": "Save",
         "act.save_template": "Save as template",
+        "act.search": "Search",
         "act.send_back": "Send back",
+        "act.sign_in": "Sign in",
+        "act.sign_out": "Sign out",
+        "act.sort_number": "Sort by number",
+        "act.sort_total": "Sort by total",
         "act.switch_role": "Switch"
       },
       "alt_action_labels": {
+        "act.add_centre": "Create budget",
         "act.add_line": "Another item",
         "act.approve": "Sign off",
+        "act.approve_selected": "Sign off the picked ones",
         "act.attach_receipt": "Add a receipt",
         "act.back_to_claims": "All expense reports",
+        "act.back_to_merchants": "All suppliers",
+        "act.back_to_sign_in": "Return to log-in",
+        "act.cancel": "Never mind",
+        "act.confirm_delete": "Remove",
+        "act.confirm_discard": "Throw it away",
+        "act.delete_centre": "Remove",
+        "act.delete_merchant": "Remove supplier",
+        "act.discard_claim": "Throw away",
         "act.edit_claim": "Make changes",
+        "act.edit_merchant": "Change supplier",
         "act.escalate": "Refer upward",
+        "act.forgot_password": "Locked out?",
         "act.lodge": "File expenses",
         "act.new_claim": "Start an expense report",
+        "act.new_merchant": "New supplier",
+        "act.next": "More",
+        "act.previous": "Back a page",
         "act.reject": "Decline",
         "act.remove_line": "Drop item",
         "act.resubmit": "Send in again",
         "act.save_changes": "Keep my edits",
         "act.save_draft": "Keep for later",
+        "act.save_merchant": "Store supplier",
+        "act.save_name": "Keep",
         "act.save_template": "Store as a pattern",
+        "act.search": "Look up",
         "act.send_back": "Return for edits",
+        "act.sign_in": "Log in",
+        "act.sign_out": "Log out",
+        "act.sort_number": "Order by number",
+        "act.sort_total": "Order by amount",
         "act.switch_role": "Change view"
       }
     },
@@ -374,6 +837,452 @@
         "lines_removed": 1,
         "lines_added": 1,
         "chars_changed": 39
+      },
+      "LED-4": {
+        "file": "src/static/ui.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 49
+      },
+      "LED-5": {
+        "file": "src/static/ui.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 19
+      }
+    },
+    "data_model": {
+      "passed": true,
+      "failures": [],
+      "description": {
+        "partition": "s_000001",
+        "tables": [
+          "categories",
+          "claim_events",
+          "claim_lines",
+          "claims",
+          "cost_centres",
+          "counters",
+          "currencies",
+          "delegations",
+          "expense_policies",
+          "merchants",
+          "users"
+        ],
+        "entities_found": [
+          "categories",
+          "claim_events",
+          "claim_lines",
+          "claims",
+          "cost_centres",
+          "currencies",
+          "delegations",
+          "expense_policies",
+          "merchants",
+          "users"
+        ],
+        "table_count": 10,
+        "foreign_keys": [
+          {
+            "table": "claim_events",
+            "name": "claim_events_acting_for_fkey",
+            "columns": [
+              5
+            ],
+            "definition": "FOREIGN KEY (acting_for) REFERENCES s_000001.users(id)",
+            "indexed": true
+          },
+          {
+            "table": "claim_events",
+            "name": "claim_events_actor_id_fkey",
+            "columns": [
+              4
+            ],
+            "definition": "FOREIGN KEY (actor_id) REFERENCES s_000001.users(id)",
+            "indexed": true
+          },
+          {
+            "table": "claim_events",
+            "name": "claim_events_claim_id_fkey",
+            "columns": [
+              1
+            ],
+            "definition": "FOREIGN KEY (claim_id) REFERENCES s_000001.claims(id) ON DELETE CASCADE",
+            "indexed": true
+          },
+          {
+            "table": "claim_lines",
+            "name": "claim_lines_category_fkey",
+            "columns": [
+              5
+            ],
+            "definition": "FOREIGN KEY (category) REFERENCES s_000001.categories(code)",
+            "indexed": true
+          },
+          {
+            "table": "claim_lines",
+            "name": "claim_lines_claim_id_fkey",
+            "columns": [
+              1
+            ],
+            "definition": "FOREIGN KEY (claim_id) REFERENCES s_000001.claims(id) ON DELETE CASCADE",
+            "indexed": true
+          },
+          {
+            "table": "claim_lines",
+            "name": "claim_lines_currency_fkey",
+            "columns": [
+              6
+            ],
+            "definition": "FOREIGN KEY (currency) REFERENCES s_000001.currencies(code)",
+            "indexed": true
+          },
+          {
+            "table": "claims",
+            "name": "claims_cost_centre_fkey",
+            "columns": [
+              3
+            ],
+            "definition": "FOREIGN KEY (cost_centre) REFERENCES s_000001.cost_centres(code)",
+            "indexed": true
+          },
+          {
+            "table": "claims",
+            "name": "claims_owner_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (owner_id) REFERENCES s_000001.users(id)",
+            "indexed": true
+          },
+          {
+            "table": "delegations",
+            "name": "delegations_delegate_id_fkey",
+            "columns": [
+              1
+            ],
+            "definition": "FOREIGN KEY (delegate_id) REFERENCES s_000001.users(id)",
+            "indexed": true
+          },
+          {
+            "table": "delegations",
+            "name": "delegations_principal_id_fkey",
+            "columns": [
+              2
+            ],
+            "definition": "FOREIGN KEY (principal_id) REFERENCES s_000001.users(id)",
+            "indexed": true
+          },
+          {
+            "table": "expense_policies",
+            "name": "expense_policies_category_fkey",
+            "columns": [
+              1
+            ],
+            "definition": "FOREIGN KEY (category) REFERENCES s_000001.categories(code)",
+            "indexed": true
+          },
+          {
+            "table": "merchants",
+            "name": "merchants_category_fkey",
+            "columns": [
+              4
+            ],
+            "definition": "FOREIGN KEY (category) REFERENCES s_000001.categories(code)",
+            "indexed": true
+          },
+          {
+            "table": "users",
+            "name": "users_cost_centre_fkey",
+            "columns": [
+              6
+            ],
+            "definition": "FOREIGN KEY (cost_centre) REFERENCES s_000001.cost_centres(code)",
+            "indexed": true
+          },
+          {
+            "table": "users",
+            "name": "users_manager_id_fkey",
+            "columns": [
+              5
+            ],
+            "definition": "FOREIGN KEY (manager_id) REFERENCES s_000001.users(id)",
+            "indexed": true
+          }
+        ],
+        "foreign_key_count": 14,
+        "foreign_keys_indexed": 14,
+        "checks": [
+          {
+            "table": "categories",
+            "name": "categories_code_check",
+            "definition": "CHECK ((code ~ '^[a-z]+$'::text))"
+          },
+          {
+            "table": "claim_events",
+            "name": "claim_events_at_check",
+            "definition": "CHECK ((at ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$'::text))"
+          },
+          {
+            "table": "claim_events",
+            "name": "claim_events_kind_check",
+            "definition": "CHECK ((kind = ANY (ARRAY['claim_drafted'::text, 'draft_saved'::text, 'lodged'::text, 'approved'::text, 'sent_back'::text, 'escalated'::text, 'rejected'::text, 'resubmitted'::text])))"
+          },
+          {
+            "table": "claim_events",
+            "name": "claim_events_note_check",
+            "definition": "CHECK ((length(note) <= 500))"
+          },
+          {
+            "table": "claim_events",
+            "name": "claim_events_revision_check",
+            "definition": "CHECK ((revision >= 1))"
+          },
+          {
+            "table": "claim_events",
+            "name": "claim_events_seq_check",
+            "definition": "CHECK ((seq >= 1))"
+          },
+          {
+            "table": "claim_lines",
+            "name": "claim_lines_amount_minor_check",
+            "definition": "CHECK (((amount_minor >= 1) AND (amount_minor <= 1000000)))"
+          },
+          {
+            "table": "claim_lines",
+            "name": "claim_lines_description_check",
+            "definition": "CHECK (((length(description) >= 1) AND (length(description) <= 120)))"
+          },
+          {
+            "table": "claim_lines",
+            "name": "claim_lines_line_no_check",
+            "definition": "CHECK (((line_no >= 1) AND (line_no <= 6)))"
+          },
+          {
+            "table": "claim_lines",
+            "name": "claim_lines_revision_check",
+            "definition": "CHECK ((revision >= 1))"
+          },
+          {
+            "table": "claims",
+            "name": "claims_id_check",
+            "definition": "CHECK ((id ~ '^CL-[0-9]{3,6}$'::text))"
+          },
+          {
+            "table": "cost_centres",
+            "name": "cost_centres_budget_pence_check",
+            "definition": "CHECK (((budget_pence >= 0) AND (budget_pence <= 100000000)))"
+          },
+          {
+            "table": "cost_centres",
+            "name": "cost_centres_code_check",
+            "definition": "CHECK ((code ~ '^CC-[0-9]{2}$'::text))"
+          },
+          {
+            "table": "cost_centres",
+            "name": "cost_centres_name_check",
+            "definition": "CHECK (((length(name) >= 1) AND (length(name) <= 60)))"
+          },
+          {
+            "table": "currencies",
+            "name": "currencies_code_check",
+            "definition": "CHECK ((code ~ '^[A-Z]{3}$'::text))"
+          },
+          {
+            "table": "currencies",
+            "name": "currencies_rate_check",
+            "definition": "CHECK ((rate > (0)::numeric))"
+          },
+          {
+            "table": "delegations",
+            "name": "delegations_check",
+            "definition": "CHECK ((delegate_id <> principal_id))"
+          },
+          {
+            "table": "expense_policies",
+            "name": "expense_policies_note_check",
+            "definition": "CHECK ((length(note) <= 200))"
+          },
+          {
+            "table": "expense_policies",
+            "name": "expense_policies_receipt_over_pence_check",
+            "definition": "CHECK ((receipt_over_pence >= 0))"
+          },
+          {
+            "table": "merchants",
+            "name": "merchants_city_check",
+            "definition": "CHECK (((length(city) >= 1) AND (length(city) <= 60)))"
+          },
+          {
+            "table": "merchants",
+            "name": "merchants_id_check",
+            "definition": "CHECK ((id ~ '^M[0-9]{3}$'::text))"
+          },
+          {
+            "table": "merchants",
+            "name": "merchants_name_check",
+            "definition": "CHECK (((length(name) >= 1) AND (length(name) <= 80)))"
+          },
+          {
+            "table": "users",
+            "name": "users_approval_limit_pence_check",
+            "definition": "CHECK ((approval_limit_pence >= 0))"
+          },
+          {
+            "table": "users",
+            "name": "users_id_check",
+            "definition": "CHECK ((id ~ '^[a-z]+$'::text))"
+          },
+          {
+            "table": "users",
+            "name": "users_pw_hash_check",
+            "definition": "CHECK ((pw_hash ~ '^[0-9a-f]{64}$'::text))"
+          },
+          {
+            "table": "users",
+            "name": "users_pw_iterations_check",
+            "definition": "CHECK ((pw_iterations >= 1000))"
+          },
+          {
+            "table": "users",
+            "name": "users_pw_salt_check",
+            "definition": "CHECK ((pw_salt ~ '^[0-9a-f]{32}$'::text))"
+          },
+          {
+            "table": "users",
+            "name": "users_role_check",
+            "definition": "CHECK ((role = ANY (ARRAY['employee'::text, 'manager'::text, 'finance'::text, 'administrator'::text])))"
+          }
+        ],
+        "check_count": 28,
+        "enumerations": [
+          "claim_events.claim_events_kind_check",
+          "users.users_role_check"
+        ],
+        "unique_indexes": [
+          "categories.categories_position_key",
+          "cost_centres.cost_centres_name_key",
+          "currencies.currencies_position_key",
+          "merchants.merchants_name_city_key",
+          "users.users_username_key"
+        ],
+        "secondary_indexes": [
+          "claim_events.claim_events_by_actor",
+          "claim_events.claim_events_by_principal",
+          "claim_lines.claim_lines_by_category",
+          "claim_lines.claim_lines_by_currency",
+          "claims.claims_by_cost_centre",
+          "claims.claims_by_owner",
+          "delegations.delegations_by_principal",
+          "merchants.merchants_by_category",
+          "merchants.merchants_by_city",
+          "users.users_by_cost_centre",
+          "users.users_by_manager"
+        ],
+        "columns": 46,
+        "not_null_columns": 42,
+        "not_null_ratio": 0.913,
+        "rows": {
+          "categories": 4,
+          "claim_events": 7,
+          "claim_lines": 3,
+          "claims": 3,
+          "cost_centres": 4,
+          "counters": 3,
+          "currencies": 3,
+          "delegations": 3,
+          "expense_policies": 4,
+          "merchants": 25,
+          "users": 6
+        },
+        "seed_rows": 62,
+        "non_empty_tables": 10,
+        "user_triggers": [],
+        "rules": [],
+        "event_triggers": [],
+        "volatile_defaults": [],
+        "identity_columns": []
+      },
+      "probes": [
+        {
+          "name": "a claim line in a currency that does not exist",
+          "kind": "foreign_key",
+          "expected": "23503",
+          "got": "23503",
+          "passed": true
+        },
+        {
+          "name": "an event by someone who is not a user",
+          "kind": "foreign_key",
+          "expected": "23503",
+          "got": "23503",
+          "passed": true
+        },
+        {
+          "name": "a role that does not exist",
+          "kind": "check",
+          "expected": "23514",
+          "got": "23514",
+          "passed": true
+        },
+        {
+          "name": "a line of nothing",
+          "kind": "check",
+          "expected": "23514",
+          "got": "23514",
+          "passed": true
+        },
+        {
+          "name": "a second cost centre called Sales",
+          "kind": "unique",
+          "expected": "23505",
+          "got": "23505",
+          "passed": true
+        }
+      ],
+      "references": []
+    },
+    "sessions": {
+      "cost": {
+        "passed": true,
+        "warn": false,
+        "samples": 20,
+        "p50_ms": 76.3,
+        "p95_ms": 98.9,
+        "max_ms": 99.1,
+        "limit_ms": 300.0,
+        "refused": 0,
+        "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
+      },
+      "cap": {
+        "passed": true,
+        "cap": 4,
+        "max_live_partitions": 4,
+        "live_after_each": [
+          2,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "evicted_session_state": null,
+        "evicted_session_lands_on": "/login",
+        "every_new_session_starts_from_the_seed": true
       }
     },
     "workflows": [
@@ -386,7 +1295,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/claims/CL-104",
+          "http://127.0.0.1:55830/claims/new"
+        ]
       },
       {
         "name": "the manager approves a small claim [default vocabulary]",
@@ -397,7 +1311,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/approvals",
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/claims/CL-102"
+        ]
       },
       {
         "name": "the manager escalates a claim over the limit and finance approves it [default vocabulary]",
@@ -408,7 +1327,13 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/approvals",
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/claims/CL-103",
+          "http://127.0.0.1:55830/finance"
+        ]
       },
       {
         "name": "the manager sends a claim back with a note [default vocabulary]",
@@ -419,7 +1344,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/approvals",
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/claims/CL-102"
+        ]
       },
       {
         "name": "a sent-back claim is resubmitted and is back in the manager's queue [default vocabulary]",
@@ -430,7 +1360,13 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/approvals",
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/claims/CL-102",
+          "http://127.0.0.1:55830/claims/CL-102/edit"
+        ]
       },
       {
         "name": "the editor's live summary converts dollars [default vocabulary]",
@@ -441,7 +1377,11 @@
         "committed_state_changed": false,
         "expected_state_change": false,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/claims/new"
+        ]
       },
       {
         "name": "remove a line before lodging [default vocabulary]",
@@ -452,7 +1392,248 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/claims/CL-104",
+          "http://127.0.0.1:55830/claims/new"
+        ]
+      },
+      {
+        "name": "sort my claims by total [default vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims"
+        ]
+      },
+      {
+        "name": "show only the claims awaiting approval [default vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims"
+        ]
+      },
+      {
+        "name": "discard a draft claim [default vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/claims/CL-104",
+          "http://127.0.0.1:55830/claims/new"
+        ]
+      },
+      {
+        "name": "read a claim's history [default vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/claims/CL-101",
+          "http://127.0.0.1:55830/claims/CL-101#history"
+        ]
+      },
+      {
+        "name": "the manager approves claims in bulk [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/approvals",
+          "http://127.0.0.1:55830/claims"
+        ]
+      },
+      {
+        "name": "page through the merchants [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/merchants",
+          "http://127.0.0.1:55830/merchants?page=2",
+          "http://127.0.0.1:55830/merchants?page=3"
+        ]
+      },
+      {
+        "name": "search the merchants [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/merchants",
+          "http://127.0.0.1:55830/merchants?q=search+query&category=&sort=name"
+        ]
+      },
+      {
+        "name": "list the meal merchants by city [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/merchants",
+          "http://127.0.0.1:55830/merchants?q=&category=meals&sort=city",
+          "http://127.0.0.1:55830/merchants?q=&category=meals&sort=name"
+        ]
+      },
+      {
+        "name": "add a merchant [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/merchants",
+          "http://127.0.0.1:55830/merchants/M026",
+          "http://127.0.0.1:55830/merchants/new"
+        ]
+      },
+      {
+        "name": "change a merchant's city [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/merchants",
+          "http://127.0.0.1:55830/merchants/M010",
+          "http://127.0.0.1:55830/merchants/M010/edit"
+        ]
+      },
+      {
+        "name": "delete a merchant [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/merchants",
+          "http://127.0.0.1:55830/merchants/M010",
+          "http://127.0.0.1:55830/merchants/M010/edit"
+        ]
+      },
+      {
+        "name": "rename a cost centre in place [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/cost-centres"
+        ]
+      },
+      {
+        "name": "add a cost centre [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/cost-centres"
+        ]
+      },
+      {
+        "name": "delete an unused cost centre [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/cost-centres"
+        ]
+      },
+      {
+        "name": "read the spending report [default vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55830/claims",
+          "http://127.0.0.1:55830/reports"
+        ]
       },
       {
         "name": "lodge a claim in pounds and euros [alt vocabulary]",
@@ -463,7 +1644,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/claims/CL-104",
+          "http://127.0.0.1:63746/claims/new"
+        ]
       },
       {
         "name": "the manager approves a small claim [alt vocabulary]",
@@ -474,7 +1660,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/approvals",
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/claims/CL-102"
+        ]
       },
       {
         "name": "the manager escalates a claim over the limit and finance approves it [alt vocabulary]",
@@ -485,7 +1676,13 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/approvals",
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/claims/CL-103",
+          "http://127.0.0.1:63746/finance"
+        ]
       },
       {
         "name": "the manager sends a claim back with a note [alt vocabulary]",
@@ -496,7 +1693,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/approvals",
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/claims/CL-102"
+        ]
       },
       {
         "name": "a sent-back claim is resubmitted and is back in the manager's queue [alt vocabulary]",
@@ -507,7 +1709,13 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/approvals",
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/claims/CL-102",
+          "http://127.0.0.1:63746/claims/CL-102/edit"
+        ]
       },
       {
         "name": "the editor's live summary converts dollars [alt vocabulary]",
@@ -518,7 +1726,11 @@
         "committed_state_changed": false,
         "expected_state_change": false,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/claims/new"
+        ]
       },
       {
         "name": "remove a line before lodging [alt vocabulary]",
@@ -529,7 +1741,248 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/claims/CL-104",
+          "http://127.0.0.1:63746/claims/new"
+        ]
+      },
+      {
+        "name": "sort my claims by total [alt vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims"
+        ]
+      },
+      {
+        "name": "show only the claims awaiting approval [alt vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims"
+        ]
+      },
+      {
+        "name": "discard a draft claim [alt vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/claims/CL-104",
+          "http://127.0.0.1:63746/claims/new"
+        ]
+      },
+      {
+        "name": "read a claim's history [alt vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/claims/CL-101",
+          "http://127.0.0.1:63746/claims/CL-101#history"
+        ]
+      },
+      {
+        "name": "the manager approves claims in bulk [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/approvals",
+          "http://127.0.0.1:63746/claims"
+        ]
+      },
+      {
+        "name": "page through the merchants [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/merchants",
+          "http://127.0.0.1:63746/merchants?page=2",
+          "http://127.0.0.1:63746/merchants?page=3"
+        ]
+      },
+      {
+        "name": "search the merchants [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/merchants",
+          "http://127.0.0.1:63746/merchants?q=search+query&category=&sort=name"
+        ]
+      },
+      {
+        "name": "list the meal merchants by city [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/merchants",
+          "http://127.0.0.1:63746/merchants?q=&category=meals&sort=city",
+          "http://127.0.0.1:63746/merchants?q=&category=meals&sort=name"
+        ]
+      },
+      {
+        "name": "add a merchant [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/merchants",
+          "http://127.0.0.1:63746/merchants/M026",
+          "http://127.0.0.1:63746/merchants/new"
+        ]
+      },
+      {
+        "name": "change a merchant's city [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/merchants",
+          "http://127.0.0.1:63746/merchants/M010",
+          "http://127.0.0.1:63746/merchants/M010/edit"
+        ]
+      },
+      {
+        "name": "delete a merchant [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/merchants",
+          "http://127.0.0.1:63746/merchants/M010",
+          "http://127.0.0.1:63746/merchants/M010/edit"
+        ]
+      },
+      {
+        "name": "rename a cost centre in place [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/cost-centres"
+        ]
+      },
+      {
+        "name": "add a cost centre [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/cost-centres"
+        ]
+      },
+      {
+        "name": "delete an unused cost centre [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/cost-centres"
+        ]
+      },
+      {
+        "name": "read the spending report [alt vocabulary]",
+        "steps": 1,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:63746/claims",
+          "http://127.0.0.1:63746/reports"
+        ]
       }
     ],
     "state_dependent": [
@@ -621,7 +2074,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 65.3
+        "seconds": 107.9
       },
       {
         "fault_id": "LED-2",
@@ -635,7 +2088,7 @@
         "witness_needs_its_own_patch": true,
         "buggy_detail": [
           "text_absent: violated=True inconclusive=False Sent back",
-          "text_absent: violated=True inconclusive=False Resubmitted \u2014 Ana Ruiz"
+          "text_absent: violated=True inconclusive=False Resubmitted \u2014 Ana Ruiz via Pat Reid"
         ],
         "confirmed": true,
         "rejected_because": "",
@@ -697,7 +2150,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 249.6
+        "seconds": 319.3
       },
       {
         "fault_id": "LED-3",
@@ -789,7 +2242,85 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 330.2
+        "seconds": 413.2
+      },
+      {
+        "fault_id": "LED-4",
+        "subtype": "displayed-vs-submitted",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 5,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_stable_across_reload: violated=True inconclusive=False before='Code Name Budget Approved spending CC-01 Operations \u00a32,500.00 \u00a30.00 Dele"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 5,
+        "minimization_trials": 13,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-cost-centres"
+          },
+          {
+            "type": "CLICK",
+            "id": "cc-name-CC-02"
+          },
+          {
+            "type": "TYPE",
+            "id": "cc-input-CC-02",
+            "params": {
+              "category": "empty_string"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "cc-save-CC-02"
+          },
+          {
+            "type": "REFRESH"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 165.3
+      },
+      {
+        "fault_id": "LED-5",
+        "subtype": "wrong-target",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 1,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'first': 38.5, 'second': 18.4}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 1,
+        "minimization_trials": 0,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "sort-total"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 50.8
       }
     ],
     "benign": [
@@ -834,6 +2365,34 @@
         "resolves": true,
         "fired": [],
         "passed": true
+      },
+      {
+        "trace": 3,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 3,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 4,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 4,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
       }
     ],
     "random_walk_clean": {
@@ -842,34 +2401,254 @@
       "raw_candidates": {},
       "errors": [],
       "foreign_requests": [],
+      "responses": {
+        "count": 249,
+        "p50_ms": 1.4,
+        "p95_ms": 5.8,
+        "max_ms": 17.6,
+        "slowest": [
+          [
+            "POST",
+            "/viewer",
+            17.6
+          ],
+          [
+            "POST",
+            "/viewer",
+            14.6
+          ],
+          [
+            "POST",
+            "/cost-centres/CC-04/delete",
+            14.3
+          ],
+          [
+            "POST",
+            "/claims/new",
+            12.3
+          ],
+          [
+            "POST",
+            "/viewer",
+            10.5
+          ]
+        ],
+        "limits_ms": {
+          "p95": 150.0,
+          "max": 1000.0
+        },
+        "passed": true
+      },
       "passed": true
+    },
+    "roles": [
+      {
+        "user": "ana.ruiz",
+        "path": "/approvals",
+        "passed": true,
+        "signed_in_as": "Ana Ruiz \u00b7 employee",
+        "status": 200,
+        "access_region": "This page belongs to another role. Choose who you are acting as, or ask the finance desk.",
+        "state_unchanged": true,
+        "errors": []
+      },
+      {
+        "user": "ana.ruiz",
+        "path": "/merchants/new",
+        "passed": true,
+        "signed_in_as": "Ana Ruiz \u00b7 employee",
+        "status": 200,
+        "access_region": "This page belongs to another role. Choose who you are acting as, or ask the finance desk.",
+        "state_unchanged": true,
+        "errors": []
+      }
+    ],
+    "breadth": {
+      "passed": true,
+      "size_problems": [],
+      "workflows_failing": [],
+      "views": [
+        {
+          "name": "discard dialog",
+          "workflow": "discard a draft claim",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:55830/claims/CL-104"
+          ]
+        },
+        {
+          "name": "sign-in page",
+          "path": "/login",
+          "as": null,
+          "status": 200,
+          "landed": "/login",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "forgotten password",
+          "path": "/login/forgot",
+          "as": null,
+          "status": 200,
+          "landed": "/login/forgot",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "my claims",
+          "path": "/claims",
+          "as": "pat.reid",
+          "status": 200,
+          "landed": "/claims",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "claim editor",
+          "path": "/claims/new",
+          "as": "pat.reid",
+          "status": 200,
+          "landed": "/claims/new",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "one claim",
+          "path": "/claims/CL-101",
+          "as": "pat.reid",
+          "status": 200,
+          "landed": "/claims/CL-101",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "merchants",
+          "path": "/merchants",
+          "as": "pat.reid",
+          "status": 200,
+          "landed": "/merchants",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "one merchant",
+          "path": "/merchants/M001",
+          "as": "pat.reid",
+          "status": 200,
+          "landed": "/merchants/M001",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "new merchant",
+          "path": "/merchants/new",
+          "as": "pat.reid",
+          "status": 200,
+          "landed": "/merchants/new",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "edit merchant",
+          "path": "/merchants/M001/edit",
+          "as": "pat.reid",
+          "status": 200,
+          "landed": "/merchants/M001/edit",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "cost centres",
+          "path": "/cost-centres",
+          "as": "pat.reid",
+          "status": 200,
+          "landed": "/cost-centres",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "spending report",
+          "path": "/reports",
+          "as": "pat.reid",
+          "status": 200,
+          "landed": "/reports",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "approval queue",
+          "path": "/approvals",
+          "as": "ben.okafor",
+          "status": 200,
+          "landed": "/approvals",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "finance queue",
+          "path": "/finance",
+          "as": "finance.desk",
+          "status": 200,
+          "landed": "/finance",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "access notice",
+          "path": "/approvals",
+          "as": "ana.ruiz",
+          "status": 200,
+          "landed": "/approvals",
+          "errors": [],
+          "passed": true
+        }
+      ],
+      "counts": {
+        "views": 15,
+        "entities": 3,
+        "patterns": [
+          "bulk-action",
+          "inline-edit",
+          "modal",
+          "pagination",
+          "search",
+          "sort-filter",
+          "tabs"
+        ]
+      }
     },
     "product_intake": {
       "profile": {
         "languages": [
           {
             "language": "JavaScript",
-            "files": 6,
-            "bytes": 43925,
-            "share": 0.5623
+            "files": 9,
+            "bytes": 98903,
+            "share": 0.5638
           },
           {
             "language": "JSON",
-            "files": 5,
-            "bytes": 28827,
-            "share": 0.369
+            "files": 15,
+            "bytes": 62124,
+            "share": 0.3541
+          },
+          {
+            "language": "SQL",
+            "files": 1,
+            "bytes": 5157,
+            "share": 0.0294
           },
           {
             "language": "CSS",
             "files": 1,
-            "bytes": 2889,
-            "share": 0.037
+            "bytes": 4788,
+            "share": 0.0273
           },
           {
             "language": "Markdown",
             "files": 1,
-            "bytes": 2479,
-            "share": 0.0317
+            "bytes": 4458,
+            "share": 0.0254
           }
         ],
         "frameworks": [],
@@ -881,7 +2660,7 @@
       },
       "build_plan": {
         "kind": "dockerfile",
-        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\ledgerly\\clean\\Dockerfile"
+        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\ledgerly\\clean\\Dockerfile"
       },
       "product_can_build": true,
       "matches_expectation": true,
@@ -889,9 +2668,9 @@
     }
   },
   "admitted": true,
-  "checks_run": 22,
+  "checks_run": 41,
   "checks_failed": [],
   "browser_checks_run": true,
   "docker_checks_run": true,
-  "wall_clock_s": 861.3
+  "wall_clock_s": 1589.7
 }

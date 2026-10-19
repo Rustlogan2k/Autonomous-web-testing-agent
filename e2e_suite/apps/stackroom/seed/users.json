@@ -1,0 +1,21 @@
+{
+ "iterations": 20000,
+ "users": [
+  {
+   "id": "dev",
+   "username": "dev.malik",
+   "name": "Dev Malik",
+   "role": "controller",
+   "salt": "5f3c1a9e7b2d4c6081f2e3d4a5b6c7d8",
+   "hash": "efc72b79ac61962777205e532f74c6b694055c2992f328332b0f7affefa0908e"
+  },
+  {
+   "id": "lee",
+   "username": "lee.ward",
+   "name": "Lee Ward",
+   "role": "viewer",
+   "salt": "a1b2c3d4e5f60718293a4b5c6d7e8f90",
+   "hash": "9957ecdd35c993afd4ecaf54e722e0608e3ad2ab483f7a5dfc2556c0fceede23"
+  }
+ ]
+}

@@ -1,5 +1,6 @@
 FROM python:3.12-slim
-WORKDIR /app
+WORKDIR /srv/bagstreet
+COPY vendor ./vendor
 COPY src ./src
 COPY seed ./seed
 COPY vocab ./vocab

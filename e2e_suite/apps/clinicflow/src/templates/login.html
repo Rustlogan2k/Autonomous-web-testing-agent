@@ -1,0 +1,12 @@
+<h1>{{ t("login.title") }}</h1>
+<p class="lede">{{ t("login.lede") }}</p>
+<form class="stack" method="post" action="/login">
+  <input type="hidden" name="next" value="{{ next }}">
+  <label for="login-username">{{ t("login.username") }}</label>
+  <input id="login-username" name="username" type="text" value="{{ username }}" autocomplete="username" required>
+  <label for="login-password">{{ t("login.password") }}</label>
+  <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+  {{ problem|raw }}
+  <p class="actions"><button id="login-submit" class="primary" type="submit">{{ t("act.sign_in") }}</button></p>
+</form>
+<p><a id="forgot-password" href="/help/sign-in">{{ t("act.forgot") }}</a></p>

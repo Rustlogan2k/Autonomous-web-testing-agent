@@ -1,41 +1,41 @@
 """Stackroom's inventory domain: items, the grid's server-side query, and the audit journal.
 
-Everything here takes an open SQLite connection and a session id; the HTTP layer owns
-transactions. Rows of every table carry the session id, so each browser session works on
-its own copy of the stockroom, seeded from seed/stockroom.json on first contact.
+Everything here takes a `Db` whose transaction is already open on the session's own schema
+(stockdb.Store.visit); the HTTP layer owns transactions and sessions. Every ORDER BY ends in
+a unique key and compares text byte-wise (COLLATE "C"), so a page of the grid is the same
+on every run and every machine.
 """
 
 from __future__ import annotations
 
-import json
+import datetime as dt
 import math
 import re
-import sqlite3
 from dataclasses import dataclass, replace
-from pathlib import Path
 from typing import Optional
 
-SEED = json.loads((Path(__file__).resolve().parent.parent / "seed" / "stockroom.json")
-                  .read_text(encoding="utf-8"))
+from stockdb import SEED, Db
+
 PAGE_SIZE = int(SEED["page_size"])
-CATEGORIES = tuple(sorted({entry["category"] for entry in SEED["items"]}))
+CATEGORIES = tuple(c["name"] for c in sorted(SEED["categories"], key=lambda c: c["position"]))
 SORT_KEYS = ("sku", "name", "stock")
 MAX_LEVEL = 999_999_999
 _LEVEL = re.compile(r"\d{1,9}")
-
-TABLES = """
-CREATE TABLE IF NOT EXISTS counters (name TEXT PRIMARY KEY, value INTEGER NOT NULL);
-CREATE TABLE IF NOT EXISTS sessions (sid TEXT PRIMARY KEY);
-CREATE TABLE IF NOT EXISTS items (
-    sid TEXT NOT NULL, sku TEXT NOT NULL, name TEXT NOT NULL, category TEXT NOT NULL,
-    location TEXT NOT NULL, stock INTEGER NOT NULL, status TEXT NOT NULL,
-    PRIMARY KEY (sid, sku));
-CREATE TABLE IF NOT EXISTS journal (
-    sid TEXT NOT NULL, seq INTEGER NOT NULL, stamp TEXT NOT NULL, sku TEXT NOT NULL,
-    kind TEXT NOT NULL, before TEXT NOT NULL, after TEXT NOT NULL, origin TEXT NOT NULL,
-    PRIMARY KEY (sid, seq));
-CREATE TABLE IF NOT EXISTS notices (sid TEXT PRIMARY KEY, sku TEXT NOT NULL);
-"""
+#: The grid's orders. Ties are broken by SKU ascending in either direction, as the stock
+#: controllers have always read the list.
+ORDERS = {
+    ("sku", "asc"): 'i.sku COLLATE "C" ASC',
+    ("sku", "desc"): 'i.sku COLLATE "C" DESC',
+    ("name", "asc"): 'lower(i.name) COLLATE "C" ASC, i.sku COLLATE "C" ASC',
+    ("name", "desc"): 'lower(i.name) COLLATE "C" DESC, i.sku COLLATE "C" ASC',
+    ("stock", "asc"): 'i.stock ASC, i.sku COLLATE "C" ASC',
+    ("stock", "desc"): 'i.stock DESC, i.sku COLLATE "C" ASC',
+}
+_ROWS = ("SELECT i.sku, i.name, c.name AS category, l.label AS location, i.stock, i.status "
+         "FROM items i JOIN categories c ON c.id = i.category_id "
+         "JOIN locations l ON l.code = i.location_code")
+_FILTER = ("WHERE (:category = 'all' OR c.name = :category) AND (:q = '' "
+           "OR strpos(lower(i.sku), :q) > 0 OR strpos(lower(i.name), :q) > 0)")
 
 
 class Rejected(Exception):
@@ -44,29 +44,6 @@ class Rejected(Exception):
     def __init__(self, status: int, message: str, field: str = "") -> None:
         super().__init__(message)
         self.status, self.message, self.field = status, message, field
-
-
-def bump(conn: sqlite3.Connection, name: str) -> int:
-    conn.execute("INSERT INTO counters (name, value) VALUES (?, 1) "
-                 "ON CONFLICT(name) DO UPDATE SET value = value + 1", (name,))
-    return conn.execute("SELECT value FROM counters WHERE name = ?", (name,)).fetchone()[0]
-
-
-def open_session(conn: sqlite3.Connection, sid: str) -> None:
-    """Create session `sid` and copy the seed stockroom into it."""
-    conn.execute("INSERT INTO sessions (sid) VALUES (?)", (sid,))
-    conn.executemany(
-        "INSERT INTO items (sid, sku, name, category, location, stock, status) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [(sid, e["sku"], e["name"], e["category"], e["location"], e["stock"], e["status"])
-         for e in SEED["items"]])
-    for entry in SEED["journal"]:
-        _journal(conn, sid, entry["stamp"], entry["sku"], entry["kind"], entry["before"],
-                 entry["after"], entry["origin"])
-
-
-def session_exists(conn: sqlite3.Connection, sid: str) -> bool:
-    return conn.execute("SELECT 1 FROM sessions WHERE sid = ?", (sid,)).fetchone() is not None
 
 
 def parse_level(raw: object, field: str) -> int:
@@ -105,68 +82,84 @@ class View:
     def as_query(self) -> dict:
         return {"category": self.category, "q": self.q, "sort": self.sort, "dir": self.direction}
 
-
-def _item(row: sqlite3.Row) -> dict:
-    return {"sku": row["sku"], "name": row["name"], "category": row["category"],
-            "location": row["location"], "stock": row["stock"], "status": row["status"]}
+    def params(self) -> dict:
+        return {"category": self.category, "q": self.q.strip().lower()}
 
 
-def matching_items(conn: sqlite3.Connection, sid: str, view: View) -> list[dict]:
-    """Every item in `view`, filtered and ordered (ties always broken by SKU)."""
-    items = [_item(r) for r in conn.execute("SELECT * FROM items WHERE sid = ? ORDER BY sku", (sid,))]
-    if view.category != "all":
-        items = [i for i in items if i["category"] == view.category]
-    needle = view.q.strip().lower()
-    if needle:
-        items = [i for i in items if needle in i["sku"].lower() or needle in i["name"].lower()]
-    if view.sort == "name":
-        items.sort(key=lambda i: i["name"].lower(), reverse=view.direction == "desc")
-    elif view.sort == "stock":
-        items.sort(key=lambda i: i["stock"], reverse=view.direction == "desc")
-    elif view.direction == "desc":
-        items.reverse()
-    return items
+def count_items(db: Db, view: View) -> int:
+    return int(db.value("SELECT count(*) FROM items i JOIN categories c ON c.id = i.category_id "
+                        f"{_FILTER}", **view.params()))
 
 
-def listing(conn: sqlite3.Connection, sid: str, view: View, page: int) -> dict:
+def page_of_items(db: Db, view: View, offset: int, limit: int) -> list[dict]:
+    """`limit` items of `view` from position `offset` (0-based), filtered and ordered."""
+    return db.all(f"{_ROWS} {_FILTER} ORDER BY {ORDERS[(view.sort, view.direction)]} "
+                  "LIMIT :limit OFFSET :offset", limit=limit, offset=offset, **view.params())
+
+
+def listing(db: Db, view: View, page: int) -> dict:
     """One page of `view`. The page asked for is reported as asked: a page past the end is
     simply empty, and keeping the page inside 1..pages is the client's job."""
-    items = matching_items(conn, sid, view)
-    pages = max(1, math.ceil(len(items) / PAGE_SIZE))
+    total = count_items(db, view)
+    pages = max(1, math.ceil(total / PAGE_SIZE))
     first = (page - 1) * PAGE_SIZE
     return {"view": view.as_query(), "page": page, "pages": pages, "page_size": PAGE_SIZE,
-            "total": len(items), "first": first, "rows": items[first:first + PAGE_SIZE],
+            "total": total, "first": first, "rows": page_of_items(db, view, first, PAGE_SIZE),
             "categories": list(CATEGORIES)}
 
 
-def find_item(conn: sqlite3.Connection, sid: str, sku: str) -> Optional[dict]:
-    row = conn.execute("SELECT * FROM items WHERE sid = ? AND sku = ?", (sid, sku)).fetchone()
-    return None if row is None else _item(row)
+def find_item(db: Db, sku: str) -> Optional[dict]:
+    return db.one(f"{_ROWS} WHERE i.sku = :sku", sku=sku)
+
+
+def item_details(db: Db, sku: str) -> Optional[dict]:
+    """An item with what its page adds: the supplier, the reorder level, what is on order
+    and the latest changes."""
+    item = db.one(
+        "SELECT i.sku, i.name, c.name AS category, l.label AS location, i.stock, i.status, "
+        "i.reorder_level, s.name AS supplier, s.lead_days FROM items i "
+        "JOIN categories c ON c.id = i.category_id JOIN locations l ON l.code = i.location_code "
+        "JOIN suppliers s ON s.id = i.supplier_id WHERE i.sku = :sku", sku=sku)
+    if item is None:
+        return None
+    on_order = db.one(
+        "SELECT coalesce(sum(ol.quantity), 0) AS units, min(po.due_on) AS due "
+        "FROM order_lines ol JOIN purchase_orders po ON po.number = ol.order_number "
+        "WHERE ol.sku = :sku AND po.status = 'open'", sku=sku)
+    item["on_order"] = int(on_order["units"])
+    item["on_order_due"] = on_order["due"].isoformat() if on_order["due"] else None
+    item["history"] = _journal_rows(db, "WHERE j.sku = :sku ORDER BY j.seq DESC LIMIT 3", sku=sku)
+    return item
 
 
 # -- changes, and the journal that records them ---------------------------------------------
 
 
-def _journal(conn, sid: str, stamp: str, sku: str, kind: str, before, after, origin: str) -> None:
-    conn.execute("INSERT INTO journal (sid, seq, stamp, sku, kind, before, after, origin) "
-                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                 (sid, bump(conn, f"journal:{sid}"), stamp, sku, kind, str(before), str(after), origin))
+def _journal(db: Db, stamp: dt.datetime, user: str, sku: str, kind: str, before, after,
+             origin: str) -> None:
+    db.run("WITH next AS (UPDATE counters SET value = value + 1 WHERE name = 'journal' "
+           "RETURNING value) INSERT INTO journal (seq, stamp, sku, kind, before, after, origin, "
+           "user_id) SELECT next.value, CAST(:stamp AS timestamp), :sku, :kind, :before, :after, "
+           ":origin, :user FROM next",
+           stamp=stamp.isoformat(sep=" "), sku=sku, kind=kind, before=str(before),
+           after=str(after), origin=origin, user=user)
 
 
-def _write_stock(conn, sid: str, sku: str, level: int) -> int:
-    before = conn.execute("SELECT stock FROM items WHERE sid = ? AND sku = ?", (sid, sku)).fetchone()[0]
-    conn.execute("UPDATE items SET stock = ? WHERE sid = ? AND sku = ?", (level, sid, sku))
-    return before
+def _write_stock(db: Db, sku: str, level: int) -> int:
+    """Set an item's stock; return the level it had (the self-join reads the old row)."""
+    return int(db.value("UPDATE items i SET stock = :level FROM items old "
+                        "WHERE i.sku = :sku AND old.sku = i.sku RETURNING old.stock",
+                        level=level, sku=sku))
 
 
-def save_inline(conn, sid: str, stamp: str, sku: str, level: int) -> dict:
+def save_inline(db: Db, stamp: dt.datetime, user: str, sku: str, level: int) -> dict:
     """The grid's inline stock cell. Every save is journalled, even an unchanged level,
     so the log shows each value the stockroom was set to."""
-    if find_item(conn, sid, sku) is None:
+    if find_item(db, sku) is None:
         raise Rejected(404, "No item with that SKU.")
-    before = _write_stock(conn, sid, sku, level)
-    _journal(conn, sid, stamp, sku, "stock", before, level, "inline")  # audited like every other change
-    return find_item(conn, sid, sku)
+    before = _write_stock(db, sku, level)
+    _journal(db, stamp, user, sku, "stock", before, level, "inline")  # audited like every other change
+    return find_item(db, sku)
 
 
 @dataclass(frozen=True)
@@ -187,36 +180,33 @@ class RowRef:
         return cls(sku=str(body.get("sku") or ""), at=at, view=View.read(view if isinstance(view, dict) else {}))
 
 
-def adjustment_target(conn, sid: str, ref: RowRef) -> Optional[dict]:
+def adjustment_target(db: Db, ref: RowRef) -> Optional[dict]:
     """The item an adjustment is committed to: the one the adjust page was opened for."""
-    return find_item(conn, sid, ref.sku)  # the SKU names the item; `at` is only the way back
+    return find_item(db, ref.sku)  # the SKU names the item; `at` is only the way back
 
 
-def commit_adjustment(conn, sid: str, stamp: str, ref: RowRef, level: int) -> dict:
-    item = adjustment_target(conn, sid, ref)
+def commit_adjustment(db: Db, stamp: dt.datetime, user: str, ref: RowRef, level: int) -> dict:
+    item = adjustment_target(db, ref)
     if item is None:
         raise Rejected(404, "No item with that SKU.")
-    before = _write_stock(conn, sid, item["sku"], level)
-    _journal(conn, sid, stamp, item["sku"], "stock", before, level, "adjust")
-    conn.execute("INSERT INTO notices (sid, sku) VALUES (?, ?) "
-                 "ON CONFLICT(sid) DO UPDATE SET sku = excluded.sku", (sid, item["sku"]))
-    return find_item(conn, sid, item["sku"])
+    before = _write_stock(db, item["sku"], level)
+    _journal(db, stamp, user, item["sku"], "stock", before, level, "adjust")
+    db.run("INSERT INTO notices (slot, sku) VALUES (1, :sku) "
+           "ON CONFLICT (slot) DO UPDATE SET sku = EXCLUDED.sku", sku=item["sku"])
+    return find_item(db, item["sku"])
 
 
-def take_notice(conn, sid: str) -> Optional[dict]:
+def take_notice(db: Db) -> Optional[dict]:
     """The one-time 'saved' notice left by the last committed adjustment, consumed on read."""
-    row = conn.execute("SELECT sku FROM notices WHERE sid = ?", (sid,)).fetchone()
-    if row is None:
-        return None
-    conn.execute("DELETE FROM notices WHERE sid = ?", (sid,))
-    return {"sku": row["sku"]}
+    sku = db.value("DELETE FROM notices WHERE slot = 1 RETURNING sku")
+    return None if sku is None else {"sku": sku}
 
 
 BULK_ACTIONS = ("archive", "restock")
 RESTOCK_STEP = 10
 
 
-def bulk(conn, sid: str, stamp: str, action: str, skus: list) -> int:
+def bulk(db: Db, stamp: dt.datetime, user: str, action: str, skus: list) -> int:
     """Apply `action` to the selected SKUs; returns how many items actually changed.
     Nothing selected changes nothing."""
     if action not in BULK_ACTIONS:
@@ -225,34 +215,49 @@ def bulk(conn, sid: str, stamp: str, action: str, skus: list) -> int:
         raise Rejected(422, "The selection is not a list of SKUs.", "skus")
     changed = 0
     for sku in sorted(set(skus)):
-        item = find_item(conn, sid, sku)
+        item = find_item(db, sku)
         if item is None:
             raise Rejected(404, f"No item {sku}.")
         if action == "archive":
             if item["status"] == "archived":
                 continue
-            conn.execute("UPDATE items SET status = 'archived' WHERE sid = ? AND sku = ?", (sid, sku))
-            _journal(conn, sid, stamp, sku, "archive", "active", "archived", "bulk")
+            db.run("UPDATE items SET status = 'archived' WHERE sku = :sku", sku=sku)
+            _journal(db, stamp, user, sku, "archive", "active", "archived", "bulk")
         else:
             level = min(MAX_LEVEL, item["stock"] + RESTOCK_STEP)
-            _write_stock(conn, sid, sku, level)
-            _journal(conn, sid, stamp, sku, "stock", item["stock"], level, "bulk")
+            _write_stock(db, sku, level)
+            _journal(db, stamp, user, sku, "stock", item["stock"], level, "bulk")
         changed += 1
     return changed
 
 
-def journal(conn, sid: str) -> list[dict]:
+def _journal_rows(db: Db, where: str, **params) -> list[dict]:
+    return [{"stamp": r["stamp"].strftime("%Y-%m-%d %H:%M"), "sku": r["sku"], "kind": r["kind"],
+             "before": r["before"], "after": r["after"], "origin": r["origin"], "by": r["by"]}
+            for r in db.all("SELECT j.stamp, j.sku, j.kind, j.before, j.after, j.origin, "
+                            f"u.name AS by FROM journal j JOIN users u ON u.id = j.user_id {where}",
+                            **params)]
+
+
+def journal(db: Db) -> list[dict]:
     """The audit log, newest first."""
-    return [{"stamp": r["stamp"], "sku": r["sku"], "kind": r["kind"], "before": r["before"],
-             "after": r["after"], "origin": r["origin"]}
-            for r in conn.execute("SELECT * FROM journal WHERE sid = ? ORDER BY seq DESC", (sid,))]
+    return _journal_rows(db, "ORDER BY j.seq DESC")
 
 
-def committed(conn, sid: str) -> dict:
-    """Business state only: stock levels, statuses and the journal (not notices or UI)."""
-    return {
-        "items": [[r["sku"], r["stock"], r["status"]] for r in conn.execute(
-            "SELECT sku, stock, status FROM items WHERE sid = ? ORDER BY sku", (sid,))],
-        "journal": [[r["sku"], r["kind"], r["before"], r["after"], r["origin"]] for r in conn.execute(
-            "SELECT * FROM journal WHERE sid = ? ORDER BY seq", (sid,))],
-    }
+#: Business state, table by table in key order (CONVENTIONS.md §3): everything a session can
+#: change or read as data; never the counters, the one-time notice or the session registry.
+COMMITTED = (("users", 'id COLLATE "C"'), ("categories", 'id COLLATE "C"'),
+             ("locations", 'code COLLATE "C"'), ("suppliers", 'id COLLATE "C"'),
+             ("items", 'sku COLLATE "C"'), ("journal", "seq"),
+             ("purchase_orders", 'number COLLATE "C"'),
+             ("order_lines", 'order_number COLLATE "C", line_no'))
+
+
+def _plain(value):
+    return value.isoformat() if isinstance(value, (dt.date, dt.datetime)) else value
+
+
+def committed(db: Db) -> dict:
+    return {table: [[_plain(v) for v in row.values()]
+                    for row in db.all(f"SELECT * FROM {table} ORDER BY {order}")]
+            for table, order in COMMITTED}

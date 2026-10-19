@@ -38,3 +38,32 @@ ol.stops li { padding: .35rem 0; border-bottom: 1px dotted var(--rule); }
 .pin { display: flex; flex-wrap: wrap; gap: .5rem; align-items: flex-end; margin-top: .6rem; }
 .share-meta strong { color: var(--sea-dark); }
 #share-days h3 { margin: 1rem 0 .3rem; font-size: 1rem; }
+
+/* suite v2: account, trip tabs, dialogs, catalogue, packing list */
+.masthead nav a { margin-right: .8rem; }
+.account { display: flex; align-items: center; gap: .6rem; position: relative; font-size: .9rem; }
+.account button { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .5); }
+.account-menu { position: absolute; right: 0; top: 2.2rem; background: #fff; border: 1px solid var(--rule); border-radius: 6px; padding: .5rem; z-index: 5; }
+.account-menu form { margin: 0; }
+.account-menu button { color: var(--sea-dark); border-color: var(--sea); }
+.gate { max-width: 26rem; }
+.tabs { display: flex; gap: .3rem; border-bottom: 2px solid var(--rule); margin: .6rem 0 1rem; }
+.tab { padding: .35rem .8rem; border: 1px solid var(--rule); border-bottom: none; border-radius: 6px 6px 0 0; color: var(--sea-dark); text-decoration: none; background: #fff; }
+.tab.current { background: var(--sea); color: #fff; border-color: var(--sea); }
+.badge { display: inline-block; min-width: 1.6rem; padding: 0 .35rem; border-radius: 999px; background: var(--sand); color: var(--ink); font-size: .8rem; text-align: center; }
+button.link { border: none; background: none; padding: 0; color: var(--sea-dark); text-decoration: underline; cursor: pointer; }
+.stop-kind { color: #5d6a6e; font-size: .8rem; font-style: italic; margin-right: .5rem; }
+.backdrop { position: fixed; top: 3.4rem; left: 0; right: 0; bottom: 0; background: rgba(31, 42, 46, .35); display: flex; align-items: flex-start; justify-content: center; padding-top: 2rem; }
+.dialog { background: #fff; border-radius: 8px; padding: 1.2rem 1.4rem; width: min(28rem, 92vw); box-shadow: 0 10px 30px rgba(0, 0, 0, .25); }
+.dialog label { display: block; font-size: .85rem; margin-top: .6rem; }
+.filters { display: flex; flex-wrap: wrap; gap: .6rem; align-items: flex-end; margin: .6rem 0; }
+.filters label { display: block; font-size: .85rem; }
+.places, .packing, .versions { padding-left: 1.2rem; }
+.places li, .packing li, .versions li { padding: .35rem 0; border-bottom: 1px dotted var(--rule); }
+.packing { list-style: none; padding-left: 0; }
+.item { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+.item.packed .item-text { color: #5d6a6e; text-decoration: line-through; }
+.small { font-size: .75rem; color: #5d6a6e; }
+.bulk { border: 1px dashed var(--rule); border-radius: 6px; padding: .4rem .6rem; }
+.pager { display: flex; gap: .8rem; align-items: center; margin: 1rem 0; }
+.danger { margin-top: 1.5rem; padding: .8rem 1.2rem; border: 1px solid var(--coral); border-radius: 6px; }

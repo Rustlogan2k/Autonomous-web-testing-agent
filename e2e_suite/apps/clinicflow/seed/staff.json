@@ -1,0 +1,41 @@
+{
+  "rounds": 20000,
+  "staff": [
+    {
+      "id": "rhiannon",
+      "username": "rhiannon.price",
+      "full_name": "Rhiannon Price",
+      "role": "receptionist",
+      "practitioner_id": null,
+      "salt": "1f2e3d4c5b6a79880716253443526170",
+      "pbkdf2": "49241412deebe6326054cc2496f337e963cd89bd701ffb58cb18c4fae1a4a003"
+    },
+    {
+      "id": "tom",
+      "username": "tom.avery",
+      "full_name": "Tom Avery",
+      "role": "receptionist",
+      "practitioner_id": null,
+      "salt": "a9b8c7d6e5f4031201f2e3d4c5b6a798",
+      "pbkdf2": "cb99ed57cf6a281a011e82725beebd3fb67c11e3a88773d435c00a5f7fc9a826"
+    },
+    {
+      "id": "okafor",
+      "username": "amara.okafor",
+      "full_name": "Dr Amara Okafor",
+      "role": "practitioner",
+      "practitioner_id": "okafor",
+      "salt": "0badc0de0badc0de1234567890abcdef",
+      "pbkdf2": "d5a962732460a40c89192a4890046b2c9c920c2a8ec32297c5c1ad783b69f5e2"
+    },
+    {
+      "id": "grace",
+      "username": "grace.holloway",
+      "full_name": "Grace Holloway",
+      "role": "manager",
+      "practitioner_id": null,
+      "salt": "feedface00112233445566778899aabb",
+      "pbkdf2": "c423919167ada2f30a1d1b4d637303befbfa3a11e7ea754d9ac216c910397da7"
+    }
+  ]
+}

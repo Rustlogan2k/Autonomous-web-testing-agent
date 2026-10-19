@@ -16,6 +16,11 @@ from .manifest import BUILD_ROOT, AppManifest, Patch
 
 #: What a variant is built from: everything the app needs at runtime.
 RUNTIME_PARTS = ("src", "seed", "vocab", "Dockerfile", "README.md", "app.json")
+#: The pinned database drivers (pg8000 and pymongo for Python; pg and mongodb for Node),
+#: shared by every app. A build gets its own language's subtree as `vendor/<language>`, the
+#: way a lockfile pins a dependency: the product builds with no network, so a build must
+#: already contain what it imports.
+VENDOR = Path(__file__).resolve().parents[1] / "vendor"
 
 
 class PatchError(RuntimeError):
@@ -52,6 +57,12 @@ def _copy_runtime(app: AppManifest, dest: Path) -> None:
                             ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "node_modules"))
         elif source.is_file():
             shutil.copy2(source, dest / part)
+    if app.database:
+        language = app.language
+        if not (VENDOR / language).is_dir():
+            raise PatchError(f"no vendored drivers for {language!r} under {VENDOR}")
+        shutil.copytree(VENDOR / language, dest / "vendor" / language,
+                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
 
 
 def build_variant(app: AppManifest, variant: str) -> Path:

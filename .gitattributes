@@ -4,3 +4,4 @@ tests/fixtures/benchmark/** text eol=lf
 tests/fixtures/ctxbench/** text eol=lf
 src/web_testing_agent/ctxbench/templates/** text eol=lf
 tests/fixtures/ctxbench/probes/*.gz binary
+e2e_suite/vendor/** -text

@@ -10,11 +10,14 @@
 <body>
 <header class="topbar">
   <a id="nav-home" class="wordmark" href="/">Harbourside Health</a>
-  <nav class="topnav" aria-label="{{ t("nav.label") }}">
-    {{ resume|raw }}
-    <a id="nav-book" href="/book">{{ t("nav.book") }}</a>
-    <a id="nav-bookings" href="/bookings">{{ t("nav.bookings") }}</a>
-  </nav>
+  <nav class="topnav" aria-label="{{ t("nav.label") }}">{{ nav|raw }}</nav>
+  <div class="account">
+    <span id="signed-in-as">{{ who }}</span>
+    <button id="nav-account" class="quiet" type="button" aria-expanded="false" aria-controls="account-menu">{{ t("act.account") }}</button>
+    <div id="account-menu" class="account-menu" hidden>
+      <form method="post" action="/logout"><button id="sign-out" type="submit">{{ t("act.sign_out") }}</button></form>
+    </div>
+  </div>
 </header>
 <main class="sheet">
 {{ notice|raw }}{{ error|raw }}
@@ -22,5 +25,6 @@
 </main>
 <footer class="foot"><p>{{ t("clinic.tagline") }}</p></footer>
 <script src="/assets/booking.js"></script>
+<script src="/assets/desk.js"></script>
 </body>
 </html>

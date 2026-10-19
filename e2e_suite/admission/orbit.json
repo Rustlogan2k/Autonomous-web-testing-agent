@@ -7,6 +7,11 @@
       "detail": []
     },
     {
+      "name": "suite_v2_contract",
+      "passed": true,
+      "detail": []
+    },
+    {
       "name": "no_external_urls",
       "passed": true,
       "detail": []
@@ -27,6 +32,16 @@
       "detail": []
     },
     {
+      "name": "database_url_from_environment",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "dockerfile_copies_vendor",
+      "passed": true,
+      "detail": []
+    },
+    {
       "name": "patches_apply_exactly_once",
       "passed": true,
       "detail": null
@@ -42,12 +57,79 @@
       "detail": {
         "passed": true,
         "summary": [
-          "# tests 15",
-          "# pass 15",
+          "# tests 22",
+          "# pass 22",
           "# fail 0"
         ],
         "pass_lines": 1,
         "tail": []
+      }
+    },
+    {
+      "name": "login_http_round_trip",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "status": 303,
+        "location": "/",
+        "cookie": true,
+        "entry_status": 200,
+        "entry_path": "/",
+        "user": "mei.tanaka"
+      }
+    },
+    {
+      "name": "data_model_contract",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "session_seed_cost",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "warn": false,
+        "samples": 20,
+        "p50_ms": 38.4,
+        "p95_ms": 51.0,
+        "max_ms": 53.7,
+        "limit_ms": 300.0,
+        "refused": 0,
+        "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
+      }
+    },
+    {
+      "name": "session_cap_honoured",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "cap": 4,
+        "max_live_partitions": 4,
+        "live_after_each": [
+          2,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "evicted_session_state": null,
+        "evicted_session_lands_on": "/login",
+        "every_new_session_starts_from_the_seed": true
       }
     },
     {
@@ -70,10 +152,10 @@
       "passed": true,
       "detail": {
         "passed": true,
-        "seed_sha": "d4a421d171f4c51f7f72fc04f08afce7c8532cbe426ebc52f7f58f3387f0d840",
+        "seed_sha": "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75",
         "fresh_context_sha": [
-          "d4a421d171f4c51f7f72fc04f08afce7c8532cbe426ebc52f7f58f3387f0d840",
-          "d4a421d171f4c51f7f72fc04f08afce7c8532cbe426ebc52f7f58f3387f0d840"
+          "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75",
+          "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75"
         ]
       }
     },
@@ -119,7 +201,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 96.7
+        "seconds": 143.5
       }
     },
     {
@@ -147,7 +229,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 42.5
+        "seconds": 69.5
       }
     },
     {
@@ -175,7 +257,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 101.3
+        "seconds": 150.5
       }
     },
     {
@@ -192,6 +274,44 @@
         "raw_candidates": {},
         "errors": [],
         "foreign_requests": [],
+        "responses": {
+          "count": 99,
+          "p50_ms": 4.6,
+          "p95_ms": 9.6,
+          "max_ms": 11.2,
+          "slowest": [
+            [
+              "POST",
+              "/api/cards/5/move",
+              11.2
+            ],
+            [
+              "POST",
+              "/api/cards/6/park",
+              10.3
+            ],
+            [
+              "POST",
+              "/api/cards/5/move",
+              10.1
+            ],
+            [
+              "POST",
+              "/api/cards/6/move",
+              10.0
+            ],
+            [
+              "POST",
+              "/api/cards/5/move",
+              9.6
+            ]
+          ],
+          "limits_ms": {
+            "p95": 150.0,
+            "max": 1000.0
+          },
+          "passed": true
+        },
         "passed": true
       }
     },
@@ -201,21 +321,190 @@
       "detail": []
     },
     {
+      "name": "responses_fast",
+      "passed": true,
+      "detail": {
+        "count": 99,
+        "p50_ms": 4.6,
+        "p95_ms": 9.6,
+        "max_ms": 11.2,
+        "slowest": [
+          [
+            "POST",
+            "/api/cards/5/move",
+            11.2
+          ],
+          [
+            "POST",
+            "/api/cards/6/park",
+            10.3
+          ],
+          [
+            "POST",
+            "/api/cards/5/move",
+            10.1
+          ],
+          [
+            "POST",
+            "/api/cards/6/move",
+            10.0
+          ],
+          [
+            "POST",
+            "/api/cards/5/move",
+            9.6
+          ]
+        ],
+        "limits_ms": {
+          "p95": 150.0,
+          "max": 1000.0
+        },
+        "passed": true
+      }
+    },
+    {
+      "name": "login_protected",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "landing": {
+          "entry": "/login",
+          "/": "/login",
+          "/index.html": "/login"
+        },
+        "public": {
+          "/login/forgot": {
+            "status": 200,
+            "redirected": false,
+            "path": "/login/forgot"
+          }
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "login_macro_signs_in",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "steps_completed": 3,
+        "steps": 3,
+        "path": "/",
+        "signed_in_as": "Mei Tanaka \u00b7 Member",
+        "sha_equals_seed": true
+      }
+    },
+    {
+      "name": "login_wrong_password_refused",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "path": "/login",
+        "error_region": "That username and password don't match an account.",
+        "session": null,
+        "errors": []
+      }
+    },
+    {
+      "name": "login_sign_out_sound",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "workflow": "park a Doing card, then pull in the next backlog card",
+        "workflow_misses": 0,
+        "sign_out_misses": 0,
+        "landed_on": "/login",
+        "user_after_sign_out": null,
+        "entry_lands_on": "/login",
+        "sign_in_again_steps": 3,
+        "sha_resumed": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "role_restrictions_sound",
+      "passed": true,
+      "detail": [
+        {
+          "user": "ola.nwosu",
+          "path": "/#/board/ops",
+          "passed": true,
+          "signed_in_as": "Ola Nwosu \u00b7 Viewer",
+          "status": null,
+          "access_region": "This board isn't shared with you, or your role can't open this page.",
+          "state_unchanged": true,
+          "errors": []
+        },
+        {
+          "user": "mei.tanaka",
+          "path": "/#/board/web/settings",
+          "passed": true,
+          "signed_in_as": "Mei Tanaka \u00b7 Member",
+          "status": null,
+          "access_region": "This board isn't shared with you, or your role can't open this page.",
+          "state_unchanged": true,
+          "errors": []
+        }
+      ]
+    },
+    {
       "name": "docker_offline_build_and_health",
       "passed": true,
       "detail": {
         "image": "e2e-suite/orbit:clean",
         "build_ok": true,
-        "build_seconds": 1.0,
+        "build_seconds": 1.2,
         "build_tail": [
-          "#10 naming to docker.io/e2e-suite/orbit:clean done",
-          "#10 unpacking to docker.io/e2e-suite/orbit:clean 0.1s done",
-          "#10 DONE 0.2s"
+          "#11 naming to docker.io/e2e-suite/orbit:clean done",
+          "#11 unpacking to docker.io/e2e-suite/orbit:clean 0.1s done",
+          "#11 DONE 0.2s"
+        ],
+        "route": "host",
+        "attempts": [
+          {
+            "route": "host",
+            "healthy": true,
+            "detail": "{'ok': True, 'app': 'orbit'}",
+            "sign_in": {
+              "passed": true,
+              "status": 303,
+              "cookie": true,
+              "entry_status": 200,
+              "entry_path": "/",
+              "container_sha": "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75",
+              "host_sha": "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75",
+              "sign_in_ms": 37.0
+            }
+          }
         ],
         "container_healthy": true,
         "detail": "{'ok': True, 'app': 'orbit'}",
-        "image_mb": 79.8,
+        "sign_in": {
+          "passed": true,
+          "status": 303,
+          "cookie": true,
+          "entry_status": 200,
+          "entry_path": "/",
+          "container_sha": "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75",
+          "host_sha": "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75",
+          "sign_in_ms": 37.0
+        },
+        "image_mb": 80.4,
         "passed": true
+      }
+    },
+    {
+      "name": "docker_sign_in_and_seed_state",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "status": 303,
+        "cookie": true,
+        "entry_status": 200,
+        "entry_path": "/",
+        "container_sha": "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75",
+        "host_sha": "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75",
+        "sign_in_ms": 37.0
       }
     },
     {
@@ -226,33 +515,33 @@
           "languages": [
             {
               "language": "JavaScript",
-              "files": 3,
-              "bytes": 43263,
-              "share": 0.5512
+              "files": 6,
+              "bytes": 77851,
+              "share": 0.5697
             },
             {
               "language": "JSON",
-              "files": 4,
-              "bytes": 25992,
-              "share": 0.3311
+              "files": 7,
+              "bytes": 44040,
+              "share": 0.3223
             },
             {
               "language": "CSS",
               "files": 1,
-              "bytes": 5990,
-              "share": 0.0763
+              "bytes": 7414,
+              "share": 0.0543
             },
             {
               "language": "Markdown",
               "files": 1,
-              "bytes": 2723,
-              "share": 0.0347
+              "bytes": 6810,
+              "share": 0.0498
             },
             {
               "language": "HTML",
               "files": 1,
-              "bytes": 527,
-              "share": 0.0067
+              "bytes": 546,
+              "share": 0.004
             }
           ],
           "frameworks": [],
@@ -264,51 +553,78 @@
         },
         "build_plan": {
           "kind": "dockerfile",
-          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\orbit\\clean\\Dockerfile"
+          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\orbit\\clean\\Dockerfile"
         },
         "product_can_build": true,
         "matches_expectation": true,
         "expectation": "buildable by the current intake"
       }
+    },
+    {
+      "name": "variant_storage_released",
+      "passed": true,
+      "detail": []
     }
   ],
   "sections": {
     "vocabulary": {
-      "keys": 72,
-      "keys_used_by_source": 72,
-      "action_keys": 15,
-      "unused_keys": [],
+      "keys": 105,
+      "keys_used_by_source": 100,
+      "action_keys": 23,
+      "unused_keys": [
+        "activity.ticked",
+        "activity.unticked",
+        "role.member",
+        "role.owner",
+        "role.viewer"
+      ],
       "default_action_labels": {
         "act.add_card": "Add card",
+        "act.back_to_board": "Back to the board",
+        "act.back_to_projects": "Back to your projects",
+        "act.back_to_sign_in": "Back to sign in",
+        "act.board_settings": "Board settings",
         "act.cancel_new_card": "Cancel",
         "act.close": "Close",
         "act.column_menu": "Column options",
         "act.comment": "Add comment",
         "act.copy_link": "Copy link",
+        "act.forgot_password": "Forgot password?",
         "act.move": "Move",
         "act.new_card": "New card",
         "act.open_board": "Open board",
         "act.park": "Park",
         "act.pull_in": "Pull in",
+        "act.save_settings": "Save limits",
         "act.ship": "Ship",
         "act.ship_ready": "Ship all ready",
+        "act.sign_in": "Sign in",
+        "act.sign_out": "Sign out",
         "act.unwatch": "Stop watching",
         "act.watch": "Watch card"
       },
       "alt_action_labels": {
         "act.add_card": "Save task",
+        "act.back_to_board": "Return to the tasks",
+        "act.back_to_projects": "See all workspaces",
+        "act.back_to_sign_in": "Return to log-in",
+        "act.board_settings": "Configure board",
         "act.cancel_new_card": "Discard",
         "act.close": "Back to board",
         "act.column_menu": "More actions",
         "act.comment": "Post note",
         "act.copy_link": "Share link",
+        "act.forgot_password": "Trouble logging in?",
         "act.move": "Relocate",
         "act.new_card": "Create task",
         "act.open_board": "Show board",
         "act.park": "Hold",
         "act.pull_in": "Start",
+        "act.save_settings": "Apply caps",
         "act.ship": "Release",
         "act.ship_ready": "Release everything finished",
+        "act.sign_in": "Log in",
+        "act.sign_out": "Log out",
         "act.unwatch": "Unfollow",
         "act.watch": "Follow"
       }
@@ -331,6 +647,283 @@
         "lines_removed": 1,
         "lines_added": 1,
         "chars_changed": 5
+      }
+    },
+    "data_model": {
+      "passed": true,
+      "failures": [],
+      "description": {
+        "partition": "e2e_orbit_62775_s000001",
+        "collections": [
+          "cards",
+          "counters",
+          "projects",
+          "users",
+          "workspaces"
+        ],
+        "entities_found": [
+          "cards",
+          "projects",
+          "users",
+          "workspaces"
+        ],
+        "collection_count": 4,
+        "per_collection": {
+          "cards": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 12,
+            "additional_properties_false": true,
+            "enums": 13,
+            "one_of": 1,
+            "unique_indexes": [],
+            "secondary_indexes": [
+              "assignees",
+              "blocked_by",
+              "board_order"
+            ],
+            "compound_indexes": [
+              "board_order"
+            ],
+            "documents": 14,
+            "embedded_elements": 125,
+            "arrays_of_objects": 33,
+            "depth": 3,
+            "object_ids": 0,
+            "id_types": [
+              "int"
+            ]
+          },
+          "projects": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 8,
+            "additional_properties_false": true,
+            "enums": 2,
+            "one_of": 0,
+            "unique_indexes": [
+              "workspace_name_unique"
+            ],
+            "secondary_indexes": [
+              "member_user"
+            ],
+            "compound_indexes": [
+              "workspace_name_unique"
+            ],
+            "documents": 2,
+            "embedded_elements": 20,
+            "arrays_of_objects": 6,
+            "depth": 2,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          },
+          "users": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 4,
+            "additional_properties_false": true,
+            "enums": 0,
+            "one_of": 0,
+            "unique_indexes": [
+              "username_unique"
+            ],
+            "secondary_indexes": [],
+            "compound_indexes": [],
+            "documents": 3,
+            "embedded_elements": 0,
+            "arrays_of_objects": 0,
+            "depth": 2,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          },
+          "workspaces": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 3,
+            "additional_properties_false": true,
+            "enums": 0,
+            "one_of": 0,
+            "unique_indexes": [],
+            "secondary_indexes": [
+              "member_ids"
+            ],
+            "compound_indexes": [],
+            "documents": 1,
+            "embedded_elements": 3,
+            "arrays_of_objects": 0,
+            "depth": 1,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          }
+        },
+        "rows": {
+          "cards": 14,
+          "counters": 1,
+          "projects": 2,
+          "users": 3,
+          "workspaces": 1
+        },
+        "validated_strict": 4,
+        "additional_properties_false": 4,
+        "enums": 15,
+        "one_of": 1,
+        "with_arrays_of_objects": 2,
+        "depth": 3,
+        "unique_indexes": 2,
+        "secondary_indexes": 7,
+        "compound_indexes": 2,
+        "object_ids": 0,
+        "volume": 168,
+        "non_empty_collections": 4
+      },
+      "probes": [
+        {
+          "name": "a card that belongs to no project",
+          "kind": "required",
+          "expected": 121,
+          "got": 121,
+          "passed": true
+        },
+        {
+          "name": "a card in a column boards do not have",
+          "kind": "enum",
+          "expected": 121,
+          "got": 121,
+          "passed": true
+        },
+        {
+          "name": "a project member with a role that does not exist",
+          "kind": "enum",
+          "expected": 121,
+          "got": 121,
+          "passed": true
+        },
+        {
+          "name": "a second account with Mei's username",
+          "kind": "duplicate",
+          "expected": 11000,
+          "got": 11000,
+          "passed": true
+        }
+      ],
+      "references": [
+        {
+          "from": "workspaces.member_ids[]",
+          "to": "users._id",
+          "values": 3,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "projects.workspace_id",
+          "to": "workspaces._id",
+          "values": 2,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "projects.members[].user_id",
+          "to": "users._id",
+          "values": 5,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "cards.project_id",
+          "to": "projects._id",
+          "values": 14,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "cards.blocked_by[]",
+          "to": "cards._id",
+          "values": 4,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "cards.assignee_ids[]",
+          "to": "users._id",
+          "values": 10,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "cards.comments[].author_id",
+          "to": "users._id",
+          "values": 5,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "cards.activity[].by",
+          "to": "users._id",
+          "values": 51,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        }
+      ]
+    },
+    "sessions": {
+      "cost": {
+        "passed": true,
+        "warn": false,
+        "samples": 20,
+        "p50_ms": 38.4,
+        "p95_ms": 51.0,
+        "max_ms": 53.7,
+        "limit_ms": 300.0,
+        "refused": 0,
+        "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
+      },
+      "cap": {
+        "passed": true,
+        "cap": 4,
+        "max_live_partitions": 4,
+        "live_after_each": [
+          2,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "evicted_session_state": null,
+        "evicted_session_lands_on": "/login",
+        "every_new_session_starts_from_the_seed": true
       }
     },
     "workflows": [
@@ -576,7 +1169,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 96.7
+        "seconds": 143.5
       },
       {
         "fault_id": "ORB-2",
@@ -614,7 +1207,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 42.5
+        "seconds": 69.5
       },
       {
         "fault_id": "ORB-3",
@@ -659,7 +1252,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 101.3
+        "seconds": 150.5
       }
     ],
     "benign": [
@@ -726,40 +1319,100 @@
       "raw_candidates": {},
       "errors": [],
       "foreign_requests": [],
+      "responses": {
+        "count": 99,
+        "p50_ms": 4.6,
+        "p95_ms": 9.6,
+        "max_ms": 11.2,
+        "slowest": [
+          [
+            "POST",
+            "/api/cards/5/move",
+            11.2
+          ],
+          [
+            "POST",
+            "/api/cards/6/park",
+            10.3
+          ],
+          [
+            "POST",
+            "/api/cards/5/move",
+            10.1
+          ],
+          [
+            "POST",
+            "/api/cards/6/move",
+            10.0
+          ],
+          [
+            "POST",
+            "/api/cards/5/move",
+            9.6
+          ]
+        ],
+        "limits_ms": {
+          "p95": 150.0,
+          "max": 1000.0
+        },
+        "passed": true
+      },
       "passed": true
     },
+    "roles": [
+      {
+        "user": "ola.nwosu",
+        "path": "/#/board/ops",
+        "passed": true,
+        "signed_in_as": "Ola Nwosu \u00b7 Viewer",
+        "status": null,
+        "access_region": "This board isn't shared with you, or your role can't open this page.",
+        "state_unchanged": true,
+        "errors": []
+      },
+      {
+        "user": "mei.tanaka",
+        "path": "/#/board/web/settings",
+        "passed": true,
+        "signed_in_as": "Mei Tanaka \u00b7 Member",
+        "status": null,
+        "access_region": "This board isn't shared with you, or your role can't open this page.",
+        "state_unchanged": true,
+        "errors": []
+      }
+    ],
     "product_intake": {
       "profile": {
         "languages": [
           {
             "language": "JavaScript",
-            "files": 3,
-            "bytes": 43263,
-            "share": 0.5512
+            "files": 6,
+            "bytes": 77851,
+            "share": 0.5697
           },
           {
             "language": "JSON",
-            "files": 4,
-            "bytes": 25992,
-            "share": 0.3311
+            "files": 7,
+            "bytes": 44040,
+            "share": 0.3223
           },
           {
             "language": "CSS",
             "files": 1,
-            "bytes": 5990,
-            "share": 0.0763
+            "bytes": 7414,
+            "share": 0.0543
           },
           {
             "language": "Markdown",
             "files": 1,
-            "bytes": 2723,
-            "share": 0.0347
+            "bytes": 6810,
+            "share": 0.0498
           },
           {
             "language": "HTML",
             "files": 1,
-            "bytes": 527,
-            "share": 0.0067
+            "bytes": 546,
+            "share": 0.004
           }
         ],
         "frameworks": [],
@@ -771,7 +1424,7 @@
       },
       "build_plan": {
         "kind": "dockerfile",
-        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\orbit\\clean\\Dockerfile"
+        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\orbit\\clean\\Dockerfile"
       },
       "product_can_build": true,
       "matches_expectation": true,
@@ -779,9 +1432,9 @@
     }
   },
   "admitted": true,
-  "checks_run": 22,
+  "checks_run": 37,
   "checks_failed": [],
   "browser_checks_run": true,
   "docker_checks_run": true,
-  "wall_clock_s": 447.4
+  "wall_clock_s": 701.3
 }

@@ -1,0 +1,6 @@
+<ul id="record-notes" class="notes">{{ notes|raw }}</ul>
+<form class="panel stack" method="post" action="/patients/{{ pid }}/notes" autocomplete="off">
+  <label for="new-note">{{ t("field.new_note") }}</label>
+  <textarea id="new-note" name="note_body" rows="3"></textarea>
+  <p class="actions"><button id="add-note" type="submit">{{ t("act.add_note") }}</button></p>
+</form>

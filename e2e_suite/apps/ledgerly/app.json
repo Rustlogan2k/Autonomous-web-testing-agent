@@ -4,30 +4,126 @@
   "domain": "expense claims",
   "user_goal": "Draft an expense claim with lines in several currencies, lodge it, and take it through manager approval, send-back and resubmission, or escalation to finance.",
   "architecture": "node-server-rendered+client-form-island",
-  "stack": "node-builtins+json-files",
-  "persistence": "append-only event log per session (JSON lines), folded over the seed on every request; nothing is ever rewritten",
+  "stack": "node22+pg-driver+postgresql",
+  "persistence": "postgresql schema per signed-in session; claims are append-only line revisions and events, their status the fold of the events; merchants and cost centres are ordinary rows",
   "entry": "/",
   "start": ["node", "src/server.js"],
   "dockerfile": true,
   "workflow_graph": {
-    "kind": ["nested-form", "branching", "revisit", "state-machine"],
-    "nodes": ["my-claims", "claim-editor", "claim", "approval-queue", "finance-queue", "receipt-panel",
-              "claim-states:draft", "claim-states:awaiting", "claim-states:sent_back",
-              "claim-states:with_finance", "claim-states:approved", "claim-states:rejected"],
-    "edges": [["my-claims", "claim-editor"], ["claim-editor", "claim-editor"], ["claim-editor", "receipt-panel"],
-              ["claim-editor", "claim"], ["my-claims", "claim"], ["claim", "claim-editor"], ["claim", "my-claims"],
-              ["approval-queue", "claim"], ["finance-queue", "claim"], ["claim", "claim"],
-              ["my-claims", "approval-queue"], ["approval-queue", "finance-queue"], ["finance-queue", "my-claims"],
-              ["claim-states:draft", "claim-states:draft"], ["claim-states:draft", "claim-states:awaiting"],
-              ["claim-states:awaiting", "claim-states:approved"], ["claim-states:awaiting", "claim-states:sent_back"],
-              ["claim-states:awaiting", "claim-states:with_finance"], ["claim-states:sent_back", "claim-states:sent_back"],
-              ["claim-states:sent_back", "claim-states:awaiting"], ["claim-states:with_finance", "claim-states:approved"],
-              ["claim-states:with_finance", "claim-states:rejected"]]
+    "kind": [
+      "branching",
+      "data-grid",
+      "hub-and-spoke",
+      "modal-heavy",
+      "nested-form",
+      "revisit",
+      "state-machine"
+    ],
+    "nodes": [
+      "my-claims",
+      "claim-editor",
+      "claim",
+      "approval-queue",
+      "finance-queue",
+      "receipt-panel",
+      "claim-states:draft",
+      "claim-states:awaiting",
+      "claim-states:sent_back",
+      "claim-states:with_finance",
+      "claim-states:approved",
+      "claim-states:rejected",
+      "sign-in",
+      "forgot-password",
+      "merchants",
+      "merchant",
+      "merchant-form",
+      "cost-centres",
+      "reports",
+      "discard-dialog",
+      "delete-dialog",
+      "access-notice"
+    ],
+    "edges": [
+      ["my-claims", "claim-editor"],
+      ["claim-editor", "claim-editor"],
+      ["claim-editor", "receipt-panel"],
+      ["claim-editor", "claim"],
+      ["my-claims", "claim"],
+      ["claim", "claim-editor"],
+      ["claim", "my-claims"],
+      ["approval-queue", "claim"],
+      ["finance-queue", "claim"],
+      ["claim", "claim"],
+      ["my-claims", "approval-queue"],
+      ["approval-queue", "finance-queue"],
+      ["finance-queue", "my-claims"],
+      ["claim-states:draft", "claim-states:draft"],
+      ["claim-states:draft", "claim-states:awaiting"],
+      ["claim-states:awaiting", "claim-states:approved"],
+      ["claim-states:awaiting", "claim-states:sent_back"],
+      ["claim-states:awaiting", "claim-states:with_finance"],
+      ["claim-states:sent_back", "claim-states:sent_back"],
+      ["claim-states:sent_back", "claim-states:awaiting"],
+      ["claim-states:with_finance", "claim-states:approved"],
+      ["claim-states:with_finance", "claim-states:rejected"],
+      ["sign-in", "my-claims"],
+      ["sign-in", "sign-in"],
+      ["sign-in", "forgot-password"],
+      ["forgot-password", "sign-in"],
+      ["my-claims", "my-claims"],
+      ["claim", "discard-dialog"],
+      ["discard-dialog", "my-claims"],
+      ["discard-dialog", "claim"],
+      ["my-claims", "merchants"],
+      ["merchants", "merchants"],
+      ["merchants", "merchant"],
+      ["merchant", "merchant-form"],
+      ["merchants", "merchant-form"],
+      ["merchant-form", "merchant"],
+      ["merchant-form", "delete-dialog"],
+      ["delete-dialog", "merchants"],
+      ["my-claims", "cost-centres"],
+      ["cost-centres", "cost-centres"],
+      ["cost-centres", "delete-dialog"],
+      ["delete-dialog", "cost-centres"],
+      ["my-claims", "reports"],
+      ["approval-queue", "approval-queue"],
+      ["access-notice", "my-claims"]
+    ]
   },
-  "features": ["nested-form", "multi-role", "server-rendered", "client-state", "server-state",
-               "dynamic-validation", "table", "enable-disable"],
-  "vocabulary": {"progress_keys": ["act.lodge", "act.resubmit", "act.approve", "act.send_back", "act.escalate",
-                                   "act.save_draft", "act.save_changes", "act.switch_role", "act.new_claim"]},
+  "features": [
+    "bulk-operation",
+    "client-state",
+    "dynamic-validation",
+    "enable-disable",
+    "filter",
+    "modal",
+    "multi-role",
+    "nested-form",
+    "server-rendered",
+    "server-state",
+    "sort",
+    "table",
+    "tabs"
+  ],
+  "vocabulary": {
+    "progress_keys": [
+      "act.add_centre",
+      "act.approve",
+      "act.approve_selected",
+      "act.confirm_delete",
+      "act.confirm_discard",
+      "act.escalate",
+      "act.lodge",
+      "act.new_claim",
+      "act.resubmit",
+      "act.save_changes",
+      "act.save_draft",
+      "act.save_merchant",
+      "act.send_back",
+      "act.switch_role"
+    ]
+  },
   "regions": {
     "my_claims": "#my-claims",
     "approval_queue": "#approval-queue",
@@ -44,108 +140,388 @@
     "sum_gbp": "#sum-gbp",
     "sum_eur": "#sum-eur",
     "sum_usd": "#sum-usd",
-    "sum_total": "#sum-total"
+    "sum_total": "#sum-total",
+    "signed_in_as": "#signed-in-as",
+    "login_error": "#login-error",
+    "access_notice": "#access-notice",
+    "claim_history": "#claim-history",
+    "claims_shown": "#claims-shown",
+    "claims_sort": "#claims-sort",
+    "row_1_total": "#row-1-total",
+    "row_2_total": "#row-2-total",
+    "claims_notice": "#claims-notice",
+    "queue_notice": "#queue-notice",
+    "merchants_total": "#merchants-total",
+    "merchants_list": "#merchants-list",
+    "merchants_page": "#merchants-page",
+    "merchants_pages": "#merchants-pages",
+    "merchants_notice": "#merchants-notice",
+    "merchant_name": "#merchant-name",
+    "merchant_city": "#merchant-city",
+    "cost_centre_list": "#cost-centre-list",
+    "centres_notice": "#centres-notice",
+    "report_categories": "#report-categories"
   },
   "workflows": [
-    {"name": "lodge a claim in pounds and euros",
-     "trace": [{"type": "CLICK", "id": "new-claim"},
-               {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}},
-               {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}},
-               {"type": "CLICK", "id": "add-line"},
-               {"type": "TYPE", "id": "description-2", "params": {"category": "valid_typical"}},
-               {"type": "SELECT", "id": "currency-2", "params": {"option": "EUR"}},
-               {"type": "TYPE", "id": "amount-2", "params": {"category": "valid_typical"}},
-               {"type": "CLICK", "id": "lodge-claim"}],
-     "expect": [{"region": "claim_total", "contains": "78.12"},
-                {"region": "claim_lines", "contains": "36.12"}]},
-    {"name": "the manager approves a small claim",
-     "trace": [{"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
-               {"type": "CLICK", "id": "switch-role"},
-               {"type": "CLICK", "id": "open-CL-102"},
-               {"type": "CLICK", "id": "approve-claim"}],
-     "expect": [{"region": "claim_approver", "contains": "Ben Okafor"},
-                {"region": "claim_total", "contains": "18.40"}]},
-    {"name": "the manager escalates a claim over the limit and finance approves it",
-     "trace": [{"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
-               {"type": "CLICK", "id": "switch-role"},
-               {"type": "CLICK", "id": "open-CL-103"},
-               {"type": "CLICK", "id": "escalate"},
-               {"type": "SELECT", "id": "viewing-as", "params": {"option": "finance"}},
-               {"type": "CLICK", "id": "switch-role"},
-               {"type": "CLICK", "id": "open-CL-103"},
-               {"type": "CLICK", "id": "approve-claim"}],
-     "expect": [{"region": "claim_approver", "contains": "Finance desk"},
-                {"region": "claim_total", "contains": "64.00"}]},
-    {"name": "the manager sends a claim back with a note",
-     "trace": [{"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
-               {"type": "CLICK", "id": "switch-role"},
-               {"type": "CLICK", "id": "open-CL-102"},
-               {"type": "TYPE", "id": "decision-note", "params": {"category": "valid_typical"}},
-               {"type": "CLICK", "id": "send-back"}],
-     "expect": [{"region": "claim_latest", "contains": "Test User Input"},
-                {"region": "claim_approver", "absent": "Ben Okafor"}]},
-    {"name": "a sent-back claim is resubmitted and is back in the manager's queue",
-     "trace": [{"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
-               {"type": "CLICK", "id": "switch-role"},
-               {"type": "CLICK", "id": "open-CL-102"},
-               {"type": "TYPE", "id": "decision-note", "params": {"category": "valid_typical"}},
-               {"type": "CLICK", "id": "send-back"},
-               {"type": "SELECT", "id": "viewing-as", "params": {"option": "ana"}},
-               {"type": "CLICK", "id": "switch-role"},
-               {"type": "CLICK", "id": "claim-CL-102"},
-               {"type": "CLICK", "id": "edit-claim"},
-               {"type": "CLICK", "id": "resubmit-claim"},
-               {"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
-               {"type": "CLICK", "id": "switch-role"}],
-     "expect": [{"region": "approval_queue", "contains": "CL-102"},
-                {"region": "approval_queue", "contains": "18.40"}]},
-    {"name": "the editor's live summary converts dollars",
-     "trace": [{"type": "CLICK", "id": "new-claim"},
-               {"type": "SELECT", "id": "currency-1", "params": {"option": "USD"}},
-               {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}}],
-     "expect": [{"region": "sum_usd", "contains": "42.00"},
-                {"region": "sum_total", "contains": "33.18"}],
-     "commits": false},
-    {"name": "remove a line before lodging",
-     "trace": [{"type": "CLICK", "id": "new-claim"},
-               {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}},
-               {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}},
-               {"type": "CLICK", "id": "add-line"},
-               {"type": "TYPE", "id": "description-2", "params": {"category": "valid_typical"}},
-               {"type": "TYPE", "id": "amount-2", "params": {"category": "valid_typical"}},
-               {"type": "CLICK", "id": "remove-line-2"},
-               {"type": "CLICK", "id": "lodge-claim"}],
-     "expect": [{"region": "claim_total", "contains": "42.00"},
-                {"region": "claim_lines", "contains": "Test User Input"}]}
+    {
+      "name": "lodge a claim in pounds and euros",
+      "trace": [
+        {"type": "CLICK", "id": "new-claim"},
+        {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "add-line"},
+        {"type": "TYPE", "id": "description-2", "params": {"category": "valid_typical"}},
+        {"type": "SELECT", "id": "currency-2", "params": {"option": "EUR"}},
+        {"type": "TYPE", "id": "amount-2", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "lodge-claim"}
+      ],
+      "expect": [
+        {"region": "claim_total", "contains": "78.12"},
+        {"region": "claim_lines", "contains": "36.12"}
+      ]
+    },
+    {
+      "name": "the manager approves a small claim",
+      "trace": [
+        {"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
+        {"type": "CLICK", "id": "switch-role"},
+        {"type": "CLICK", "id": "open-CL-102"},
+        {"type": "CLICK", "id": "approve-claim"}
+      ],
+      "expect": [
+        {"region": "claim_approver", "contains": "Ben Okafor"},
+        {"region": "claim_total", "contains": "18.40"}
+      ]
+    },
+    {
+      "name": "the manager escalates a claim over the limit and finance approves it",
+      "trace": [
+        {"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
+        {"type": "CLICK", "id": "switch-role"},
+        {"type": "CLICK", "id": "open-CL-103"},
+        {"type": "CLICK", "id": "escalate"},
+        {"type": "SELECT", "id": "viewing-as", "params": {"option": "finance"}},
+        {"type": "CLICK", "id": "switch-role"},
+        {"type": "CLICK", "id": "open-CL-103"},
+        {"type": "CLICK", "id": "approve-claim"}
+      ],
+      "expect": [
+        {"region": "claim_approver", "contains": "Finance desk"},
+        {"region": "claim_total", "contains": "64.00"}
+      ]
+    },
+    {
+      "name": "the manager sends a claim back with a note",
+      "trace": [
+        {"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
+        {"type": "CLICK", "id": "switch-role"},
+        {"type": "CLICK", "id": "open-CL-102"},
+        {"type": "TYPE", "id": "decision-note", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "send-back"}
+      ],
+      "expect": [
+        {"region": "claim_latest", "contains": "Test User Input"},
+        {"region": "claim_approver", "absent": "Ben Okafor"}
+      ]
+    },
+    {
+      "name": "a sent-back claim is resubmitted and is back in the manager's queue",
+      "trace": [
+        {"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
+        {"type": "CLICK", "id": "switch-role"},
+        {"type": "CLICK", "id": "open-CL-102"},
+        {"type": "TYPE", "id": "decision-note", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "send-back"},
+        {"type": "SELECT", "id": "viewing-as", "params": {"option": "ana"}},
+        {"type": "CLICK", "id": "switch-role"},
+        {"type": "CLICK", "id": "claim-CL-102"},
+        {"type": "CLICK", "id": "edit-claim"},
+        {"type": "CLICK", "id": "resubmit-claim"},
+        {"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
+        {"type": "CLICK", "id": "switch-role"}
+      ],
+      "expect": [
+        {"region": "approval_queue", "contains": "CL-102"},
+        {"region": "approval_queue", "contains": "18.40"}
+      ]
+    },
+    {
+      "name": "the editor's live summary converts dollars",
+      "trace": [
+        {"type": "CLICK", "id": "new-claim"},
+        {"type": "SELECT", "id": "currency-1", "params": {"option": "USD"}},
+        {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}}
+      ],
+      "expect": [
+        {"region": "sum_usd", "contains": "42.00"},
+        {"region": "sum_total", "contains": "33.18"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "remove a line before lodging",
+      "trace": [
+        {"type": "CLICK", "id": "new-claim"},
+        {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "add-line"},
+        {"type": "TYPE", "id": "description-2", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "amount-2", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "remove-line-2"},
+        {"type": "CLICK", "id": "lodge-claim"}
+      ],
+      "expect": [
+        {"region": "claim_total", "contains": "42.00"},
+        {"region": "claim_lines", "contains": "Test User Input"}
+      ]
+    },
+    {
+      "name": "sort my claims by total",
+      "trace": [
+        {"type": "CLICK", "id": "sort-total"}
+      ],
+      "expect": [
+        {"region": "row_1_total", "contains": "18.40"},
+        {"region": "row_2_total", "contains": "38.50"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "show only the claims awaiting approval",
+      "trace": [
+        {"type": "CLICK", "id": "filter-awaiting"}
+      ],
+      "expect": [
+        {"region": "claims_shown", "contains": "2"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "discard a draft claim",
+      "trace": [
+        {"type": "CLICK", "id": "new-claim"},
+        {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "save-draft"},
+        {"type": "CLICK", "id": "discard-claim"},
+        {"type": "CLICK", "id": "confirm-discard"}
+      ],
+      "expect": [
+        {"region": "my_claims", "absent": "CL-104"},
+        {"region": "claims_notice", "contains": "CL-104"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "read a claim's history",
+      "trace": [
+        {"type": "CLICK", "id": "claim-CL-101"},
+        {"type": "CLICK", "id": "tab-history"}
+      ],
+      "expect": [
+        {"region": "claim_history", "contains": "Ben Okafor"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "the manager approves claims in bulk",
+      "trace": [
+        {"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
+        {"type": "CLICK", "id": "switch-role"},
+        {"type": "CLICK", "id": "pick-CL-102"},
+        {"type": "CLICK", "id": "pick-CL-103"},
+        {"type": "CLICK", "id": "approve-selected"}
+      ],
+      "expect": [
+        {"region": "approval_queue", "absent": "CL-102"},
+        {"region": "approval_queue", "contains": "CL-103"}
+      ]
+    },
+    {
+      "name": "page through the merchants",
+      "trace": [
+        {"type": "CLICK", "id": "nav-merchants"},
+        {"type": "CLICK", "id": "merchants-next"},
+        {"type": "CLICK", "id": "merchants-next"}
+      ],
+      "expect": [
+        {"region": "merchants_page", "contains": "3"},
+        {"region": "merchants_pages", "contains": "4"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "search the merchants",
+      "trace": [
+        {"type": "CLICK", "id": "nav-merchants"},
+        {"type": "TYPE", "id": "merchants-q", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "merchants-search"}
+      ],
+      "expect": [
+        {"region": "merchants_total", "contains": "0"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "list the meal merchants by city",
+      "trace": [
+        {"type": "CLICK", "id": "nav-merchants"},
+        {"type": "SELECT", "id": "merchants-category", "params": {"option": "meals"}},
+        {"type": "SELECT", "id": "merchants-sort", "params": {"option": "city"}}
+      ],
+      "expect": [
+        {"region": "merchants_total", "contains": "6"},
+        {"region": "merchants_list", "contains": "Bagel House"},
+        {"region": "merchants_list", "absent": "Northern Rail"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "add a merchant",
+      "trace": [
+        {"type": "CLICK", "id": "nav-merchants"},
+        {"type": "CLICK", "id": "new-merchant"},
+        {"type": "TYPE", "id": "merchant-name-field", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "merchant-city-field", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "save-merchant"}
+      ],
+      "expect": [
+        {"region": "merchant_name", "contains": "Test User Input"}
+      ]
+    },
+    {
+      "name": "change a merchant's city",
+      "trace": [
+        {"type": "CLICK", "id": "nav-merchants"},
+        {"type": "CLICK", "id": "merchant-M010"},
+        {"type": "CLICK", "id": "edit-merchant"},
+        {"type": "TYPE", "id": "merchant-city-field", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "save-merchant"}
+      ],
+      "expect": [
+        {"region": "merchant_city", "contains": "Test User Input"},
+        {"region": "merchant_name", "contains": "Airport Parking"}
+      ]
+    },
+    {
+      "name": "delete a merchant",
+      "trace": [
+        {"type": "CLICK", "id": "nav-merchants"},
+        {"type": "CLICK", "id": "merchant-M010"},
+        {"type": "CLICK", "id": "edit-merchant"},
+        {"type": "CLICK", "id": "delete-merchant"},
+        {"type": "CLICK", "id": "confirm-delete"}
+      ],
+      "expect": [
+        {"region": "merchants_list", "absent": "Airport Parking"},
+        {"region": "merchants_notice", "contains": "Airport Parking"}
+      ]
+    },
+    {
+      "name": "rename a cost centre in place",
+      "trace": [
+        {"type": "CLICK", "id": "nav-cost-centres"},
+        {"type": "CLICK", "id": "cc-name-CC-03"},
+        {"type": "TYPE", "id": "cc-input-CC-03", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "cc-save-CC-03"}
+      ],
+      "expect": [
+        {"region": "cost_centre_list", "contains": "Test User Input"},
+        {"region": "cost_centre_list", "absent": "Research"}
+      ]
+    },
+    {
+      "name": "add a cost centre",
+      "trace": [
+        {"type": "CLICK", "id": "nav-cost-centres"},
+        {"type": "TYPE", "id": "cc-new-name", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "cc-new-budget", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "add-cost-centre"}
+      ],
+      "expect": [
+        {"region": "cost_centre_list", "contains": "Test User Input"},
+        {"region": "centres_notice", "contains": "CC-05"}
+      ]
+    },
+    {
+      "name": "delete an unused cost centre",
+      "trace": [
+        {"type": "CLICK", "id": "nav-cost-centres"},
+        {"type": "CLICK", "id": "delete-CC-04"},
+        {"type": "CLICK", "id": "confirm-delete"}
+      ],
+      "expect": [
+        {"region": "cost_centre_list", "absent": "Community events"},
+        {"region": "centres_notice", "contains": "CC-04"}
+      ]
+    },
+    {
+      "name": "read the spending report",
+      "trace": [
+        {"type": "CLICK", "id": "nav-reports"}
+      ],
+      "expect": [
+        {"region": "report_categories", "contains": "38.50"}
+      ],
+      "commits": false
+    }
   ],
   "state_dependent": [
-    {"name": "the manager's Approve approves a claim within the £50 limit and is refused above it",
-     "useless": {"trace": [{"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
-                           {"type": "CLICK", "id": "switch-role"},
-                           {"type": "CLICK", "id": "open-CL-103"}],
-                 "action": {"type": "CLICK", "id": "approve-claim"}},
-     "useful": {"trace": [{"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
-                          {"type": "CLICK", "id": "switch-role"},
-                          {"type": "CLICK", "id": "open-CL-102"}],
-                "action": {"type": "CLICK", "id": "approve-claim"}}},
-    {"name": "Lodge claim is refused while a line has no amount and lodges once it has one",
-     "useless": {"trace": [{"type": "CLICK", "id": "new-claim"},
-                           {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}}],
-                 "action": {"type": "CLICK", "id": "lodge-claim"}},
-     "useful": {"trace": [{"type": "CLICK", "id": "new-claim"},
-                          {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}},
-                          {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}}],
-                "action": {"type": "CLICK", "id": "lodge-claim"}}}
+    {
+      "name": "the manager's Approve approves a claim within the £50 limit and is refused above it",
+      "useless": {
+        "trace": [
+          {"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
+          {"type": "CLICK", "id": "switch-role"},
+          {"type": "CLICK", "id": "open-CL-103"}
+        ],
+        "action": {"type": "CLICK", "id": "approve-claim"}
+      },
+      "useful": {
+        "trace": [
+          {"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
+          {"type": "CLICK", "id": "switch-role"},
+          {"type": "CLICK", "id": "open-CL-102"}
+        ],
+        "action": {"type": "CLICK", "id": "approve-claim"}
+      }
+    },
+    {
+      "name": "Lodge claim is refused while a line has no amount and lodges once it has one",
+      "useless": {
+        "trace": [
+          {"type": "CLICK", "id": "new-claim"},
+          {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}}
+        ],
+        "action": {"type": "CLICK", "id": "lodge-claim"}
+      },
+      "useful": {
+        "trace": [
+          {"type": "CLICK", "id": "new-claim"},
+          {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}},
+          {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}}
+        ],
+        "action": {"type": "CLICK", "id": "lodge-claim"}
+      }
+    }
   ],
   "decoys": [
-    {"name": "Save as template in the claim editor",
-     "trace": [{"type": "CLICK", "id": "new-claim"},
-               {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}},
-               {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}}],
-     "decoy": {"type": "CLICK", "id": "save-template"}},
-    {"name": "Attach receipt in the claim editor",
-     "trace": [{"type": "CLICK", "id": "new-claim"}],
-     "decoy": {"type": "CLICK", "id": "attach-receipt"}}
+    {
+      "name": "Save as template in the claim editor",
+      "trace": [
+        {"type": "CLICK", "id": "new-claim"},
+        {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}}
+      ],
+      "decoy": {"type": "CLICK", "id": "save-template"}
+    },
+    {
+      "name": "Attach receipt in the claim editor",
+      "trace": [
+        {"type": "CLICK", "id": "new-claim"}
+      ],
+      "decoy": {"type": "CLICK", "id": "attach-receipt"}
+    }
   ],
   "faults": [
     {
@@ -157,10 +533,16 @@
       "trigger_condition": "In the claim editor, type an amount on a line, then change that line's currency.",
       "expected_behaviour": "The editor's Total in GBP always equals the pounds plus the euros at 0.86 plus the dollars at 0.79 shown beside it.",
       "observable_violation": "Pounds £0.00, Euros €42.00, Dollars $0.00, but Total in GBP £42.00 instead of £36.12.",
-      "assertions": [{"kind": "region_arithmetic", "where": "/claims/(new|CL-\\d+/edit)$",
-                      "expression": "total == round(gbp + eur * 0.86 + usd * 0.79, 2)", "tolerance": 0.011,
-                      "operands": {"total": "sum_total", "gbp": "sum_gbp", "eur": "sum_eur", "usd": "sum_usd"},
-                      "describes": "the editor's sterling total is the sum of its per-currency sums at the fixed rates"}],
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "/claims/(new|CL-\\d+/edit)$",
+          "expression": "total == round(gbp + eur * 0.86 + usd * 0.79, 2)",
+          "tolerance": 0.011,
+          "operands": {"total": "sum_total", "gbp": "sum_gbp", "eur": "sum_eur", "usd": "sum_usd"},
+          "describes": "the editor's sterling total is the sum of its per-currency sums at the fixed rates"
+        }
+      ],
       "reproduction": {"replays": 2, "must_all_reproduce": true},
       "observation_horizon": 0,
       "shortest_path": 3,
@@ -168,10 +550,13 @@
         {"type": "CLICK", "id": "new-claim"},
         {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}},
         {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}},
-        {"type": "SELECT", "id": "currency-1", "params": {"option": "EUR"}}],
-      "patch": {"file": "src/static/claim-editor.js",
-                "find": "row.querySelector(\"[data-currency]\").addEventListener(\"change\", () => { reprice(row); renderSummary(); });",
-                "replace": "row.querySelector(\"[data-currency]\").addEventListener(\"change\", () => renderSummary());"}
+        {"type": "SELECT", "id": "currency-1", "params": {"option": "EUR"}}
+      ],
+      "patch": {
+        "file": "src/static/claim-editor.js",
+        "find": "row.querySelector(\"[data-currency]\").addEventListener(\"change\", () => { reprice(row); renderSummary(); });",
+        "replace": "row.querySelector(\"[data-currency]\").addEventListener(\"change\", () => renderSummary());"
+      }
     },
     {
       "fault_id": "LED-2",
@@ -183,10 +568,21 @@
       "expected_behaviour": "A resubmitted claim is awaiting the manager's approval again.",
       "observable_violation": "The claim page's latest entry is 'Resubmitted — Ana Ruiz' while its status still reads 'Sent back'.",
       "assertions": [
-        {"kind": "text_absent", "where": "/claims/CL-\\d+$", "region": "claim_status", "expected": "Sent back",
-         "describes": "the claim is not (still) sent back ..."},
-        {"kind": "text_absent", "where": "/claims/CL-\\d+$", "region": "claim_latest", "expected": "Resubmitted",
-         "describes": "... once its latest event is a resubmission"}],
+        {
+          "kind": "text_absent",
+          "where": "/claims/CL-\\d+$",
+          "region": "claim_status",
+          "expected": "Sent back",
+          "describes": "the claim is not (still) sent back ..."
+        },
+        {
+          "kind": "text_absent",
+          "where": "/claims/CL-\\d+$",
+          "region": "claim_latest",
+          "expected": "Resubmitted",
+          "describes": "... once its latest event is a resubmission"
+        }
+      ],
       "reproduction": {"replays": 2, "must_all_reproduce": true},
       "observation_horizon": 0,
       "shortest_path": 10,
@@ -200,10 +596,13 @@
         {"type": "CLICK", "id": "switch-role"},
         {"type": "CLICK", "id": "claim-CL-102"},
         {"type": "CLICK", "id": "edit-claim"},
-        {"type": "CLICK", "id": "resubmit-claim"}],
-      "patch": {"file": "src/claims.js",
-                "find": "  resubmitted: \"awaiting\", // back into the manager's queue\n",
-                "replace": ""}
+        {"type": "CLICK", "id": "resubmit-claim"}
+      ],
+      "patch": {
+        "file": "src/claims.js",
+        "find": "  resubmitted: \"awaiting\", // back into the manager's queue\n",
+        "replace": ""
+      }
     },
     {
       "fault_id": "LED-3",
@@ -214,10 +613,16 @@
       "trigger_condition": "Lodge a claim with a pound line and a euro line that together exceed £50 while the pound lines alone do not; as the manager, approve it.",
       "expected_behaviour": "A manager never approves a claim worth more than £50 in sterling; above that only finance approves.",
       "observable_violation": "The claim page shows 'Approved by Ben Okafor (manager)' with a total of £78.12.",
-      "assertions": [{"kind": "region_arithmetic", "where": "/claims/CL-\\d+$", "expression": "total <= 50",
-                      "operands": {"total": "claim_total"},
-                      "guard": {"region": "claim_approver", "contains": "manager"},
-                      "describes": "a claim approved by a manager is within the manager's £50 limit"}],
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "/claims/CL-\\d+$",
+          "expression": "total <= 50",
+          "operands": {"total": "claim_total"},
+          "guard": {"region": "claim_approver", "contains": "manager"},
+          "describes": "a claim approved by a manager is within the manager's £50 limit"
+        }
+      ],
       "reproduction": {"replays": 2, "must_all_reproduce": true},
       "observation_horizon": 0,
       "shortest_path": 11,
@@ -233,40 +638,269 @@
         {"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
         {"type": "CLICK", "id": "switch-role"},
         {"type": "CLICK", "id": "open-CL-104"},
-        {"type": "CLICK", "id": "approve-claim"}],
-      "patch": {"file": "src/claims.js",
-                "find": "const value = claimTotalPence(claim.lines, cfg.rates);",
-                "replace": "const value = currencySubtotal(claim.lines, \"GBP\");"}
+        {"type": "CLICK", "id": "approve-claim"}
+      ],
+      "patch": {
+        "file": "src/claims.js",
+        "find": "const value = claimTotalPence(claim.lines, cfg.rates);",
+        "replace": "const value = currencySubtotal(claim.lines, \"GBP\");"
+      }
+    },
+    {
+      "fault_id": "LED-4",
+      "fault_class": "state_corruption",
+      "subtype": "displayed-vs-submitted",
+      "oracle": "extension",
+      "description": "Renaming a cost centre in place shows the new name at once and lets the server decide. When the server refuses the name (empty, too long or taken), the old name should come back; instead the refused name stays on screen, though the cost centre keeps its old name, as a reload shows.",
+      "trigger_condition": "On Cost centres, click a cost centre's name, clear it, and save.",
+      "expected_behaviour": "After a rename, the list shows the name the cost centre now has: the old one if the rename was refused.",
+      "observable_violation": "The list shows an empty name for CC-02 until the page is reloaded, when 'Sales' is back.",
+      "assertions": [
+        {
+          "kind": "region_stable_across_reload",
+          "where": "/cost-centres$",
+          "region": "cost_centre_list",
+          "describes": "the cost centres listed are the same before and after a reload"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 1,
+      "shortest_path": 5,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "nav-cost-centres"},
+        {"type": "CLICK", "id": "cc-name-CC-02"},
+        {"type": "TYPE", "id": "cc-input-CC-02", "params": {"category": "empty_string"}},
+        {"type": "CLICK", "id": "cc-save-CC-02"},
+        {"type": "REFRESH"}
+      ],
+      "patch": {
+        "file": "src/static/ui.js",
+        "find": "const shown = reply.ok ? reply.name : before; // a refused rename puts the old name back",
+        "replace": "const shown = reply.ok ? reply.name : typed; // a refused rename puts the old name back"
+      }
+    },
+    {
+      "fault_id": "LED-5",
+      "fault_class": "calculation_error",
+      "subtype": "wrong-target",
+      "oracle": "extension",
+      "description": "Sorting My claims by total reads the sort key from the column before the total (the first line's description), which has no amount, so every key compares equal and the list stays in claim-number order while the page says it is sorted lowest total first.",
+      "trigger_condition": "On My claims, choose Sort by total.",
+      "expected_behaviour": "Sorted by total, lowest first, each claim's total is no larger than the next one's.",
+      "observable_violation": "'Total: lowest first' with £38.50 listed above £18.40.",
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "/claims$",
+          "expression": "first <= second",
+          "operands": {"first": "row_1_total", "second": "row_2_total"},
+          "guard": {"region": "claims_sort", "contains": "Total: lowest first"},
+          "describes": "a list sorted by total, lowest first, is in ascending order of total"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 1,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "sort-total"}
+      ],
+      "patch": {
+        "file": "src/static/ui.js",
+        "find": "total: (row) => Number(row.cells[TOTAL_COLUMN].dataset.pence),",
+        "replace": "total: (row) => Number(row.cells[TOTAL_COLUMN - 1].dataset.pence),"
+      }
     }
   ],
   "benign_traces": [
-    [{"type": "CLICK", "id": "new-claim"},
-     {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}},
-     {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}},
-     {"type": "CLICK", "id": "lodge-claim"},
-     {"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
-     {"type": "CLICK", "id": "switch-role"},
-     {"type": "CLICK", "id": "open-CL-104"},
-     {"type": "CLICK", "id": "approve-claim"}],
-    [{"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
-     {"type": "CLICK", "id": "switch-role"},
-     {"type": "CLICK", "id": "open-CL-103"},
-     {"type": "CLICK", "id": "approve-claim"},
-     {"type": "CLICK", "id": "escalate"},
-     {"type": "SELECT", "id": "viewing-as", "params": {"option": "finance"}},
-     {"type": "CLICK", "id": "switch-role"},
-     {"type": "CLICK", "id": "open-CL-103"},
-     {"type": "CLICK", "id": "approve-claim"}],
-    [{"type": "CLICK", "id": "new-claim"},
-     {"type": "SELECT", "id": "currency-1", "params": {"option": "USD"}},
-     {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}},
-     {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}},
-     {"type": "CLICK", "id": "add-line"},
-     {"type": "SELECT", "id": "currency-2", "params": {"option": "EUR"}},
-     {"type": "TYPE", "id": "description-2", "params": {"category": "valid_typical"}},
-     {"type": "TYPE", "id": "amount-2", "params": {"category": "valid_typical"}},
-     {"type": "CLICK", "id": "remove-line-1"},
-     {"type": "CLICK", "id": "save-draft"},
-     {"type": "CLICK", "id": "edit-claim"}]
-  ]
+    [
+      {"type": "CLICK", "id": "new-claim"},
+      {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}},
+      {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}},
+      {"type": "CLICK", "id": "lodge-claim"},
+      {"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
+      {"type": "CLICK", "id": "switch-role"},
+      {"type": "CLICK", "id": "open-CL-104"},
+      {"type": "CLICK", "id": "approve-claim"}
+    ],
+    [
+      {"type": "SELECT", "id": "viewing-as", "params": {"option": "ben"}},
+      {"type": "CLICK", "id": "switch-role"},
+      {"type": "CLICK", "id": "open-CL-103"},
+      {"type": "CLICK", "id": "approve-claim"},
+      {"type": "CLICK", "id": "escalate"},
+      {"type": "SELECT", "id": "viewing-as", "params": {"option": "finance"}},
+      {"type": "CLICK", "id": "switch-role"},
+      {"type": "CLICK", "id": "open-CL-103"},
+      {"type": "CLICK", "id": "approve-claim"}
+    ],
+    [
+      {"type": "CLICK", "id": "new-claim"},
+      {"type": "SELECT", "id": "currency-1", "params": {"option": "USD"}},
+      {"type": "TYPE", "id": "description-1", "params": {"category": "valid_typical"}},
+      {"type": "TYPE", "id": "amount-1", "params": {"category": "valid_typical"}},
+      {"type": "CLICK", "id": "add-line"},
+      {"type": "SELECT", "id": "currency-2", "params": {"option": "EUR"}},
+      {"type": "TYPE", "id": "description-2", "params": {"category": "valid_typical"}},
+      {"type": "TYPE", "id": "amount-2", "params": {"category": "valid_typical"}},
+      {"type": "CLICK", "id": "remove-line-1"},
+      {"type": "CLICK", "id": "save-draft"},
+      {"type": "CLICK", "id": "edit-claim"}
+    ],
+    [
+      {"type": "CLICK", "id": "sort-number"},
+      {"type": "CLICK", "id": "sort-total"},
+      {"type": "CLICK", "id": "sort-total"},
+      {"type": "CLICK", "id": "filter-approved"},
+      {"type": "CLICK", "id": "filter-all"}
+    ],
+    [
+      {"type": "CLICK", "id": "nav-cost-centres"},
+      {"type": "CLICK", "id": "cc-name-CC-03"},
+      {"type": "CLICK", "id": "cc-cancel-CC-03"},
+      {"type": "CLICK", "id": "nav-merchants"},
+      {"type": "CLICK", "id": "merchants-next"},
+      {"type": "CLICK", "id": "merchants-prev"},
+      {"type": "REFRESH"}
+    ]
+  ],
+  "login": {
+    "path": "/login",
+    "protected": ["/", "/claims", "/merchants"],
+    "public": ["/login/forgot"],
+    "users": [
+      {
+        "username": "pat.reid",
+        "name": "Pat Reid",
+        "roles": ["administrator", "delegate"],
+        "macro": true
+      },
+      {"username": "ana.ruiz", "name": "Ana Ruiz", "roles": ["employee"]},
+      {"username": "raj.patel", "name": "Raj Patel", "roles": ["employee"]},
+      {"username": "lena.novak", "name": "Lena Novak", "roles": ["employee"]},
+      {"username": "ben.okafor", "name": "Ben Okafor", "roles": ["manager"]},
+      {"username": "finance.desk", "name": "Finance desk", "roles": ["finance"]}
+    ],
+    "password_value": "Ledgerly-claims-26",
+    "steps": [
+      {"type": "TYPE", "id": "login-username", "params": {"value": "pat.reid"}},
+      {"type": "TYPE", "id": "login-password", "params": {"value": "Ledgerly-claims-26"}},
+      {"type": "CLICK", "id": "login-submit"}
+    ],
+    "form": {"action": "/login", "username_field": "username", "password_field": "password"},
+    "signed_in_region": "signed_in_as",
+    "error_region": "login_error",
+    "sign_out": [
+      {"type": "CLICK", "id": "nav-account"},
+      {"type": "CLICK", "id": "sign-out"}
+    ],
+    "restricted": [
+      {"user": "ana.ruiz", "path": "/approvals", "region": "access_notice"},
+      {"user": "ana.ruiz", "path": "/merchants/new", "region": "access_notice"}
+    ]
+  },
+  "database": {
+    "engine": "postgres",
+    "isolation": "schema-per-session",
+    "schema": "src/schema.sql",
+    "entities": [
+      "cost_centres",
+      "users",
+      "delegations",
+      "currencies",
+      "categories",
+      "expense_policies",
+      "merchants",
+      "claims",
+      "claim_lines",
+      "claim_events"
+    ],
+    "auxiliary": ["counters"],
+    "references": [],
+    "probes": [
+      {
+        "name": "a claim line in a currency that does not exist",
+        "kind": "foreign_key",
+        "sql": "INSERT INTO claim_lines (claim_id, revision, line_no, description, category, currency, amount_minor) VALUES ('CL-101', 9, 1, 'Probe', 'travel', 'XYZ', 100)"
+      },
+      {
+        "name": "an event by someone who is not a user",
+        "kind": "foreign_key",
+        "sql": "INSERT INTO claim_events (claim_id, seq, kind, actor_id, acting_for, revision, at, note) VALUES ('CL-101', 9, 'approved', 'nobody', NULL, 1, '2026-06-10T09:00:00', '')"
+      },
+      {
+        "name": "a role that does not exist",
+        "kind": "check",
+        "sql": "UPDATE users SET role = 'intern' WHERE id = 'raj'"
+      },
+      {
+        "name": "a line of nothing",
+        "kind": "check",
+        "sql": "INSERT INTO claim_lines (claim_id, revision, line_no, description, category, currency, amount_minor) VALUES ('CL-101', 9, 1, 'Probe', 'travel', 'GBP', 0)"
+      },
+      {
+        "name": "a second cost centre called Sales",
+        "kind": "unique",
+        "sql": "INSERT INTO cost_centres (code, name, budget_pence) VALUES ('CC-09', 'Sales', 0)"
+      }
+    ],
+    "absent_constraints": [
+      {
+        "fault_id": "LED-3",
+        "constraint": "any database rule tying a manager's approval to the claim's value in sterling (a CHECK or trigger on claim_events)",
+        "reason": "the limit needs the claim's every line converted at the fixed rates, which is the application's rule (claims.js); a database rule would refuse the over-limit approval LED-3 lets through"
+      }
+    ]
+  },
+  "breadth": {
+    "views": [
+      {"name": "sign-in page", "path": "/login", "as": null},
+      {"name": "forgotten password", "path": "/login/forgot", "as": null},
+      {"name": "my claims", "path": "/claims"},
+      {"name": "claim editor", "path": "/claims/new"},
+      {"name": "one claim", "path": "/claims/CL-101"},
+      {"name": "approval queue", "path": "/approvals", "as": "ben.okafor"},
+      {"name": "finance queue", "path": "/finance", "as": "finance.desk"},
+      {"name": "merchants", "path": "/merchants"},
+      {"name": "one merchant", "path": "/merchants/M001"},
+      {"name": "new merchant", "path": "/merchants/new"},
+      {"name": "edit merchant", "path": "/merchants/M001/edit"},
+      {"name": "cost centres", "path": "/cost-centres"},
+      {"name": "spending report", "path": "/reports"},
+      {"name": "access notice", "path": "/approvals", "as": "ana.ruiz"},
+      {
+        "name": "discard dialog",
+        "workflow": "discard a draft claim",
+        "where": "/claims/CL-\\d+$"
+      }
+    ],
+    "entities": {
+      "claim": {
+        "create": "lodge a claim in pounds and euros",
+        "read": "read a claim's history",
+        "update": "a sent-back claim is resubmitted and is back in the manager's queue",
+        "delete": "discard a draft claim"
+      },
+      "merchant": {
+        "create": "add a merchant",
+        "read": "list the meal merchants by city",
+        "update": "change a merchant's city",
+        "delete": "delete a merchant"
+      },
+      "cost centre": {
+        "create": "add a cost centre",
+        "read": "read the spending report",
+        "update": "rename a cost centre in place",
+        "delete": "delete an unused cost centre"
+      }
+    },
+    "patterns": {
+      "pagination": "page through the merchants",
+      "sort-filter": "list the meal merchants by city",
+      "search": "search the merchants",
+      "modal": "discard a draft claim",
+      "tabs": "read a claim's history",
+      "inline-edit": "rename a cost centre in place",
+      "bulk-action": "the manager approves claims in bulk"
+    }
+  }
 }

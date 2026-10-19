@@ -1,9 +1,10 @@
 """Start, health-check and stop application servers, one process per variant.
 
-Each variant runs in its own process on its own port with its own data directory, so the
-buggy build, the clean build and every per-fault control are independent origins with no
-shared state — the same isolation the primary oracle gets from serving each static build on
-its own origin.
+Each variant runs in its own process on its own port with its own data directory and, for
+the suite v2 apps, its own database home (a PostgreSQL database or a MongoDB home database,
+dropped before the variant starts and after it stops), so the buggy build, the clean build
+and every per-fault control are independent origins with no shared state — the same
+isolation the primary oracle gets from serving each static build on its own origin.
 """
 
 from __future__ import annotations
@@ -20,10 +21,16 @@ import time
 import urllib.request
 from pathlib import Path
 
+from .dbctl import engine
 from .manifest import AppManifest
 
 DEFAULT_NOW = "2026-06-10T09:00:00"
 HEALTH_TIMEOUT_S = 30.0
+#: The environment variable through which each engine's app receives its home's URL.
+URL_VARIABLES = {"postgres": "DATABASE_URL", "mongodb": "MONGODB_URL"}
+#: Every database home a Server created in this process, as (app_id, engine, home), so an
+#: admission can prove that each was released again (`leftover_homes`).
+CREATED_HOMES: list[tuple[str, str, str]] = []
 
 
 def free_port() -> int:
@@ -50,12 +57,16 @@ class Server:
     """One running variant. Use as a context manager."""
 
     def __init__(self, app: AppManifest, directory: Path, *, vocab: str = "default",
-                 test_hooks: bool = True, now: str = DEFAULT_NOW) -> None:
+                 test_hooks: bool = True, now: str = DEFAULT_NOW,
+                 session_cap: int | None = None) -> None:
         self.app, self.directory = app, Path(directory)
         self.vocab, self.test_hooks, self.now = vocab, test_hooks, now
+        #: `WTA_SESSION_CAP` for this variant; None passes the harness's own value through.
+        self.session_cap = session_cap
         self.port = 0
         self.process: subprocess.Popen | None = None
         self.data_dir = ""
+        self.home = ""  # this variant's own database home (suite v2 apps)
         self.log_path = self.directory / f"server-{vocab}.log"
 
     @property
@@ -69,6 +80,15 @@ class Server:
                "WTA_FIXED_NOW": self.now, "WTA_DATA_DIR": self.data_dir,
                "PYTHONDONTWRITEBYTECODE": "1", "PYTHONUNBUFFERED": "1"}
         env.pop("WTA_TEST_HOOKS", None)
+        for variable in URL_VARIABLES.values():
+            env.pop(variable, None)
+        if self.app.database:
+            store = engine(self.app.database)
+            self.home = store.home_name(self.app.app_id, self.port)
+            CREATED_HOMES.append((self.app.app_id, self.app.database, self.home))
+            env[URL_VARIABLES[self.app.database]] = store.create_home(self.home)
+        if self.session_cap is not None:
+            env["WTA_SESSION_CAP"] = str(self.session_cap)
         if self.test_hooks:
             env["WTA_TEST_HOOKS"] = "1"
         log = self.log_path.open("w", encoding="utf-8")
@@ -102,6 +122,9 @@ class Server:
                 self.process.kill()
                 self.process.wait(timeout=10)
         self.process = None
+        if self.home:
+            engine(self.app.database).drop_home(self.home)
+            self.home = ""
         if self.data_dir:
             shutil.rmtree(self.data_dir, ignore_errors=True)
             self.data_dir = ""
@@ -111,6 +134,13 @@ class Server:
 
     def __exit__(self, *exc: object) -> None:
         self.stop()
+
+
+def leftover_homes(app_id: str) -> list[str]:
+    """Database homes this process created for `app_id` that still exist (for Mongo, a
+    home counts while any of its partition databases is left)."""
+    return [home for app, name, home in CREATED_HOMES
+            if app == app_id and engine(name).home_exists(home)]
 
 
 @contextlib.contextmanager

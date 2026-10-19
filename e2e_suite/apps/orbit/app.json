@@ -4,23 +4,38 @@
   "domain": "kanban project management",
   "user_goal": "Move cards through Backlog, Doing, Review and Shipped within the board's WIP limits; finish checklists, respect dependencies, ship work, discuss it in comments.",
   "architecture": "spa-modal+json-api",
-  "stack": "node-builtins+json-files",
-  "persistence": "one JSON file per session, read at the start of every request and written after every mutation; the client keeps tabs, menus, drafts and 'watching' in memory",
+  "stack": "node22+mongodb-driver+mongodb",
+  "persistence": "mongodb database per signed-in session, created at sign-in from seed/ with the validators and indexes of src/schema.js; every request loads the board it needs and a persisting route writes the changed documents back (bulkWrite of replaceOne); the client keeps tabs, menus, drafts and 'watching' in memory",
   "entry": "/",
   "start": ["node", "src/server.js"],
   "dockerfile": true,
   "workflow_graph": {
     "kind": ["hub-and-spoke", "modal-heavy", "state-machine"],
     "nodes": [
+      "sign-in",
+      "forgot-password",
+      "account-menu",
       "projects",
       "board",
       "board:column-menu",
       "board:new-card-form",
+      "board-settings",
+      "access-notice",
       "card-modal:details",
       "card-modal:checklist",
       "card-modal:activity"
     ],
     "edges": [
+      ["sign-in", "projects"],
+      ["sign-in", "sign-in"],
+      ["sign-in", "forgot-password"],
+      ["forgot-password", "sign-in"],
+      ["projects", "account-menu"],
+      ["board", "account-menu"],
+      ["account-menu", "sign-in"],
+      ["board", "board-settings"],
+      ["board-settings", "board"],
+      ["access-notice", "projects"],
       ["projects", "board"],
       ["board", "projects"],
       ["board", "board"],
@@ -52,7 +67,9 @@
     "dynamic-validation",
     "enable-disable",
     "bulk-operation",
-    "conditional-section"
+    "conditional-section",
+    "sign-in",
+    "role-based-access"
   ],
   "vocabulary": {
     "progress_keys": ["act.pull_in", "act.ship", "act.park", "act.move", "act.ship_ready", "act.add_card"]
@@ -68,7 +85,70 @@
     "wip_review": "#wip-review",
     "card_progress": "#card-progress",
     "card_message": "#card-message",
-    "comment_list": "#comment-list"
+    "comment_list": "#comment-list",
+    "signed_in_as": "#signed-in-as",
+    "login_error": "#login-error",
+    "access_notice": "#access-notice"
+  },
+  "login": {
+    "path": "/login",
+    "protected": ["/", "/index.html"],
+    "public": ["/login/forgot"],
+    "users": [
+      {"username": "mei.tanaka", "name": "Mei Tanaka", "roles": ["member"], "macro": true},
+      {"username": "rosa.lindqvist", "name": "Rosa Lindqvist", "roles": ["owner"]},
+      {"username": "ola.nwosu", "name": "Ola Nwosu", "roles": ["viewer"]}
+    ],
+    "password_value": "Orbit-kanban-26",
+    "steps": [
+      {"type": "TYPE", "id": "login-username", "params": {"value": "mei.tanaka"}},
+      {"type": "TYPE", "id": "login-password", "params": {"value": "Orbit-kanban-26"}},
+      {"type": "CLICK", "id": "login-submit"}
+    ],
+    "form": {"action": "/login", "username_field": "username", "password_field": "password"},
+    "signed_in_region": "signed_in_as",
+    "error_region": "login_error",
+    "sign_out": [{"type": "CLICK", "id": "nav-account"}, {"type": "CLICK", "id": "sign-out"}],
+    "restricted": [
+      {"user": "ola.nwosu", "path": "/#/board/ops", "region": "access_notice"},
+      {"user": "mei.tanaka", "path": "/#/board/web/settings", "region": "access_notice"}
+    ]
+  },
+  "database": {
+    "engine": "mongodb",
+    "isolation": "database-per-session",
+    "schema": "src/schema.js",
+    "entities": ["users", "workspaces", "projects", "cards"],
+    "auxiliary": ["counters"],
+    "references": [
+      {"from": "workspaces.member_ids[]", "to": "users._id"},
+      {"from": "projects.workspace_id", "to": "workspaces._id"},
+      {"from": "projects.members[].user_id", "to": "users._id"},
+      {"from": "cards.project_id", "to": "projects._id"},
+      {"from": "cards.blocked_by[]", "to": "cards._id"},
+      {"from": "cards.assignee_ids[]", "to": "users._id"},
+      {"from": "cards.comments[].author_id", "to": "users._id"},
+      {"from": "cards.activity[].by", "to": "users._id"}
+    ],
+    "probes": [
+      {"name": "a card that belongs to no project", "kind": "required", "collection": "cards",
+       "insert": {"_id": 90, "column": "backlog", "position": 90, "title": "Orphan",
+                  "description": "", "checklist": [], "blocked_by": [], "labels": [],
+                  "assignee_ids": [], "comments": [], "activity": []}},
+      {"name": "a card in a column boards do not have", "kind": "enum", "collection": "cards",
+       "insert": {"_id": 91, "project_id": "web", "column": "archive", "position": 91,
+                  "title": "Archived", "description": "", "checklist": [], "blocked_by": [],
+                  "labels": [], "assignee_ids": [], "comments": [], "activity": []}},
+      {"name": "a project member with a role that does not exist", "kind": "enum",
+       "collection": "projects",
+       "update": {"filter": {"_id": "web"}, "update": {"$set": {"members.1.role": "admin"}}}},
+      {"name": "a second account with Mei's username", "kind": "duplicate", "collection": "users",
+       "insert": {"_id": "meitwo", "username": "mei.tanaka", "name": "Mei Tanaka",
+                  "pw": {"salt": "a83f17c29e5b40d68c2e91f7b3a0d4e6",
+                         "hash": "be146818bb4e7537c273f461c4a40395b27ecbba8e6afe8de40039cae645fc53",
+                         "iter": 20000}}}
+    ],
+    "absent_constraints": []
   },
   "workflows": [
     {

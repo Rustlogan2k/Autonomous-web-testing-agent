@@ -47,3 +47,29 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .decide { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.35rem; max-width: 32rem; }
 .panel { margin-top: 0.75rem; padding: 0.5rem 1rem; border: 1px dashed var(--line); background: #fff; }
 .history li { margin-bottom: 0.25rem; }
+
+/* suite v2: header, account menu, lists, tabs, dialogs, pager */
+.links { display: flex; gap: 0.9rem; flex: 1; }
+.links a { color: var(--accent); text-decoration: none; }
+.account { position: relative; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
+.menu { position: absolute; right: 0; top: 2.4rem; z-index: 5; background: #fff; border: 1px solid var(--line);
+        border-radius: 6px; padding: 0.5rem; }
+.menu form { margin: 0; }
+.narrow { max-width: 26rem; }
+.stack { display: flex; flex-direction: column; gap: 0.35rem; max-width: 30rem; }
+.quiet-line { min-height: 1.2em; margin: 0; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+.toolbar [aria-pressed="true"] { background: var(--accent); color: #fff; }
+.tabs { display: flex; gap: 0.25rem; margin-top: 1.5rem; border-bottom: 2px solid var(--line); }
+.tabs a { padding: 0.35rem 0.9rem; border: 1px solid var(--line); border-bottom: none; border-radius: 6px 6px 0 0;
+          text-decoration: none; color: var(--accent); background: #fff; }
+.tabs a[aria-current="true"] { background: var(--accent); color: #fff; }
+.filters { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: end; margin: 0.75rem 0; }
+.inline-form { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: end; }
+.pager { display: flex; gap: 1rem; align-items: center; margin: 1rem 0; }
+.small { font-size: 0.75rem; color: var(--muted); margin-left: 0.2rem; }
+button.link { border: none; padding: 0; background: none; color: var(--accent); text-decoration: underline; }
+.backdrop { position: fixed; inset: 3.5rem 0 0 0; background: rgba(29, 36, 51, 0.35); display: flex;
+            align-items: flex-start; justify-content: center; padding-top: 2rem; }
+.dialog { background: #fff; border-radius: 8px; padding: 1rem 1.5rem; width: min(28rem, 92vw);
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25); }

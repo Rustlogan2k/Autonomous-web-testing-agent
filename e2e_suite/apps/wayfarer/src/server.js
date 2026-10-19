@@ -1,336 +1,349 @@
 /*
- * Wayfarer — trip itinerary builder. Node 22 built-ins only.
+ * Wayfarer — trip itinerary builder. Node 22 built-ins plus the suite's vendored MongoDB driver.
  *
- * The browser owns the itinerary being edited (a draft in localStorage). The server owns
- * what has been agreed: trips, sealed itinerary versions and read-only share links.
- * Sealed versions are write-once files, so a version, once sealed, can never change:
+ * The browser owns the itinerary being edited (a draft in localStorage). The server owns what
+ * has been agreed: trips, sealed itinerary versions and share links, in a MongoDB database of
+ * the signed-in browser's own (partitions.js). Sealed versions are write-once documents.
  *
- *   $WTA_DATA_DIR/sessions/<sid>/trips.json                  trip list (mutable)
- *   $WTA_DATA_DIR/sessions/<sid>/versions/<trip>/v<N>.json   sealed version N (write-once)
- *   $WTA_DATA_DIR/share-index.json                           share token -> session + trip
+ * Signing in is required for everything but the sign-in pages, the static assets and share
+ * links: a share link (/share/<token>) shows the trip's latest sealed version to anyone.
+ * Pages of a signed-out browser redirect to /login (303); the API answers
+ * 200 {ok: false, reason: "signed-out"}. A trip not shared with you, or a change only its
+ * owner may make, answers 200 {ok: false, reason: "forbidden"}. Nothing answers 401 or 403.
  */
 "use strict";
 
 const http = require("node:http");
 const fs = require("node:fs");
-const os = require("node:os");
 const path = require("node:path");
 const crypto = require("node:crypto");
+const { Partitions, readSeed, isSid } = require("./partitions.js");
+const domain = require("./itinerary.js");
+const signin = require("./signin.js");
+const { STOP_LENGTHS, STOP_KINDS, LIMITS } = require("./collections.js");
 
+const { HttpError } = domain;
 const APP_ID = "wayfarer";
 const APP_ROOT = path.resolve(__dirname, "..");
 const STATIC_DIR = path.join(__dirname, "static");
-const SEED = JSON.parse(fs.readFileSync(path.join(APP_ROOT, "seed", "seed.json"), "utf8"));
+const SEED = readSeed(path.join(APP_ROOT, "seed"));
 const VOCAB_PROFILE = process.env.WTA_VOCAB === "alt" ? "alt" : "default";
 const VOCAB = JSON.parse(fs.readFileSync(path.join(APP_ROOT, "vocab", `${VOCAB_PROFILE}.json`), "utf8"));
 const FIXED_NOW = process.env.WTA_FIXED_NOW || "2026-06-10T09:00:00"; // wta-clock
 const TODAY = FIXED_NOW.slice(0, 10);
-const DATA_DIR = process.env.WTA_DATA_DIR || fs.mkdtempSync(path.join(os.tmpdir(), "wayfarer-"));
+const SEALED_AT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(FIXED_NOW) ? `${FIXED_NOW.slice(0, 16)}:00` : `${TODAY}T00:00:00`;
 const TEST_HOOKS = process.env.WTA_TEST_HOOKS === "1";
+const BODY_LIMIT = 256 * 1024;
+const ACCOUNTS = new Map(SEED.users.map((user) => [user.username, user]));
+const PEOPLE = new Map(SEED.users.map((user) => [user._id, user]));
+const ORGANISERS = new Set(SEED.trips.map((trip) => trip.owner_id));
 
-const STOP_LENGTHS = ["30m", "1h", "2h", "half"];
-const LIMITS = { tripName: 80, stopName: 120, minDays: 1, maxDays: 5, horizonDays: 730, body: 256 * 1024 };
-const SID_PATTERN = /^ws-\d{6}$/;
-const STOP_ID_PATTERN = /^s\d{1,6}$/;
-
-class HttpError extends Error {
-  constructor(status, message, field = "") {
-    super(message);
-    this.status = status;
-    this.field = field;
-  }
+function stop(message) {
+  console.error(`wayfarer: ${message}`);
+  process.exit(2);
 }
 
-// -- calendar (string dates only; "today" comes from WTA_FIXED_NOW) ---------------------------
+const MONGODB_URL = process.env.MONGODB_URL || stop("MONGODB_URL is required: it names the app's home database.");
+const CAP_TEXT = process.env.WTA_SESSION_CAP || "32";
+const SESSION_CAP = /^[1-9][0-9]*$/.test(CAP_TEXT) ? Number(CAP_TEXT) : stop("WTA_SESSION_CAP must be a positive whole number.");
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const t = (key) => (Object.prototype.hasOwnProperty.call(VOCAB, key) ? VOCAB[key] : key);
+const forbidden = () => [200, { ok: false, reason: "forbidden", error: t("msg.forbidden") }];
 
-function dayNumber(iso) {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
-  if (!match) { return null; }
-  const [year, month, day] = match.slice(1).map(Number);
-  const stamp = Date.UTC(year, month - 1, day);
-  const check = new Date(stamp);
-  if (check.getUTCFullYear() !== year || check.getUTCMonth() !== month - 1 || check.getUTCDate() !== day) {
-    return null;
-  }
-  return Math.round(stamp / 86400000);
+let partitions = null; // connected in main()
+
+// -- reading one browser's data -----------------------------------------------------------------
+
+async function tripIn(db, tripId) {
+  const trip = await db.collection("trips").findOne({ _id: tripId });
+  if (!trip) { throw new HttpError(404, "No such trip."); }
+  return trip;
 }
 
-function labelFor(dayIndex) {
-  const when = new Date(dayIndex * 86400000);
-  return `${WEEKDAYS[when.getUTCDay()]} ${String(when.getUTCDate()).padStart(2, "0")} `
-    + `${MONTHS[when.getUTCMonth()]} ${when.getUTCFullYear()}`;
+const latestOf = (db, trip) => (trip.latest ? db.collection("versions").findOne({ _id: `${trip._id}:v${trip.latest}` }) : null);
+
+async function namesIn(db) {
+  const users = await db.collection("users").find({}, { projection: { name: 1 } }).toArray();
+  return new Map(users.map((user) => [user._id, user.name]));
 }
 
-const TODAY_NUMBER = dayNumber(TODAY);
+const packingOf = (db, tripId) => db.collection("packing").find({ trip_id: tripId }).sort({ n: 1 }).toArray();
+const regionList = (db) => db.collection("regions").find({}, { projection: { name: 1 } }).sort({ _id: 1 }).toArray();
 
-// -- storage --------------------------------------------------------------------------------
-
-function writeAtomically(file, value) {
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  const scratch = `${file}.writing`;
-  fs.writeFileSync(scratch, JSON.stringify(value, null, 1));
-  fs.renameSync(scratch, file);
+/** A trip as the planner shows it, with the region choices its settings offer. */
+async function viewOf(db, trip, viewer) {
+  const [latest, region, people, packing, regions] = await Promise.all([
+    latestOf(db, trip), db.collection("regions").findOne({ _id: trip.region_id }), namesIn(db),
+    packingOf(db, trip._id), regionList(db),
+  ]);
+  return { ...domain.tripView(trip, latest, region, people, viewer, packing),
+    regions: regions.map((r) => ({ id: r._id, name: r.name })) };
 }
 
-function readJson(file, fallback) {
-  try {
-    return JSON.parse(fs.readFileSync(file, "utf8"));
-  } catch (error) {
-    if (error.code === "ENOENT") { return fallback; }
-    throw error;
-  }
+/** The trip `tripId` if `user` may read it (`need` "viewer") or change it (`need` "owner"). */
+async function tripFor(db, user, tripId, need) {
+  const trip = await tripIn(db, tripId);
+  const role = domain.roleOn(trip, user._id);
+  return role && (need === "viewer" || role === "owner") ? trip : null;
 }
 
-const sessionsDir = path.join(DATA_DIR, "sessions");
-const shareIndexFile = path.join(DATA_DIR, "share-index.json");
+// -- the API (signed in) ----------------------------------------------------------------------------
 
-class VersionStore {
-  constructor() {
-    fs.mkdirSync(sessionsDir, { recursive: true });
-    this.cache = new Map();
-    this.shareIndex = readJson(shareIndexFile, {});
-    const existing = fs.readdirSync(sessionsDir).filter((name) => SID_PATTERN.test(name));
-    this.lastSession = existing.reduce((high, name) => Math.max(high, Number(name.slice(3))), 0);
-  }
-
-  sessionDir(sid) {
-    return path.join(sessionsDir, sid);
-  }
-
-  exists(sid) {
-    return SID_PATTERN.test(sid) && (this.cache.has(sid) || fs.existsSync(path.join(this.sessionDir(sid), "trips.json")));
-  }
-
-  /** A new session starts from the seed: its trips, and each seeded trip sealed as version 1. */
-  createSession() {
-    this.lastSession += 1;
-    const sid = `ws-${String(this.lastSession).padStart(6, "0")}`;
-    const meta = { next_trip: SEED.next_trip, trips: [] };
-    const versions = new Map();
-    for (const trip of SEED.trips) {
-      meta.trips.push({ id: trip.id, name: trip.name, start: trip.start, days: trip.days, share: null });
-      versions.set(trip.id, []);
-    }
-    this.cache.set(sid, { meta, versions });
-    writeAtomically(path.join(this.sessionDir(sid), "trips.json"), meta);
-    for (const trip of SEED.trips) {
-      this.appendVersion(sid, trip.id, trip.sealed, 0);
-    }
-    return sid;
-  }
-
-  load(sid) {
-    if (!this.cache.has(sid)) {
-      const meta = readJson(path.join(this.sessionDir(sid), "trips.json"), null);
-      if (!meta) { throw new HttpError(500, "session storage is missing"); }
-      const versions = new Map();
-      for (const trip of meta.trips) {
-        const dir = path.join(this.sessionDir(sid), "versions", trip.id);
-        const files = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => /^v\d+\.json$/.test(f)) : [];
-        const list = files.map((f) => readJson(path.join(dir, f), null)).filter(Boolean);
-        list.sort((a, b) => a.version - b.version);
-        versions.set(trip.id, list);
-      }
-      this.cache.set(sid, { meta, versions });
-    }
-    return this.cache.get(sid);
-  }
-
-  saveMeta(sid) {
-    writeAtomically(path.join(this.sessionDir(sid), "trips.json"), this.load(sid).meta);
-  }
-
-  trip(sid, tripId) {
-    const trip = this.load(sid).meta.trips.find((t) => t.id === tripId);
-    if (!trip) { throw new HttpError(404, "No such trip."); }
-    return trip;
-  }
-
-  versions(sid, tripId) {
-    return this.load(sid).versions.get(tripId) || [];
-  }
-
-  latest(sid, tripId) {
-    const list = this.versions(sid, tripId);
-    return list.length ? list[list.length - 1] : null;
-  }
-
-  /** Seal a new version. The file is created exclusively: an existing version is never rewritten. */
-  appendVersion(sid, tripId, days, requestedNext) {
-    const list = this.load(sid).versions.get(tripId);
-    const previous = list.length ? list[list.length - 1] : null;
-    const highest = days.flat().reduce((high, stop) => Math.max(high, Number(stop.id.slice(1))), 0);
-    const version = {
-      version: previous ? previous.version + 1 : 1,
-      sealed_at: FIXED_NOW,
-      next_stop: Math.max(highest + 1, requestedNext || 0, previous ? previous.next_stop : 0),
-      days: days.map((stops) => stops.map((s) => ({ id: s.id, name: s.name, length: s.length }))),
-    };
-    const file = path.join(this.sessionDir(sid), "versions", tripId, `v${version.version}.json`);
-    fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, JSON.stringify(version, null, 1), { flag: "wx" });
-    list.push(version);
-    return version;
-  }
-
-  addTrip(sid, fields) {
-    const { meta, versions } = this.load(sid);
-    const trip = { id: `t${meta.next_trip}`, ...fields, share: null };
-    meta.next_trip += 1;
-    meta.trips.push(trip);
-    versions.set(trip.id, []);
-    this.saveMeta(sid);
-    return trip;
-  }
-
-  issueShare(sid, tripId) {
-    const trip = this.trip(sid, tripId);
-    if (trip.share) { return { token: trip.share, created: false }; }
-    const token = crypto.createHash("sha256").update(`wayfarer-share:${sid}:${tripId}`).digest("hex").slice(0, 16);
-    trip.share = token;
-    this.saveMeta(sid);
-    this.shareIndex[token] = { sid, trip: tripId };
-    writeAtomically(shareIndexFile, this.shareIndex);
-    return { token, created: true };
-  }
-
-  resolveShare(token) {
-    const entry = Object.prototype.hasOwnProperty.call(this.shareIndex, token) ? this.shareIndex[token] : null;
-    if (!entry || !this.exists(entry.sid)) { throw new HttpError(404, "This share link does not exist."); }
-    return entry;
-  }
+async function listTrips({ db, user }) {
+  const trips = await db.collection("trips").find({ "members.user_id": user._id }).sort({ _id: 1 }).toArray();
+  const versionIds = trips.filter((trip) => trip.latest).map((trip) => `${trip._id}:v${trip.latest}`);
+  const [versions, regions, people, packing] = await Promise.all([
+    db.collection("versions").find({ _id: { $in: versionIds } }).toArray(),
+    regionList(db),
+    namesIn(db),
+    db.collection("packing").find({ trip_id: { $in: trips.map((trip) => trip._id) } }).toArray(),
+  ]);
+  const latest = new Map(versions.map((version) => [version.trip_id, version]));
+  const itemsOf = (tripId) => packing.filter((item) => item.trip_id === tripId);
+  return [200, {
+    trips: trips.map((trip) => domain.tripSummary(trip, latest.get(trip._id), people, user._id, itemsOf(trip._id))),
+    regions: regions.map((region) => ({ id: region._id, name: region.name })),
+  }];
 }
 
-// -- domain ---------------------------------------------------------------------------------
-
-const countStops = (days) => days.reduce((total, stops) => total + stops.length, 0);
-const contentOf = (days) => JSON.stringify(days.map((stops) => stops.map((s) => [s.name, s.length])));
-const dayLabels = (trip) => Array.from({ length: trip.days }, (_, i) => labelFor(dayNumber(trip.start) + i));
-
-function tripView(store, sid, trip) {
-  const latest = store.latest(sid, trip.id);
-  return {
-    id: trip.id,
-    name: trip.name,
-    start: trip.start,
-    start_label: labelFor(dayNumber(trip.start)),
-    days: trip.days,
-    day_labels: dayLabels(trip),
-    shared: Boolean(trip.share),
-    latest: latest && {
-      version: latest.version,
-      stop_count: countStops(latest.days),
-      next_stop: latest.next_stop,
-      days: latest.days,
-    },
+async function createTrip({ db, user, body }) {
+  const regionIds = (await db.collection("regions").find({}, { projection: { _id: 1 } }).toArray()).map((r) => r._id);
+  const fields = domain.validateTrip(body, regionIds, TODAY);
+  const counters = await db.collection("counters").findOneAndUpdate({ _id: "seq" }, { $inc: { next_trip: 1 } });
+  const trip = {
+    _id: `t${counters.next_trip}`, owner_id: user._id, region_id: fields.region, name: fields.name,
+    start: fields.start, days: fields.days, members: [{ user_id: user._id, role: "owner" }],
+    latest: null, share: null,
   };
+  await db.collection("trips").insertOne(trip);
+  return [201, await viewOf(db, trip, user._id)];
 }
 
-function tripSummary(store, sid, trip) {
-  const latest = store.latest(sid, trip.id);
-  return {
-    id: trip.id, name: trip.name, start: trip.start, start_label: labelFor(dayNumber(trip.start)),
-    days: trip.days, latest_version: latest ? latest.version : null,
-    stop_count: latest ? countStops(latest.days) : 0,
-  };
+async function showTrip({ db, user }, tripId) {
+  const trip = await tripIn(db, tripId);
+  if (!domain.roleOn(trip, user._id)) { return forbidden(); }
+  return [200, await viewOf(db, trip, user._id)];
 }
 
-function shareView(store, token) {
-  const { sid, trip: tripId } = store.resolveShare(token);
-  const trip = store.trip(sid, tripId);
-  const latest = store.latest(sid, tripId);
-  const labels = dayLabels(trip);
-  return {
-    token,
-    trip: trip.id,
-    trip_name: trip.name,
-    start_label: labels[0],
-    version: latest.version,
-    stop_count: countStops(latest.days),
-    days: latest.days.map((stops, i) => ({ label: labels[i], stops })),
-  };
+async function showVersion({ db, user }, tripId, number) {
+  const trip = await tripIn(db, tripId);
+  if (!domain.roleOn(trip, user._id)) { return forbidden(); }
+  const version = await db.collection("versions").findOne({ trip_id: tripId, n: Number(number) });
+  if (!version) { throw new HttpError(404, "No such version."); }
+  const days = version.days.map((day) => day.stops);
+  return [200, { version: version.n, next_stop: version.next_stop, days, latest: trip.latest,
+    stop_count: days.reduce((total, stops) => total + stops.length, 0), trip: await viewOf(db, trip, user._id) }];
 }
 
-function validateTrip(body) {
-  const name = typeof body.name === "string" ? body.name.trim() : "";
-  if (!name) { throw new HttpError(422, "Give the trip a name.", "name"); }
-  if (name.length > LIMITS.tripName) {
-    throw new HttpError(422, `Trip names are at most ${LIMITS.tripName} characters.`, "name");
+async function seal({ db, user, body }, tripId) {
+  const trip = await tripIn(db, tripId);
+  if (domain.roleOn(trip, user._id) !== "owner") { return forbidden(); }
+  const { days, nextStop } = domain.validateItinerary(trip, body);
+  const latest = await latestOf(db, trip);
+  if (domain.sameAsLatest(latest, days)) {
+    return [200, { created: false, trip: await viewOf(db, trip, user._id) }]; // nothing new to seal
   }
-  const start = dayNumber(body.start);
-  if (start === null) { throw new HttpError(422, "Choose the date the trip starts.", "start"); }
-  if (start < TODAY_NUMBER) { throw new HttpError(422, "A trip can't start in the past.", "start"); }
-  if (start > TODAY_NUMBER + LIMITS.horizonDays) {
-    throw new HttpError(422, "Trips can be planned up to two years ahead.", "start");
-  }
-  const days = Number(body.days);
-  if (!Number.isInteger(days) || days < LIMITS.minDays || days > LIMITS.maxDays) {
-    throw new HttpError(422, `A trip lasts ${LIMITS.minDays} to ${LIMITS.maxDays} days.`, "days");
-  }
-  return { name, start: String(body.start), days };
+  const version = domain.nextVersion(trip, latest, days, nextStop, { by: user._id, at: SEALED_AT });
+  await db.collection("versions").insertOne(version); // a sealed version is never rewritten
+  await db.collection("trips").updateOne({ _id: trip._id }, { $set: { latest: version.n } });
+  trip.latest = version.n;
+  return [201, { created: true, trip: await viewOf(db, trip, user._id) }];
 }
 
-function validateItinerary(trip, body) {
-  const days = body.days;
-  if (!Array.isArray(days) || days.length !== trip.days) {
-    throw new HttpError(422, `The itinerary must have exactly ${trip.days} days.`, "days");
+async function share({ db, user, sid }, tripId) {
+  const trip = await tripIn(db, tripId);
+  if (domain.roleOn(trip, user._id) !== "owner") { return forbidden(); }
+  const latest = await latestOf(db, trip);
+  if (!latest) { throw new HttpError(409, "Seal the itinerary before sharing it."); }
+  let created = false;
+  if (!trip.share) {
+    // Derived, not random (the suite is deterministic): an identifier, not a secret.
+    const token = crypto.createHash("sha256").update(`wayfarer-share:${sid}:${trip._id}`).digest("hex").slice(0, 16);
+    const counters = await db.collection("counters").findOneAndUpdate({ _id: "seq" }, { $inc: { shares: 1 } },
+      { returnDocument: "after" });
+    trip.share = { token, issued_seq: counters.shares };
+    await db.collection("trips").updateOne({ _id: trip._id }, { $set: { share: trip.share } });
+    await partitions.publish(token, sid, trip._id);
+    created = true;
   }
-  const seen = new Set();
-  const clean = days.map((stops, dayIndex) => {
-    if (!Array.isArray(stops)) { throw new HttpError(422, `Day ${dayIndex + 1} is not a list of stops.`, "days"); }
-    return stops.map((stop) => {
-      if (!stop || typeof stop !== "object") { throw new HttpError(422, "Every stop must be an object.", "days"); }
-      const id = String(stop.id || "");
-      if (!STOP_ID_PATTERN.test(id) || seen.has(id)) {
-        throw new HttpError(422, `Stop id ${JSON.stringify(id)} is missing, malformed or repeated.`, "days");
-      }
-      seen.add(id);
-      const name = typeof stop.name === "string" ? stop.name.trim() : "";
-      if (!name || name.length > LIMITS.stopName) {
-        throw new HttpError(422, `Stop names are 1 to ${LIMITS.stopName} characters.`, "stop_name");
-      }
-      if (!STOP_LENGTHS.includes(stop.length)) {
-        throw new HttpError(422, `Unknown stop length ${JSON.stringify(stop.length)}.`, "stop_length");
-      }
-      return { id, name, length: stop.length };
-    });
+  return [created ? 201 : 200, { created, token: trip.share.token, share: domain.shareView(trip.share.token, trip, latest) }];
+}
+
+async function updateTrip({ db, user, body }, tripId) {
+  const trip = await tripFor(db, user, tripId, "owner");
+  if (!trip) { return forbidden(); }
+  const regionIds = (await regionList(db)).map((r) => r._id);
+  const fields = domain.validateTrip(body, regionIds, TODAY, trip.days);
+  const changes = { name: fields.name, start: fields.start, region_id: fields.region };
+  await db.collection("trips").updateOne({ _id: trip._id }, { $set: changes });
+  return [200, await viewOf(db, { ...trip, ...changes }, user._id)];
+}
+
+async function deleteTrip({ db, user }, tripId) {
+  const trip = await tripFor(db, user, tripId, "owner");
+  if (!trip) { return forbidden(); }
+  await db.collection("versions").deleteMany({ trip_id: trip._id });
+  await db.collection("packing").deleteMany({ trip_id: trip._id });
+  await db.collection("trips").deleteOne({ _id: trip._id });
+  if (trip.share) { await partitions.unpublish(trip.share.token); }
+  return [200, { ok: true, deleted: trip._id }];
+}
+
+async function listVersions({ db, user }, tripId) {
+  const trip = await tripFor(db, user, tripId, "viewer");
+  if (!trip) { return forbidden(); }
+  const [versions, people] = await Promise.all([
+    db.collection("versions").find({ trip_id: trip._id }).toArray(), namesIn(db),
+  ]);
+  return [200, { trip: await viewOf(db, trip, user._id), versions: domain.versionList(versions, people) }];
+}
+
+// -- packing lists (the trip's owner changes them; viewers read) ------------------------------------
+
+async function packingReply(db, trip, user) {
+  const items = await packingOf(db, trip._id);
+  const canEdit = domain.roleOn(trip, user._id) === "owner";
+  return [200, { trip: await viewOf(db, trip, user._id), ...domain.packingView(items, canEdit) }];
+}
+
+async function showPacking({ db, user }, tripId) {
+  const trip = await tripFor(db, user, tripId, "viewer");
+  return trip ? packingReply(db, trip, user) : forbidden();
+}
+
+async function addItem({ db, user, body }, tripId) {
+  const trip = await tripFor(db, user, tripId, "owner");
+  if (!trip) { return forbidden(); }
+  const text = domain.validateItemText(body);
+  const [counters, last] = await Promise.all([
+    db.collection("counters").findOneAndUpdate({ _id: "seq" }, { $inc: { next_item: 1 } }),
+    db.collection("packing").find({ trip_id: trip._id }).sort({ n: -1 }).limit(1).toArray(),
+  ]);
+  await db.collection("packing").insertOne({ _id: `k${counters.next_item}`, trip_id: trip._id,
+    n: last.length ? last[0].n + 1 : 1, text, packed: false, added_by: user._id });
+  return packingReply(db, trip, user);
+}
+
+/** Item `itemId` of trip `tripId`'s list, when `user` owns the trip. An item that is no longer
+ *  there (removed by an earlier click on a list the page had not redrawn yet) is not an error:
+ *  the answer is the list as it now stands, marked `gone`. */
+async function itemOn(db, user, tripId, itemId) {
+  const trip = await tripFor(db, user, tripId, "owner");
+  const item = trip && await db.collection("packing").findOne({ _id: itemId, trip_id: trip._id });
+  return { trip, item };
+}
+
+async function goneReply(db, trip, user) {
+  const [status, payload] = await packingReply(db, trip, user);
+  return [status, { ...payload, gone: true }];
+}
+
+async function updateItem({ db, user, body }, tripId, itemId) {
+  const { item, trip } = await itemOn(db, user, tripId, itemId);
+  if (!trip) { return forbidden(); }
+  if (!item) { return goneReply(db, trip, user); }
+  const changes = {};
+  if (body.text !== undefined) { changes.text = domain.validateItemText(body); }
+  if (body.packed !== undefined) {
+    if (typeof body.packed !== "boolean") { throw new HttpError(400, "Say whether the item is packed."); }
+    changes.packed = body.packed;
+  }
+  if (Object.keys(changes).length) { // an empty $set would be legal, but there is nothing to write
+    await db.collection("packing").updateOne({ _id: item._id }, { $set: changes });
+  }
+  return packingReply(db, trip, user);
+}
+
+async function deleteItem({ db, user }, tripId, itemId) {
+  const { item, trip } = await itemOn(db, user, tripId, itemId);
+  if (!trip) { return forbidden(); }
+  if (!item) { return goneReply(db, trip, user); }
+  await db.collection("packing").deleteOne({ _id: item._id });
+  return packingReply(db, trip, user);
+}
+
+const BULK_UPDATES = { pack: { $set: { packed: true } }, unpack: { $set: { packed: false } } };
+
+async function bulkItems({ db, user, body }, tripId) {
+  const trip = await tripFor(db, user, tripId, "owner");
+  if (!trip) { return forbidden(); }
+  const ids = Array.isArray(body.ids) ? body.ids.filter((id) => /^k\d+$/.test(String(id))) : [];
+  if (!ids.length || !(body.action === "delete" || BULK_UPDATES[body.action])) {
+    throw new HttpError(400, "Choose items and what to do with them.");
+  }
+  const selection = { trip_id: trip._id, _id: { $in: ids } }; // never another trip's items
+  if (body.action === "delete") {
+    await db.collection("packing").deleteMany(selection);
+  } else {
+    await db.collection("packing").updateMany(selection, BULK_UPDATES[body.action]);
+  }
+  return packingReply(db, trip, user);
+}
+
+// -- the places catalogue (read-only, paged on the server) -----------------------------------------
+
+async function listPlaces({ db }, url) {
+  const query = domain.placeQuery(url.searchParams);
+  const places = db.collection("places");
+  const [total, items, regions] = await Promise.all([
+    places.countDocuments(query.filter),
+    places.find(query.filter).sort(query.sort).skip((query.page - 1) * domain.PLACES_PER_PAGE)
+      .limit(domain.PLACES_PER_PAGE).toArray(),
+    regionList(db),
+  ]);
+  return [200, domain.placesPage(query, total, items, new Map(regions.map((r) => [r._id, r.name])))];
+}
+
+async function showPlace({ db, user }, placeId) {
+  const place = await db.collection("places").findOne({ _id: placeId });
+  if (!place) { throw new HttpError(404, "No such place."); }
+  const [regions, trips] = await Promise.all([
+    regionList(db),
+    db.collection("trips").find({ members: { $elemMatch: { user_id: user._id, role: "owner" } } })
+      .sort({ _id: 1 }).toArray(),
+  ]);
+  const owned = await Promise.all(trips.map(async (trip) => {
+    const latest = await latestOf(db, trip);
+    return { id: trip._id, name: trip.name, days: trip.days, latest: latest && {
+      version: latest.n, next_stop: latest.next_stop, days: latest.days.map((day) => day.stops) } };
+  }));
+  return [200, { place: domain.placeView(place, new Map(regions.map((r) => [r._id, r.name]))), trips: owned }];
+}
+
+/** Routes of the signed-in API: [method, pattern, handler(context, ...captures)]. */
+const ROUTES = [
+  ["GET", /^\/api\/trips$/, listTrips],
+  ["POST", /^\/api\/trips$/, createTrip],
+  ["GET", /^\/api\/trips\/(t\d+)$/, showTrip],
+  ["POST", /^\/api\/trips\/(t\d+)$/, updateTrip],
+  ["POST", /^\/api\/trips\/(t\d+)\/delete$/, deleteTrip],
+  ["GET", /^\/api\/trips\/(t\d+)\/versions$/, listVersions],
+  ["GET", /^\/api\/trips\/(t\d+)\/versions\/(\d+)$/, showVersion],
+  ["POST", /^\/api\/trips\/(t\d+)\/seal$/, seal],
+  ["POST", /^\/api\/trips\/(t\d+)\/share$/, share],
+  ["GET", /^\/api\/trips\/(t\d+)\/packing$/, showPacking],
+  ["POST", /^\/api\/trips\/(t\d+)\/packing$/, addItem],
+  ["POST", /^\/api\/trips\/(t\d+)\/packing\/bulk$/, bulkItems],
+  ["POST", /^\/api\/trips\/(t\d+)\/packing\/(k\d+)$/, updateItem],
+  ["POST", /^\/api\/trips\/(t\d+)\/packing\/(k\d+)\/delete$/, deleteItem],
+  ["GET", /^\/api\/places$/, listPlaces],
+  ["GET", /^\/api\/places\/(p\d+)$/, showPlace],
+];
+
+/** A share link, for anyone: read in the owning session's lane, so it never races a seal. */
+async function publicShare(token) {
+  const link = await partitions.resolve(token);
+  const gone = { ok: false, reason: "not-found", error: t("msg.missing_share") };
+  if (!link) { return gone; }
+  return partitions.lane(link.sid, async () => {
+    const db = partitions.database(link);
+    const trip = await db.collection("trips").findOne({ _id: link.trip_id });
+    const latest = trip && await latestOf(db, trip);
+    return latest ? domain.shareView(token, trip, latest) : gone;
   });
-  if (countStops(clean) === 0) { throw new HttpError(422, "Pin at least one stop before sealing.", "days"); }
-  const nextStop = Number.isInteger(body.next_stop) && body.next_stop > 0 ? body.next_stop : 0;
-  return { days: clean, nextStop };
 }
 
-function committedState(store, sid) {
-  const { meta } = store.load(sid);
-  return {
-    trips: meta.trips.map((trip) => ({
-      id: trip.id,
-      name: trip.name,
-      start: trip.start,
-      days: trip.days,
-      // Whether a share link exists; the token itself is derived from the session id,
-      // which differs between otherwise identical sessions.
-      shared: Boolean(trip.share),
-      versions: store.versions(sid, trip.id).map((v) => ({ version: v.version, days: v.days })),
-    })),
-  };
-}
-
-/** What the page needs before its first render, embedded in index.html (no extra round trip). */
-function bootData(sid) {
-  return {
-    vocab: VOCAB,
-    today: TODAY,
-    lengths: STOP_LENGTHS,
-    limits: { tripName: LIMITS.tripName, stopName: LIMITS.stopName, minDays: LIMITS.minDays,
-      maxDays: LIMITS.maxDays, horizonDays: LIMITS.horizonDays },
-    // Namespaces this browser's local drafts, so two sessions never read each other's.
-    workspace: crypto.createHash("sha256").update(`wayfarer-workspace:${sid}`).digest("hex").slice(0, 12),
-  };
-}
+// -- the committed-state hook ----------------------------------------------------------------------
 
 function canonical(value) {
   if (Array.isArray(value)) { return `[${value.map(canonical).join(",")}]`; }
@@ -340,40 +353,39 @@ function canonical(value) {
   return JSON.stringify(value);
 }
 
-// -- HTTP -----------------------------------------------------------------------------------
-
-const store = new VersionStore();
-
-const STATIC_FILES = {
-  "/": ["index.html", "text/html; charset=utf-8"],
-  "/index.html": ["index.html", "text/html; charset=utf-8"],
-  "/app.js": ["app.js", "text/javascript; charset=utf-8"],
-  "/styles.css": ["styles.css", "text/css; charset=utf-8"],
-};
-
-function sessionOf(request) {
-  const header = request.headers.cookie || "";
-  for (const part of header.split(";")) {
-    const [key, ...rest] = part.trim().split("=");
-    if (key === "wta_sid") {
-      const sid = rest.join("=");
-      if (store.exists(sid)) { return { sid, fresh: false }; }
-    }
-  }
-  return { sid: store.createSession(), fresh: true };
+async function testState(row, user) {
+  if (!row) { return { session: null, user: null, committed: null, sha: null }; }
+  const db = partitions.database(row);
+  const [trips, versions, packing] = await Promise.all([
+    db.collection("trips").find({}).sort({ _id: 1 }).toArray(),
+    db.collection("versions").find({}).sort({ trip_id: 1, n: 1 }).toArray(),
+    db.collection("packing").find({}).sort({ trip_id: 1, n: 1 }).toArray(),
+  ]);
+  const committed = domain.committedState(trips, versions, packing);
+  const sha = crypto.createHash("sha256").update(canonical(committed)).digest("hex");
+  return { session: row._id, user: user ? user.username : null, committed, sha };
 }
 
-function send(response, status, body, type, session) {
-  const headers = { "Content-Type": type, "Content-Length": Buffer.byteLength(body), "Cache-Control": "no-store" };
-  if (session && session.fresh) {
-    headers["Set-Cookie"] = `wta_sid=${session.sid}; Path=/; HttpOnly; SameSite=Lax`;
-  }
-  response.writeHead(status, headers);
+// -- HTTP ------------------------------------------------------------------------------------------
+
+const ASSETS = { "/app.js": ["app.js", "text/javascript; charset=utf-8"], "/styles.css": ["styles.css", "text/css; charset=utf-8"] };
+
+function send(response, status, body, type, headers = {}) {
+  response.writeHead(status, { "Content-Type": type, "Content-Length": Buffer.byteLength(body), "Cache-Control": "no-store", ...headers });
   response.end(body);
 }
 
-const sendJson = (response, status, payload, session) =>
-  send(response, status, JSON.stringify(payload), "application/json; charset=utf-8", session);
+const sendJson = (response, status, payload) => send(response, status, JSON.stringify(payload), "application/json; charset=utf-8");
+const sendPage = (response, html) => send(response, 200, html, "text/html; charset=utf-8");
+const redirect = (response, where, headers = {}) => send(response, 303, "", "text/plain; charset=utf-8", { Location: where, ...headers });
+
+function cookieOf(request) {
+  for (const part of String(request.headers.cookie || "").split(";")) {
+    const [key, ...rest] = part.trim().split("=");
+    if (key === "wta_sid") { return rest.join("="); }
+  }
+  return "";
+}
 
 function readBody(request) {
   return new Promise((resolve, reject) => {
@@ -381,111 +393,136 @@ function readBody(request) {
     let size = 0;
     request.on("data", (chunk) => {
       size += chunk.length;
-      if (size > LIMITS.body) {
+      if (size > BODY_LIMIT) {
         reject(new HttpError(413, "Request body too large."));
         request.destroy();
         return;
       }
       chunks.push(chunk);
     });
-    request.on("end", () => {
-      if (!size) { return resolve({}); }
-      let data;
-      try {
-        data = JSON.parse(Buffer.concat(chunks).toString("utf8"));
-      } catch {
-        return reject(new HttpError(400, "Request body is not JSON."));
-      }
-      if (!data || typeof data !== "object" || Array.isArray(data)) {
-        return reject(new HttpError(400, "Request body must be a JSON object."));
-      }
-      resolve(data);
-    });
+    request.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
     request.on("error", reject);
   });
 }
 
-/** Routes: [method, pattern, handler(context, ...captures)]. */
-const ROUTES = [
-  ["GET", /^\/__wta\/state$/, ({ sid }) => {
-    if (!TEST_HOOKS) { throw new HttpError(404, "Not found."); }
-    const committed = committedState(store, sid);
-    const sha = crypto.createHash("sha256").update(canonical(committed)).digest("hex");
-    return [200, { session: sid, committed, sha }];
-  }],
-  ["GET", /^\/api\/trips$/, ({ sid }) =>
-    [200, { trips: store.load(sid).meta.trips.map((trip) => tripSummary(store, sid, trip)) }]],
-  ["POST", /^\/api\/trips$/, ({ sid, body }) => {
-    const trip = store.addTrip(sid, validateTrip(body));
-    return [201, tripView(store, sid, trip)];
-  }],
-  ["GET", /^\/api\/trips\/(t\d+)$/, ({ sid }, tripId) => [200, tripView(store, sid, store.trip(sid, tripId))]],
-  ["GET", /^\/api\/trips\/(t\d+)\/versions\/(\d+)$/, ({ sid }, tripId, number) => {
-    store.trip(sid, tripId);
-    const version = store.versions(sid, tripId).find((v) => v.version === Number(number));
-    if (!version) { throw new HttpError(404, "No such version."); }
-    return [200, { ...version, stop_count: countStops(version.days) }];
-  }],
-  ["POST", /^\/api\/trips\/(t\d+)\/seal$/, ({ sid, body }, tripId) => {
-    const trip = store.trip(sid, tripId);
-    const { days, nextStop } = validateItinerary(trip, body);
-    const latest = store.latest(sid, tripId);
-    if (latest && contentOf(latest.days) === contentOf(days)) {
-      return [200, { created: false, trip: tripView(store, sid, trip) }]; // nothing new to seal
+function jsonBody(text) {
+  if (!text) { return {}; }
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new HttpError(400, "Request body is not JSON.");
+  }
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    throw new HttpError(400, "Request body must be a JSON object.");
+  }
+  return data;
+}
+
+/** The planner's page, with what it needs before its first render embedded (no extra round trip). */
+function shell(sid, user, extra) {
+  const boot = {
+    vocab: VOCAB,
+    today: TODAY,
+    lengths: STOP_LENGTHS,
+    kinds: STOP_KINDS,
+    limits: { tripName: LIMITS.tripName, stopName: LIMITS.stopName, itemText: LIMITS.itemText, minDays: LIMITS.minDays, maxDays: LIMITS.maxDays, horizonDays: 730 },
+    // Namespaces this browser's local drafts, so two sessions never read each other's.
+    workspace: sid ? crypto.createHash("sha256").update(`wayfarer-workspace:${sid}`).digest("hex").slice(0, 12) : "public",
+    user: user && { name: user.name, role: t(ORGANISERS.has(user._id) ? "role.organiser" : "role.traveller") },
+    ...extra,
+  };
+  const page = fs.readFileSync(path.join(STATIC_DIR, "index.html"), "utf8");
+  return page.replace("__WAYFARER_BOOT__", () => JSON.stringify(boot).replace(/</g, "\\u003c"));
+}
+
+async function signInPost(response, sid, text) {
+  const form = new URLSearchParams(text);
+  const next = signin.destination(form.get("next"));
+  const account = await signin.check(ACCOUNTS.get((form.get("username") || "").trim()), form.get("password"));
+  if (!account) { return sendPage(response, signin.signInPage(t, { next, refusal: t("msg.sign_in_refused") })); }
+  const { sid: kept, created } = await partitions.signIn(sid, account._id);
+  return redirect(response, next, created ? { "Set-Cookie": `wta_sid=${kept}; Path=/; HttpOnly; SameSite=Lax` } : {});
+}
+
+/** One request of one browser (run in that browser's lane when it has a session cookie). */
+async function respond(request, response, url, sid, text) {
+  const row = await partitions.find(sid);
+  const user = row && row.user_id ? PEOPLE.get(row.user_id) : null;
+  const { pathname } = url;
+  const method = request.method;
+  if (pathname === "/login") {
+    if (method === "POST") { return signInPost(response, sid, text); }
+    const next = signin.destination(url.searchParams.get("next"));
+    return user ? redirect(response, next) : sendPage(response, signin.signInPage(t, { next }));
+  }
+  if (method === "GET" && pathname === "/login/help") { return sendPage(response, signin.helpPage(t)); }
+  if (method === "POST" && pathname === "/sign-out") {
+    if (row) { await partitions.signOut(row._id); } // the trips stay: signing in again resumes them
+    return redirect(response, "/login");
+  }
+  if (method === "GET" && pathname === "/__wta/state" && TEST_HOOKS) { return sendJson(response, 200, await testState(row, user)); }
+  const shared = /^\/share\/([0-9a-f]{16})$/.exec(pathname);
+  if (method === "GET" && shared) { return sendPage(response, shell(row && row._id, user, { mode: "share", token: shared[1] })); }
+  if (method === "GET" && (pathname === "/" || pathname === "/index.html")) {
+    return user ? sendPage(response, shell(row._id, user, { mode: "planner" }))
+      : redirect(response, `/login?next=${encodeURIComponent(pathname)}`);
+  }
+  if (!pathname.startsWith("/api/")) { return send(response, 404, "Not found.", "text/plain; charset=utf-8"); }
+  if (!user) { return sendJson(response, 200, { ok: false, reason: "signed-out" }); }
+  for (const [routeMethod, pattern, handler] of ROUTES) {
+    const match = routeMethod === method ? pattern.exec(pathname) : null;
+    if (match) {
+      const context = { db: partitions.database(row), user, sid: row._id, body: method === "POST" ? jsonBody(text) : {} };
+      // A route without captures (the places list) reads its query string instead.
+      const [status, payload] = await handler(context, ...(match.length > 1 ? match.slice(1) : [url]));
+      return sendJson(response, status, payload);
     }
-    store.appendVersion(sid, tripId, days, nextStop);
-    return [201, { created: true, trip: tripView(store, sid, trip) }];
-  }],
-  ["POST", /^\/api\/trips\/(t\d+)\/share$/, ({ sid }, tripId) => {
-    store.trip(sid, tripId);
-    if (!store.latest(sid, tripId)) { throw new HttpError(409, "Seal the itinerary before sharing it."); }
-    const { token, created } = store.issueShare(sid, tripId);
-    return [created ? 201 : 200, { created, token, share: shareView(store, token) }];
-  }],
-  ["GET", /^\/api\/share\/([0-9a-f]{16})$/, (_context, token) => [200, shareView(store, token)]],
-];
+  }
+  throw new HttpError(404, "Not found.");
+}
 
 async function handle(request, response) {
-  const pathname = (request.url || "/").split("?")[0];
+  const url = new URL(request.url || "/", "http://localhost");
+  const { pathname } = url;
   if (request.method === "GET" && pathname === "/healthz") {
-    return sendJson(response, 200, { ok: true, app: APP_ID });
+    const ok = await partitions.healthy();
+    return sendJson(response, ok ? 200 : 503, { ok, app: APP_ID });
   }
-  const session = sessionOf(request);
-  if (request.method === "GET" && STATIC_FILES[pathname]) {
-    const [file, type] = STATIC_FILES[pathname];
-    let body = fs.readFileSync(path.join(STATIC_DIR, file), "utf8");
-    if (file === "index.html") {
-      const boot = JSON.stringify(bootData(session.sid)).replace(/</g, "\\u003c"); // keeps a </script> in a label inert
-      body = body.replace("__WAYFARER_BOOT__", () => boot);
-    }
-    return send(response, 200, body, type, session);
+  if (request.method === "GET" && ASSETS[pathname]) {
+    const [file, type] = ASSETS[pathname];
+    return send(response, 200, fs.readFileSync(path.join(STATIC_DIR, file), "utf8"), type);
   }
-  try {
-    for (const [method, pattern, handler] of ROUTES) {
-      const match = pattern.exec(pathname);
-      if (!match || method !== request.method) { continue; }
-      const body = method === "POST" ? await readBody(request) : {};
-      const [status, payload] = handler({ sid: session.sid, body }, ...match.slice(1));
-      return sendJson(response, status, payload, session);
-    }
-    throw new HttpError(404, "Not found.");
-  } catch (error) {
-    if (!(error instanceof HttpError)) {
+  const token = /^\/api\/share\/([0-9a-f]{16})$/.exec(pathname);
+  if (request.method === "GET" && token) { return sendJson(response, 200, await publicShare(token[1])); }
+  const text = request.method === "POST" ? await readBody(request) : "";
+  const sid = cookieOf(request);
+  return isSid(sid) ? partitions.lane(sid, () => respond(request, response, url, sid, text))
+    : respond(request, response, url, "", text);
+}
+
+async function main() {
+  partitions = await Partitions.connect(MONGODB_URL, { seed: SEED, cap: SESSION_CAP });
+  const server = http.createServer((request, response) => {
+    handle(request, response).catch((error) => {
+      if (response.headersSent) { return; }
+      if (error instanceof HttpError) {
+        return sendJson(response, error.status, { error: error.message, field: error.field });
+      }
       console.error(error);
-      return sendJson(response, 500, { error: "Something went wrong." }, session);
-    }
-    return sendJson(response, error.status, { error: error.message, field: error.field }, session);
+      return sendJson(response, 500, { error: "Something went wrong." });
+    });
+  });
+  const port = Number(process.env.PORT || 8080);
+  server.listen(port, process.env.HOST === "0.0.0.0" ? "0.0.0.0" : "127.0.0.1", () => {
+    console.log(`wayfarer listening on ${port} (vocab ${VOCAB_PROFILE}, home database ready)`);
+  });
+  for (const signal of ["SIGINT", "SIGTERM"]) {
+    process.on(signal, () => server.close(() => partitions.client.close().finally(() => process.exit(0))));
   }
 }
 
-const server = http.createServer((request, response) => {
-  handle(request, response).catch((error) => {
-    console.error(error);
-    if (!response.headersSent) { sendJson(response, 500, { error: "Something went wrong." }); }
-  });
-});
-
-const port = Number(process.env.PORT || 8080);
-server.listen(port, process.env.HOST === "0.0.0.0" ? "0.0.0.0" : "127.0.0.1", () => {
-  console.log(`wayfarer listening on ${port} (vocab ${VOCAB_PROFILE}, data ${DATA_DIR})`);
+main().catch((error) => {
+  console.error(`wayfarer: cannot start: ${error.stack || error}`);
+  process.exit(1);
 });

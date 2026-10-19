@@ -2,39 +2,579 @@
   "app_id": "helpline",
   "name": "Helpline",
   "domain": "customer support ticketing (broadband provider's care desk)",
-  "user_goal": "Work the support queue as agent Sam: filter it, answer customers, record phone replies, move tickets through their statuses, hand tickets to the on-call colleague, and merge duplicates.",
+  "user_goal": "Sign in as agent Sam and work the support queue: filter it, answer customers (with saved replies), record phone replies, move tickets through their statuses, hand tickets to the on-call colleague, merge duplicates, open tickets for customers, and keep the customer directory and saved replies.",
   "architecture": "server-rendered+html-fragments",
-  "stack": "python-stdlib+sqlite",
-  "persistence": "one sqlite database file per session, copied from a seeded template; every page and fragment rendered from it",
+  "stack": "python-stdlib+pymongo+mongodb",
+  "persistence": "mongodb database per signed-in session, created from the seed with validators; every page and fragment rendered from it",
   "entry": "/",
-  "start": ["python", "src/server.py"],
+  "start": [
+    "python",
+    "src/server.py"
+  ],
   "dockerfile": true,
-  "workflow_graph": {
-    "kind": ["state-machine", "hub-and-spoke", "modal-heavy", "branching"],
-    "nodes": ["queue", "queue/filtered", "ticket/conversation", "ticket/details", "ticket/history",
-              "ticket/merge-dialog", "ticket/linked"],
-    "edges": [["queue", "queue/filtered"], ["queue/filtered", "queue/filtered"], ["queue", "queue"],
-              ["queue", "ticket/conversation"], ["queue/filtered", "ticket/conversation"],
-              ["ticket/conversation", "ticket/details"], ["ticket/details", "ticket/history"],
-              ["ticket/history", "ticket/conversation"], ["ticket/conversation", "ticket/conversation"],
-              ["ticket/conversation", "ticket/merge-dialog"], ["ticket/merge-dialog", "ticket/conversation"],
-              ["ticket/conversation", "ticket/linked"], ["ticket/linked", "ticket/conversation"],
-              ["ticket/conversation", "queue"], ["ticket/conversation", "queue/filtered"]],
-    "status_machine": {
-      "states": ["new", "triage", "in_progress", "waiting", "resolved", "closed"],
-      "transitions": [["new", "triage", "Start triage"], ["triage", "in_progress", "Start work"],
-                      ["waiting", "in_progress", "Start work"],
-                      ["new|triage|in_progress", "waiting", "Send reply"],
-                      ["waiting|resolved", "in_progress", "Log customer reply"],
-                      ["new|triage|in_progress|waiting", "resolved", "Resolve (agent has the last word)"],
-                      ["resolved", "closed", "Close"], ["new|triage|in_progress|waiting", "closed", "merged into another ticket"]]
+  "database": {
+    "engine": "mongodb",
+    "isolation": "database-per-session",
+    "schema": "src/schema.py",
+    "entities": [
+      "agents",
+      "customers",
+      "tickets",
+      "queue_index",
+      "sla_policies",
+      "replies"
+    ],
+    "auxiliary": [
+      "counters"
+    ],
+    "references": [
+      {
+        "from": "tickets.customer_id",
+        "to": "customers._id"
+      },
+      {
+        "from": "tickets.assignee_id",
+        "to": "agents._id"
+      },
+      {
+        "from": "tickets.linked[]",
+        "to": "tickets._id"
+      },
+      {
+        "from": "tickets.merged_into",
+        "to": "tickets._id"
+      },
+      {
+        "from": "tickets.entries[].author_id",
+        "to": "agents._id"
+      },
+      {
+        "from": "queue_index._id",
+        "to": "tickets._id"
+      },
+      {
+        "from": "tickets.priority",
+        "to": "sla_policies._id"
+      },
+      {
+        "from": "replies.author_id",
+        "to": "agents._id"
+      }
+    ],
+    "probes": [
+      {
+        "name": "a ticket that belongs to no customer",
+        "kind": "required",
+        "collection": "tickets",
+        "insert": {
+          "_id": 990,
+          "subject": "Orphan",
+          "channel": "email",
+          "priority": "low",
+          "status": "new",
+          "assignee_id": null,
+          "merged_into": null,
+          "linked": [],
+          "tags": [],
+          "opened": "2026-06-10 09:00",
+          "entries": [
+            {
+              "role": "system",
+              "at": "2026-06-10 09:00",
+              "event": "acknowledged"
+            }
+          ],
+          "history": []
+        }
+      },
+      {
+        "name": "a ticket in a status the desk does not have",
+        "kind": "enum",
+        "collection": "tickets",
+        "update": {
+          "filter": {
+            "_id": 101
+          },
+          "update": {
+            "$set": {
+              "status": "escalated"
+            }
+          }
+        }
+      },
+      {
+        "name": "a customer on a plan that is not sold",
+        "kind": "enum",
+        "collection": "customers",
+        "update": {
+          "filter": {
+            "_id": "c1"
+          },
+          "update": {
+            "$set": {
+              "plan.name": "Satellite"
+            }
+          }
+        }
+      },
+      {
+        "name": "a second agent with Sam's username",
+        "kind": "duplicate",
+        "collection": "agents",
+        "insert": {
+          "_id": "sam2",
+          "username": "sam.lewis",
+          "name": "Sam Lewis",
+          "roles": [
+            "agent"
+          ],
+          "on_call": false,
+          "pw": {
+            "salt": "00",
+            "hash": "00",
+            "iter": 20000
+          }
+        }
+      },
+      {
+        "name": "a second customer with Priya Shah's email",
+        "kind": "duplicate",
+        "collection": "customers",
+        "update": {
+          "filter": {
+            "_id": "c2"
+          },
+          "update": {
+            "$set": {
+              "email": "priya.shah@example.net"
+            }
+          }
+        }
+      }
+    ],
+    "absent_constraints": []
+  },
+  "login": {
+    "path": "/login",
+    "protected": [
+      "/",
+      "/queue",
+      "/tickets/101",
+      "/customers",
+      "/replies",
+      "/tickets/new"
+    ],
+    "public": [
+      "/help/sign-in"
+    ],
+    "users": [
+      {
+        "username": "sam.lewis",
+        "name": "Sam Lewis",
+        "roles": [
+          "agent"
+        ],
+        "macro": true
+      },
+      {
+        "username": "kai.moreno",
+        "name": "Kai Moreno",
+        "roles": [
+          "agent"
+        ]
+      },
+      {
+        "username": "noor.haddad",
+        "name": "Noor Haddad",
+        "roles": [
+          "agent"
+        ]
+      },
+      {
+        "username": "morgan.blake",
+        "name": "Morgan Blake",
+        "roles": [
+          "agent",
+          "lead"
+        ]
+      }
+    ],
+    "password_value": "Helpline-desk-26",
+    "steps": [
+      {
+        "type": "TYPE",
+        "id": "login-username",
+        "params": {
+          "value": "sam.lewis"
+        }
+      },
+      {
+        "type": "TYPE",
+        "id": "login-password",
+        "params": {
+          "value": "Helpline-desk-26"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "login-submit"
+      }
+    ],
+    "form": {
+      "action": "/login",
+      "username_field": "username",
+      "password_field": "password"
+    },
+    "signed_in_region": "signed_in_as",
+    "error_region": "login_error",
+    "sign_out": [
+      {
+        "type": "CLICK",
+        "id": "nav-account"
+      },
+      {
+        "type": "CLICK",
+        "id": "sign-out"
+      }
+    ],
+    "restricted": [
+      {
+        "user": "kai.moreno",
+        "path": "/reports",
+        "region": "access_notice"
+      }
+    ]
+  },
+  "breadth": {
+    "views": [
+      {
+        "name": "sign-in page",
+        "path": "/login",
+        "as": null
+      },
+      {
+        "name": "sign-in help",
+        "path": "/help/sign-in",
+        "as": null
+      },
+      {
+        "name": "queue",
+        "path": "/queue"
+      },
+      {
+        "name": "ticket",
+        "path": "/tickets/101"
+      },
+      {
+        "name": "new ticket: customer",
+        "path": "/tickets/new"
+      },
+      {
+        "name": "new ticket: details",
+        "workflow": "open a ticket for a customer with the wizard",
+        "where": "/tickets/new/details\\?"
+      },
+      {
+        "name": "new ticket: review",
+        "workflow": "open a ticket for a customer with the wizard",
+        "where": "/tickets/new/review\\?"
+      },
+      {
+        "name": "customer directory",
+        "path": "/customers"
+      },
+      {
+        "name": "customer profile",
+        "path": "/customers/c1"
+      },
+      {
+        "name": "new customer form",
+        "path": "/customers/new"
+      },
+      {
+        "name": "edit customer form",
+        "path": "/customers/c1/edit"
+      },
+      {
+        "name": "saved replies",
+        "path": "/replies"
+      },
+      {
+        "name": "team",
+        "path": "/team"
+      },
+      {
+        "name": "SLA report",
+        "path": "/reports",
+        "as": "morgan.blake"
+      }
+    ],
+    "entities": {
+      "customer": {
+        "create": "add a customer, then delete the record",
+        "read": "update a customer's phone number",
+        "update": "update a customer's phone number",
+        "delete": "add a customer, then delete the record"
+      },
+      "ticket": {
+        "create": "open a ticket for a customer with the wizard",
+        "read": "reload a ticket on its history tab",
+        "update": "answer a new ticket and resolve it",
+        "delete": "delete a ticket opened by mistake"
+      },
+      "saved reply": {
+        "create": "add a saved reply",
+        "read": "move a saved reply to the top",
+        "update": "rename a saved reply in place",
+        "delete": "delete a saved reply after confirming"
+      }
+    },
+    "patterns": {
+      "pagination": "browse the customer directory to its last page",
+      "sort-filter": "list customers with the fastest plans first",
+      "search": "search the directory for a customer nobody has",
+      "modal": "merge a duplicate billing ticket",
+      "tabs": "reload a ticket on its history tab",
+      "inline-edit": "rename a saved reply in place",
+      "wizard": "open a ticket for a customer with the wizard",
+      "reorder": "move a saved reply to the top"
     }
   },
-  "features": ["server-rendered", "fragment-update", "tabs", "modal", "table", "filter", "server-state",
-               "enable-disable", "conditional-section", "cross-page-state"],
-  "vocabulary": {"progress_keys": ["act.send_reply", "act.resolve", "act.close", "act.merge_confirm", "act.apply",
-                                   "act.log_customer", "act.start_triage", "act.start_work", "act.handoff",
-                                   "act.handoff_to"]},
+  "workflow_graph": {
+    "kind": [
+      "state-machine",
+      "hub-and-spoke",
+      "modal-heavy",
+      "branching"
+    ],
+    "nodes": [
+      "sign-in",
+      "customers",
+      "customer",
+      "customer-form",
+      "new-ticket/customer",
+      "new-ticket/details",
+      "new-ticket/review",
+      "replies",
+      "team",
+      "reports",
+      "queue",
+      "queue/filtered",
+      "ticket/conversation",
+      "ticket/details",
+      "ticket/history",
+      "ticket/merge-dialog",
+      "ticket/linked"
+    ],
+    "edges": [
+      [
+        "sign-in",
+        "queue"
+      ],
+      [
+        "queue",
+        "customers"
+      ],
+      [
+        "customers",
+        "customers"
+      ],
+      [
+        "customers",
+        "customer"
+      ],
+      [
+        "customers",
+        "customer-form"
+      ],
+      [
+        "customer",
+        "customer-form"
+      ],
+      [
+        "customer-form",
+        "customer"
+      ],
+      [
+        "customer",
+        "new-ticket/details"
+      ],
+      [
+        "queue",
+        "new-ticket/customer"
+      ],
+      [
+        "new-ticket/customer",
+        "new-ticket/details"
+      ],
+      [
+        "new-ticket/details",
+        "new-ticket/review"
+      ],
+      [
+        "new-ticket/review",
+        "ticket/conversation"
+      ],
+      [
+        "queue",
+        "replies"
+      ],
+      [
+        "replies",
+        "replies"
+      ],
+      [
+        "queue",
+        "team"
+      ],
+      [
+        "queue",
+        "reports"
+      ],
+      [
+        "queue",
+        "queue/filtered"
+      ],
+      [
+        "queue/filtered",
+        "queue/filtered"
+      ],
+      [
+        "queue",
+        "queue"
+      ],
+      [
+        "queue",
+        "ticket/conversation"
+      ],
+      [
+        "queue/filtered",
+        "ticket/conversation"
+      ],
+      [
+        "ticket/conversation",
+        "ticket/details"
+      ],
+      [
+        "ticket/details",
+        "ticket/history"
+      ],
+      [
+        "ticket/history",
+        "ticket/conversation"
+      ],
+      [
+        "ticket/conversation",
+        "ticket/conversation"
+      ],
+      [
+        "ticket/conversation",
+        "ticket/merge-dialog"
+      ],
+      [
+        "ticket/merge-dialog",
+        "ticket/conversation"
+      ],
+      [
+        "ticket/conversation",
+        "ticket/linked"
+      ],
+      [
+        "ticket/linked",
+        "ticket/conversation"
+      ],
+      [
+        "ticket/conversation",
+        "queue"
+      ],
+      [
+        "ticket/conversation",
+        "queue/filtered"
+      ]
+    ],
+    "status_machine": {
+      "states": [
+        "new",
+        "triage",
+        "in_progress",
+        "waiting",
+        "resolved",
+        "closed"
+      ],
+      "transitions": [
+        [
+          "new",
+          "triage",
+          "Start triage"
+        ],
+        [
+          "triage",
+          "in_progress",
+          "Start work"
+        ],
+        [
+          "waiting",
+          "in_progress",
+          "Start work"
+        ],
+        [
+          "new|triage|in_progress",
+          "waiting",
+          "Send reply"
+        ],
+        [
+          "waiting|resolved",
+          "in_progress",
+          "Log customer reply"
+        ],
+        [
+          "new|triage|in_progress|waiting",
+          "resolved",
+          "Resolve (agent has the last word)"
+        ],
+        [
+          "resolved",
+          "closed",
+          "Close"
+        ],
+        [
+          "new|triage|in_progress|waiting",
+          "closed",
+          "merged into another ticket"
+        ]
+      ]
+    }
+  },
+  "features": [
+    "server-rendered",
+    "fragment-update",
+    "tabs",
+    "modal",
+    "table",
+    "filter",
+    "server-state",
+    "enable-disable",
+    "conditional-section",
+    "cross-page-state",
+    "sort",
+    "multi-role",
+    "reload-persistence",
+    "nested-form"
+  ],
+  "vocabulary": {
+    "progress_keys": [
+      "act.send_reply",
+      "act.resolve",
+      "act.close",
+      "act.merge_confirm",
+      "act.apply",
+      "act.log_customer",
+      "act.start_triage",
+      "act.start_work",
+      "act.handoff",
+      "act.handoff_to"
+    ]
+  },
   "regions": {
     "queue_rows": "#queue-rows",
     "queue_flash": "#queue-flash",
@@ -51,79 +591,862 @@
     "count_in_progress": "#count-in-progress",
     "count_waiting": "#count-waiting",
     "count_resolved": "#count-resolved",
-    "count_closed": "#count-closed"
+    "count_closed": "#count-closed",
+    "signed_in_as": "#signed-in-as",
+    "login_error": "#login-error",
+    "access_notice": "#access-notice",
+    "tab_panel": "#tab-panel",
+    "speed_first": "#speed-1",
+    "speed_max": "#speed-max",
+    "customer_rows": "#customer-rows",
+    "page_number": "#page-number",
+    "customer_phone": "#customer-phone",
+    "first_reply": "#first-reply",
+    "saved_replies": "#saved-replies",
+    "title_r3": "#title-r3"
   },
   "workflows": [
-    {"name": "answer a new ticket and resolve it",
-     "trace": [{"type": "CLICK", "id": "open-101"},
-               {"type": "TYPE", "id": "reply-body", "params": {"category": "valid_typical"}},
-               {"type": "CLICK", "id": "send-reply"}, {"type": "CLICK", "id": "resolve"}],
-     "expect": [{"region": "conversation", "contains": "comment used for functional testing"},
-                {"region": "count_resolved", "contains": "2"}, {"region": "count_new", "contains": "2"}]},
-    {"name": "hand a ticket to Kai from its page, then check the unassigned list",
-     "trace": [{"type": "CLICK", "id": "open-102"}, {"type": "CLICK", "id": "handoff"},
-               {"type": "CLICK", "id": "nav-unassigned"}],
-     "expect": [{"region": "queue_rows", "absent": "No internet since the storm"},
-                {"region": "queue_rows", "contains": "Router keeps dropping Wi-Fi"}]},
-    {"name": "merge a duplicate billing ticket",
-     "trace": [{"type": "CLICK", "id": "open-105"}, {"type": "CLICK", "id": "open-merge"},
-               {"type": "SELECT", "id": "merge-source", "params": {"option": "106"}},
-               {"type": "CLICK", "id": "merge-confirm"}],
-     "expect": [{"region": "linked_tickets", "contains": "106"}, {"region": "count_closed", "contains": "2"},
-                {"region": "count_new", "contains": "2"}]},
-    {"name": "show only unassigned tickets",
-     "trace": [{"type": "SELECT", "id": "filter-assignee", "params": {"option": "none"}},
-               {"type": "CLICK", "id": "apply-filters"}],
-     "expect": [{"region": "queue_rows", "contains": "Refund for the double charge"},
-                {"region": "queue_rows", "absent": "Charged twice in May"}],
-     "commits": false},
-    {"name": "log a phone reply on a ticket waiting for the customer",
-     "trace": [{"type": "CLICK", "id": "open-107"},
-               {"type": "TYPE", "id": "customer-body", "params": {"category": "valid_typical"}},
-               {"type": "CLICK", "id": "log-customer-reply"}],
-     "expect": [{"region": "conversation", "contains": "comment used for functional testing"},
-                {"region": "count_waiting", "contains": "0"}, {"region": "count_in_progress", "contains": "3"}]},
-    {"name": "resolve and close an answered ticket",
-     "trace": [{"type": "CLICK", "id": "open-107"}, {"type": "CLICK", "id": "resolve"},
-               {"type": "CLICK", "id": "close-ticket"}],
-     "expect": [{"region": "count_closed", "contains": "2"}, {"region": "count_waiting", "contains": "0"},
-                {"region": "count_resolved", "contains": "1"}]},
-    {"name": "hand a ticket to Kai from the queue",
-     "trace": [{"type": "CLICK", "id": "handoff-103"}],
-     "expect": [{"region": "queue_rows", "contains": "Kai"}]},
-    {"name": "triage a new ticket and start work on it",
-     "trace": [{"type": "CLICK", "id": "open-103"}, {"type": "CLICK", "id": "start-triage"},
-               {"type": "CLICK", "id": "start-work"}],
-     "expect": [{"region": "count_new", "contains": "2"}, {"region": "count_in_progress", "contains": "3"}]},
-    {"name": "read a resolved ticket's history",
-     "trace": [{"type": "SELECT", "id": "filter-status", "params": {"option": "all"}},
-               {"type": "CLICK", "id": "apply-filters"}, {"type": "CLICK", "id": "open-108"},
-               {"type": "CLICK", "id": "tab-history"}],
-     "expect": [{"region": "history_list", "contains": "2026-06-04 09:05"}],
-     "commits": false}
+    {
+      "name": "answer a new ticket and resolve it",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-101"
+        },
+        {
+          "type": "TYPE",
+          "id": "reply-body",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "send-reply"
+        },
+        {
+          "type": "CLICK",
+          "id": "resolve"
+        }
+      ],
+      "expect": [
+        {
+          "region": "conversation",
+          "contains": "comment used for functional testing"
+        },
+        {
+          "region": "count_resolved",
+          "contains": "2"
+        },
+        {
+          "region": "count_new",
+          "contains": "2"
+        }
+      ]
+    },
+    {
+      "name": "hand a ticket to Kai from its page, then check the unassigned list",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-102"
+        },
+        {
+          "type": "CLICK",
+          "id": "handoff"
+        },
+        {
+          "type": "CLICK",
+          "id": "nav-unassigned"
+        }
+      ],
+      "expect": [
+        {
+          "region": "queue_rows",
+          "absent": "No internet since the storm"
+        },
+        {
+          "region": "queue_rows",
+          "contains": "Router keeps dropping Wi-Fi"
+        }
+      ]
+    },
+    {
+      "name": "merge a duplicate billing ticket",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-105"
+        },
+        {
+          "type": "CLICK",
+          "id": "open-merge"
+        },
+        {
+          "type": "SELECT",
+          "id": "merge-source",
+          "params": {
+            "option": "106"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "merge-confirm"
+        }
+      ],
+      "expect": [
+        {
+          "region": "linked_tickets",
+          "contains": "106"
+        },
+        {
+          "region": "count_closed",
+          "contains": "2"
+        },
+        {
+          "region": "count_new",
+          "contains": "2"
+        }
+      ]
+    },
+    {
+      "name": "show only unassigned tickets",
+      "trace": [
+        {
+          "type": "SELECT",
+          "id": "filter-assignee",
+          "params": {
+            "option": "none"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "apply-filters"
+        }
+      ],
+      "expect": [
+        {
+          "region": "queue_rows",
+          "contains": "Refund for the double charge"
+        },
+        {
+          "region": "queue_rows",
+          "absent": "Charged twice in May"
+        }
+      ],
+      "commits": false
+    },
+    {
+      "name": "log a phone reply on a ticket waiting for the customer",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-107"
+        },
+        {
+          "type": "TYPE",
+          "id": "customer-body",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "log-customer-reply"
+        }
+      ],
+      "expect": [
+        {
+          "region": "conversation",
+          "contains": "comment used for functional testing"
+        },
+        {
+          "region": "count_waiting",
+          "contains": "0"
+        },
+        {
+          "region": "count_in_progress",
+          "contains": "3"
+        }
+      ]
+    },
+    {
+      "name": "resolve and close an answered ticket",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-107"
+        },
+        {
+          "type": "CLICK",
+          "id": "resolve"
+        },
+        {
+          "type": "CLICK",
+          "id": "close-ticket"
+        }
+      ],
+      "expect": [
+        {
+          "region": "count_closed",
+          "contains": "2"
+        },
+        {
+          "region": "count_waiting",
+          "contains": "0"
+        },
+        {
+          "region": "count_resolved",
+          "contains": "1"
+        }
+      ]
+    },
+    {
+      "name": "hand a ticket to Kai from the queue",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "handoff-103"
+        }
+      ],
+      "expect": [
+        {
+          "region": "queue_rows",
+          "contains": "Kai"
+        }
+      ]
+    },
+    {
+      "name": "triage a new ticket and start work on it",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-103"
+        },
+        {
+          "type": "CLICK",
+          "id": "start-triage"
+        },
+        {
+          "type": "CLICK",
+          "id": "start-work"
+        }
+      ],
+      "expect": [
+        {
+          "region": "count_new",
+          "contains": "2"
+        },
+        {
+          "region": "count_in_progress",
+          "contains": "3"
+        }
+      ]
+    },
+    {
+      "name": "read a resolved ticket's history",
+      "trace": [
+        {
+          "type": "SELECT",
+          "id": "filter-status",
+          "params": {
+            "option": "all"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "apply-filters"
+        },
+        {
+          "type": "CLICK",
+          "id": "open-108"
+        },
+        {
+          "type": "CLICK",
+          "id": "tab-history"
+        }
+      ],
+      "expect": [
+        {
+          "region": "history_list",
+          "contains": "2026-06-04 09:05"
+        }
+      ],
+      "commits": false
+    },
+    {
+      "name": "browse the customer directory to its last page",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-customers"
+        },
+        {
+          "type": "CLICK",
+          "id": "page-last"
+        }
+      ],
+      "expect": [
+        {
+          "region": "page_number",
+          "contains": "4"
+        },
+        {
+          "region": "customer_rows",
+          "contains": "Zoe Adams"
+        },
+        {
+          "region": "customer_rows",
+          "absent": "Aisha Bello"
+        }
+      ],
+      "commits": false
+    },
+    {
+      "name": "list customers with the fastest plans first",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-customers"
+        },
+        {
+          "type": "SELECT",
+          "id": "customer-sort",
+          "params": {
+            "option": "speed"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "customer-search-go"
+        }
+      ],
+      "expect": [
+        {
+          "region": "speed_first",
+          "contains": "1000"
+        },
+        {
+          "region": "customer_rows",
+          "contains": "Aisha Bello"
+        }
+      ],
+      "commits": false
+    },
+    {
+      "name": "search the directory for a customer nobody has",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-customers"
+        },
+        {
+          "type": "TYPE",
+          "id": "customer-search",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "customer-search-go"
+        }
+      ],
+      "expect": [
+        {
+          "region": "customer_rows",
+          "absent": "Aisha Bello"
+        },
+        {
+          "region": "page_number",
+          "contains": "1"
+        }
+      ],
+      "commits": false
+    },
+    {
+      "name": "add a customer, then delete the record",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-customers"
+        },
+        {
+          "type": "CLICK",
+          "id": "add-customer"
+        },
+        {
+          "type": "TYPE",
+          "id": "customer-name-input",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "customer-email-input",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "customer-phone-input",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "customer-plan-input",
+          "params": {
+            "option": "Gigafast"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "customer-line1",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "customer-town",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "customer-postcode",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-customer"
+        },
+        {
+          "type": "CLICK",
+          "id": "delete-customer"
+        },
+        {
+          "type": "CLICK",
+          "id": "confirm-delete-customer"
+        }
+      ],
+      "expect": [
+        {
+          "region": "customer_rows",
+          "absent": "Test User Input"
+        },
+        {
+          "region": "customer_rows",
+          "contains": "Aisha Bello"
+        }
+      ],
+      "commits": false
+    },
+    {
+      "name": "update a customer's phone number",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-customers"
+        },
+        {
+          "type": "CLICK",
+          "id": "open-customer-c10"
+        },
+        {
+          "type": "CLICK",
+          "id": "edit-customer"
+        },
+        {
+          "type": "TYPE",
+          "id": "customer-phone-input",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-customer"
+        }
+      ],
+      "expect": [
+        {
+          "region": "customer_phone",
+          "contains": "202-555-0143"
+        }
+      ]
+    },
+    {
+      "name": "open a ticket for a customer with the wizard",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-new-ticket"
+        },
+        {
+          "type": "CLICK",
+          "id": "choose-customer-c10"
+        },
+        {
+          "type": "TYPE",
+          "id": "ticket-subject",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "SELECT",
+          "id": "ticket-priority",
+          "params": {
+            "option": "urgent"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "ticket-message",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "review-ticket"
+        },
+        {
+          "type": "CLICK",
+          "id": "create-ticket"
+        }
+      ],
+      "expect": [
+        {
+          "region": "conversation",
+          "contains": "functional testing"
+        },
+        {
+          "region": "count_new",
+          "contains": "4"
+        }
+      ]
+    },
+    {
+      "name": "delete a ticket opened by mistake",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-103"
+        },
+        {
+          "type": "CLICK",
+          "id": "delete-ticket"
+        },
+        {
+          "type": "CLICK",
+          "id": "confirm-delete-ticket"
+        }
+      ],
+      "expect": [
+        {
+          "region": "queue_rows",
+          "absent": "log in to my account"
+        },
+        {
+          "region": "count_new",
+          "contains": "2"
+        }
+      ]
+    },
+    {
+      "name": "add a saved reply",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-replies"
+        },
+        {
+          "type": "TYPE",
+          "id": "new-reply-title",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "TYPE",
+          "id": "new-reply-body",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "add-reply"
+        }
+      ],
+      "expect": [
+        {
+          "region": "saved_replies",
+          "contains": "Test User Input"
+        },
+        {
+          "region": "saved_replies",
+          "contains": "functional testing"
+        }
+      ]
+    },
+    {
+      "name": "move a saved reply to the top",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-replies"
+        },
+        {
+          "type": "CLICK",
+          "id": "reply-up-r2"
+        }
+      ],
+      "expect": [
+        {
+          "region": "first_reply",
+          "contains": "Router restart steps"
+        }
+      ]
+    },
+    {
+      "name": "rename a saved reply in place",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-replies"
+        },
+        {
+          "type": "CLICK",
+          "id": "edit-title-r3"
+        },
+        {
+          "type": "TYPE",
+          "id": "title-input-r3",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-title-r3"
+        },
+        {
+          "type": "REFRESH"
+        }
+      ],
+      "expect": [
+        {
+          "region": "title_r3",
+          "contains": "Test User Input"
+        }
+      ]
+    },
+    {
+      "name": "delete a saved reply after confirming",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-replies"
+        },
+        {
+          "type": "CLICK",
+          "id": "delete-reply-r5"
+        },
+        {
+          "type": "CLICK",
+          "id": "confirm-delete-reply-r5"
+        }
+      ],
+      "expect": [
+        {
+          "region": "saved_replies",
+          "absent": "Closing note"
+        },
+        {
+          "region": "saved_replies",
+          "contains": "Billing correction"
+        }
+      ]
+    },
+    {
+      "name": "answer with a saved reply",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-101"
+        },
+        {
+          "type": "SELECT",
+          "id": "saved-reply",
+          "params": {
+            "option": "r2"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "use-saved-reply"
+        },
+        {
+          "type": "CLICK",
+          "id": "send-reply"
+        }
+      ],
+      "expect": [
+        {
+          "region": "conversation",
+          "contains": "switch the router off"
+        },
+        {
+          "region": "count_waiting",
+          "contains": "2"
+        }
+      ]
+    },
+    {
+      "name": "reload a ticket on its history tab",
+      "trace": [
+        {
+          "type": "CLICK",
+          "id": "open-104"
+        },
+        {
+          "type": "CLICK",
+          "id": "tab-history"
+        },
+        {
+          "type": "REFRESH"
+        }
+      ],
+      "expect": [
+        {
+          "region": "history_list",
+          "contains": "2026-06-08 21:02"
+        }
+      ],
+      "commits": false
+    }
   ],
   "state_dependent": [
-    {"name": "Resolve changes a ticket only once the agent has replied after the customer",
-     "useless": {"trace": [{"type": "CLICK", "id": "open-101"}],
-                 "action": {"type": "CLICK", "id": "resolve"}},
-     "useful": {"trace": [{"type": "CLICK", "id": "open-101"},
-                          {"type": "TYPE", "id": "reply-body", "params": {"category": "valid_typical"}},
-                          {"type": "CLICK", "id": "send-reply"}],
-                "action": {"type": "CLICK", "id": "resolve"}}},
-    {"name": "Close changes a ticket only once it is resolved",
-     "useless": {"trace": [{"type": "CLICK", "id": "open-101"}],
-                 "action": {"type": "CLICK", "id": "close-ticket"}},
-     "useful": {"trace": [{"type": "CLICK", "id": "open-101"},
-                          {"type": "TYPE", "id": "reply-body", "params": {"category": "valid_typical"}},
-                          {"type": "CLICK", "id": "send-reply"}, {"type": "CLICK", "id": "resolve"}],
-                "action": {"type": "CLICK", "id": "close-ticket"}}}
+    {
+      "name": "Resolve changes a ticket only once the agent has replied after the customer",
+      "useless": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "open-101"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "resolve"
+        }
+      },
+      "useful": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "open-101"
+          },
+          {
+            "type": "TYPE",
+            "id": "reply-body",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "send-reply"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "resolve"
+        }
+      }
+    },
+    {
+      "name": "Close changes a ticket only once it is resolved",
+      "useless": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "open-101"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "close-ticket"
+        }
+      },
+      "useful": {
+        "trace": [
+          {
+            "type": "CLICK",
+            "id": "open-101"
+          },
+          {
+            "type": "TYPE",
+            "id": "reply-body",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "send-reply"
+          },
+          {
+            "type": "CLICK",
+            "id": "resolve"
+          }
+        ],
+        "action": {
+          "type": "CLICK",
+          "id": "close-ticket"
+        }
+      }
+    }
   ],
   "decoys": [
-    {"name": "Mark done on the on-call notification", "trace": [],
-     "decoy": {"type": "CLICK", "id": "notice-done"}},
-    {"name": "Refresh queue", "trace": [{"type": "SELECT", "id": "filter-status", "params": {"option": "new"}},
-                                        {"type": "CLICK", "id": "apply-filters"}],
-     "decoy": {"type": "CLICK", "id": "refresh-queue"}}
+    {
+      "name": "Mark done on the on-call notification",
+      "trace": [],
+      "decoy": {
+        "type": "CLICK",
+        "id": "notice-done"
+      }
+    },
+    {
+      "name": "Refresh queue",
+      "trace": [
+        {
+          "type": "SELECT",
+          "id": "filter-status",
+          "params": {
+            "option": "new"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "apply-filters"
+        }
+      ],
+      "decoy": {
+        "type": "CLICK",
+        "id": "refresh-queue"
+      }
+    }
   ],
   "faults": [
     {
@@ -136,21 +1459,58 @@
       "expected_behaviour": "A ticket is never Resolved while the customer has the last word: resolving needs an agent reply last, and a customer reply on a resolved ticket reopens it to In progress.",
       "observable_violation": "The ticket's status reads Resolved while its latest entry is from the Customer.",
       "assertions": [
-        {"kind": "text_absent", "where": "/tickets/\\d+", "region": "ticket_status", "expected": "Resolved",
-         "describes": "a ticket whose customer has the last word is not shown as resolved"},
-        {"kind": "text_absent", "where": "/tickets/\\d+", "region": "latest_role", "expected": "Customer",
-         "describes": "(conjunct) the ticket's latest conversation entry is the customer's"}
+        {
+          "kind": "text_absent",
+          "where": "/tickets/\\d+",
+          "region": "ticket_status",
+          "expected": "Resolved",
+          "describes": "a ticket whose customer has the last word is not shown as resolved"
+        },
+        {
+          "kind": "text_absent",
+          "where": "/tickets/\\d+",
+          "region": "latest_role",
+          "expected": "Customer",
+          "describes": "(conjunct) the ticket's latest conversation entry is the customer's"
+        }
       ],
-      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
       "observation_horizon": 0,
       "shortest_path": 3,
       "trigger_trace": [
-        {"type": "CLICK", "id": "open-101"},
-        {"type": "TYPE", "id": "reply-body", "params": {"category": "valid_typical"}},
-        {"type": "CLICK", "id": "send-reply"},
-        {"type": "CLICK", "id": "resolve"},
-        {"type": "TYPE", "id": "customer-body", "params": {"category": "valid_typical"}},
-        {"type": "CLICK", "id": "log-customer-reply"}
+        {
+          "type": "CLICK",
+          "id": "open-101"
+        },
+        {
+          "type": "TYPE",
+          "id": "reply-body",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "send-reply"
+        },
+        {
+          "type": "CLICK",
+          "id": "resolve"
+        },
+        {
+          "type": "TYPE",
+          "id": "customer-body",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "log-customer-reply"
+        }
       ],
       "patch": {
         "file": "src/desk.py",
@@ -168,24 +1528,52 @@
       "expected_behaviour": "Right after a merge, the receiving ticket lists the merged ticket among its linked tickets.",
       "observable_violation": "The page says 'Merged #106 into this ticket' while its Linked tickets list does not contain #106.",
       "assertions": [
-        {"kind": "echoes_input", "where": "/tickets/\\d+", "region": "linked_tickets", "input_field": "merge_source",
-         "describes": "the ticket chosen in the merge dialog appears in this ticket's linked tickets"},
-        {"kind": "text_absent", "where": "/tickets/\\d+", "region": "ticket_flash", "expected": "#",
-         "describes": "(scope) evaluated on the response to a merge, whose one-time banner names the merged ticket"}
+        {
+          "kind": "echoes_input",
+          "where": "/tickets/\\d+",
+          "region": "linked_tickets",
+          "input_field": "merge_source",
+          "describes": "the ticket chosen in the merge dialog appears in this ticket's linked tickets"
+        },
+        {
+          "kind": "text_absent",
+          "where": "/tickets/\\d+",
+          "region": "ticket_flash",
+          "expected": "#",
+          "describes": "(scope) evaluated on the response to a merge, whose one-time banner names the merged ticket"
+        }
       ],
-      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
       "observation_horizon": 0,
       "shortest_path": 4,
       "trigger_trace": [
-        {"type": "CLICK", "id": "open-105"},
-        {"type": "CLICK", "id": "open-merge"},
-        {"type": "SELECT", "id": "merge-source", "params": {"option": "106"}},
-        {"type": "CLICK", "id": "merge-confirm"}
+        {
+          "type": "CLICK",
+          "id": "open-105"
+        },
+        {
+          "type": "CLICK",
+          "id": "open-merge"
+        },
+        {
+          "type": "SELECT",
+          "id": "merge-source",
+          "params": {
+            "option": "106"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "merge-confirm"
+        }
       ],
       "patch": {
         "file": "src/desk.py",
-        "find": "for owner, other in ((target_id, source[\"id\"]), (source[\"id\"], target_id)):",
-        "replace": "for owner, other in ((source[\"id\"], target_id),):"
+        "find": "for owner, other in ((target_id, source[\"_id\"]), (source[\"_id\"], target_id)):",
+        "replace": "for owner, other in ((source[\"_id\"], target_id),):"
       }
     },
     {
@@ -198,35 +1586,291 @@
       "expected_behaviour": "The queue filtered to unassigned tickets lists only tickets nobody owns.",
       "observable_violation": "The Unassigned view lists a ticket whose assignee column says Kai.",
       "assertions": [
-        {"kind": "text_absent", "where": "/queue\\?.*assignee=none", "region": "queue_rows", "expected": "Kai",
-         "describes": "the unassigned view lists no ticket assigned to Kai"}
+        {
+          "kind": "text_absent",
+          "where": "/queue\\?.*assignee=none",
+          "region": "queue_rows",
+          "expected": "Kai",
+          "describes": "the unassigned view lists no ticket assigned to Kai"
+        }
       ],
-      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
       "observation_horizon": 0,
       "shortest_path": 3,
       "trigger_trace": [
-        {"type": "SELECT", "id": "filter-assignee", "params": {"option": "none"}},
-        {"type": "CLICK", "id": "apply-filters"},
-        {"type": "CLICK", "id": "handoff-102"}
+        {
+          "type": "SELECT",
+          "id": "filter-assignee",
+          "params": {
+            "option": "none"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "apply-filters"
+        },
+        {
+          "type": "CLICK",
+          "id": "handoff-102"
+        }
       ],
       "patch": {
         "file": "src/desk.py",
-        "find": "    refresh_assignee_index(conn, [row[\"id\"] for row in tickets])\n",
-        "replace": "    refresh_assignee_index(conn, [row[\"id\"] for row in tickets if row[\"assignee\"]])\n"
+        "find": "    refresh_assignee_index(db, [row[\"_id\"] for row in tickets])\n",
+        "replace": "    refresh_assignee_index(db, [row[\"_id\"] for row in tickets if row[\"assignee_id\"]])\n"
+      }
+    },
+    {
+      "fault_id": "HELP-4",
+      "fault_class": "broken_transition",
+      "subtype": "incorrect-navigation",
+      "oracle": "extension",
+      "description": "Switching a ticket's tab updates the panel but writes the conversation tab's address into the browser, so reloading the page (or coming back to it) shows a different tab from the one the agent was reading.",
+      "trigger_condition": "Open a ticket, switch to its History tab, reload the page.",
+      "expected_behaviour": "Reloading a ticket shows the tab that was open.",
+      "observable_violation": "After a reload on the History tab, the panel shows the conversation.",
+      "assertions": [
+        {
+          "kind": "region_stable_across_reload",
+          "where": "/tickets/\\d+",
+          "region": "tab_panel",
+          "describes": "a ticket's open tab survives a reload"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 1,
+      "shortest_path": 3,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "open-104"
+        },
+        {
+          "type": "CLICK",
+          "id": "tab-history"
+        },
+        {
+          "type": "REFRESH"
+        }
+      ],
+      "patch": {
+        "file": "src/server.py",
+        "find": "                     views.ticket_flash(\"\"), url=views.ticket_url(row[\"_id\"], tab))",
+        "replace": "                     views.ticket_flash(\"\"), url=views.ticket_url(row[\"_id\"]))"
+      }
+    },
+    {
+      "fault_id": "HELP-5",
+      "fault_class": "calculation_error",
+      "subtype": "calculation",
+      "oracle": "extension",
+      "description": "'Fastest plan first' orders the customer directory by the plan's name instead of its speed, so the first customer listed is not on the fastest plan among those shown.",
+      "trigger_condition": "Order the customer directory by fastest plan.",
+      "expected_behaviour": "Ordered by fastest plan, the first customer's speed is the top of the plans range shown.",
+      "observable_violation": "The first row is Ben Carter on 80 Mbps while the plans range up to 1000 Mbps.",
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "/customers\\?q=[^&#]*&sort=speed(&page=1)?$",
+          "expression": "first == fastest",
+          "operands": {
+            "first": "speed_first",
+            "fastest": "speed_max"
+          },
+          "describes": "fastest first: the first row is on the fastest plan of the matching customers"
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 0,
+      "shortest_path": 3,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-customers"
+        },
+        {
+          "type": "SELECT",
+          "id": "customer-sort",
+          "params": {
+            "option": "speed"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "customer-search-go"
+        }
+      ],
+      "patch": {
+        "file": "src/desk.py",
+        "find": "    \"speed\": [(\"plan.speed_mbps\", pymongo.DESCENDING), ",
+        "replace": "    \"speed\": [(\"plan.name\", pymongo.DESCENDING), "
       }
     }
   ],
   "benign_traces": [
-    [{"type": "CLICK", "id": "open-102"}, {"type": "CLICK", "id": "handoff"}, {"type": "CLICK", "id": "nav-unassigned"}],
-    [{"type": "CLICK", "id": "open-101"}, {"type": "TYPE", "id": "reply-body", "params": {"category": "valid_typical"}},
-     {"type": "CLICK", "id": "send-reply"}, {"type": "CLICK", "id": "resolve"}, {"type": "CLICK", "id": "close-ticket"}],
-    [{"type": "SELECT", "id": "filter-status", "params": {"option": "new"}}, {"type": "CLICK", "id": "apply-filters"},
-     {"type": "CLICK", "id": "open-103"}, {"type": "CLICK", "id": "tab-details"}, {"type": "CLICK", "id": "tab-history"},
-     {"type": "CLICK", "id": "start-triage"}],
-    [{"type": "CLICK", "id": "open-107"}, {"type": "TYPE", "id": "customer-body", "params": {"category": "valid_typical"}},
-     {"type": "CLICK", "id": "log-customer-reply"}, {"type": "CLICK", "id": "nav-queue"},
-     {"type": "SELECT", "id": "filter-assignee", "params": {"option": "noor"}}, {"type": "CLICK", "id": "apply-filters"},
-     {"type": "CLICK", "id": "handoff-104"},
-     {"type": "SELECT", "id": "filter-assignee", "params": {"option": "none"}}, {"type": "CLICK", "id": "apply-filters"}]
+    [
+      {
+        "type": "CLICK",
+        "id": "open-102"
+      },
+      {
+        "type": "CLICK",
+        "id": "handoff"
+      },
+      {
+        "type": "CLICK",
+        "id": "nav-unassigned"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "open-101"
+      },
+      {
+        "type": "TYPE",
+        "id": "reply-body",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "send-reply"
+      },
+      {
+        "type": "CLICK",
+        "id": "resolve"
+      },
+      {
+        "type": "CLICK",
+        "id": "close-ticket"
+      }
+    ],
+    [
+      {
+        "type": "SELECT",
+        "id": "filter-status",
+        "params": {
+          "option": "new"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "apply-filters"
+      },
+      {
+        "type": "CLICK",
+        "id": "open-103"
+      },
+      {
+        "type": "CLICK",
+        "id": "tab-details"
+      },
+      {
+        "type": "CLICK",
+        "id": "tab-history"
+      },
+      {
+        "type": "CLICK",
+        "id": "start-triage"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "open-107"
+      },
+      {
+        "type": "TYPE",
+        "id": "customer-body",
+        "params": {
+          "category": "valid_typical"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "log-customer-reply"
+      },
+      {
+        "type": "CLICK",
+        "id": "nav-queue"
+      },
+      {
+        "type": "SELECT",
+        "id": "filter-assignee",
+        "params": {
+          "option": "noor"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "apply-filters"
+      },
+      {
+        "type": "CLICK",
+        "id": "handoff-104"
+      },
+      {
+        "type": "SELECT",
+        "id": "filter-assignee",
+        "params": {
+          "option": "none"
+        }
+      },
+      {
+        "type": "CLICK",
+        "id": "apply-filters"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "nav-customers"
+      },
+      {
+        "type": "CLICK",
+        "id": "page-next"
+      },
+      {
+        "type": "CLICK",
+        "id": "page-prev"
+      },
+      {
+        "type": "CLICK",
+        "id": "open-customer-c10"
+      }
+    ],
+    [
+      {
+        "type": "CLICK",
+        "id": "nav-replies"
+      },
+      {
+        "type": "CLICK",
+        "id": "reply-down-r1"
+      },
+      {
+        "type": "CLICK",
+        "id": "nav-queue"
+      },
+      {
+        "type": "CLICK",
+        "id": "open-104"
+      },
+      {
+        "type": "CLICK",
+        "id": "tab-details"
+      }
+    ]
   ]
 }

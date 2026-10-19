@@ -1,0 +1,17 @@
+{
+ "iterations": 20000,
+ "logins": [
+  {
+   "customer_id": "alex",
+   "username": "alex.carter",
+   "salt": "7d1e3f5a9b0c2d4e6f8a1b3c5d7e9f02",
+   "pbkdf2_sha256": "be7b08b54eba20f905eebcc7bec31102ff506359c6bcdc958023bdc121916f4c"
+  },
+  {
+   "customer_id": "jamie",
+   "username": "jamie.carter",
+   "salt": "c0ffee11d00d22b00b33a55e66f77089",
+   "pbkdf2_sha256": "ce75be7a3c393775c0543f0dc0b5bbc300b1d0496ded4a3f37794ddfcbd513ce"
+  }
+ ]
+}

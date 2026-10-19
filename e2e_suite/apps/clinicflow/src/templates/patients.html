@@ -1,0 +1,16 @@
+<h1>{{ t("patients.title") }}</h1>
+<form class="filters" method="get" action="/patients" role="search">
+  <label for="patient-search">{{ t("patients.search") }}</label>
+  <input id="patient-search" name="q" type="search" value="{{ q }}" autocomplete="off">
+  <label for="patient-sort">{{ t("filter.sort") }}</label>
+  <select id="patient-sort" name="sort">{{ sort_options|raw }}</select>
+  <button id="patient-search-go" type="submit">{{ t("act.search") }}</button>
+</form>
+{{ summary|raw }}
+<table class="ledger">
+  <thead><tr><th scope="col">{{ t("label.patient") }}</th><th scope="col">{{ t("field.dob") }}</th>
+    <th scope="col">{{ t("field.email") }}</th></tr></thead>
+  <tbody id="patient-rows">{{ rows|raw }}</tbody>
+</table>
+<nav class="pager" aria-label="{{ t("label.pages") }}">{{ pager|raw }}</nav>
+<p><a id="add-patient" class="button primary" href="/patients/new">{{ t("act.add_patient") }}</a></p>

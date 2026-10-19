@@ -1,0 +1,5 @@
+[
+  {"_id": "lighting", "name": "Lighting", "position": 1},
+  {"_id": "kitchen", "name": "Kitchen", "position": 2},
+  {"_id": "outdoor", "name": "Outdoor", "position": 3}
+]

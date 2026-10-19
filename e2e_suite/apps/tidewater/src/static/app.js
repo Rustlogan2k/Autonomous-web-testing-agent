@@ -1,7 +1,10 @@
-/* Tidewater — single-page banking client. Hash routes, JSON API, no dependencies. */
+/* Tidewater — single-page banking client. Hash routes, JSON API, no dependencies.
+   It runs only once signed in (the server sends the sign-in page otherwise). A customer
+   with view access sees balances and statements; moving money and payees are for holders. */
 "use strict";
 
 let VOCAB = {};
+let ME = { name: "", holder: false };
 const t = (key) => VOCAB[key] || key;
 
 const esc = (value) => String(value ?? "").replace(/[&<>"']/g,
@@ -15,6 +18,13 @@ async function api(path, options = {}) {
     credentials: "same-origin",
   });
   const data = await response.json();
+  if (data && data.ok === false && data.reason === "signed-out") {
+    location.assign("/login");  // signed out in another tab: sign in again
+    return { ok: false, status: response.status, data: { error: "" } };
+  }
+  if (data && data.ok === false && data.reason === "forbidden") {
+    return { ok: false, status: response.status, data: { error: t("access.notice") } };
+  }
   return { ok: response.ok, status: response.status, data };
 }
 
@@ -39,12 +49,41 @@ const view = () => document.getElementById("view");
 const go = (hash) => { if (location.hash === hash) { route(); } else { location.hash = hash; } };
 
 function renderNav() {
-  document.getElementById("main-nav").innerHTML = `
+  document.getElementById("main-nav").innerHTML = ME.holder ? `
     <a id="nav-accounts" href="#/">${esc(t("nav.accounts"))}</a>
     <button id="nav-move" type="button">${esc(t("act.move"))}</button>
     <a id="nav-payees" href="#/payees">${esc(t("nav.payees"))}</a>
+    <a id="nav-statements" href="#/statements">${esc(t("nav.statements"))}</a>` : `
+    <a id="nav-accounts" href="#/">${esc(t("nav.accounts"))}</a>
     <a id="nav-statements" href="#/statements">${esc(t("nav.statements"))}</a>`;
-  document.getElementById("nav-move").addEventListener("click", () => { freshWizard(); go("#/move"); });
+  if (ME.holder) {
+    document.getElementById("nav-move").addEventListener("click", () => { freshWizard(); go("#/move"); });
+  }
+  renderWho();
+}
+
+/* Who is signed in, and the account menu: Sign out sits one click behind it. */
+function renderWho() {
+  const who = document.getElementById("who");
+  who.innerHTML = `
+    <span id="signed-in-as">${esc(ME.name)} · ${esc(t(ME.holder ? "role.holder" : "role.viewer"))}</span>
+    <button id="nav-account" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="account-menu">${esc(t("act.account"))}</button>
+    <div class="menu" id="account-menu" hidden>
+      <form action="/logout" method="post"><button id="sign-out" type="submit">${esc(t("act.sign_out"))}</button></form>
+    </div>`;
+  const toggle = document.getElementById("nav-account");
+  toggle.addEventListener("click", () => {
+    const menu = document.getElementById("account-menu");
+    menu.hidden = !menu.hidden;
+    toggle.setAttribute("aria-expanded", menu.hidden ? "false" : "true");
+  });
+}
+
+function showAccessNotice() {
+  view().innerHTML = `
+    <h1>${esc(t("access.title"))}</h1>
+    <p class="panel notice" id="access-notice">${esc(t("access.notice"))}</p>
+    <a id="access-back" href="#/">${esc(t("act.back_accounts"))}</a>`;
 }
 
 function steps(current) {
@@ -64,10 +103,16 @@ async function showDashboard() {
       <strong class="balance" id="balance-${esc(a.id)}">${esc(a.balance_label)}</strong>
       <span class="muted" id="scheduled-${esc(a.id)}">${esc(t("label.scheduled_out"))}: ${esc(a.scheduled_label)}</span>
     </li>`).join("");
+  const cancel = (s) => (ME.holder
+    ? `<button id="cancel-${s.id}" type="button" data-id="${s.id}">${esc(t("act.cancel_scheduled"))}</button>` : "");
   const rows = data.scheduled.length ? data.scheduled.map((s) => `
     <tr><td>${esc(s.date)}</td><td>${esc(s.from)}</td><td>${esc(s.to)}</td><td>${esc(s.amount)}</td>
-      <td><button id="cancel-${s.id}" type="button" data-id="${s.id}">${esc(t("act.cancel_scheduled"))}</button></td></tr>`).join("")
+      <td>${cancel(s)}</td></tr>`).join("")
     : `<tr><td colspan="5" class="muted">${esc(t("msg.no_scheduled"))}</td></tr>`;
+  const mandates = data.direct_debits.length ? data.direct_debits.map((d) => `
+    <li>${esc(d.originator)} <span class="muted">${esc(d.reference)} · ${esc(d.account)} ·
+      ${esc(t("label.collected_on"))} ${esc(d.collection_day)}</span></li>`).join("")
+    : `<li class="muted">${esc(t("msg.no_direct_debits"))}</li>`;
   view().innerHTML = `
     <h1>${esc(t("title.accounts"))}</h1>
     <p class="muted">${esc(t("label.today"))} ${esc(data.today)}</p>
@@ -77,6 +122,10 @@ async function showDashboard() {
       <h2>${esc(t("title.scheduled"))}</h2>
       <table id="scheduled-table"><thead><tr><th>${esc(t("col.date"))}</th><th>${esc(t("col.from"))}</th>
         <th>${esc(t("col.to"))}</th><th>${esc(t("col.amount"))}</th><th></th></tr></thead><tbody>${rows}</tbody></table>
+    </section>
+    <section class="panel" id="mandates-panel">
+      <h2>${esc(t("title.direct_debits"))}</h2>
+      <ul class="mandates">${mandates}</ul>
     </section>
     <aside class="panel promo">
       <h2>${esc(t("promo.title"))}</h2><p>${esc(t("promo.body"))}</p>
@@ -90,11 +139,16 @@ async function showDashboard() {
   }));
 }
 
-function showOffers() {
+async function showOffers() {
+  const { data } = await api("/api/products");
+  const products = data.products.map((p) => `
+    <li>${esc(p.title)} <span class="muted">${esc(t(`kind.${p.kind}`))}${p.interest_bps
+      ? ` · ${esc((p.interest_bps / 100).toFixed(2))}% ${esc(t("label.aer"))}` : ""}</span></li>`).join("");
   view().innerHTML = `
     <h1>${esc(t("promo.title"))}</h1>
     <p>${esc(t("promo.detail"))}</p>
     <p class="muted">${esc(t("promo.small_print"))}</p>
+    <section class="panel"><h2>${esc(t("title.products"))}</h2><ul class="products">${products}</ul></section>
     <a id="back-to-accounts" href="#/">${esc(t("act.back_accounts"))}</a>`;
 }
 
@@ -348,8 +402,9 @@ async function showStatements() {
 async function route() {
   const hash = location.hash || "#/";
   const payee = hash.match(/^#\/payees\/([\w-]+)$/);
-  if (hash === "#/" || hash === "#") { await showDashboard(); }
-  else if (hash === "#/offers") { showOffers(); }
+  if (!ME.holder && /^#\/(move|payees)/.test(hash)) { showAccessNotice(); }
+  else if (hash === "#/" || hash === "#") { await showDashboard(); }
+  else if (hash === "#/offers") { await showOffers(); }
   else if (hash === "#/move") { await showMoveAccounts(); }
   else if (hash === "#/move/amount") { await showMoveAmount(); }
   else if (hash === "#/move/review") { showMoveReview(); }
@@ -362,7 +417,10 @@ async function route() {
 }
 
 async function boot() {
-  VOCAB = (await api("/api/vocab")).data;
+  const [vocab, me] = await Promise.all([api("/api/vocab"), api("/api/me")]);
+  VOCAB = vocab.data;
+  if (!me.ok) { return; }  // signed out meanwhile: api() is already on its way to the sign-in page
+  ME = me.data;
   document.title = t("app.title");
   renderNav();
   window.addEventListener("hashchange", route);

@@ -4,9 +4,14 @@
  *   #/projects                    the projects hub
  *   #/board/<project>             a board
  *   #/board/<project>/card/<n>    a card, as a modal over its board (a reload reopens it)
+ *   #/board/<project>/settings    the board's WIP limits (project owners)
  * Every route render and every action is one JSON request; the page is always redrawn from
  * the server's answer, never from what the client hoped would happen. The only state kept
  * purely on the client is UI state: the open tab, open menus, drafts, and "watching".
+ *
+ * The server decides who may do what. A board says what the signed-in user may do there
+ * (`access`), and the client shows only those controls; a route the user may not open
+ * shows an access notice instead. A signed-out answer sends the browser to the sign-in page.
  */
 
 const VOCAB = JSON.parse(document.getElementById("vocab-data").textContent);
@@ -29,6 +34,8 @@ const ui = {
   openMenu: null,     // the column whose options menu is open
   draftCard: null,    // {title} while the new-card form is open
   modal: null,        // {n, tab, target, message, linkCopied, comment} while a card is open
+  settings: null,     // {pid, view, values, message} on a settings route
+  notice: null,       // the access notice for the current route, if it may not be opened
   watching: new Set(), // cards this browser tab watches; never sent to the server
   busy: false,
 };
@@ -41,7 +48,12 @@ async function request(path, body) {
     : { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body) };
   const response = await fetch(path, options);
-  return response.json();
+  const result = await response.json();
+  if (result && result.reason === "signed-out") {
+    location.assign("/login");
+    return new Promise(() => {}); // the page is going away; nothing more to draw
+  }
+  return result;
 }
 
 /** One server action at a time; the answer replaces the board the page is drawn from. */
@@ -60,6 +72,8 @@ async function perform(path, body, where) {
       ui.modal.message = message;
     } else if (where === "board") {
       ui.boardMessage = message;
+    } else if (where === "settings" && ui.settings) {
+      ui.settings.message = message;
     }
     return result;
   } finally {
@@ -73,6 +87,10 @@ function parseRoute(hash) {
   let m = /^#\/board\/([a-z]+)\/card\/(\d+)$/.exec(hash);
   if (m) {
     return { name: "card", pid: m[1], n: Number(m[2]) };
+  }
+  m = /^#\/board\/([a-z]+)\/settings$/.exec(hash);
+  if (m) {
+    return { name: "settings", pid: m[1], n: null };
   }
   m = /^#\/board\/([a-z]+)$/.exec(hash);
   if (m) {
@@ -90,9 +108,11 @@ async function route() {
   const token = ++routeToken;
   const previous = current;
   current = next;
+  setAccountMenu(false);
   if (!previous || previous.name !== next.name || previous.pid !== next.pid || previous.n !== next.n) {
     ui.boardMessage = "";
     ui.openMenu = null;
+    ui.notice = null;
   }
   if (!previous || previous.pid !== next.pid) {
     ui.draftCard = null;
@@ -100,6 +120,9 @@ async function route() {
   ui.modal = next.name !== "card" ? null
     : ui.modal && ui.modal.n === next.n ? ui.modal
       : { n: next.n, tab: "details", target: null, message: "", linkCopied: false, comment: "" };
+  if (next.name !== "settings") {
+    ui.settings = null;
+  }
   paint(); // at once, from what is already known; then from the server
   if (next.name === "projects") {
     const data = await request("/api/projects");
@@ -109,9 +132,25 @@ async function route() {
     }
     return;
   }
+  if (next.name === "settings") {
+    const data = await request(`/api/boards/${next.pid}/settings`);
+    if (token === routeToken) {
+      if (data.ok) {
+        ui.settings = { pid: next.pid, view: data.settings, values: limitsOf(data.settings), message: "" };
+      } else {
+        ui.notice = data.message || data.error || "";
+      }
+      paint();
+    }
+    return;
+  }
   const data = await request(`/api/boards/${next.pid}`);
-  if (token === routeToken && data.board) {
-    ui.board = data.board;
+  if (token === routeToken) {
+    if (data.board) {
+      ui.board = data.board;
+    } else {
+      ui.notice = data.message || data.error || "";
+    }
     paint();
   }
 }
@@ -122,10 +161,23 @@ function paint() {
   if (!current) {
     return;
   }
-  document.body.classList.toggle("modal-open", current.name === "card");
+  document.body.classList.toggle("modal-open", current.name === "card" && ui.notice === null);
+  if (ui.notice !== null) {
+    modalRoot.innerHTML = "";
+    view.innerHTML = noticeHtml();
+    return;
+  }
   if (current.name === "projects") {
     modalRoot.innerHTML = "";
     view.innerHTML = projectsHtml();
+    return;
+  }
+  if (current.name === "settings") {
+    modalRoot.innerHTML = "";
+    view.innerHTML = ui.settings ? settingsHtml(ui.settings) : `<p class="loading">${esc(t("label.loading"))}</p>`;
+    if (ui.settings) {
+      bindSettings(ui.settings);
+    }
     return;
   }
   const data = ui.board && ui.board.project.id === current.pid ? ui.board : null;
@@ -144,6 +196,15 @@ function paint() {
   }
 }
 
+function noticeHtml() {
+  return `
+    <section class="notice">
+      <h1>${esc(t("notice.title"))}</h1>
+      <p id="access-notice">${esc(ui.notice || t("notice.forbidden"))}</p>
+      <a id="notice-back" class="button" href="#/projects">${esc(t("act.back_to_projects"))}</a>
+    </section>`;
+}
+
 // -- projects hub ------------------------------------------------------------------------------
 
 function projectsHtml() {
@@ -155,6 +216,7 @@ function projectsHtml() {
       <h2>${esc(p.name)}</h2>
       <p class="muted">${esc(p.summary)}</p>
       <span id="summary-${esc(p.id)}" class="summary">${esc(t("label.project_summary", { cards: p.cards, shipped: p.shipped }))}</span>
+      <span class="pill">${esc(t(`role.${p.role}`))}</span>
       <a id="open-project-${esc(p.id)}" class="button primary" href="#/board/${esc(p.id)}">${esc(t("act.open_board"))}</a>
     </li>`).join("");
   return `<h1>${esc(t("title.projects"))}</h1><ul id="project-list" class="projects">${items}</ul>`;
@@ -164,10 +226,15 @@ function projectsHtml() {
 
 function boardHtml(data, interactive) {
   const columns = data.columns.map((column) => columnHtml(data, column, interactive)).join("");
+  const settings = interactive && data.access.canAdmin
+    ? `<a id="board-settings" class="button" href="#/board/${esc(data.project.id)}/settings">${esc(t("act.board_settings"))}</a>` : "";
+  const readOnly = data.access.canEdit ? "" : `<p id="read-only-note" class="muted">${esc(t("label.read_only"))}</p>`;
   return `
     <section class="board-head">
       <h1 id="board-title">${esc(data.project.name)}</h1>
+      ${settings}
       <p class="muted">${esc(data.project.summary)}</p>
+      ${readOnly}
       <p id="board-message" class="message" role="status">${interactive ? esc(ui.boardMessage) : ""}</p>
     </section>
     <div class="columns"${interactive ? "" : ' aria-hidden="true"'}>${columns}</div>`;
@@ -185,7 +252,7 @@ function columnHtml(data, column, interactive) {
         <h2 id="col-title-${esc(column.id)}">${esc(column.name)}</h2>
         <output id="wip-${esc(column.id)}" class="load${full ? " full" : ""}"${limit}>${esc(column.load)}</output>
       </header>
-      ${interactive ? columnTools(column) : ""}
+      ${interactive && data.access.canEdit ? columnTools(column) : ""}
       <ul id="col-${esc(column.id)}-cards" class="cards">${cards}</ul>
     </section>`;
 }
@@ -281,6 +348,51 @@ function bindBoard(data) {
   });
 }
 
+// -- board settings (owners) ---------------------------------------------------------------------
+
+function limitsOf(view) {
+  return Object.fromEntries(view.columns.map((c) => [c.id, String(c.wip)]));
+}
+
+function settingsHtml(s) {
+  const fields = s.view.columns.map((c) => `
+    <div class="field">
+      <label for="wip-${esc(c.id)}-input">${esc(t("field.wip_limit", { column: c.name }))}</label>
+      <input id="wip-${esc(c.id)}-input" name="wip_${esc(c.id)}" type="number" min="1" max="${s.view.max}"
+        data-column="${esc(c.id)}" value="${esc(s.values[c.id])}">
+      <span class="muted">${esc(t("label.holding", { count: c.holding }))}</span>
+    </div>`).join("");
+  return `
+    <section class="settings">
+      <h1 id="settings-title">${esc(t("title.settings", { project: s.view.project.name }))}</h1>
+      <p class="muted">${esc(t("label.settings_help"))}</p>
+      ${fields}
+      <div class="row">
+        <button id="save-settings" class="primary" type="button">${esc(t("act.save_settings"))}</button>
+        <a id="settings-back" class="button" href="#/board/${esc(s.pid)}">${esc(t("act.back_to_board"))}</a>
+      </div>
+      <p id="settings-message" class="message" role="status">${esc(s.message)}</p>
+    </section>`;
+}
+
+function bindSettings(s) {
+  document.querySelectorAll(".settings input[data-column]").forEach((input) => {
+    input.addEventListener("input", (event) => {
+      s.values[input.dataset.column] = event.target.value;
+    });
+  });
+  document.getElementById("save-settings").addEventListener("click", async () => {
+    const result = await perform(`/api/boards/${s.pid}/settings`, { limits: { ...s.values } }, "settings");
+    if (result && result.settings && ui.settings === s) {
+      s.view = result.settings;
+      if (result.ok) {
+        s.values = limitsOf(result.settings);
+      }
+    }
+    paint();
+  });
+}
+
 // -- card modal ----------------------------------------------------------------------------------
 
 const TABS = ["details", "checklist", "activity"];
@@ -301,10 +413,15 @@ function modalHtml(data) {
   const watching = ui.watching.has(card.n);
   const tabs = TABS.map((tab) => `<button id="tab-${tab}" type="button" role="tab"
     aria-selected="${m.tab === tab}" class="tab${m.tab === tab ? " active" : ""}">${esc(TAB_LABEL[tab]())}</button>`).join("");
-  const panel = m.tab === "checklist" ? checklistHtml(card) : m.tab === "activity" ? activityHtml(card) : detailsHtml(data, card);
+  const panel = m.tab === "checklist" ? checklistHtml(data, card)
+    : m.tab === "activity" ? activityHtml(data, card) : detailsHtml(data, card);
   const options = card.moveTargets.map((target) =>
     `<option value="${esc(target.id)}"${target.id === m.target ? " selected" : ""}>${esc(target.name)}</option>`).join("");
-  const workflow = card.final ? `<p class="muted" id="card-final">${esc(t("label.final"))}</p>` : `
+  let workflow = "";
+  if (card.final) {
+    workflow = `<p class="muted" id="card-final">${esc(t("label.final"))}</p>`;
+  } else if (data.access.canEdit) {
+    workflow = `
       <div class="move">
         <label for="move-target">${esc(t("field.move_to"))}</label>
         <select id="move-target" name="move_target">${options}</select>
@@ -312,6 +429,7 @@ function modalHtml(data) {
       </div>
       ${card.canShip ? `<button id="ship-card" class="primary" type="button">${esc(t("act.ship"))}</button>` : ""}
       ${card.canPark ? `<button id="park-card" type="button">${esc(t("act.park"))}</button>` : ""}`;
+  }
   return `
     <div class="backdrop">
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="card-title" id="card-modal">
@@ -347,37 +465,46 @@ function detailsHtml(data, card) {
       <li><a id="dep-${b.n}" href="#/board/${esc(data.project.id)}/card/${b.n}">#${b.n} ${esc(b.title)}</a>
         <span class="muted">${esc(b.columnName)} · ${esc(b.finished ? t("label.dep_shipped") : t("label.dep_open"))}</span></li>`).join("")}
     </ul>` : `<p class="muted" id="card-blockers-none">${esc(t("label.no_blockers"))}</p>`;
+  const people = card.assignees.length ? card.assignees.map(esc).join(", ") : esc(t("label.unassigned"));
+  const labels = card.labels.map((name) => `<span class="pill label">${esc(name)}</span>`).join(" ");
   return `
     <h3>${esc(t("title.description"))}</h3>
     <p id="card-description">${esc(card.description || t("label.no_description"))}</p>
+    <dl class="facts">
+      <dt>${esc(t("label.assignees"))}</dt><dd id="card-assignees">${people}</dd>
+      <dt>${esc(t("label.labels"))}</dt><dd id="card-labels">${labels || esc(t("label.no_labels"))}</dd>
+    </dl>
     ${blockers}`;
 }
 
-function checklistHtml(card) {
+function checklistHtml(data, card) {
   if (!card.checklist.length) {
     return `<p class="muted">${esc(t("label.empty_checklist"))}</p>`;
   }
+  const locked = card.final || !data.access.canEdit;
   const items = card.checklist.map((item) => {
     const id = `check-${card.n}-${item.id}`;
-    return `<li><input type="checkbox" id="${id}" name="item-${card.n}-${item.id}" data-item="${item.id}"${item.done ? " checked" : ""}${card.final ? " disabled" : ""}>
+    return `<li><input type="checkbox" id="${id}" name="item-${card.n}-${item.id}" data-item="${item.id}"${item.done ? " checked" : ""}${locked ? " disabled" : ""}>
       <label for="${id}">${esc(item.text)}</label></li>`;
   }).join("");
   return `<ul id="checklist" class="checklist">${items}</ul>`;
 }
 
-function activityHtml(card) {
+function activityHtml(data, card) {
   const comments = card.comments.length
-    ? card.comments.map((c) => `<li><p class="comment-body">${esc(c.body)}</p><span class="muted">${esc(c.at)}</span></li>`).join("")
+    ? card.comments.map((c) => `<li><p class="comment-body">${esc(c.body)}</p><span class="muted">${esc(c.author)} · ${esc(c.at)}</span></li>`).join("")
     : `<li class="muted">${esc(t("label.no_comments"))}</li>`;
   const history = card.activity.length
-    ? card.activity.map((a) => `<li><span class="muted">${esc(a.at)}</span> ${esc(a.text)}</li>`).join("")
+    ? card.activity.map((a) => `<li><span class="muted">${esc(a.at)}</span> ${esc(a.text)} <span class="muted">· ${esc(a.by)}</span></li>`).join("")
     : `<li class="muted">${esc(t("label.no_activity"))}</li>`;
+  const form = data.access.canEdit ? `
+    <label for="comment-body">${esc(t("field.comment"))}</label>
+    <textarea id="comment-body" name="comment" rows="3">${esc(ui.modal.comment)}</textarea>
+    <div class="row"><button id="add-comment" type="button">${esc(t("act.comment"))}</button></div>` : "";
   return `
     <h3>${esc(t("title.comments"))}</h3>
     <ul id="comment-list" class="comments">${comments}</ul>
-    <label for="comment-body">${esc(t("field.comment"))}</label>
-    <textarea id="comment-body" name="comment" rows="3">${esc(ui.modal.comment)}</textarea>
-    <div class="row"><button id="add-comment" type="button">${esc(t("act.comment"))}</button></div>
+    ${form}
     <h3>${esc(t("title.activity"))}</h3>
     <ol id="activity-log" class="activity">${history}</ol>`;
 }
@@ -458,6 +585,17 @@ function bindModal(data) {
   });
 }
 
+// -- account menu (rendered by the server with the page) -------------------------------------------
+
+function setAccountMenu(open) {
+  const button = document.getElementById("nav-account");
+  const menu = document.getElementById("account-menu");
+  if (button && menu) {
+    button.setAttribute("aria-expanded", String(open));
+    menu.hidden = !open;
+  }
+}
+
 // -- boot ------------------------------------------------------------------------------------------
 
 function boot() {
@@ -465,8 +603,15 @@ function boot() {
   document.getElementById("brand").textContent = t("app.title");
   document.getElementById("main-nav").innerHTML =
     `<a id="nav-projects" href="#/projects">${esc(t("nav.projects"))}</a>`;
+  document.getElementById("nav-account").addEventListener("click", () => {
+    setAccountMenu(document.getElementById("account-menu").hidden);
+  });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && current && current.name === "card") {
+    if (event.key !== "Escape") {
+      return;
+    }
+    setAccountMenu(false);
+    if (current && current.name === "card") {
       location.hash = `#/board/${current.pid}`;
     }
   });

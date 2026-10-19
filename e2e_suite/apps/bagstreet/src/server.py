@@ -1,18 +1,19 @@
-"""Bagstreet — a small shop. Server-rendered pages and HTML forms, standard library only.
+"""Bagstreet — a small shop. Server-rendered pages and HTML forms on the Python standard
+library, with the suite's vendored MongoDB driver.
 
 Post/redirect/get throughout: every form posts, the server validates and stores, then
-redirects to a page that is rendered from the database. State lives in SQLite under
-WTA_DATA_DIR, partitioned by the `wta_sid` session cookie.
+redirects to a page rendered from the database. Each signed-in browser has a MongoDB database
+of its own (store.py); requests are served one at a time under one lock.
 """
 
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import os
 import re
-import sqlite3
-import tempfile
+import sys
 import threading
 from http import cookies
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -20,145 +21,56 @@ from pathlib import Path
 from urllib.parse import parse_qs, quote, urlsplit
 
 import pages
+import shop
+from shop import Refused, refresh_voucher
+from store import Visits, read_seed
 
 APP_ID = "bagstreet"
 ROOT = Path(__file__).resolve().parent
-CATALOG = json.loads((ROOT.parent / "seed" / "catalog.json").read_text(encoding="utf-8"))
+SEED = read_seed(ROOT.parent / "seed")
 pages.VOCAB.update(json.loads((ROOT.parent / "vocab" / f"{os.environ.get('WTA_VOCAB', 'default')}.json")
                               .read_text(encoding="utf-8")))
 t = pages.t
-DATA_DIR = Path(os.environ.get("WTA_DATA_DIR") or tempfile.mkdtemp(prefix="bagstreet-"))
-DB_PATH = DATA_DIR / "bagstreet.sqlite3"
 TEST_HOOKS = os.environ.get("WTA_TEST_HOOKS") == "1"
-PRODUCTS = {p["slug"]: p for p in CATALOG["products"]}
-METHOD_FEES = {"standard": 395, "express": 795, "collect": 0}
-VOUCHERS = ("none", "welcome10", "freeship", "bundle5")
-MAX_QTY = 99
-TEXT_LIMIT = 10000
-_LOCK = threading.Lock()
-
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value INTEGER);
-CREATE TABLE IF NOT EXISTS bags (sid TEXT PRIMARY KEY, voucher TEXT, discount INTEGER, method TEXT,
-    full_name TEXT, address TEXT, notice TEXT, error TEXT);
-CREATE TABLE IF NOT EXISTS lines (sid TEXT, line INTEGER, slug TEXT, variant TEXT, qty INTEGER,
-    PRIMARY KEY (sid, line));
-CREATE TABLE IF NOT EXISTS orders (sid TEXT, number TEXT, method TEXT, full_name TEXT, address TEXT,
-    subtotal INTEGER, discount INTEGER, delivery INTEGER, total INTEGER, PRIMARY KEY (sid, number));
-CREATE TABLE IF NOT EXISTS order_lines (sid TEXT, number TEXT, line INTEGER, slug TEXT, variant TEXT,
-    qty INTEGER, price INTEGER);
-"""
+NOW = os.environ.get("WTA_FIXED_NOW") or "2026-06-10T09:00:00"
+ACCOUNTS = {u["username"]: u for u in SEED["users"]}
+PEOPLE = {u["_id"]: u for u in SEED["users"]}
+STAND_IN = {"salt": "0" * 32, "hash": "0" * 64, "iter": 20000}  # an unknown name costs one derivation too
+PAGE_NUMBER = re.compile(r"[1-9]\d{0,3}")
+ADDRESS_KEY = r"[a-z][a-z0-9-]{0,40}"
+LOCK = threading.Lock()
+VISITS: Visits | None = None
 
 
-def connect() -> sqlite3.Connection:
-    conn = sqlite3.connect(DB_PATH, timeout=10)
-    conn.row_factory = sqlite3.Row
-    return conn
+def authenticate(username: str, password: str) -> dict | None:
+    account = ACCOUNTS.get(username.strip().lower())
+    pw = account["pw"] if account else STAND_IN
+    derived = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), bytes.fromhex(pw["salt"]), pw["iter"]).hex()
+    return account if account and hmac.compare_digest(derived, pw["hash"]) else None
 
 
-def next_id(conn, key: str) -> int:
-    row = conn.execute("SELECT value FROM meta WHERE key = ?", (key,)).fetchone()
-    value = (row["value"] if row else 0) + 1
-    conn.execute("INSERT OR REPLACE INTO meta VALUES (?, ?)", (key, value))
-    return value
-
-
-def variant_of(slug: str, variant: str) -> dict | None:
-    product = PRODUCTS.get(slug)
-    if product is None:
-        return None
-    return next((v for v in product["variants"] if v["id"] == variant), None)
+def continue_to(raw: str) -> str:
+    """Where to go after signing in: a same-origin path other than the sign-in page."""
+    if not raw.startswith("/") or raw.startswith("//") or "\\" in raw or urlsplit(raw).path == "/login":
+        return "/"
+    return raw
 
 
 def method_label(method: str) -> str:
     return t(f"method.{method}")
 
 
-def voucher_label(code: str) -> str:
-    return t(f"voucher.{code}")
-
-
-# -- the bag ---------------------------------------------------------------------------------
-
-
-def bag_row(conn, sid) -> sqlite3.Row:
-    return conn.execute("SELECT * FROM bags WHERE sid = ?", (sid,)).fetchone()
-
-
-def bag_lines(conn, sid) -> list[dict]:
-    out = []
-    for row in conn.execute("SELECT * FROM lines WHERE sid = ? ORDER BY line", (sid,)):
-        product, variant = PRODUCTS[row["slug"]], variant_of(row["slug"], row["variant"])
-        out.append({"line": row["line"], "slug": row["slug"], "variant": row["variant"],
-                    "name": product["name"], "variant_name": variant["name"],
-                    "price": variant["price"], "qty": row["qty"]})
-    return out
-
-
-def voucher_discount(code: str, subtotal: int) -> int:
-    if code == "welcome10":
-        return (subtotal + 5) // 10
-    if code == "bundle5":
-        return 500 if subtotal >= 5000 else 0
-    return 0
-
-
-def refresh_voucher(conn, sid) -> None:
-    """Recompute the stored voucher discount from the bag as it is now."""
-    bag = bag_row(conn, sid)
-    subtotal = sum(line["price"] * line["qty"] for line in bag_lines(conn, sid))
-    conn.execute("UPDATE bags SET discount = ? WHERE sid = ?", (voucher_discount(bag["voucher"], subtotal), sid))
-
-
-def totals(conn, sid, method: str | None = None) -> dict:
-    bag = bag_row(conn, sid)
-    subtotal = sum(line["price"] * line["qty"] for line in bag_lines(conn, sid))
-    method = method or bag["method"]
-    delivery = 0 if bag["voucher"] == "freeship" else METHOD_FEES[method]
-    before = subtotal - bag["discount"]
-    return {"subtotal": subtotal, "discount": bag["discount"], "before_delivery": before,
-            "delivery": delivery, "total": before + delivery, "voucher_label": voucher_label(bag["voucher"])}
-
-
-def committed_state(conn, sid) -> dict:
-    bag = bag_row(conn, sid)
-    return {
-        "bag": {"voucher": bag["voucher"], "discount": bag["discount"], "method": bag["method"],
-                "full_name": bag["full_name"], "address": bag["address"]},
-        "lines": [dict(r) for r in conn.execute(
-            "SELECT line, slug, variant, qty FROM lines WHERE sid = ? ORDER BY line", (sid,))],
-        "orders": [dict(r) for r in conn.execute(
-            "SELECT number, method, full_name, address, subtotal, discount, delivery, total FROM orders "
-            "WHERE sid = ? ORDER BY number", (sid,))],
-    }
-
-
-def parse_qty(raw: str) -> int | None:
-    text = (raw or "").strip()
-    if not re.fullmatch(r"\d{1,3}", text):
-        return None
-    value = int(text)
-    return value if value <= MAX_QTY else None
-
-
-# -- HTTP ------------------------------------------------------------------------------------
+def page_number(raw: str) -> int:
+    return int(raw) if PAGE_NUMBER.fullmatch(raw or "") else 1
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "Bagstreet/1.0"
+    server_version = "Bagstreet/2.0"
 
     def log_message(self, fmt, *args):
         pass
 
-    def _session(self, conn) -> str:
-        jar = cookies.SimpleCookie(self.headers.get("Cookie", ""))
-        sid = jar["wta_sid"].value if "wta_sid" in jar else ""
-        if sid and bag_row(conn, sid) is not None:
-            return sid
-        sid = f"b{next_id(conn, 'session'):06d}"
-        conn.execute("INSERT INTO bags VALUES (?, 'none', 0, 'standard', '', '', '', '')", (sid,))
-        self._cookie = sid
-        return sid
+    # -- the wire ----------------------------------------------------------------------------
 
     def _headers(self, status: int, content_type: str | None = None, length: int = 0, location: str = "") -> None:
         self.send_response(status)
@@ -172,17 +84,14 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Set-Cookie", f"wta_sid={self._cookie}; Path=/; HttpOnly; SameSite=Lax")
         self.end_headers()
 
-    def _html(self, status: int, body: bytes) -> None:
-        self._headers(status, "text/html; charset=utf-8", len(body))
+    def _send(self, status: int, content_type: str, body: bytes) -> None:
+        self._headers(status, content_type, len(body))
         self.wfile.write(body)
 
-    def _redirect(self, location: str) -> None:
-        self._headers(303, location=location)
-
-    def _form(self) -> dict:
+    def _read_form(self) -> dict[str, list[str]]:
         length = int(self.headers.get("Content-Length") or 0)
-        raw = self.rfile.read(length).decode("utf-8") if length else ""
-        return {k: v[-1] for k, v in parse_qs(raw, keep_blank_values=True).items()}
+        raw = self.rfile.read(length).decode("utf-8", "replace") if length else ""
+        return parse_qs(raw, keep_blank_values=True)
 
     def do_GET(self):
         self._handle("GET")
@@ -193,231 +102,368 @@ class Handler(BaseHTTPRequestHandler):
     def _handle(self, method: str) -> None:
         self._cookie = None
         parts = urlsplit(self.path)
-        path = parts.path
-        if path == "/healthz":
-            body = json.dumps({"ok": True, "app": APP_ID}).encode()
-            self._headers(200, "application/json", len(body))
-            self.wfile.write(body)
-            return
-        if path.startswith("/static/"):
-            return self._static(path[len("/static/"):])
-        with _LOCK:
-            conn = connect()
-            try:
-                sid = self._session(conn)
-                outcome = self._route(conn, sid, method, path, parse_qs(parts.query))
-                conn.commit()
-            finally:
-                conn.close()
-        kind, payload = outcome
+        if parts.path == "/healthz":
+            ok = VISITS.healthy()
+            return self._send(200 if ok else 503, "application/json", json.dumps({"ok": ok, "app": APP_ID}).encode())
+        if parts.path.startswith("/static/"):
+            return self._static(parts.path[len("/static/"):])
+        self.form = self._read_form() if method == "POST" else {}
+        jar = cookies.SimpleCookie(self.headers.get("Cookie", ""))
+        self.sid = jar["wta_sid"].value if "wta_sid" in jar else ""
+        with LOCK:
+            kind, payload = self._route(method, parts.path, parse_qs(parts.query), parts.query)
         if kind == "redirect":
-            self._redirect(payload)
+            self._headers(303, location=payload)
         elif kind == "json":
-            body = json.dumps(payload).encode()
-            self._headers(200, "application/json", len(body))
-            self.wfile.write(body)
+            self._send(200, "application/json", json.dumps(payload).encode())
         else:
             status, body = payload
-            self._html(status, body)
+            self._send(status, "text/html; charset=utf-8", body)
+        return None
 
     def _static(self, name: str) -> None:
         target = (ROOT / "static" / name).resolve()
         if (ROOT / "static") not in target.parents or not target.is_file():
-            self._headers(404, "text/plain", 0)
-            return
-        kind = {".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8"}.get(target.suffix,
-                                                                                            "application/octet-stream")
-        body = target.read_bytes()
-        self._headers(200, kind, len(body))
-        self.wfile.write(body)
+            return self._send(404, "text/plain", b"not found")
+        kind = {".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8"}.get(
+            target.suffix, "application/octet-stream")
+        return self._send(200, kind, target.read_bytes())
 
-    def _page(self, conn, sid, title: str, body: str, status: int = 200):
-        count = conn.execute("SELECT COALESCE(SUM(qty), 0) AS n FROM lines WHERE sid = ?", (sid,)).fetchone()["n"]
-        bag = bag_row(conn, sid)
-        notice = bag["notice"]
-        if notice:
-            conn.execute("UPDATE bags SET notice = '' WHERE sid = ?", (sid,))
-        return "html", (status, pages.layout(title, body, count, notice))
+    def field(self, name: str, default: str = "") -> str:
+        return (self.form.get(name) or [default])[-1]
 
-    def _take_error(self, conn, sid) -> str:
-        error = bag_row(conn, sid)["error"]
-        if error:
-            conn.execute("UPDATE bags SET error = '' WHERE sid = ?", (sid,))
-        return error
+    # -- page helpers ------------------------------------------------------------------------
 
-    def _fail(self, conn, sid, message: str, location: str):
-        conn.execute("UPDATE bags SET error = ? WHERE sid = ?", (message, sid))
+    def page(self, title: str, body: str, status: int = 200, dialogs: str = ""):
+        notice = VISITS.heard(self.visit, "notice")
+        html = pages.layout(title, body, who=self.who, bag_count=shop.bag_count(self.db, self.who["id"]),
+                            notice=notice, dialogs=dialogs)
+        return "html", (status, html)
+
+    def error(self) -> str:
+        return VISITS.heard(self.visit, "error")
+
+    def fail(self, key: str, location: str):
+        VISITS.say(self.visit["_id"], error=t(key))
         return "redirect", location
 
-    def _route(self, conn, sid, method: str, path: str, query: dict):  # noqa: C901, PLR0911, PLR0912
+    def done(self, location: str, key: str = "", extra: str = ""):
+        if key:
+            VISITS.say(self.visit["_id"], notice=f"{t(key)}{extra}")
+        return "redirect", location
+
+    def missing(self):
+        return self.page(t("missing.title"), pages.info("missing.title", "missing.body"), 404)
+
+    def refused(self):
+        return self.page(t("access.title"), pages.access_notice())
+
+    # -- routing -----------------------------------------------------------------------------
+
+    def _route(self, method: str, path: str, query: dict, raw_query: str):  # noqa: PLR0911
         if method == "GET" and path == "/__wta/state":
-            if not TEST_HOOKS:
-                return "html", (404, b"not found")
-            committed = committed_state(conn, sid)
-            sha = hashlib.sha256(json.dumps(committed, sort_keys=True).encode()).hexdigest()
-            return "json", {"session": sid, "committed": committed, "sha": sha}
+            return self._state()
+        if path == "/login":
+            return self._sign_in(method, query)
+        if method == "GET" and path == "/login/forgot":
+            return "html", (200, pages.layout(t("forgot.title"), pages.forgot()))
+        self.visit = VISITS.find(self.sid) if self.sid else None
+        if self.visit is None or self.visit["user_id"] is None:
+            if method == "GET":
+                asked = path + (f"?{raw_query}" if raw_query else "")
+                return "redirect", f"/login?next={quote(asked, safe='')}"
+            return "redirect", "/login"
+        person = PEOPLE[self.visit["user_id"]]
+        self.who = {"id": person["_id"], "username": person["username"], "name": person["name"],
+                    "roles": person["roles"]}
+        self.db = VISITS.database(self.visit)
+        if method == "POST" and path == "/logout":
+            VISITS.sign_out(self.visit["_id"])
+            return "redirect", "/login"
+        sections = (("/account", self._account), ("/staff/", self._staff), ("/p/", self._product),
+                    ("/bag", self._bag), ("/checkout/", self._checkout), ("/orders", self._orders))
+        for prefix, handler in sections:
+            if path.startswith(prefix):
+                return handler(method, path, query)
         if method == "GET" and path == "/":
-            return self._page(conn, sid, t("home.title"), pages.home(CATALOG))
+            return self.page(t("home.title"), pages.home(shop.categories(self.db)))
         if method == "GET" and path == "/search":
-            q = (query.get("q") or [""])[0].strip()
-            category = (query.get("category") or ["all"])[0]
-            sort = (query.get("sort") or ["relevance"])[0]
-            items = [p for p in CATALOG["products"] if category in ("all", p["category"])]
-            matched = [p for p in items if q and q.lower() in (p["name"] + " " + p["blurb"]).lower()]
-            exact = bool(matched) or not q
-            items = matched or items  # nothing matched: show everything rather than an empty page
-            price = lambda p: min(v["price"] for v in p["variants"])  # noqa: E731
-            if sort == "price-asc":
-                items = sorted(items, key=price)
-            elif sort == "price-desc":
-                items = sorted(items, key=price, reverse=True)
-            elif sort == "name":
-                items = sorted(items, key=lambda p: p["name"])
-            return self._page(conn, sid, t("results.title"), pages.results(CATALOG, items, q, category, sort, exact))
-        match = re.fullmatch(r"/p/([\w-]+)", path)
-        if method == "GET" and match and match.group(1) in PRODUCTS:
-            return self._page(conn, sid, PRODUCTS[match.group(1)]["name"],
-                              pages.product(PRODUCTS[match.group(1)], self._take_error(conn, sid)))
-        if method == "POST" and path == "/bag/add":
-            form = self._form()
-            slug, variant = form.get("slug", ""), form.get("variant", "")
-            if variant_of(slug, variant) is None:
-                return "redirect", "/"
-            qty = parse_qty(form.get("qty", ""))
-            if qty is None or qty == 0:
-                return self._fail(conn, sid, t("msg.qty_rule"), f"/p/{quote(slug)}")
-            existing = conn.execute("SELECT * FROM lines WHERE sid = ? AND slug = ? AND variant = ?",
-                                    (sid, slug, variant)).fetchone()
-            if existing:
-                if existing["qty"] + qty > MAX_QTY:
-                    return self._fail(conn, sid, t("msg.qty_rule"), f"/p/{quote(slug)}")
-                conn.execute("UPDATE lines SET qty = qty + ? WHERE sid = ? AND line = ?", (qty, sid, existing["line"]))
-            else:
-                line = (conn.execute("SELECT COALESCE(MAX(line), 0) AS n FROM lines WHERE sid = ?",
-                                     (sid,)).fetchone()["n"]) + 1
-                conn.execute("INSERT INTO lines VALUES (?, ?, ?, ?, ?)", (sid, line, slug, variant, qty))
-            refresh_voucher(conn, sid)
-            conn.execute("UPDATE bags SET notice = ? WHERE sid = ?", (t("msg.added"), sid))
-            return "redirect", "/bag"
+            return self._search(query)
+        if method == "GET" and path == "/express":
+            return self.page(t("express.title"), pages.info("express.title", "express.body"))
+        if method == "GET" and path == "/gifts":
+            return self.page(t("gifts.title"), pages.info("gifts.title", "gifts.body"))
+        return self.missing()
+
+    def _state(self):
+        if not TEST_HOOKS:
+            return "html", (404, b"not found")
+        visit = VISITS.find(self.sid) if self.sid else None
+        if visit is None:
+            return "json", {"session": None, "user": None, "committed": None, "sha": None}
+        committed = shop.committed(VISITS.database(visit))
+        canonical = json.dumps(committed, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+        user = PEOPLE[visit["user_id"]]["username"] if visit["user_id"] else None
+        return "json", {"session": visit["_id"], "user": user, "committed": committed,
+                        "sha": hashlib.sha256(canonical.encode("utf-8")).hexdigest()}
+
+    def _sign_in(self, method: str, query: dict):
+        if method == "GET":
+            next_path = continue_to((query.get("next") or [""])[0])
+            visit = VISITS.find(self.sid) if self.sid else None
+            if visit is not None and visit["user_id"] is not None:
+                return "redirect", next_path
+            return "html", (200, pages.layout(t("signin.title"), pages.sign_in(next_path)))
+        next_path = continue_to(self.field("next"))
+        account = authenticate(self.field("username"), self.field("password"))
+        if account is None:
+            return "html", (200, pages.layout(t("signin.title"), pages.sign_in(next_path, t("msg.signin_refused"))))
+        sid, _ = VISITS.sign_in(self.sid, account["_id"])
+        self._cookie = sid
+        return "redirect", next_path
+
+    # -- browsing ----------------------------------------------------------------------------
+
+    def _search(self, query: dict):
+        q = (query.get("q") or [""])[0].strip()
+        categories = shop.categories(self.db)
+        category = (query.get("category") or ["all"])[0]
+        if category not in {c["_id"] for c in categories}:
+            category = "all"
+        sort = (query.get("sort") or ["relevance"])[0]
+        sort = sort if sort in shop.SORTS else "relevance"
+        page = page_number((query.get("page") or ["1"])[0])
+        items, exact = shop.search(self.db, q, category, sort)
+        shown, page_count = shop.page_of(items, page)
+        return self.page(t("results.title"), pages.results(categories, shown, q, category, sort, exact, page,
+                                                           page_count, shop.from_price))
+
+    def _product(self, method: str, path: str, query: dict):  # noqa: PLR0911
+        match = re.fullmatch(r"/p/([a-z][a-z0-9-]*)(/reviews|/review/edit|/review/delete)?", path)
+        item = shop.product(self.db, match.group(1)) if match else None
+        if item is None:
+            return self.missing()
+        slug, action = item["_id"], match.group(2)
+        reviews_tab = f"/p/{slug}?tab=reviews"
+        if method == "GET" and action is None:
+            tab = (query.get("tab") or ["details"])[0]
+            message = self.error()
+            authors = {k: v["name"] for k, v in PEOPLE.items()}
+            body, dialogs = pages.product(item, tab=tab, authors=authors, me=self.who,
+                                          error="" if tab == "reviews" else message,
+                                          review_error=message if tab == "reviews" else "")
+            return self.page(item["name"], body, dialogs=dialogs)
+        if action is None:
+            return self.missing()
+        if "customer" not in self.who["roles"]:
+            return self.refused()
+        mine = shop.own_review(item, self.who["id"])
+        if action == "/review/edit" and method == "GET":
+            if mine is None:
+                return "redirect", reviews_tab
+            return self.page(t("review.edit_title"), pages.review_editor(item, mine, self.error()))
+        if method != "POST":
+            return self.missing()
+        if action == "/review/delete":
+            if shop.delete_review(self.db, slug, self.who["id"]):
+                return self.done(reviews_tab, "msg.review_deleted")
+            return "redirect", reviews_tab
+        stars, text = self.field("stars").strip(), self.field("text").strip()
+        problem = shop.review_problem(stars, text)
+        if action == "/reviews":
+            if problem:
+                return self.fail(problem, reviews_tab)
+            try:
+                shop.post_review(self.db, slug, self.who["id"], int(stars), text)
+            except Refused as refusal:
+                return self.fail(refusal.key, reviews_tab)
+            return self.done(reviews_tab, "msg.review_posted")
+        if mine is None:
+            return "redirect", reviews_tab
+        if problem:
+            return self.fail(problem, f"/p/{slug}/review/edit")
+        shop.edit_review(self.db, slug, self.who["id"], int(stars), text)
+        return self.done(reviews_tab, "msg.review_saved")
+
+    # -- the bag -----------------------------------------------------------------------------
+
+    def _bag(self, method: str, path: str, query: dict):  # noqa: PLR0911
+        bag_id = self.who["id"]
         if method == "GET" and path == "/bag":
-            vouchers = [(code, voucher_label(code)) for code in VOUCHERS]
-            body = pages.bag(bag_lines(conn, sid), totals(conn, sid), vouchers, bag_row(conn, sid)["voucher"],
-                             self._take_error(conn, sid))
-            return self._page(conn, sid, t("bag.title"), body)
-        if method == "POST" and path == "/bag/update":
-            form = self._form()
+            vouchers = [(code, t(f"voucher.{code}")) for code in shop.VOUCHER_CODES]
+            body = pages.bag(shop.bag_lines(self.db, bag_id), shop.totals(shop.bag(self.db, bag_id)), vouchers,
+                             self.error())
+            return self.page(t("bag.title"), body)
+        if method != "POST":
+            return self.missing()
+        if path == "/bag/add":
+            slug, code = self.field("slug"), self.field("variant")
+            if shop.variant_of(shop.product(self.db, slug), code) is None:
+                return "redirect", "/"
+            qty = shop.parse_qty(self.field("qty"))
+            if not qty:
+                return self.fail("msg.qty_rule", f"/p/{quote(slug)}")
+            try:
+                shop.add_to_bag(self.db, bag_id, slug, code, qty)
+            except Refused as refusal:
+                return self.fail(refusal.key, f"/p/{quote(slug)}")
+            return self.done("/bag", "msg.added")
+        if path == "/bag/update":
             changes = {}
-            for line in bag_lines(conn, sid):
-                raw = form.get(f"qty_{line['line']}")
+            for line in shop.bag(self.db, bag_id)["lines"]:
+                raw = self.form.get(f"qty_{line['n']}")
                 if raw is None:
                     continue
-                qty = parse_qty(raw)
+                qty = shop.parse_qty(raw[-1])
                 if qty is None:
-                    return self._fail(conn, sid, t("msg.qty_rule"), "/bag")
-                changes[line["line"]] = qty
-            for line, qty in changes.items():
-                if qty == 0:
-                    conn.execute("DELETE FROM lines WHERE sid = ? AND line = ?", (sid, line))
-                else:
-                    conn.execute("UPDATE lines SET qty = ? WHERE sid = ? AND line = ?", (qty, sid, line))
-            refresh_voucher(conn, sid)  # the discount depends on what is in the bag
+                    return self.fail("msg.qty_rule", "/bag")
+                changes[line["n"]] = qty
+            shop.set_quantities(self.db, bag_id, changes)
+            refresh_voucher(self.db, bag_id)  # the discount depends on what is in the bag
             return "redirect", "/bag"
-        match = re.fullmatch(r"/bag/remove/(\d+)", path)
-        if method == "POST" and match:
-            conn.execute("DELETE FROM lines WHERE sid = ? AND line = ?", (sid, int(match.group(1))))
-            refresh_voucher(conn, sid)
+        match = re.fullmatch(r"/bag/remove/(\d{1,3})", path)
+        if match:
+            shop.remove_lines(self.db, bag_id, {int(match.group(1))})
             return "redirect", "/bag"
-        if method == "POST" and path == "/bag/voucher":
-            code = self._form().get("voucher", "none")
-            if code not in VOUCHERS:
-                return self._fail(conn, sid, t("msg.voucher_unknown"), "/bag")
-            conn.execute("UPDATE bags SET voucher = ? WHERE sid = ?", (code, sid))
-            refresh_voucher(conn, sid)
+        if path == "/bag/remove-selected":
+            picked = {int(n) for n in self.form.get("line", []) if re.fullmatch(r"\d{1,3}", n)}
+            if not picked:
+                return self.fail("msg.pick_items", "/bag")
+            removed = shop.remove_lines(self.db, bag_id, picked)
+            return self.done("/bag", "msg.removed", f" ({removed})")
+        if path == "/bag/voucher":
+            code = self.field("voucher", "none")
+            if code not in shop.VOUCHER_CODES:
+                return self.fail("msg.voucher_unknown", "/bag")
+            shop.use_voucher(self.db, bag_id, code)
             return "redirect", "/bag"
-        if path == "/checkout/delivery":
-            if not bag_lines(conn, sid):
-                return "redirect", "/bag"
-            if method == "GET":
-                methods = [(m, method_label(m), METHOD_FEES[m]) for m in METHOD_FEES]
-                bag = bag_row(conn, sid)
-                saved = {"method": bag["method"], "full_name": bag["full_name"], "address": bag["address"]}
-                return self._page(conn, sid, t("delivery.title"),
-                                  pages.delivery(methods, saved, CATALOG["store"], self._take_error(conn, sid)))
-            form = self._form()
-            chosen = form.get("method", "standard")
-            if chosen not in METHOD_FEES:
-                return self._fail(conn, sid, t("msg.method_unknown"), "/checkout/delivery")
-            conn.execute("UPDATE bags SET method = ? WHERE sid = ?", (chosen, sid))
-            if "full_name" in form:
-                full_name, address = form.get("full_name", "").strip(), form.get("address", "").strip()
-                if len(full_name) > TEXT_LIMIT or len(address) > TEXT_LIMIT:
-                    return self._fail(conn, sid, t("msg.too_long"), "/checkout/delivery")
-                conn.execute("UPDATE bags SET full_name = ?, address = ? WHERE sid = ?", (full_name, address, sid))
-            if form.get("action") != "review":
+        return self.missing()
+
+    # -- checkout ----------------------------------------------------------------------------
+
+    def _checkout(self, method: str, path: str, query: dict):  # noqa: PLR0911
+        bag_id = self.who["id"]
+        bag = shop.bag(self.db, bag_id)
+        if not bag["lines"]:
+            return "redirect", "/bag"
+        saved = {"method": bag["method"], "full_name": bag["full_name"], "address": bag["address"]}
+        store = shop.store(self.db, bag["store_id"])["address"]
+        if path == "/checkout/delivery" and method == "GET":
+            methods = [(m, method_label(m), fee) for m, fee in shop.METHOD_FEES.items()]
+            book = shop.addresses(self.db, bag_id)
+            return self.page(t("delivery.title"), pages.delivery(methods, saved, store, book, shop.one_line,
+                                                                 self.error()))
+        if path == "/checkout/delivery" and method == "POST":
+            chosen = self.field("method", "standard")
+            if chosen not in shop.METHOD_FEES:
+                return self.fail("msg.method_unknown", "/checkout/delivery")
+            details = None
+            if "full_name" in self.form:
+                full_name, address = self.field("full_name").strip(), self.field("address").strip()
+                if len(full_name) > shop.TEXT_LIMIT or len(address) > shop.TEXT_LIMIT:
+                    return self.fail("msg.too_long", "/checkout/delivery")
+                details = (full_name, address)
+            shop.save_delivery(self.db, bag_id, chosen, details)
+            if self.field("action") != "review":
                 return "redirect", "/checkout/delivery"  # the method changed: show its section
-            bag = bag_row(conn, sid)
+            bag = shop.bag(self.db, bag_id)
             if chosen in ("standard", "express") and not (bag["full_name"] and bag["address"]):
-                return self._fail(conn, sid, t("msg.address_needed"), "/checkout/delivery")
+                return self.fail("msg.address_needed", "/checkout/delivery")
             return "redirect", "/checkout/review"
-        if method == "GET" and path == "/checkout/review":
-            lines = bag_lines(conn, sid)
-            if not lines:
-                return "redirect", "/bag"
-            bag = bag_row(conn, sid)
-            saved = {"method": bag["method"], "full_name": bag["full_name"], "address": bag["address"]}
-            return self._page(conn, sid, t("review.title"),
-                              pages.review(lines, totals(conn, sid), saved, method_label(bag["method"]),
-                                           CATALOG["store"]))
-        if method == "POST" and path == "/checkout/place":
-            lines = bag_lines(conn, sid)
-            if not lines:
-                return "redirect", "/bag"
-            chosen = self._form().get("method", "")
-            if chosen not in METHOD_FEES:
-                return self._fail(conn, sid, t("msg.method_unknown"), "/checkout/delivery")
-            bag = bag_row(conn, sid)
-            sums = totals(conn, sid, chosen)
-            number = f"BS-{1000 + next_id(conn, f'order:{sid}')}"
-            conn.execute("INSERT INTO orders VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                         (sid, number, chosen, bag["full_name"] if chosen != "collect" else "",
-                          bag["address"] if chosen != "collect" else "", sums["subtotal"], sums["discount"],
-                          sums["delivery"], sums["total"]))
-            for line in lines:
-                conn.execute("INSERT INTO order_lines VALUES (?, ?, ?, ?, ?, ?, ?)",
-                             (sid, number, line["line"], line["slug"], line["variant"], line["qty"], line["price"]))
-            conn.execute("DELETE FROM lines WHERE sid = ?", (sid,))
-            conn.execute("UPDATE bags SET voucher = 'none', discount = 0, notice = ? WHERE sid = ?",
-                         (f"{t('msg.placed')} {number}", sid))
-            return "redirect", f"/orders/{number}"
+        if path == "/checkout/review" and method == "GET":
+            return self.page(t("review.title"), pages.review(shop.bag_lines(self.db, bag_id), shop.totals(bag), saved,
+                                                             method_label(bag["method"]), store))
+        if path == "/checkout/place" and method == "POST":
+            chosen = self.field("method")
+            if chosen not in shop.METHOD_FEES:
+                return self.fail("msg.method_unknown", "/checkout/delivery")
+            number = shop.place_order(self.db, bag_id, chosen, NOW)
+            return self.done(f"/orders/{number}", "msg.placed", f" {number}")
+        return self.missing()
+
+    # -- orders ------------------------------------------------------------------------------
+
+    def _orders(self, method: str, path: str, query: dict):
+        labels = {m: method_label(m) for m in shop.METHOD_FEES}
         if method == "GET" and path == "/orders":
-            rows = [dict(r) for r in conn.execute("SELECT * FROM orders WHERE sid = ? ORDER BY number DESC", (sid,))]
-            labels = {m: method_label(m) for m in METHOD_FEES}
-            return self._page(conn, sid, t("nav.orders"), pages.orders(rows, labels))
-        match = re.fullmatch(r"/orders/(BS-\d+)", path)
-        if method == "GET" and match:
-            order = conn.execute("SELECT * FROM orders WHERE sid = ? AND number = ?", (sid, match.group(1))).fetchone()
-            if order is None:
-                return self._page(conn, sid, t("nav.orders"), pages.info("orders.missing_title", "orders.missing"), 404)
-            lines = []
-            for row in conn.execute("SELECT * FROM order_lines WHERE sid = ? AND number = ? ORDER BY line",
-                                    (sid, order["number"])):
-                lines.append({"qty": row["qty"], "name": PRODUCTS[row["slug"]]["name"],
-                              "variant_name": variant_of(row["slug"], row["variant"])["name"]})
-            return self._page(conn, sid, t("confirm.title"),
-                              pages.confirmation(dict(order), lines, method_label(order["method"]), CATALOG["store"]))
-        if method == "GET" and path == "/express":
-            return self._page(conn, sid, t("express.title"), pages.info("express.title", "express.body"))
-        if method == "GET" and path == "/gifts":
-            return self._page(conn, sid, t("gifts.title"), pages.info("gifts.title", "gifts.body"))
-        return self._page(conn, sid, t("missing.title"), pages.info("missing.title", "missing.body"), 404)
+            return self.page(t("nav.orders"), pages.orders(shop.orders_of(self.db, self.who["id"]), labels))
+        match = re.fullmatch(r"/orders/(BS-\d{4})", path)
+        placed = shop.order(self.db, match.group(1)) if match and method == "GET" else None
+        if placed is None or (placed["customer_id"] != self.who["id"] and "staff" not in self.who["roles"]):
+            return self.page(t("nav.orders"), pages.info("orders.missing_title", "orders.missing"), 404)
+        store = shop.store(self.db, placed["store_id"])["address"]
+        return self.page(t("confirm.title"), pages.confirmation(placed, method_label(placed["method"]), store))
+
+    def _staff(self, method: str, path: str, query: dict):
+        if "staff" not in self.who["roles"]:
+            return self.refused()
+        labels = {m: method_label(m) for m in shop.METHOD_FEES}
+        customers = {k: v["name"] for k, v in PEOPLE.items()}
+        if method == "GET" and path == "/staff/orders":
+            status = (query.get("status") or ["placed"])[0]
+            status = status if status in ("all", *shop.STATUSES) else "placed"
+            return self.page(t("staff.title"), pages.staff_orders(shop.all_orders(self.db, status), status, customers,
+                                                                  labels, self.error()))
+        if method == "POST" and path == "/staff/orders/dispatch":
+            numbers = [n for n in self.form.get("order", []) if re.fullmatch(r"BS-\d{4}", n)]
+            if not numbers:
+                return self.fail("msg.pick_orders", "/staff/orders")
+            count = shop.dispatch(self.db, numbers, self.who["id"], NOW)
+            return self.done("/staff/orders", "msg.dispatched", f" ({count})")
+        return self.missing()
+
+    # -- the account -------------------------------------------------------------------------
+
+    def _account(self, method: str, path: str, query: dict):  # noqa: PLR0911
+        user_id = self.who["id"]
+        if method == "GET" and path == "/account":
+            return self.page(t("account.title"), pages.account(self.who))
+        if path == "/account/addresses" and method == "GET":
+            body, dialogs = pages.address_book(shop.addresses(self.db, user_id), shop.one_line, self.error())
+            return self.page(t("addresses.title"), body, dialogs=dialogs)
+        if path == "/account/addresses/new":
+            if method == "GET":
+                return self.page(t("addresses.new_title"), pages.address_form(path, {}, self.error()))
+            fields = self._address_fields()
+            problem = shop.address_problem(fields)
+            if problem:
+                return self.fail(problem, path)
+            try:
+                shop.add_address(self.db, user_id, fields)
+            except Refused as refusal:
+                return self.fail(refusal.key, "/account/addresses")
+            return self.done("/account/addresses", "msg.address_added")
+        match = re.fullmatch(rf"/account/addresses/({ADDRESS_KEY})/(edit|delete)", path)
+        if not match:
+            return self.missing()
+        key, action = match.groups()
+        current = next((a for a in shop.addresses(self.db, user_id) if a["key"] == key), None)
+        if current is None:
+            return "redirect", "/account/addresses"  # already deleted, e.g. from another tab
+        if action == "edit" and method == "GET":
+            return self.page(t("addresses.edit_title"), pages.address_form(path, current, self.error()))
+        if method != "POST":
+            return self.missing()
+        if action == "delete":
+            shop.delete_address(self.db, user_id, key)
+            return self.done("/account/addresses", "msg.address_deleted")
+        fields = self._address_fields()
+        problem = shop.address_problem(fields)
+        if problem:
+            return self.fail(problem, path)
+        shop.update_address(self.db, user_id, key, fields)
+        return self.done("/account/addresses", "msg.address_saved")
+
+    def _address_fields(self) -> dict[str, str]:
+        return {name: self.field(name).strip() for name in shop.ADDRESS_LIMITS}
 
 
 def main() -> None:
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    conn = connect()
-    conn.executescript(SCHEMA)
-    conn.commit()
-    conn.close()
+    global VISITS  # noqa: PLW0603 - the one registry, made once the URL is known
+    url = os.environ.get("MONGODB_URL")
+    if not url:
+        sys.exit("bagstreet: MONGODB_URL is required (the MongoDB home database for this server)")
+    VISITS = Visits(url, SEED, int(os.environ.get("WTA_SESSION_CAP") or 32))
     server = ThreadingHTTPServer((os.environ.get("HOST", "127.0.0.1"), int(os.environ["PORT"])), Handler)
     server.daemon_threads = True
     server.serve_forever()

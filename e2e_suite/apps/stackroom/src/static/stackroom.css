@@ -39,3 +39,11 @@ dl.facts dt { color: var(--dim); }
 .actions { display: flex; gap: 1rem; align-items: center; margin-top: 1rem; }
 ol.journal { background: #fff; border: 1px solid var(--rule); padding: .6rem 1rem .6rem 2.4rem; }
 ol.journal li { padding: .15rem 0; }
+.account { margin-left: auto; display: flex; gap: .8rem; align-items: baseline; position: relative; }
+#signed-in-as { color: var(--dim); font-size: .9rem; }
+.account-menu { position: absolute; right: 0; top: 2.2rem; z-index: 2; }
+.account-menu form { margin: 0; }
+.notice { border-left: 4px solid var(--warn); background: #fff; padding: .6rem .9rem; max-width: 40rem; }
+.note { color: var(--dim); margin: .6rem 0; }
+h2 { font-size: 1.05rem; margin: 1.4rem 0 .4rem; }
+#login-form input[type="text"], #login-form input[type="password"] { width: 100%; padding: .35rem .5rem; border: 1px solid var(--rule); border-radius: 3px; }

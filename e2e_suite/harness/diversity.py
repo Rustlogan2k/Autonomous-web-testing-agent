@@ -19,16 +19,19 @@ FEATURES = ("modal", "tabs", "nested-form", "conditional-section", "table", "fil
             "server-rendered", "fragment-update", "dynamic-validation", "enable-disable",
             "multi-role", "reload-persistence")
 _TOKEN = re.compile(r"[a-z]+")
+#: What counts as implementation: code, markup, styles and (suite v2) SQL. Authentication and
+#: database plumbing are written per app, so they fall under the same 15% shared-line rule.
+SHINGLED_SUFFIXES = {".py", ".js", ".mjs", ".html", ".css", ".sql"}
 
 
 def _shingles(app: AppManifest) -> set[str]:
     """Normalised non-trivial source lines, the unit of 'shared implementation'."""
     lines = set()
     for path in (app.root / "src").rglob("*"):
-        if path.is_file() and path.suffix in {".py", ".js", ".mjs", ".html", ".css"}:
+        if path.is_file() and path.suffix in SHINGLED_SUFFIXES:
             for line in path.read_text(encoding="utf-8").splitlines():
                 norm = " ".join(line.split())
-                if len(norm) >= 25 and not norm.startswith(("#", "//", "/*", "*")):
+                if len(norm) >= 25 and not norm.startswith(("#", "//", "/*", "*", "--")):
                     lines.add(norm)
     return lines
 

@@ -1,0 +1,5 @@
+[
+  {"_id": "welcome10", "kind": "percent", "percent": 10},
+  {"_id": "freeship", "kind": "free_delivery"},
+  {"_id": "bundle5", "kind": "amount_off", "amount_pence": 500, "min_subtotal_pence": 5000}
+]

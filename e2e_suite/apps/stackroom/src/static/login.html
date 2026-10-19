@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{TITLE}}</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/assets/stackroom.css">
+</head>
+<body>
+  <header class="masthead">
+    <strong class="wordmark">{{TITLE}}</strong>
+  </header>
+  <main id="page" tabindex="-1">
+    <h1>{{HEADING}}</h1>
+    <form id="login-form" class="panel" method="post" action="/login">
+      <input type="hidden" name="next" value="{{NEXT}}">
+      <label for="login-username">{{USERNAME_LABEL}}</label>
+      <input id="login-username" name="username" type="text" value="{{USERNAME}}" autocomplete="username" required>
+      <label for="login-password">{{PASSWORD_LABEL}}</label>
+      <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+      {{ERROR}}
+      <div class="actions">
+        <button id="login-submit" class="strong" type="submit">{{SIGN_IN}}</button>
+        <a id="forgot-password" href="/help/sign-in">{{FORGOT}}</a>
+      </div>
+    </form>
+  </main>
+</body>
+</html>

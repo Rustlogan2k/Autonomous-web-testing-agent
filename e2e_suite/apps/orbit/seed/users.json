@@ -1,0 +1,17 @@
+[
+  {
+    "_id": "rosa", "username": "rosa.lindqvist", "name": "Rosa Lindqvist",
+    "pw": {"salt": "5d1c0f6e2b8a4c7391e0a6b4f2d8c135",
+           "hash": "db5c417150fb38a6c2c2e38990392e2f371cf28356bc5bce71df9da291ed1b99", "iter": 20000}
+  },
+  {
+    "_id": "mei", "username": "mei.tanaka", "name": "Mei Tanaka",
+    "pw": {"salt": "a83f17c29e5b40d68c2e91f7b3a0d4e6",
+           "hash": "be146818bb4e7537c273f461c4a40395b27ecbba8e6afe8de40039cae645fc53", "iter": 20000}
+  },
+  {
+    "_id": "ola", "username": "ola.nwosu", "name": "Ola Nwosu",
+    "pw": {"salt": "0e9b6d2c4f7a1853b6e0c9d27f4a8b31",
+           "hash": "f3909589d680337e11ff3521b6a78d457347b3d6c27cf081d226061f919b8f36", "iter": 20000}
+  }
+]

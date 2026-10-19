@@ -1,9 +1,11 @@
-"""Helpline's care desk: tickets, their conversations, and the rules that move them.
+"""Helpline's care desk: tickets, their conversations, customers, saved replies, and the
+rules that move them.
 
-Pure domain code over one SQLite connection (one database file per session; see
-`store.py`). Nothing here knows about HTTP or HTML. Every operation either commits a
-complete change or raises `Refusal` having written nothing, so a refused action leaves the
-committed state byte-for-byte as it was.
+Domain code over one session's MongoDB database (`store.py`); nothing here knows about HTTP
+or HTML. A ticket is one document: its conversation (`entries`: customer, agent and system
+entries), its history and its links travel with it. Every operation checks everything it
+needs before it writes, and raises `Refusal` having written nothing, so a refused action
+leaves the committed state exactly as it was.
 
 The status machine::
 
@@ -19,38 +21,35 @@ The status machine::
 
 from __future__ import annotations
 
-import sqlite3
+import datetime as dt
+import re
+
+import pymongo
 
 STATUSES = ("new", "triage", "in_progress", "waiting", "resolved", "closed")
 OPEN_STATUSES = ("new", "triage", "in_progress", "waiting")
 PRIORITY_RANK = {"urgent": 0, "high": 1, "normal": 2, "low": 3}
+CHANNELS = ("email", "phone", "chat")
 #: Explicit status moves an agent can make with a button, and where each may start from.
 MOVES = {"triage": ("new",), "in_progress": ("triage", "waiting")}
-ME = "sam"
-ONCALL = "kai"
-PEOPLE = {"sam": "Sam", "noor": "Noor", "kai": "Kai"}
 BODY_LIMIT = 10_000
+TEXT_LIMIT = 200
 #: Queue filters as they appear in URLs, and what they select.
 STATUS_FILTERS = ("open", "all") + STATUSES
 ASSIGNEE_FILTERS = ("any", "none", "noor", "kai")
-
-SCHEMA = """
-CREATE TABLE tickets (
-    id INTEGER PRIMARY KEY, subject TEXT NOT NULL, customer TEXT NOT NULL, email TEXT, phone TEXT,
-    plan TEXT, channel TEXT, priority TEXT NOT NULL, status TEXT NOT NULL,
-    assignee TEXT NOT NULL DEFAULT '', merged_into INTEGER, opened TEXT NOT NULL);
-CREATE TABLE entries (
-    seq INTEGER PRIMARY KEY AUTOINCREMENT, ticket_id INTEGER NOT NULL, role TEXT NOT NULL,
-    author TEXT NOT NULL, body TEXT NOT NULL, at TEXT NOT NULL);
-CREATE TABLE links (ticket_id INTEGER NOT NULL, other_id INTEGER NOT NULL,
-    PRIMARY KEY (ticket_id, other_id));
-CREATE TABLE history (
-    seq INTEGER PRIMARY KEY AUTOINCREMENT, ticket_id INTEGER NOT NULL, at TEXT NOT NULL,
-    actor TEXT NOT NULL, event TEXT NOT NULL, detail TEXT NOT NULL DEFAULT '');
--- Denormalised for the queue's assignee filters (which would otherwise scan every ticket
--- with its conversation joined). Derived data: whoever changes an assignee re-indexes.
-CREATE TABLE assignee_index (ticket_id INTEGER PRIMARY KEY, assignee TEXT NOT NULL);
-"""
+#: Customer directory: page size and orders (each ends in a unique key).
+DIRECTORY_PAGE = 10
+CUSTOMER_SORTS = {
+    "name": [("name", pymongo.ASCENDING), ("_id", pymongo.ASCENDING)],
+    "newest": [("since", pymongo.DESCENDING), ("_id", pymongo.ASCENDING)],
+    "speed": [("plan.speed_mbps", pymongo.DESCENDING), ("name", pymongo.ASCENDING), ("_id", pymongo.ASCENDING)],
+}
+PLANS = {"Gigafast": 1000, "Fibre Max": 900, "Fibre Plus": 500, "Fibre Essential": 150, "Rural Wireless": 80,
+         "Copper Basic": 36}
+ROUTERS = {"Gigafast": "Hub 6", "Fibre Max": "Hub 5", "Fibre Plus": "Hub 5", "Fibre Essential": "Hub 4",
+           "Rural Wireless": "Outdoor unit W2", "Copper Basic": "Hub 3"}
+EMAIL = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
+PHONE = re.compile(r"[0-9 +()-]{6,20}")
 
 
 class Refusal(Exception):
@@ -61,82 +60,72 @@ class Refusal(Exception):
         self.key = key
 
 
-# -- building a session's database -----------------------------------------------------------
+# -- the seed --------------------------------------------------------------------------------
 
 
-def install(conn: sqlite3.Connection, seed: dict) -> None:
-    """Create the schema and load the seed: the state every new session starts from."""
-    conn.executescript(SCHEMA)
-    for ticket in seed["tickets"]:
-        conn.execute(
-            "INSERT INTO tickets (id, subject, customer, email, phone, plan, channel, priority, status,"
-            " assignee, merged_into, opened) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)",
-            (ticket["id"], ticket["subject"], ticket["customer"], ticket["email"], ticket["phone"],
-             ticket["plan"], ticket["channel"], ticket["priority"], ticket["status"], ticket["assignee"],
-             ticket["opened"]))
-        _log(conn, ticket["id"], ticket["opened"], ticket["customer"], "created", ticket["channel"])
-        for entry in ticket["conversation"]:
-            author = ticket["customer"] if entry["role"] == "customer" else entry["author"]
-            conn.execute("INSERT INTO entries (ticket_id, role, author, body, at) VALUES (?, ?, ?, ?, ?)",
-                         (ticket["id"], entry["role"], author, entry["body"], entry["at"]))
-        last = ticket["conversation"][-1]["at"]
-        if ticket["assignee"]:
-            _log(conn, ticket["id"], last, "noor", "assigned", ticket["assignee"])
-        if ticket["status"] != "new":
-            _log(conn, ticket["id"], last, "noor", "status", f"new>{ticket['status']}")
-    for a, b in seed.get("links", []):
-        conn.executemany("INSERT INTO links VALUES (?, ?)", ((a, b), (b, a)))
-    refresh_assignee_index(conn, [ticket["id"] for ticket in seed["tickets"]])
+def template(seed: dict) -> dict[str, list[dict]]:
+    """Every collection as a new session first sees it: the seed, the derived queue index
+    and the counters (the next ticket is #111, the next customer c36)."""
+    return {**seed, "queue_index": [{"_id": t["_id"], "assignee": t["assignee_id"] or "", "status": t["status"]}
+                                     for t in seed["tickets"]],
+            "counters": [{"_id": "ticket", "n": max(t["_id"] for t in seed["tickets"])},
+                         {"_id": "customer", "n": len(seed["customers"])},
+                         {"_id": "reply", "n": len(seed["replies"])}]}
 
 
-def refresh_assignee_index(conn: sqlite3.Connection, ids: list[int]) -> None:
-    """Bring the queue's assignee index in line with the tickets themselves."""
-    for ticket_id in ids:
-        conn.execute("INSERT OR REPLACE INTO assignee_index (ticket_id, assignee)"
-                     " SELECT id, assignee FROM tickets WHERE id = ?", (ticket_id,))
+def _next(db, counter: str) -> int:
+    return db.counters.find_one_and_update({"_id": counter}, {"$inc": {"n": 1}},
+                                           return_document=pymongo.ReturnDocument.AFTER)["n"]
 
 
-# -- reading ---------------------------------------------------------------------------------
+# -- people ----------------------------------------------------------------------------------
 
 
-def ticket(conn: sqlite3.Connection, ticket_id: int) -> sqlite3.Row | None:
-    return conn.execute("SELECT * FROM tickets WHERE id = ?", (ticket_id,)).fetchone()
+def agents(db) -> dict[str, dict]:
+    return {a["_id"]: a for a in db.agents.find({}, {"pw": 0}).sort("_id", 1)}
 
 
-def entries(conn: sqlite3.Connection, ticket_id: int) -> list[sqlite3.Row]:
-    return conn.execute("SELECT * FROM entries WHERE ticket_id = ? ORDER BY seq", (ticket_id,)).fetchall()
+def on_call(db) -> dict:
+    return db.agents.find_one({"on_call": True}, {"pw": 0}, sort=[("_id", 1)])
 
 
-def latest_role(conn: sqlite3.Connection, ticket_id: int) -> str:
-    row = conn.execute("SELECT role FROM entries WHERE ticket_id = ? ORDER BY seq DESC LIMIT 1",
-                       (ticket_id,)).fetchone()
-    return row["role"] if row else ""
+# -- reading tickets ---------------------------------------------------------------------------
 
 
-def history(conn: sqlite3.Connection, ticket_id: int) -> list[sqlite3.Row]:
-    return conn.execute("SELECT * FROM history WHERE ticket_id = ? ORDER BY seq", (ticket_id,)).fetchall()
+def ticket(db, ticket_id: int) -> dict | None:
+    return db.tickets.find_one({"_id": ticket_id})
 
 
-def linked(conn: sqlite3.Connection, ticket_id: int) -> list[sqlite3.Row]:
-    return conn.execute("SELECT t.id, t.subject FROM links l JOIN tickets t ON t.id = l.other_id"
-                        " WHERE l.ticket_id = ? ORDER BY t.id", (ticket_id,)).fetchall()
+def customer(db, customer_id: str) -> dict | None:
+    return db.customers.find_one({"_id": customer_id})
 
 
-def merge_candidates(conn: sqlite3.Connection, ticket_id: int) -> list[sqlite3.Row]:
+def conversation(row: dict) -> list[dict]:
+    return list(row["entries"])
+
+
+def latest_role(row: dict) -> str:
+    """Who had the last word: the latest customer or agent entry (system notes do not speak)."""
+    spoken = [e for e in row["entries"] if e["role"] in ("customer", "agent")]
+    return spoken[-1]["role"] if spoken else ""
+
+
+def linked(db, row: dict) -> list[dict]:
+    return list(db.tickets.find({"_id": {"$in": row["linked"]}}, {"subject": 1}).sort("_id", 1))
+
+
+def merge_candidates(db, row: dict) -> list[dict]:
     """Open tickets that could be merged into this one: the same customer's first."""
-    target = ticket(conn, ticket_id)
-    marks = ",".join("?" * len(OPEN_STATUSES))
-    rows = conn.execute(f"SELECT * FROM tickets WHERE id != ? AND status IN ({marks})",
-                        (ticket_id, *OPEN_STATUSES)).fetchall()
-    return sorted(rows, key=lambda row: (row["customer"] != target["customer"], row["id"]))
+    rows = list(db.tickets.find({"_id": {"$ne": row["_id"]}, "status": {"$in": list(OPEN_STATUSES)}}))
+    return sorted(rows, key=lambda other: (other["customer_id"] != row["customer_id"], other["_id"]))
 
 
-def can_merge_into(row: sqlite3.Row) -> bool:
+def can_merge_into(row: dict) -> bool:
     return row["status"] in OPEN_STATUSES
 
 
-def counts(conn: sqlite3.Connection) -> dict[str, int]:
-    found = dict(conn.execute("SELECT status, COUNT(*) FROM tickets GROUP BY status").fetchall())
+def counts(db) -> dict[str, int]:
+    found = {r["_id"]: r["n"] for r in db.tickets.aggregate([{"$group": {"_id": "$status", "n": {"$sum": 1}}}])}
     return {status: found.get(status, 0) for status in STATUSES}
 
 
@@ -145,51 +134,82 @@ def normalise_filters(status: str, assignee: str) -> tuple[str, str]:
             assignee if assignee in ASSIGNEE_FILTERS else "any")
 
 
-def queue(conn: sqlite3.Connection, status: str, assignee: str) -> list[sqlite3.Row]:
+def queue(db, status: str, assignee: str) -> list[dict]:
     """The queue under a filter, most urgent first. Assignee filters read the index."""
     status, assignee = normalise_filters(status, assignee)
-    rows = conn.execute("SELECT * FROM tickets").fetchall()
+    rows = list(db.tickets.find({}, {"entries": 0, "history": 0}))
     if status == "open":
         rows = [row for row in rows if row["status"] in OPEN_STATUSES]
     elif status != "all":
         rows = [row for row in rows if row["status"] == status]
     if assignee != "any":
         code = "" if assignee == "none" else assignee
-        wanted = {r[0] for r in conn.execute("SELECT ticket_id FROM assignee_index WHERE assignee = ?",
-                                             (code,))}
-        rows = [row for row in rows if row["id"] in wanted]
-    return sorted(rows, key=lambda row: (PRIORITY_RANK.get(row["priority"], 9), row["id"]))
+        wanted = {r["_id"] for r in db.queue_index.find({"assignee": code}, {"_id": 1})}
+        rows = [row for row in rows if row["_id"] in wanted]
+    return sorted(rows, key=lambda row: (PRIORITY_RANK.get(row["priority"], 9), row["_id"]))
 
 
-def committed(conn: sqlite3.Connection) -> dict:
-    """The business state a test hook reports: tickets, conversations, links and the audit log."""
-    def rows(sql: str) -> list[dict]:
-        return [dict(row) for row in conn.execute(sql)]
-    return {
-        "tickets": rows("SELECT id, status, assignee, priority, merged_into FROM tickets ORDER BY id"),
-        "entries": rows("SELECT seq, ticket_id, role, author, body FROM entries ORDER BY seq"),
-        "links": rows("SELECT ticket_id, other_id FROM links ORDER BY ticket_id, other_id"),
-        "history": rows("SELECT seq, ticket_id, actor, event, detail FROM history ORDER BY seq"),
-    }
+def sla(db, row: dict, now: dt.datetime) -> dict:
+    """When a ticket must first be answered and resolved, and whether either is already late."""
+    policy = db.sla_policies.find_one({"_id": row["priority"]})
+    opened = dt.datetime.fromisoformat(row["opened"])
+    respond_by = opened + dt.timedelta(minutes=policy["first_response_min"])
+    resolve_by = opened + dt.timedelta(hours=policy["resolve_hours"])
+    answered = any(e["role"] == "agent" for e in row["entries"])
+    open_ = row["status"] in OPEN_STATUSES
+    return {"respond_by": respond_by.strftime("%Y-%m-%d %H:%M"), "resolve_by": resolve_by.strftime("%Y-%m-%d %H:%M"),
+            "response_late": not answered and open_ and now > respond_by, "resolve_late": open_ and now > resolve_by}
 
 
-# -- changing --------------------------------------------------------------------------------
+def breaches(db, now: dt.datetime) -> list[dict]:
+    """Open tickets past either of their SLA times, most urgent first (the lead's report)."""
+    out = []
+    for row in queue(db, "open", "any"):
+        full = ticket(db, row["_id"])
+        due = sla(db, full, now)
+        if due["response_late"] or due["resolve_late"]:
+            out.append({"ticket": full, **due})
+    return out
 
 
-def _log(conn, ticket_id: int, at: str, actor: str, event: str, detail: str = "") -> None:
-    conn.execute("INSERT INTO history (ticket_id, at, actor, event, detail) VALUES (?, ?, ?, ?, ?)",
-                 (ticket_id, at, actor, event, detail))
+def committed(db) -> dict:
+    """Business state: tickets (with conversations, history and links), the queue index,
+    customers, saved replies and agents (never their passwords)."""
+    return {"tickets": list(db.tickets.find({}).sort("_id", 1)),
+            "queue_index": list(db.queue_index.find({}).sort("_id", 1)),
+            "customers": list(db.customers.find({}).sort("_id", 1)),
+            "replies": list(db.replies.find({}).sort("_id", 1)),
+            "agents": list(db.agents.find({}, {"pw": 0}).sort("_id", 1))}
 
 
-def _set_status(conn, row: sqlite3.Row, to: str, now: str) -> None:
+# -- changing tickets ----------------------------------------------------------------------------
+
+
+def refresh_assignee_index(db, ids: list[int]) -> None:
+    """Bring the queue's index in line with the tickets themselves."""
+    for ticket_id in ids:
+        row = ticket(db, ticket_id)
+        if row is not None:
+            db.queue_index.replace_one({"_id": ticket_id}, {"_id": ticket_id, "assignee": row["assignee_id"] or "",
+                                                            "status": row["status"]}, upsert=True)
+
+
+def _log(db, ticket_id: int, at: str, actor: str, event: str, detail: str = "") -> None:
+    row = db.tickets.find_one({"_id": ticket_id}, {"history": 1})
+    entry = {"n": len(row["history"]) + 1, "at": at, "actor": actor, "event": event, "detail": detail}
+    db.tickets.update_one({"_id": ticket_id}, {"$push": {"history": entry}})
+
+
+def _set_status(db, row: dict, to: str, now: str, me: str) -> None:
     if row["status"] == to:
         return
-    conn.execute("UPDATE tickets SET status = ? WHERE id = ?", (to, row["id"]))
-    _log(conn, row["id"], now, ME, "status", f"{row['status']}>{to}")
+    db.tickets.update_one({"_id": row["_id"]}, {"$set": {"status": to}})
+    _log(db, row["_id"], now, me, "status", f"{row['status']}>{to}")
+    db.queue_index.update_one({"_id": row["_id"]}, {"$set": {"status": to}})
 
 
-def _open_ticket(conn, ticket_id: int) -> sqlite3.Row:
-    row = ticket(conn, ticket_id)
+def _open_ticket(db, ticket_id: int) -> dict:
+    row = ticket(db, ticket_id)
     if row is None:
         raise Refusal("msg.no_such_ticket")
     if row["status"] == "closed":
@@ -205,89 +225,269 @@ def _clean_body(body: str) -> str:
     return body  # stored exactly as typed
 
 
-def send_reply(conn, ticket_id: int, body: str, now: str) -> None:
+def send_reply(db, ticket_id: int, body: str, now: str, me: str) -> None:
     """The agent answers the customer; the ball is then in the customer's court."""
-    row = _open_ticket(conn, ticket_id)
+    row = _open_ticket(db, ticket_id)
     text = _clean_body(body)
-    conn.execute("INSERT INTO entries (ticket_id, role, author, body, at) VALUES (?, 'agent', ?, ?, ?)",
-                 (ticket_id, ME, text, now))
-    _log(conn, ticket_id, now, ME, "reply")
+    db.tickets.update_one({"_id": ticket_id}, {"$push": {"entries": {"role": "agent", "at": now, "body": text,
+                                                                     "author_id": me}}})
+    _log(db, ticket_id, now, me, "reply")
     if row["status"] in ("new", "triage", "in_progress"):
-        _set_status(conn, row, "waiting", now)
+        _set_status(db, row, "waiting", now, me)
 
 
-def log_customer_reply(conn, ticket_id: int, body: str, now: str) -> None:
+def log_customer_reply(db, ticket_id: int, body: str, now: str, me: str) -> None:
     """The agent records what the customer said on the phone."""
-    row = _open_ticket(conn, ticket_id)
+    row = _open_ticket(db, ticket_id)
     text = _clean_body(body)
-    conn.execute("INSERT INTO entries (ticket_id, role, author, body, at) VALUES (?, 'customer', ?, ?, ?)",
-                 (ticket_id, row["customer"], text, now))
-    _log(conn, ticket_id, now, ME, "customer_reply")
+    db.tickets.update_one({"_id": ticket_id}, {"$push": {"entries": {"role": "customer", "at": now, "body": text,
+                                                                     "via": "phone"}}})
+    _log(db, ticket_id, now, me, "customer_reply")
     if row["status"] in ("waiting", "resolved"):  # the customer answered: back to work
-        _set_status(conn, row, "in_progress", now)
+        _set_status(db, row, "in_progress", now, me)
 
 
-def move(conn, ticket_id: int, to: str, now: str) -> None:
+def move(db, ticket_id: int, to: str, now: str, me: str) -> None:
     """An explicit step along the machine: start triage, start (or resume) work."""
-    row = _open_ticket(conn, ticket_id)
+    row = _open_ticket(db, ticket_id)
     if row["status"] not in MOVES.get(to, ()):
         raise Refusal("msg.bad_transition")
-    _set_status(conn, row, to, now)
+    _set_status(db, row, to, now, me)
 
 
-def resolve(conn, ticket_id: int, now: str) -> None:
-    row = _open_ticket(conn, ticket_id)
+def resolve(db, ticket_id: int, now: str, me: str) -> None:
+    row = _open_ticket(db, ticket_id)
     if row["status"] not in OPEN_STATUSES:
         raise Refusal("msg.already_resolved")
-    if latest_role(conn, ticket_id) != "agent":
+    if latest_role(row) != "agent":
         raise Refusal("msg.resolve_needs_reply")
-    _set_status(conn, row, "resolved", now)
+    _set_status(db, row, "resolved", now, me)
 
 
-def close(conn, ticket_id: int, now: str) -> None:
-    row = _open_ticket(conn, ticket_id)
+def close(db, ticket_id: int, now: str, me: str) -> None:
+    row = _open_ticket(db, ticket_id)
     if row["status"] != "resolved":
         raise Refusal("msg.close_needs_resolved")
-    _set_status(conn, row, "closed", now)
+    _set_status(db, row, "closed", now, me)
 
 
-def _assign(conn, row: sqlite3.Row, who: str, now: str) -> None:
-    conn.execute("UPDATE tickets SET assignee = ? WHERE id = ?", (who, row["id"]))
-    _log(conn, row["id"], now, ME, "assigned", who)
+def _assign(db, row: dict, who: str, now: str, me: str) -> None:
+    db.tickets.update_one({"_id": row["_id"]}, {"$set": {"assignee_id": who}})
+    _log(db, row["_id"], now, me, "assigned", who)
 
 
-def hand_off(conn, ticket_id: int, now: str) -> None:
+def hand_off(db, ticket_id: int, now: str, me: str) -> None:
     """The ticket page's hand-off: one ticket to whoever is on call."""
-    row = _open_ticket(conn, ticket_id)
-    if row["assignee"] == ONCALL:
+    row = _open_ticket(db, ticket_id)
+    target = on_call(db)["_id"]
+    if row["assignee_id"] == target:
         raise Refusal("msg.already_oncall")
-    _assign(conn, row, ONCALL, now)
-    refresh_assignee_index(conn, [ticket_id])
+    _assign(db, row, target, now, me)
+    refresh_assignee_index(db, [ticket_id])
 
 
-def hand_off_many(conn, ticket_ids: list[int], now: str) -> None:
+def hand_off_many(db, ticket_ids: list[int], now: str, me: str) -> None:
     """The queue's hand-off, written for several rows at once (one row today)."""
-    tickets = [_open_ticket(conn, ticket_id) for ticket_id in ticket_ids]
-    if any(row["assignee"] == ONCALL for row in tickets):
+    target = on_call(db)["_id"]
+    tickets = [_open_ticket(db, ticket_id) for ticket_id in ticket_ids]
+    if any(row["assignee_id"] == target for row in tickets):
         raise Refusal("msg.already_oncall")
     for row in tickets:
-        _assign(conn, row, ONCALL, now)
-    refresh_assignee_index(conn, [row["id"] for row in tickets])
+        _assign(db, row, target, now, me)
+    refresh_assignee_index(db, [row["_id"] for row in tickets])
 
 
-def merge(conn, target_id: int, source_raw: str, now: str) -> int:
+def merge(db, target_id: int, source_raw: str, now: str, me: str) -> int:
     """Merge another open ticket into this one. Returns the merged ticket's number."""
-    target = _open_ticket(conn, target_id)
+    target = _open_ticket(db, target_id)
     if not can_merge_into(target):
         raise Refusal("msg.merge_target_done")
     if not source_raw.strip().isdigit():
         raise Refusal("msg.merge_invalid")
-    source = ticket(conn, int(source_raw))
-    if source is None or source["id"] == target_id or source["status"] not in OPEN_STATUSES:
+    source = ticket(db, int(source_raw))
+    if source is None or source["_id"] == target_id or source["status"] not in OPEN_STATUSES:
         raise Refusal("msg.merge_invalid")
-    conn.execute("UPDATE tickets SET status = 'closed', merged_into = ? WHERE id = ?", (target_id, source["id"]))
-    _log(conn, source["id"], now, ME, "merged_into", str(target_id))
-    _log(conn, target_id, now, ME, "merged_from", str(source["id"]))
-    for owner, other in ((target_id, source["id"]), (source["id"], target_id)):  # each lists the other
-        conn.execute("INSERT OR IGNORE INTO links VALUES (?, ?)", (owner, other))
-    return source["id"]
+    db.tickets.update_one({"_id": source["_id"]}, {"$set": {"status": "closed", "merged_into": target_id}})
+    db.queue_index.update_one({"_id": source["_id"]}, {"$set": {"status": "closed"}})
+    _log(db, source["_id"], now, me, "merged_into", str(target_id))
+    _log(db, target_id, now, me, "merged_from", str(source["_id"]))
+    for owner, other in ((target_id, source["_id"]), (source["_id"], target_id)):  # each lists the other
+        db.tickets.update_one({"_id": owner}, {"$addToSet": {"linked": other}})
+    return source["_id"]
+
+
+def create_ticket(db, customer_id: str, subject: str, channel: str, priority: str, message: str,
+                  now: str, me: str) -> int:
+    """A ticket opened at the desk for a customer, with the customer's first message."""
+    found = check_new_ticket(db, customer_id, subject, channel, priority, message)
+    ticket_id = _next(db, "ticket")
+    db.tickets.insert_one({
+        "_id": ticket_id, "subject": subject.strip(), "customer_id": customer_id, "channel": channel,
+        "priority": priority, "status": "new", "assignee_id": None, "merged_into": None, "linked": [], "tags": [],
+        "opened": now,
+        "entries": [{"role": "customer", "at": now, "body": message, "via": channel},
+                    {"role": "system", "at": now, "event": "acknowledged"}],
+        "history": [{"n": 1, "at": now, "actor": found["name"], "event": "created", "detail": channel}]})
+    refresh_assignee_index(db, [ticket_id])
+    return ticket_id
+
+
+def check_new_ticket(db, customer_id: str, subject: str, channel: str, priority: str, message: str) -> dict:
+    """The new-ticket wizard's rules; returns the customer, or raises Refusal."""
+    found = customer(db, customer_id)
+    if found is None:
+        raise Refusal("msg.choose_customer")
+    if not subject.strip() or len(subject) > TEXT_LIMIT:
+        raise Refusal("msg.subject_needed")
+    if channel not in CHANNELS or priority not in PRIORITY_RANK:
+        raise Refusal("msg.choose_options")
+    _clean_body(message)
+    return found
+
+
+def delete_ticket(db, ticket_id: int) -> dict:
+    """Delete a ticket opened by mistake (or spam): it disappears from every list and link."""
+    row = ticket(db, ticket_id)
+    if row is None:
+        raise Refusal("msg.no_such_ticket")
+    db.tickets.update_many({"linked": ticket_id}, {"$pull": {"linked": ticket_id}})
+    db.tickets.update_many({"merged_into": ticket_id}, {"$set": {"merged_into": None}})
+    db.tickets.delete_one({"_id": ticket_id})
+    db.queue_index.delete_one({"_id": ticket_id})
+    return row
+
+
+# -- customers ---------------------------------------------------------------------------------------
+
+
+def directory(db, q: str, sort: str, page: int) -> dict:
+    """One page of customers whose name or email contains `q`, in `sort` order."""
+    needle = q.strip()
+    query = {"$or": [{"name": {"$regex": re.escape(needle), "$options": "i"}},
+                     {"email": {"$regex": re.escape(needle), "$options": "i"}}]} if needle else {}
+    total = db.customers.count_documents(query)
+    pages = max(1, -(-total // DIRECTORY_PAGE))
+    page = min(max(page, 1), pages)
+    rows = list(db.customers.find(query).sort(CUSTOMER_SORTS[sort]).skip((page - 1) * DIRECTORY_PAGE)
+                .limit(DIRECTORY_PAGE))
+    speeds = [c["plan"]["speed_mbps"] for c in db.customers.find(query, {"plan.speed_mbps": 1})]
+    return {"rows": rows, "total": total, "page": page, "pages": pages,
+            "slowest": min(speeds, default=0), "fastest": max(speeds, default=0)}
+
+
+def tickets_of(db, customer_id: str) -> list[dict]:
+    return list(db.tickets.find({"customer_id": customer_id}, {"entries": 0, "history": 0}).sort("_id", 1))
+
+
+def read_customer(form: dict) -> dict:
+    """A customer's details from the form, or Refusal."""
+    name, email, phone = form.get("name", "").strip(), form.get("email", "").strip(), form.get("phone", "").strip()
+    plan = form.get("plan", "")
+    address = {"line1": form.get("line1", "").strip(), "town": form.get("town", "").strip(),
+               "postcode": form.get("postcode", "").strip()}
+    if not name or len(name) > TEXT_LIMIT or any(len(v) > TEXT_LIMIT for v in address.values()):
+        raise Refusal("msg.customer_name_needed")
+    if not EMAIL.fullmatch(email) or len(email) > TEXT_LIMIT:
+        raise Refusal("msg.email_bad")
+    if not PHONE.fullmatch(phone):
+        raise Refusal("msg.phone_bad")
+    if plan not in PLANS:
+        raise Refusal("msg.choose_plan")
+    if not all(address.values()):
+        raise Refusal("msg.address_needed")
+    return {"name": name, "email": email, "phone": phone, "plan": plan, "address": address}
+
+
+def _email_taken(db, email: str, other_than: str = "") -> bool:
+    return db.customers.count_documents({"email": email, "_id": {"$ne": other_than}}) > 0
+
+
+def add_customer(db, form: dict, today: str) -> str:
+    details = read_customer(form)
+    if _email_taken(db, details["email"]):
+        raise Refusal("msg.email_taken")
+    customer_id = f"c{_next(db, 'customer')}"
+    db.customers.insert_one({
+        "_id": customer_id, "name": details["name"], "email": details["email"], "phone": details["phone"],
+        "since": today, "address": details["address"], "contacts": [],
+        "plan": {"name": details["plan"], "speed_mbps": PLANS[details["plan"]],
+                 "router": {"model": ROUTERS[details["plan"]], "serial": f"TW{90000 + int(customer_id[1:]):06d}"}}})
+    return customer_id
+
+
+def update_customer(db, customer_id: str, form: dict) -> None:
+    current = customer(db, customer_id)
+    if current is None:
+        raise Refusal("msg.no_such_customer")
+    details = read_customer(form)
+    if _email_taken(db, details["email"], customer_id):
+        raise Refusal("msg.email_taken")
+    plan = current["plan"]
+    if details["plan"] != plan["name"]:  # a new plan comes with its own router
+        plan = {"name": details["plan"], "speed_mbps": PLANS[details["plan"]],
+                "router": {"model": ROUTERS[details["plan"]], "serial": plan["router"]["serial"]}}
+    db.customers.update_one({"_id": customer_id}, {"$set": {
+        "name": details["name"], "email": details["email"], "phone": details["phone"],
+        "address": details["address"], "plan": plan}})
+
+
+def delete_customer(db, customer_id: str) -> dict:
+    current = customer(db, customer_id)
+    if current is None:
+        raise Refusal("msg.no_such_customer")
+    if db.tickets.count_documents({"customer_id": customer_id}):
+        raise Refusal("msg.customer_has_tickets")
+    db.customers.delete_one({"_id": customer_id})
+    return current
+
+
+# -- saved replies ----------------------------------------------------------------------------------
+
+
+def replies(db) -> list[dict]:
+    return list(db.replies.find({}).sort([("position", 1), ("_id", 1)]))
+
+
+def _reply_text(title: str, body: str) -> tuple[str, str]:
+    title, body = title.strip(), body.strip()
+    if not title or len(title) > TEXT_LIMIT:
+        raise Refusal("msg.reply_title_needed")
+    return title, _clean_body(body)
+
+
+def add_reply(db, title: str, body: str, today: str, me: str) -> str:
+    title, body = _reply_text(title, body)
+    reply_id = f"r{_next(db, 'reply')}"
+    last = db.replies.find_one({}, sort=[("position", -1)])
+    db.replies.insert_one({"_id": reply_id, "title": title, "body": body, "position": (last["position"] if last else 0) + 1,
+                           "author_id": me, "updated": today})
+    return reply_id
+
+
+def rename_reply(db, reply_id: str, title: str, today: str) -> str:
+    title = title.strip()
+    if not title or len(title) > TEXT_LIMIT:
+        raise Refusal("msg.reply_title_needed")
+    if not db.replies.update_one({"_id": reply_id}, {"$set": {"title": title, "updated": today}}).matched_count:
+        raise Refusal("msg.no_such_reply")
+    return title
+
+
+def move_reply(db, reply_id: str, direction: str) -> None:
+    """Swap a saved reply with its neighbour above or below."""
+    row = db.replies.find_one({"_id": reply_id})
+    if row is None:
+        raise Refusal("msg.no_such_reply")
+    compare, order = ("$lt", -1) if direction == "up" else ("$gt", 1)
+    neighbour = db.replies.find_one({"position": {compare: row["position"]}}, sort=[("position", order)])
+    if neighbour is None:
+        return
+    db.replies.update_one({"_id": row["_id"]}, {"$set": {"position": neighbour["position"]}})
+    db.replies.update_one({"_id": neighbour["_id"]}, {"$set": {"position": row["position"]}})
+
+
+def delete_reply(db, reply_id: str) -> dict:
+    row = db.replies.find_one_and_delete({"_id": reply_id})
+    if row is None:
+        raise Refusal("msg.no_such_reply")
+    return row

@@ -1,87 +1,49 @@
-"""Tidewater — personal banking. A single-page app over a JSON API, standard library only.
+"""Tidewater — personal banking. A single-page app over a JSON API, behind a sign-in.
 
-State lives in SQLite under WTA_DATA_DIR, partitioned by the `wta_sid` session cookie and
-seeded from seed/seed.json on a session's first request.
+The data lives in PostgreSQL, one schema per signed-in browser context (vault.py); the
+sign-in and help pages are rendered here (pages.py) and everything after the sign-in is the
+single-page client in static/. Standard library plus the suite's vendored pg8000.
+
+Environment: PORT (required), DATABASE_URL (required), HOST, WTA_VOCAB, WTA_FIXED_NOW,
+WTA_SESSION_CAP, WTA_TEST_HOOKS.
 """
 
 from __future__ import annotations
 
 import datetime as dt
 import hashlib
+import hmac
 import json
 import os
 import re
-import sqlite3
-import tempfile
-import threading
+import sys
 from http import cookies
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import parse_qs, quote, urlsplit
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import pages  # noqa: E402
+from vault import Vault  # noqa: E402
 
 APP_ID = "tidewater"
 ROOT = Path(__file__).resolve().parent
 STATIC = ROOT / "static"
-SEED = json.loads((ROOT.parent / "seed" / "seed.json").read_text(encoding="utf-8"))
 VOCAB = json.loads((ROOT.parent / "vocab" / f"{os.environ.get('WTA_VOCAB', 'default')}.json")
                    .read_text(encoding="utf-8"))
+LOGINS = json.loads((ROOT.parent / "seed" / "logins.json").read_text(encoding="utf-8"))
 NOW = dt.datetime.fromisoformat(os.environ.get("WTA_FIXED_NOW", "2026-06-10T09:00:00"))  # wta-clock
-DATA_DIR = Path(os.environ.get("WTA_DATA_DIR") or tempfile.mkdtemp(prefix="tidewater-"))
-DB_PATH = DATA_DIR / "tidewater.sqlite3"
 TEST_HOOKS = os.environ.get("WTA_TEST_HOOKS") == "1"
 SCHEDULE_OPTIONS = ("next-friday", "month-end")
 WHEN_OPTIONS = ("now",) + SCHEDULE_OPTIONS
-BANKS = ("Harbour Bank", "Northgate", "Coastal Mutual", "Fernway")
 NAME_LIMIT = 5000
-_LOCK = threading.Lock()
-
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value INTEGER);
-CREATE TABLE IF NOT EXISTS sessions (sid TEXT PRIMARY KEY);
-CREATE TABLE IF NOT EXISTS accounts (sid TEXT, id TEXT, name TEXT, number TEXT, balance INTEGER,
-    PRIMARY KEY (sid, id));
-CREATE TABLE IF NOT EXISTS payees (sid TEXT, id TEXT, nickname TEXT, bank TEXT, account_number TEXT,
-    position INTEGER, PRIMARY KEY (sid, id));
-CREATE TABLE IF NOT EXISTS transactions (sid TEXT, seq INTEGER, account TEXT, date TEXT,
-    description TEXT, amount INTEGER);
-CREATE TABLE IF NOT EXISTS drafts (sid TEXT, id INTEGER, source TEXT, target TEXT,
-    available_snapshot INTEGER, PRIMARY KEY (sid, id));
-CREATE TABLE IF NOT EXISTS quotes (sid TEXT, id INTEGER, draft INTEGER, source TEXT, target TEXT,
-    amount INTEGER, reference TEXT, run_when TEXT, used INTEGER DEFAULT 0, PRIMARY KEY (sid, id));
-CREATE TABLE IF NOT EXISTS transfers (sid TEXT, id INTEGER, source TEXT, target TEXT, amount INTEGER,
-    reference TEXT, run_when TEXT, run_date TEXT, status TEXT, PRIMARY KEY (sid, id));
-"""
+PUBLIC_FILES = {"/app.js": "text/javascript; charset=utf-8", "/styles.css": "text/css; charset=utf-8"}
+VAULT: Vault | None = None  # opened by main()
 
 
-def connect() -> sqlite3.Connection:
-    conn = sqlite3.connect(DB_PATH, timeout=10)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-
-def next_id(conn: sqlite3.Connection, key: str) -> int:
-    row = conn.execute("SELECT value FROM meta WHERE key = ?", (key,)).fetchone()
-    value = (row["value"] if row else 0) + 1
-    conn.execute("INSERT OR REPLACE INTO meta (key, value) VALUES (?, ?)", (key, value))
-    return value
-
-
-def seed_session(conn: sqlite3.Connection, sid: str) -> None:
-    conn.execute("INSERT INTO sessions (sid) VALUES (?)", (sid,))
-    for a in SEED["accounts"]:
-        conn.execute("INSERT INTO accounts VALUES (?, ?, ?, ?, ?)",
-                     (sid, a["id"], a["name"], a["number"], a["balance"]))
-    for position, p in enumerate(SEED["payees"]):
-        conn.execute("INSERT INTO payees VALUES (?, ?, ?, ?, ?, ?)",
-                     (sid, p["id"], p["nickname"], p["bank"], p["account_number"], position))
-    for seq, t in enumerate(SEED["transactions"]):
-        conn.execute("INSERT INTO transactions VALUES (?, ?, ?, ?, ?, ?)",
-                     (sid, seq, t["account"], t["date"], t["description"], t["amount"]))
-
-
-def money(cents: int) -> str:
-    sign = "-" if cents < 0 else ""
-    return f"{sign}£{abs(cents) / 100:,.2f}"
+def money(pence: int) -> str:
+    sign = "-" if pence < 0 else ""
+    return f"{sign}£{abs(pence) / 100:,.2f}"
 
 
 def parse_amount(raw) -> int | None:
@@ -109,77 +71,116 @@ def label_date(day: dt.date) -> str:
     return day.strftime("%a %d %b %Y")
 
 
-# -- domain --------------------------------------------------------------------------------
-
-
-def accounts(conn, sid) -> list[dict]:
-    rows = conn.execute("SELECT * FROM accounts WHERE sid = ? ORDER BY rowid", (sid,)).fetchall()
-    scheduled = {r["source"]: r["total"] for r in conn.execute(
-        "SELECT source, SUM(amount) AS total FROM transfers WHERE sid = ? AND status = 'scheduled' "
-        "GROUP BY source", (sid,))}
-    return [{"id": r["id"], "name": r["name"], "number": r["number"], "balance": r["balance"],
-             "balance_label": money(r["balance"]), "scheduled": scheduled.get(r["id"], 0),
-             "scheduled_label": money(scheduled.get(r["id"], 0))} for r in rows]
-
-
-def available(conn, sid, account_id) -> int | None:
-    row = conn.execute("SELECT balance FROM accounts WHERE sid = ? AND id = ?", (sid, account_id)).fetchone()
-    return None if row is None else row["balance"]
-
-
-def payees(conn, sid) -> list[dict]:
-    return [dict(r) for r in conn.execute(
-        "SELECT id, nickname, bank, account_number FROM payees WHERE sid = ? ORDER BY position", (sid,))]
-
-
-def target_name(conn, sid, target: str) -> str | None:
-    kind, _, ident = target.partition(":")
-    if kind == "acct":
-        row = conn.execute("SELECT name FROM accounts WHERE sid = ? AND id = ?", (sid, ident)).fetchone()
-        return row["name"] if row else None
-    if kind == "payee":
-        row = conn.execute("SELECT nickname FROM payees WHERE sid = ? AND id = ?", (sid, ident)).fetchone()
-        return row["nickname"] if row else None
+def verify(username: str, password: str) -> str | None:
+    """The customer a username and password sign in as (PBKDF2, seeded salts), or None."""
+    login = next((entry for entry in LOGINS["logins"] if entry["username"] == username), None)
+    salt = bytes.fromhex(login["salt"]) if login else b"\0" * 16  # unknown names cost the same
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, LOGINS["iterations"]).hex()
+    if login and hmac.compare_digest(digest, login["pbkdf2_sha256"]):
+        return login["customer_id"]
     return None
 
 
-def transfer_view(conn, sid, row) -> dict:
-    return {"id": row["id"], "from": target_name(conn, sid, "acct:" + row["source"]),
-            "to": target_name(conn, sid, row["target"]) or "(removed payee)",
-            "amount": money(row["amount"]), "reference": row["reference"],
-            "when": row["run_when"], "date": label_date(dt.date.fromisoformat(row["run_date"])),
-            "status": row["status"]}
+# -- the bank, as one customer sees it ---------------------------------------------------------
+
+BALANCE = ("a.opening_balance_pence + coalesce((select sum(e.amount_pence) from ledger_entries e "
+           "where e.account_id = a.id), 0)")
 
 
-def post_transfer(conn, sid, source: str, target: str, amount: int, reference: str, day: dt.date) -> None:
-    seq = next_id(conn, f"tx:{sid}")
-    to_label = target_name(conn, sid, target)
-    from_label = target_name(conn, sid, "acct:" + source)
-    conn.execute("UPDATE accounts SET balance = balance - ? WHERE sid = ? AND id = ?", (amount, sid, source))
-    conn.execute("INSERT INTO transactions VALUES (?, ?, ?, ?, ?, ?)",
-                 (sid, 1000 + seq, source, day.isoformat(), f"To {to_label}" + (f" — {reference}" if reference else ""), -amount))
-    if target.startswith("acct:"):
-        conn.execute("UPDATE accounts SET balance = balance + ? WHERE sid = ? AND id = ?",
-                     (amount, sid, target[5:]))
-        conn.execute("INSERT INTO transactions VALUES (?, ?, ?, ?, ?, ?)",
-                     (sid, 1000 + seq, target[5:], day.isoformat(), f"From {from_label}", amount))
+def accounts(db, me: str) -> list[dict]:
+    """The accounts `me` may see, with their balances and what is scheduled to leave them."""
+    rows = db.fetch(
+        f"select a.id, a.name, a.number, x.level, {BALANCE} as balance, "
+        "coalesce((select sum(t.amount_pence) from transfers t where t.source_id = a.id "
+        "and t.status = 'scheduled'), 0) as scheduled "
+        "from accounts a join account_access x on x.account_id = a.id and x.customer_id = %s "
+        "order by a.position", me)
+    return [{"id": r["id"], "name": r["name"], "number": "•••• " + r["number"][-4:],
+             "level": r["level"], "balance": r["balance"], "balance_label": money(r["balance"]),
+             "scheduled": r["scheduled"], "scheduled_label": money(r["scheduled"])} for r in rows]
 
 
-def committed_state(conn, sid) -> dict:
+def available(db, account_id: str) -> int | None:
+    return db.scalar(f"select {BALANCE} from accounts a where a.id = %s", account_id)
+
+
+def owns(db, me: str, account_id: str) -> bool:
+    return db.scalar("select count(*) from account_access where customer_id = %s and account_id = %s "
+                     "and level = 'owner'", me, account_id) == 1
+
+
+def is_holder(db, me: str) -> bool:
+    """A holder owns an account; anyone else has view access only."""
+    return db.scalar("select count(*) from account_access where customer_id = %s and level = 'owner'", me) > 0
+
+
+def split_target(target: str) -> tuple[str | None, str | None]:
+    """`acct:<id>` or `payee:<id>` as (target account, target payee)."""
+    kind, _, ident = target.partition(":")
+    return (ident, None) if kind == "acct" else (None, ident) if kind == "payee" else (None, None)
+
+
+def target_name(db, me: str, account_id: str | None, payee_id: str | None) -> str | None:
+    if account_id is not None:
+        return db.scalar("select a.name from accounts a join account_access x on x.account_id = a.id "
+                         "where a.id = %s and x.customer_id = %s", account_id, me)
+    if payee_id is not None:
+        return db.scalar("select nickname from payees where id = %s and customer_id = %s", payee_id, me)
+    return None
+
+
+def payees(db, me: str) -> list[dict]:
+    return db.fetch("select p.id, p.nickname, b.name as bank, p.account_number from payees p "
+                    "join banks b on b.id = p.bank_id where p.customer_id = %s order by p.position", me)
+
+
+def banks(db) -> list[str]:
+    return [r["name"] for r in db.fetch("select name from banks order by position")]
+
+
+def transfer_view(db, me: str, row: dict) -> dict:
+    return {"id": row["id"], "from": target_name(db, me, row["source_id"], None),
+            "to": target_name(db, me, row["target_account_id"], row["target_payee_id"]) or "(removed payee)",
+            "amount": money(row["amount_pence"]), "reference": row["reference"],
+            "when": row["run_when"], "date": label_date(row["run_on"]), "status": row["status"]}
+
+
+def post_transfer(db, me: str, transfer: dict) -> None:
+    """The ledger entries of a transfer that is carried out today."""
+    source, account, payee = transfer["source_id"], transfer["target_account_id"], transfer["target_payee_id"]
+    to_label = target_name(db, me, account, payee)
+    reference = transfer["reference"]
+    db.execute("insert into ledger_entries values (%s, %s, %s, %s, %s, %s, %s)",
+               db.next_number("ledger"), source, transfer["run_on"],
+               f"To {to_label}" + (f" — {reference}" if reference else ""), -transfer["amount_pence"],
+               "transfer_out" if account else "payment", transfer["id"])
+    if account is not None:
+        db.execute("insert into ledger_entries values (%s, %s, %s, %s, %s, %s, %s)",
+                   db.next_number("ledger"), account, transfer["run_on"],
+                   f"From {target_name(db, me, source, None)}", transfer["amount_pence"],
+                   "transfer_in", transfer["id"])
+
+
+def iso(value):
+    return value.isoformat() if isinstance(value, (dt.date, dt.datetime)) else value
+
+
+def committed_state(db) -> dict:
+    """Business state of this session's bank: never drafts, quotes or counters."""
+    def table(sql: str) -> list[list]:
+        return [[iso(v) for v in row.values()] for row in db.fetch(sql)]
+
     return {
-        "accounts": [dict(r) for r in conn.execute(
-            "SELECT id, balance FROM accounts WHERE sid = ? ORDER BY id", (sid,))],
-        "payees": [dict(r) for r in conn.execute(
-            "SELECT id, nickname, bank, account_number FROM payees WHERE sid = ? ORDER BY id", (sid,))],
-        "transfers": [dict(r) for r in conn.execute(
-            "SELECT id, source, target, amount, reference, run_when, run_date, status FROM transfers "
-            "WHERE sid = ? ORDER BY id", (sid,))],
-        "transactions": conn.execute("SELECT COUNT(*) AS n FROM transactions WHERE sid = ?",
-                                     (sid,)).fetchone()["n"],
+        "accounts": table(f'select a.id, {BALANCE} as balance from accounts a order by a.id collate "C"'),
+        "access": table('select * from account_access order by customer_id collate "C", account_id collate "C"'),
+        "payees": table('select * from payees order by id collate "C"'),
+        "direct_debits": table('select * from direct_debits order by id collate "C"'),
+        "transfers": table("select * from transfers order by id"),
+        "ledger": table("select * from ledger_entries order by id"),
     }
 
 
-# -- HTTP ----------------------------------------------------------------------------------
+# -- HTTP ----------------------------------------------------------------------------------------
 
 
 class ApiError(Exception):
@@ -188,29 +189,43 @@ class ApiError(Exception):
         self.status, self.message, self.field = status, message, field
 
 
+class Refusal(Exception):
+    """Not an error: the caller is signed out, or their role may not do this (200, ok false)."""
+
+    def __init__(self, reason: str) -> None:
+        super().__init__(reason)
+        self.reason = reason
+
+
+def next_path(raw: str | None) -> str:
+    value = (raw or "").strip()
+    if re.fullmatch(r"/(?!/)[^\s\\]*", value) and not value.startswith(("/login", "/logout")):
+        return value
+    return "/"
+
+
 class Handler(BaseHTTPRequestHandler):
-    server_version = "Tidewater/1.0"
+    server_version = "Tidewater/2.0"
 
     def log_message(self, fmt, *args):  # quiet, deterministic logs
         pass
 
-    # session ------------------------------------------------------------------------------
-    def _session(self, conn) -> str:
-        jar = cookies.SimpleCookie(self.headers.get("Cookie", ""))
-        sid = jar["wta_sid"].value if "wta_sid" in jar else ""
-        if sid and conn.execute("SELECT 1 FROM sessions WHERE sid = ?", (sid,)).fetchone():
-            return sid
-        sid = f"s{next_id(conn, 'session'):06d}"
-        seed_session(conn, sid)
-        self._new_cookie = sid
-        return sid
+    def _cookie(self) -> str | None:
+        jar = cookies.SimpleCookie()
+        try:
+            jar.load(self.headers.get("Cookie", ""))
+        except cookies.CookieError:
+            return None
+        return jar["wta_sid"].value if "wta_sid" in jar else None
 
-    def _send(self, status: int, body: bytes, content_type: str) -> None:
+    def _send(self, status: int, body: bytes, content_type: str, location: str = "") -> None:
         self.send_response(status)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
-        if getattr(self, "_new_cookie", None):
+        if location:
+            self.send_header("Location", location)
+        if self._new_cookie:
             self.send_header("Set-Cookie", f"wta_sid={self._new_cookie}; Path=/; HttpOnly; SameSite=Lax")
         self.end_headers()
         self.wfile.write(body)
@@ -218,12 +233,22 @@ class Handler(BaseHTTPRequestHandler):
     def _json(self, status: int, payload) -> None:
         self._send(status, json.dumps(payload).encode("utf-8"), "application/json; charset=utf-8")
 
-    def _body(self) -> dict:
+    def _html(self, body: str) -> None:
+        self._send(200, body.encode("utf-8"), "text/html; charset=utf-8")
+
+    def _see_other(self, location: str) -> None:
+        self._send(303, b"", "text/plain; charset=utf-8", location)
+
+    def _raw_body(self) -> bytes:
         length = int(self.headers.get("Content-Length") or 0)
-        if not length:
+        return self.rfile.read(length) if length else b""
+
+    def _body(self) -> dict:
+        raw = self._raw_body()
+        if not raw:
             return {}
         try:
-            data = json.loads(self.rfile.read(length).decode("utf-8"))
+            data = json.loads(raw.decode("utf-8"))
         except ValueError as exc:
             raise ApiError(400, "request body is not JSON") from exc
         if not isinstance(data, dict):
@@ -239,60 +264,111 @@ class Handler(BaseHTTPRequestHandler):
     def do_PUT(self):
         self._dispatch("PUT")
 
-    def _dispatch(self, method: str) -> None:
+    def _dispatch(self, method: str) -> None:  # noqa: PLR0911 - one exit per route
         self._new_cookie = None
-        path = urlsplit(self.path).path
-        if method == "GET" and path == "/healthz":
-            return self._json(200, {"ok": True, "app": APP_ID})
-        if method == "GET" and not path.startswith(("/api/", "/__wta/")):
-            return self._static(path)
-        with _LOCK:
-            conn = connect()
-            try:
-                sid = self._session(conn)
-                status, payload = self._api(conn, sid, method, path)
-                conn.commit()
-            except ApiError as exc:
-                conn.commit()  # a new session's seed is kept even when the request fails
-                status, payload = exc.status, {"error": exc.message, "field": exc.field}
-            finally:
-                conn.close()
-        self._json(status, payload)
-
-    def _static(self, path: str) -> None:
-        name = "index.html" if path in ("/", "/index.html") else path.lstrip("/")
-        target = (STATIC / name).resolve()
-        if STATIC not in target.parents and target != STATIC / "index.html" or not target.is_file():
+        parts = urlsplit(self.path)
+        path = parts.path
+        if method == "GET" and path == "/healthz":  # ok only while the database answers
+            ok = VAULT.healthy()
+            return self._json(200 if ok else 503, {"ok": ok, "app": APP_ID})
+        if method == "GET" and path in PUBLIC_FILES:
+            return self._send(200, (STATIC / path[1:]).read_bytes(), PUBLIC_FILES[path])
+        if method == "GET" and path == "/api/vocab":
+            return self._json(200, VOCAB)
+        if method == "GET" and path == "/help/password":
+            return self._html(pages.password_help(VOCAB))
+        if path == "/login":
+            return self._sign_in(parts.query) if method == "POST" else self._sign_in_page(parts.query)
+        if method == "POST" and path == "/logout":
+            VAULT.release(self._cookie())
+            return self._see_other("/login")
+        is_page = method == "GET" and path in ("/", "/index.html")
+        if not is_page and not path.startswith("/api/") and not (TEST_HOOKS and path == "/__wta/state"):
             return self._send(404, b"not found", "text/plain; charset=utf-8")
-        kinds = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
-                 ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml"}
-        with _LOCK:  # create the session on the first page load, so its cookie is set early
-            conn = connect()
-            try:
-                self._session(conn)
-                conn.commit()
-            finally:
-                conn.close()
-        self._send(200, target.read_bytes(), kinds.get(target.suffix, "application/octet-stream"))
+        try:  # the reply is worked out inside the transaction and sent once it has committed
+            with VAULT.session(self._cookie()) as db:
+                if path == "/__wta/state":
+                    status, payload = 200, self._state(db)
+                elif db.customer_id is None:
+                    raise Refusal("signed-out")
+                elif is_page:
+                    status, payload = 200, None
+                else:
+                    status, payload = self._api(db, db.customer_id, method, path, parse_qs(parts.query))
+        except Refusal as refusal:
+            if is_page:  # signed out: to the sign-in page, and back here afterwards
+                return self._see_other("/login?next=" + quote(self.path, safe=""))
+            return self._json(200, {"ok": False, "reason": refusal.reason})
+        except ApiError as exc:
+            return self._json(exc.status, {"error": exc.message, "field": exc.field})
+        if is_page:
+            return self._send(200, (STATIC / "index.html").read_bytes(), "text/html; charset=utf-8")
+        return self._json(status, payload)
+
+    # signing in ----------------------------------------------------------------------------
+    def _sign_in_page(self, query: str) -> None:
+        wanted = (parse_qs(query).get("next") or [""])[0]
+        with VAULT.session(self._cookie()) as db:
+            signed_in = db.customer_id is not None
+        if signed_in:  # Back to the sign-in page after signing in lands here
+            return self._see_other(next_path(wanted))
+        return self._html(pages.sign_in(VOCAB, wanted))
+
+    def _sign_in(self, query: str) -> None:
+        form = {k: v[-1] for k, v in parse_qs(self._raw_body().decode("utf-8", "replace"),
+                                              keep_blank_values=True).items()}
+        username, password = form.get("username", "").strip(), form.get("password", "")
+        wanted = form.get("next") or (parse_qs(query).get("next") or [""])[0]
+        customer = verify(username, password) if username and password else None
+        if customer is None:  # one message whatever was wrong; no session is created
+            return self._html(pages.sign_in(VOCAB, wanted, username, refused=True))
+        self._new_cookie = VAULT.admit(self._cookie(), customer)
+        return self._see_other(next_path(wanted))
+
+    def _state(self, db) -> dict:
+        if db.schema is None:
+            return {"session": None, "user": None, "committed": None, "sha": None}
+        committed = committed_state(db)
+        sha = hashlib.sha256(json.dumps(committed, sort_keys=True).encode()).hexdigest()
+        user = next((e["username"] for e in LOGINS["logins"] if e["customer_id"] == db.customer_id), None)
+        return {"session": db.sid, "user": user, "committed": committed, "sha": sha}
 
     # API ----------------------------------------------------------------------------------
-    def _api(self, conn, sid: str, method: str, path: str):  # noqa: C901, PLR0911, PLR0912
-        query = parse_qs(urlsplit(self.path).query)
-        if method == "GET" and path == "/__wta/state":
-            if not TEST_HOOKS:
-                raise ApiError(404, "not found")
-            committed = committed_state(conn, sid)
-            sha = hashlib.sha256(json.dumps(committed, sort_keys=True).encode()).hexdigest()
-            return 200, {"session": sid, "committed": committed, "sha": sha}
-        if method == "GET" and path == "/api/vocab":
-            return 200, VOCAB
+    def _api(self, db, me: str, method: str, path: str, query: dict):  # noqa: C901, PLR0911, PLR0912
+        if method == "GET" and path == "/api/me":
+            holder = is_holder(db, me)
+            customer = db.first("select full_name from customers where id = %s", me)
+            return 200, {"ok": True, "name": customer["full_name"], "holder": holder}
         if method == "GET" and path == "/api/overview":
-            transfers = [transfer_view(conn, sid, r) for r in conn.execute(
-                "SELECT * FROM transfers WHERE sid = ? AND status = 'scheduled' ORDER BY id", (sid,))]
-            return 200, {"accounts": accounts(conn, sid), "scheduled": transfers,
+            visible = accounts(db, me)
+            ids = [a["id"] for a in visible]
+            scheduled = [transfer_view(db, me, r) for r in db.fetch(
+                "select * from transfers where status = 'scheduled' and source_id = any(%s) order by id", ids)]
+            mandates = db.fetch(
+                "select d.originator, d.reference, d.collection_day, a.name as account from direct_debits d "
+                "join accounts a on a.id = d.account_id where d.status = 'active' and d.account_id = any(%s) "
+                'order by d.collection_day, d.id collate "C"', ids)
+            return 200, {"accounts": visible, "scheduled": scheduled, "direct_debits": mandates,
                          "today": label_date(NOW.date())}
+        if method == "GET" and path == "/api/products":
+            return 200, {"products": db.fetch(
+                'select title, kind, interest_bps from account_products order by title collate "C"')}
+        if method == "GET" and path == "/api/statements":
+            visible = {a["id"]: a["name"] for a in accounts(db, me)}
+            account = (query.get("account") or ["all"])[0]
+            direction = (query.get("direction") or ["all"])[0]
+            chosen = [account] if account in visible else list(visible)
+            sign = {"in": "and amount_pence > 0", "out": "and amount_pence < 0"}.get(direction, "")
+            rows = db.fetch("select account_id, posted_on, description, amount_pence from ledger_entries "
+                            f"where account_id = any(%s) {sign} order by posted_on desc, id desc", chosen)
+            return 200, {"rows": [{"date": r["posted_on"].isoformat(), "account": visible[r["account_id"]],
+                                   "description": r["description"], "amount": money(r["amount_pence"])}
+                                  for r in rows],
+                         "count": len(rows)}
+        if not is_holder(db, me):  # everything below moves money or manages payees
+            raise Refusal("forbidden")
         if method == "GET" and path == "/api/payees":
-            return 200, {"payees": payees(conn, sid), "banks": list(BANKS)}
+            return 200, {"payees": payees(db, me), "banks": banks(db)}
         if method == "POST" and path == "/api/payees":
             body = self._body()
             nickname = str(body.get("nickname", "")).strip()
@@ -302,14 +378,15 @@ class Handler(BaseHTTPRequestHandler):
                 raise ApiError(422, "Enter a name for the payee.", "nickname")
             if len(nickname) > NAME_LIMIT:
                 raise ApiError(422, "That name is too long.", "nickname")
-            if bank not in BANKS:
+            bank_id = db.scalar("select id from banks where name = %s", bank)
+            if bank_id is None:
                 raise ApiError(422, "Choose the payee's bank.", "bank")
             if not re.fullmatch(r"\d{2,8}", number):
                 raise ApiError(422, "Account numbers are 2 to 8 digits.", "account_number")
-            ident = f"p{next_id(conn, f'payee:{sid}')}"
-            position = conn.execute("SELECT COUNT(*) AS n FROM payees WHERE sid = ?", (sid,)).fetchone()["n"]
-            conn.execute("INSERT INTO payees VALUES (?, ?, ?, ?, ?, ?)",
-                         (sid, ident, nickname, bank, number, position))
+            ident = f"p{db.next_number('payees')}"
+            position = db.scalar("select count(*) from payees where customer_id = %s", me)
+            db.execute("insert into payees values (%s, %s, %s, %s, %s, %s)",
+                       ident, me, nickname, bank_id, number, position)
             return 201, {"id": ident}
         match = re.fullmatch(r"/api/payees/([\w-]+)", path)
         if method == "PUT" and match:
@@ -319,78 +396,61 @@ class Handler(BaseHTTPRequestHandler):
                 raise ApiError(422, "A payee needs a name.", "nickname")
             if len(nickname) > NAME_LIMIT:
                 raise ApiError(422, "That name is too long.", "nickname")
-            updated = conn.execute("UPDATE payees SET nickname = ? WHERE sid = ? AND id = ?",
-                                   (nickname, sid, match.group(1))).rowcount
-            if not updated:
+            if not db.execute("update payees set nickname = %s where id = %s and customer_id = %s",
+                              nickname, match.group(1), me):
                 raise ApiError(404, "No such payee.")
             return 200, {"id": match.group(1), "nickname": nickname}
         if method == "POST" and path == "/api/drafts":
             body = self._body()
             source, target = str(body.get("from", "")), str(body.get("to", ""))
-            self._check_route(conn, sid, source, target)
-            ident = next_id(conn, f"draft:{sid}")
-            conn.execute("INSERT INTO drafts VALUES (?, ?, ?, ?, ?)",
-                         (sid, ident, source, target, available(conn, sid, source)))
+            account, payee = self._check_route(db, me, source, target)
+            ident = db.next_number("drafts")
+            db.execute("insert into transfer_drafts values (%s, %s, %s, %s, %s, %s)",
+                       ident, me, source, account, payee, available(db, source))
             return 201, {"id": ident}
         match = re.fullmatch(r"/api/drafts/(\d+)", path)
         if method == "PUT" and match:
             body = self._body()
-            draft = conn.execute("SELECT * FROM drafts WHERE sid = ? AND id = ?",
-                                 (sid, int(match.group(1)))).fetchone()
+            draft = db.first("select * from transfer_drafts where id = %s and customer_id = %s",
+                             int(match.group(1)), me)
             if draft is None:
                 raise ApiError(404, "That transfer has expired. Start again.")
             source, target = str(body.get("from", "")), str(body.get("to", ""))
-            self._check_route(conn, sid, source, target)
-            snapshot = draft["available_snapshot"]
-            if source != draft["source"]:
-                snapshot = available(conn, sid, source)
-            conn.execute("UPDATE drafts SET source = ?, target = ?, available_snapshot = ? "
-                         "WHERE sid = ? AND id = ?", (source, target, snapshot, sid, draft["id"]))
+            account, payee = self._check_route(db, me, source, target)
+            snapshot = draft["available_snapshot_pence"]
+            if source != draft["source_id"]:
+                snapshot = available(db, source)
+            db.execute("update transfer_drafts set source_id = %s, target_account_id = %s, "
+                       "target_payee_id = %s, available_snapshot_pence = %s where id = %s",
+                       source, account, payee, snapshot, draft["id"])
             return 200, {"id": draft["id"]}
         match = re.fullmatch(r"/api/drafts/(\d+)/quote", path)
         if method == "POST" and match:
-            return self._quote(conn, sid, int(match.group(1)), self._body())
+            return self._quote(db, me, int(match.group(1)), self._body())
         match = re.fullmatch(r"/api/quotes/(\d+)/authorise", path)
         if method == "POST" and match:
-            return self._authorise(conn, sid, int(match.group(1)))
+            return self._authorise(db, me, int(match.group(1)))
         match = re.fullmatch(r"/api/transfers/(\d+)/cancel", path)
         if method == "POST" and match:
-            row = conn.execute("SELECT * FROM transfers WHERE sid = ? AND id = ?",
-                               (sid, int(match.group(1)))).fetchone()
-            if row is None or row["status"] != "scheduled":
+            row = db.first("select * from transfers where id = %s", int(match.group(1)))
+            if row is None or row["status"] != "scheduled" or not owns(db, me, row["source_id"]):
                 raise ApiError(409, "Only scheduled transfers can be cancelled.")
-            conn.execute("UPDATE transfers SET status = 'cancelled' WHERE sid = ? AND id = ?", (sid, row["id"]))
+            db.execute("update transfers set status = 'cancelled' where id = %s", row["id"])
             return 200, {"id": row["id"], "status": "cancelled"}
-        if method == "GET" and path == "/api/statements":
-            account = (query.get("account") or ["all"])[0]
-            direction = (query.get("direction") or ["all"])[0]
-            sql = "SELECT * FROM transactions WHERE sid = ?"
-            args: list = [sid]
-            if account != "all":
-                sql += " AND account = ?"
-                args.append(account)
-            if direction == "in":
-                sql += " AND amount > 0"
-            elif direction == "out":
-                sql += " AND amount < 0"
-            rows = conn.execute(sql + " ORDER BY date DESC, seq DESC", args).fetchall()
-            names = {a["id"]: a["name"] for a in accounts(conn, sid)}
-            return 200, {"rows": [{"date": r["date"], "account": names.get(r["account"], r["account"]),
-                                   "description": r["description"], "amount": money(r["amount"])}
-                                  for r in rows],
-                         "count": len(rows)}
         raise ApiError(404, "not found")
 
-    def _check_route(self, conn, sid, source: str, target: str) -> None:
-        if available(conn, sid, source) is None:
+    def _check_route(self, db, me: str, source: str, target: str) -> tuple[str | None, str | None]:
+        if not owns(db, me, source):
             raise ApiError(422, "Choose the account to pay from.", "from")
-        if target_name(conn, sid, target) is None:
+        account, payee = split_target(target)
+        if target_name(db, me, account, payee) is None:
             raise ApiError(422, "Choose who to pay.", "to")
-        if target == "acct:" + source:
+        if account == source:
             raise ApiError(422, "You can't move money to the same account.", "to")
+        return account, payee
 
-    def _quote(self, conn, sid: str, draft_id: int, body: dict):
-        draft = conn.execute("SELECT * FROM drafts WHERE sid = ? AND id = ?", (sid, draft_id)).fetchone()
+    def _quote(self, db, me: str, draft_id: int, body: dict):
+        draft = db.first("select * from transfer_drafts where id = %s and customer_id = %s", draft_id, me)
         if draft is None:
             raise ApiError(404, "That transfer has expired. Start again.")
         amount = parse_amount(body.get("amount"))
@@ -402,45 +462,50 @@ class Handler(BaseHTTPRequestHandler):
         reference = str(body.get("reference", "")).strip()
         if len(reference) > 140:
             raise ApiError(422, "References are at most 140 characters.", "reference")
-        if amount > draft["available_snapshot"]:
+        if amount > draft["available_snapshot_pence"]:
             raise ApiError(422, "That's more than the account has available.", "amount")
-        ident = next_id(conn, f"quote:{sid}")
-        conn.execute("INSERT INTO quotes (sid, id, draft, source, target, amount, reference, run_when) "
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                     (sid, ident, draft_id, draft["source"], draft["target"], amount, reference, when))
-        after = available(conn, sid, draft["source"]) - amount
-        return 201, {"id": ident, "from": target_name(conn, sid, "acct:" + draft["source"]),
-                     "to": target_name(conn, sid, draft["target"]), "amount": money(amount),
-                     "reference": reference, "when": when, "date": label_date(run_date(when)),
-                     "available_after": money(after)}
+        ident = db.next_number("quotes")
+        db.execute("insert into quotes values (%s, %s, %s, %s, %s, %s, %s, %s, false)",
+                   ident, draft_id, draft["source_id"], draft["target_account_id"],
+                   draft["target_payee_id"], amount, reference, when)
+        after = available(db, draft["source_id"]) - amount
+        return 201, {"id": ident, "from": target_name(db, me, draft["source_id"], None),
+                     "to": target_name(db, me, draft["target_account_id"], draft["target_payee_id"]),
+                     "amount": money(amount), "reference": reference, "when": when,
+                     "date": label_date(run_date(when)), "available_after": money(after)}
 
-    def _authorise(self, conn, sid: str, quote_id: int):
-        quote = conn.execute("SELECT * FROM quotes WHERE sid = ? AND id = ?", (sid, quote_id)).fetchone()
+    def _authorise(self, db, me: str, quote_id: int):
+        quote = db.first("select q.* from quotes q join transfer_drafts d on d.id = q.draft_id "
+                         "where q.id = %s and d.customer_id = %s", quote_id, me)
         if quote is None:
             raise ApiError(404, "That transfer has expired. Start again.")
         if quote["used"]:
             raise ApiError(409, "This transfer has already been authorised.")
-        conn.execute("UPDATE quotes SET used = 1 WHERE sid = ? AND id = ?", (sid, quote_id))
+        db.execute("update quotes set used = true where id = %s", quote_id)
         day = run_date(quote["run_when"])
-        ident = next_id(conn, f"transfer:{sid}")
         if quote["run_when"] in SCHEDULE_OPTIONS:
             status = "scheduled"
         else:
             status = "completed"
-            post_transfer(conn, sid, quote["source"], quote["target"], quote["amount"], quote["reference"], day)
-        conn.execute("INSERT INTO transfers VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                     (sid, ident, quote["source"], quote["target"], quote["amount"], quote["reference"],
-                      quote["run_when"], day.isoformat(), status))
-        row = conn.execute("SELECT * FROM transfers WHERE sid = ? AND id = ?", (sid, ident)).fetchone()
-        return 201, transfer_view(conn, sid, row)
+        transfer = {"id": db.next_number("transfers"), "quote_id": quote_id, "source_id": quote["source_id"],
+                    "target_account_id": quote["target_account_id"], "target_payee_id": quote["target_payee_id"],
+                    "amount_pence": quote["amount_pence"], "reference": quote["reference"],
+                    "run_when": quote["run_when"], "run_on": day, "status": status, "authorised_by": me}
+        db.execute("insert into transfers values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                   *transfer.values())
+        if status == "completed":
+            post_transfer(db, me, transfer)
+        return 201, transfer_view(db, me, transfer)
 
 
 def main() -> None:
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    conn = connect()
-    conn.executescript(SCHEMA)
-    conn.commit()
-    conn.close()
+    global VAULT  # noqa: PLW0603 - opened once, at start
+    url = os.environ.get("DATABASE_URL")
+    if not url:
+        sys.exit("tidewater: set DATABASE_URL to the PostgreSQL database this server may own")
+    VAULT = Vault(url, int(os.environ.get("WTA_SESSION_CAP") or 32))
+    VAULT.open()
+    VAULT.rebuild()
     host = os.environ.get("HOST", "127.0.0.1")
     server = ThreadingHTTPServer((host, int(os.environ["PORT"])), Handler)
     server.daemon_threads = True
