@@ -4,88 +4,91 @@
   "domain": "travel itinerary planning",
   "user_goal": "Plan a multi-day trip stop by stop, seal agreed versions of the itinerary, and share a read-only link to the latest sealed version.",
   "architecture": "client-draft-spa+server-sealed-versions",
-  "stack": "node-builtins+localStorage+server-versions",
-  "persistence": "the itinerary being edited is a client-side draft in localStorage (written synchronously on every edit); the server keeps trips, write-once sealed versions (one JSON file per version) and share tokens under WTA_DATA_DIR",
+  "stack": "node22+mongodb-driver+mongodb",
+  "persistence": "mongodb database per signed-in session (trips, write-once sealed versions, packing lists, the places catalogue); the itinerary being edited is a client-side draft in localStorage, written synchronously on every edit; public share links resolve through the home database",
   "entry": "/",
-  "start": [
-    "node",
-    "src/server.js"
-  ],
+  "start": ["node", "src/server.js"],
   "dockerfile": false,
   "workflow_graph": {
-    "kind": [
-      "hub-and-spoke",
-      "nested-form",
-      "revisit"
-    ],
+    "kind": ["hub-and-spoke", "nested-form", "revisit", "data-grid", "modal-heavy"],
     "nodes": [
+      "sign-in",
+      "login-help",
       "trips",
       "trips:new-trip-form",
-      "trip",
+      "trip:itinerary",
       "trip/day:pin-form",
       "trip:weather-panel",
-      "share"
+      "trip:stop-dialog",
+      "trip:packing",
+      "trip:history",
+      "trip:version",
+      "trip:settings",
+      "trip:delete-dialog",
+      "share",
+      "public-share",
+      "places",
+      "place",
+      "access-notice"
     ],
     "edges": [
-      [
-        "trips",
-        "trip"
-      ],
-      [
-        "trips",
-        "trips:new-trip-form"
-      ],
-      [
-        "trips:new-trip-form",
-        "trip"
-      ],
-      [
-        "trip",
-        "trip/day:pin-form"
-      ],
-      [
-        "trip/day:pin-form",
-        "trip"
-      ],
-      [
-        "trip",
-        "trip"
-      ],
-      [
-        "trip",
-        "trip:weather-panel"
-      ],
-      [
-        "trip:weather-panel",
-        "trip"
-      ],
-      [
-        "trip",
-        "share"
-      ],
-      [
-        "trip",
-        "trips"
-      ],
-      [
-        "share",
-        "trips"
-      ],
-      [
-        "share",
-        "share"
-      ]
+      ["sign-in", "trips"],
+      ["sign-in", "sign-in"],
+      ["sign-in", "login-help"],
+      ["login-help", "sign-in"],
+      ["trips", "trip:itinerary"],
+      ["trips", "trips:new-trip-form"],
+      ["trips:new-trip-form", "trip:itinerary"],
+      ["trip:itinerary", "trip/day:pin-form"],
+      ["trip/day:pin-form", "trip:itinerary"],
+      ["trip:itinerary", "trip:itinerary"],
+      ["trip:itinerary", "trip:weather-panel"],
+      ["trip:weather-panel", "trip:itinerary"],
+      ["trip:itinerary", "trip:stop-dialog"],
+      ["trip:stop-dialog", "trip:itinerary"],
+      ["trip:itinerary", "trip:packing"],
+      ["trip:packing", "trip:packing"],
+      ["trip:packing", "trip:history"],
+      ["trip:itinerary", "trip:history"],
+      ["trip:history", "trip:version"],
+      ["trip:version", "trip:itinerary"],
+      ["trip:version", "trip:history"],
+      ["trip:itinerary", "trip:settings"],
+      ["trip:settings", "trip:settings"],
+      ["trip:settings", "trip:delete-dialog"],
+      ["trip:delete-dialog", "trips"],
+      ["trip:delete-dialog", "trip:settings"],
+      ["trip:itinerary", "share"],
+      ["trip:itinerary", "trips"],
+      ["share", "trips"],
+      ["share", "public-share"],
+      ["public-share", "trips"],
+      ["trips", "places"],
+      ["places", "places"],
+      ["places", "place"],
+      ["place", "places"],
+      ["place", "trip:itinerary"],
+      ["access-notice", "trips"]
     ]
   },
   "features": [
-    "spa",
+    "bulk-operation",
     "client-state",
-    "server-state",
-    "reload-persistence",
-    "cross-page-state",
-    "nested-form",
     "conditional-section",
-    "table"
+    "cross-page-state",
+    "dynamic-validation",
+    "enable-disable",
+    "filter",
+    "fragment-update",
+    "modal",
+    "multi-role",
+    "nested-form",
+    "reload-persistence",
+    "server-state",
+    "sort",
+    "spa",
+    "table",
+    "tabs"
   ],
   "vocabulary": {
     "progress_keys": [
@@ -93,7 +96,11 @@
       "act.seal",
       "act.share",
       "act.create_trip",
-      "act.open"
+      "act.open",
+      "act.save_stop",
+      "act.add_item",
+      "act.save_trip",
+      "act.add_to_trip"
     ]
   },
   "regions": {
@@ -108,250 +115,294 @@
     "share_version": "#share-version",
     "share_count": "#share-count",
     "share_shown": "#share-shown",
-    "share_days": "#share-days"
+    "share_days": "#share-days",
+    "day3_stops": "#day-3-stops",
+    "signed_in_as": "#signed-in-as",
+    "login_error": "#login-error",
+    "access_notice": "#access-notice",
+    "trips_notice": "#trips-notice",
+    "places_total": "#places-total",
+    "places_list": "#places-list",
+    "places_page": "#places-page",
+    "places_pages": "#places-pages",
+    "packing_done": "#packing-done",
+    "packing_badge": "#packing-badge",
+    "packing_list": "#packing-list",
+    "version_list": "#version-list",
+    "place_name": "#place-name"
   },
   "workflows": [
     {
       "name": "pin a stop on day 1 and seal it as version 2",
       "trace": [
-        {
-          "type": "CLICK",
-          "id": "open-t1"
-        },
-        {
-          "type": "TYPE",
-          "id": "stop-name-1",
-          "params": {
-            "category": "valid_typical"
-          }
-        },
-        {
-          "type": "CLICK",
-          "id": "pin-1"
-        },
-        {
-          "type": "CLICK",
-          "id": "seal"
-        }
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "TYPE", "id": "stop-name-1", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "pin-1"},
+        {"type": "CLICK", "id": "seal"}
       ],
       "expect": [
-        {
-          "region": "sealed_version",
-          "contains": "2"
-        },
-        {
-          "region": "day1_stops",
-          "contains": "Test User Input"
-        }
+        {"region": "sealed_version", "contains": "2"},
+        {"region": "day1_stops", "contains": "Test User Input"}
       ]
     },
     {
       "name": "reorder and strike on day 1, then seal",
       "trace": [
-        {
-          "type": "CLICK",
-          "id": "open-t1"
-        },
-        {
-          "type": "CLICK",
-          "id": "down-s1"
-        },
-        {
-          "type": "CLICK",
-          "id": "strike-s2"
-        },
-        {
-          "type": "CLICK",
-          "id": "seal"
-        }
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "CLICK", "id": "down-s1"},
+        {"type": "CLICK", "id": "strike-s2"},
+        {"type": "CLICK", "id": "seal"}
       ],
       "expect": [
-        {
-          "region": "day1_stops",
-          "absent": "Fish market"
-        },
-        {
-          "region": "day1_stops",
-          "contains": "Harbour walk"
-        },
-        {
-          "region": "sealed_version",
-          "contains": "2"
-        }
+        {"region": "day1_stops", "absent": "Fish market"},
+        {"region": "day1_stops", "contains": "Harbour walk"},
+        {"region": "sealed_version", "contains": "2"}
       ]
     },
     {
       "name": "plan a new two-day trip and seal its first stop",
       "trace": [
-        {
-          "type": "TYPE",
-          "id": "trip-name",
-          "params": {
-            "category": "valid_typical"
-          }
-        },
-        {
-          "type": "TYPE",
-          "id": "trip-start",
-          "params": {
-            "category": "valid_typical"
-          }
-        },
-        {
-          "type": "SELECT",
-          "id": "trip-days",
-          "params": {
-            "option": "2"
-          }
-        },
-        {
-          "type": "CLICK",
-          "id": "create-trip"
-        },
-        {
-          "type": "TYPE",
-          "id": "stop-name-1",
-          "params": {
-            "category": "valid_typical"
-          }
-        },
-        {
-          "type": "SELECT",
-          "id": "stop-length-1",
-          "params": {
-            "option": "half"
-          }
-        },
-        {
-          "type": "CLICK",
-          "id": "pin-1"
-        },
-        {
-          "type": "CLICK",
-          "id": "seal"
-        }
+        {"type": "TYPE", "id": "trip-name", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "trip-start", "params": {"category": "valid_typical"}},
+        {"type": "SELECT", "id": "trip-days", "params": {"option": "2"}},
+        {"type": "CLICK", "id": "create-trip"},
+        {"type": "TYPE", "id": "stop-name-1", "params": {"category": "valid_typical"}},
+        {"type": "SELECT", "id": "stop-length-1", "params": {"option": "half"}},
+        {"type": "CLICK", "id": "pin-1"},
+        {"type": "CLICK", "id": "seal"}
       ],
       "expect": [
-        {
-          "region": "trip_title",
-          "contains": "Test User Input"
-        },
-        {
-          "region": "trip_dates",
-          "contains": "15 Jun 2026"
-        },
-        {
-          "region": "trip_dates",
-          "contains": "2"
-        },
-        {
-          "region": "day1_stops",
-          "contains": "Test User Input"
-        },
-        {
-          "region": "sealed_version",
-          "contains": "1"
-        }
+        {"region": "trip_title", "contains": "Test User Input"},
+        {"region": "trip_dates", "contains": "15 Jun 2026"},
+        {"region": "trip_dates", "contains": "2"},
+        {"region": "day1_stops", "contains": "Test User Input"},
+        {"region": "sealed_version", "contains": "1"}
       ]
     },
     {
       "name": "share the seeded itinerary",
       "trace": [
-        {
-          "type": "CLICK",
-          "id": "open-t1"
-        },
-        {
-          "type": "CLICK",
-          "id": "share"
-        }
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "CLICK", "id": "share"}
       ],
       "expect": [
-        {
-          "region": "share_version",
-          "contains": "1"
-        },
-        {
-          "region": "share_count",
-          "contains": "5"
-        },
-        {
-          "region": "share_days",
-          "contains": "Lighthouse"
-        }
+        {"region": "share_version", "contains": "1"},
+        {"region": "share_count", "contains": "5"},
+        {"region": "share_days", "contains": "Lighthouse"}
       ]
     },
     {
       "name": "pin on day 2, seal, then share the new version",
       "trace": [
-        {
-          "type": "CLICK",
-          "id": "open-t1"
-        },
-        {
-          "type": "TYPE",
-          "id": "stop-name-2",
-          "params": {
-            "category": "valid_typical"
-          }
-        },
-        {
-          "type": "CLICK",
-          "id": "pin-2"
-        },
-        {
-          "type": "CLICK",
-          "id": "seal"
-        },
-        {
-          "type": "CLICK",
-          "id": "share"
-        }
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "TYPE", "id": "stop-name-2", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "pin-2"},
+        {"type": "CLICK", "id": "seal"},
+        {"type": "CLICK", "id": "share"}
       ],
       "expect": [
-        {
-          "region": "share_version",
-          "contains": "2"
-        },
-        {
-          "region": "share_count",
-          "contains": "6"
-        },
-        {
-          "region": "share_days",
-          "contains": "Test User Input"
-        },
-        {
-          "region": "share_shown",
-          "contains": "6"
-        }
+        {"region": "share_version", "contains": "2"},
+        {"region": "share_count", "contains": "6"},
+        {"region": "share_days", "contains": "Test User Input"},
+        {"region": "share_shown", "contains": "6"}
       ]
     },
     {
       "name": "check the forecast, star a stop and return to the trip list",
       "trace": [
-        {
-          "type": "CLICK",
-          "id": "open-t1"
-        },
-        {
-          "type": "CLICK",
-          "id": "weather"
-        },
-        {
-          "type": "CLICK",
-          "id": "fav-s3"
-        },
-        {
-          "type": "CLICK",
-          "id": "back-trips"
-        }
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "CLICK", "id": "weather"},
+        {"type": "CLICK", "id": "fav-s3"},
+        {"type": "CLICK", "id": "back-trips"}
       ],
       "expect": [
-        {
-          "region": "trip_list",
-          "contains": "Coast to Coast"
-        }
+        {"region": "trip_list", "contains": "Coast to Coast"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "find a food place and add it to day 2 of the coast trip",
+      "trace": [
+        {"type": "CLICK", "id": "nav-places"},
+        {"type": "SELECT", "id": "places-kind", "params": {"option": "food"}},
+        {"type": "CLICK", "id": "place-p02"},
+        {"type": "SELECT", "id": "add-day", "params": {"option": "1"}},
+        {"type": "CLICK", "id": "add-to-trip"}
+      ],
+      "expect": [
+        {"region": "day2_stops", "contains": "Kipper smokehouse"},
+        {"region": "day2_stops", "contains": "Cliff path"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "page through the places catalogue",
+      "trace": [
+        {"type": "CLICK", "id": "nav-places"},
+        {"type": "CLICK", "id": "places-next"},
+        {"type": "CLICK", "id": "places-next"}
+      ],
+      "expect": [
+        {"region": "places_page", "contains": "3"},
+        {"region": "places_pages", "contains": "3"},
+        {"region": "places_total", "contains": "24"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "sort the catalogue by region and open the first place",
+      "trace": [
+        {"type": "CLICK", "id": "nav-places"},
+        {"type": "SELECT", "id": "places-sort", "params": {"option": "region"}},
+        {"type": "CLICK", "id": "place-p04"}
+      ],
+      "expect": [
+        {"region": "place_name", "contains": "Boggle Hole"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "pack two items in one go",
+      "trace": [
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "CLICK", "id": "tab-packing"},
+        {"type": "CLICK", "id": "select-k2"},
+        {"type": "CLICK", "id": "select-k3"},
+        {"type": "CLICK", "id": "bulk-pack"}
+      ],
+      "expect": [
+        {"region": "packing_done", "contains": "3"},
+        {"region": "packing_badge", "contains": "3/6"}
+      ]
+    },
+    {
+      "name": "rename a packing item in place",
+      "trace": [
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "CLICK", "id": "tab-packing"},
+        {"type": "CLICK", "id": "item-name-k3"},
+        {"type": "TYPE", "id": "item-text-k3", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "item-save-k3"}
+      ],
+      "expect": [
+        {"region": "packing_list", "contains": "Test User Input"},
+        {"region": "packing_list", "absent": "Ordnance Survey map"}
+      ]
+    },
+    {
+      "name": "add an item to the packing list and remove another",
+      "trace": [
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "CLICK", "id": "tab-packing"},
+        {"type": "TYPE", "id": "item-new", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "item-add"},
+        {"type": "CLICK", "id": "item-delete-k1"}
+      ],
+      "expect": [
+        {"region": "packing_list", "contains": "Test User Input"},
+        {"region": "packing_list", "absent": "Walking boots"},
+        {"region": "packing_done", "contains": "0"}
+      ]
+    },
+    {
+      "name": "move a stop to day 3 with the stop editor and seal it",
+      "trace": [
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "CLICK", "id": "stop-s1"},
+        {"type": "SELECT", "id": "stop-edit-day", "params": {"option": "2"}},
+        {"type": "CLICK", "id": "stop-save"},
+        {"type": "CLICK", "id": "seal"}
+      ],
+      "expect": [
+        {"region": "day3_stops", "contains": "Harbour walk"},
+        {"region": "day1_stops", "absent": "Harbour walk"},
+        {"region": "sealed_version", "contains": "2"}
+      ]
+    },
+    {
+      "name": "rename the trip in its settings",
+      "trace": [
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "CLICK", "id": "tab-settings"},
+        {"type": "TYPE", "id": "settings-name", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "save-trip"}
+      ],
+      "expect": [
+        {"region": "trip_title", "contains": "Test User Input"}
+      ]
+    },
+    {
+      "name": "plan a trip, then delete it through its settings",
+      "trace": [
+        {"type": "TYPE", "id": "trip-name", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "trip-start", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "create-trip"},
+        {"type": "CLICK", "id": "tab-settings"},
+        {"type": "CLICK", "id": "delete-trip"},
+        {"type": "CLICK", "id": "confirm-delete"}
+      ],
+      "expect": [
+        {"region": "trip_list", "absent": "Test User Input"},
+        {"region": "trip_list", "contains": "Coast to Coast"},
+        {"region": "trips_notice", "contains": "Test User Input"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "seal a change, then start a draft from the earlier version",
+      "trace": [
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "TYPE", "id": "stop-name-1", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "pin-1"},
+        {"type": "CLICK", "id": "seal"},
+        {"type": "CLICK", "id": "tab-history"},
+        {"type": "CLICK", "id": "version-1"},
+        {"type": "CLICK", "id": "use-version"}
+      ],
+      "expect": [
+        {"region": "sealed_version", "contains": "2"},
+        {"region": "day1_stops", "absent": "Test User Input"},
+        {"region": "day1_stops", "contains": "Lighthouse"}
+      ]
+    },
+    {
+      "name": "read the packing list of a trip shared with you",
+      "trace": [
+        {"type": "CLICK", "id": "open-t90"},
+        {"type": "CLICK", "id": "tab-packing"}
+      ],
+      "expect": [
+        {"region": "packing_list", "contains": "Midge spray"},
+        {"region": "packing_done", "contains": "2"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "search the places catalogue",
+      "trace": [
+        {"type": "CLICK", "id": "nav-places"},
+        {"type": "TYPE", "id": "places-q", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "places-search"}
+      ],
+      "expect": [
+        {"region": "places_total", "contains": "0"},
+        {"region": "places_page", "contains": "1"}
+      ],
+      "commits": false
+    },
+    {
+      "name": "go back to the previous page of places, then forward again",
+      "trace": [
+        {"type": "CLICK", "id": "nav-places"},
+        {"type": "CLICK", "id": "places-next"},
+        {"type": "CLICK", "id": "places-next"},
+        {"type": "BROWSER_BACK"},
+        {"type": "BROWSER_BACK"},
+        {"type": "BROWSER_FORWARD"}
+      ],
+      "expect": [
+        {"region": "places_page", "contains": "2"},
+        {"region": "places_list", "contains": "Glencoe Lochan"}
       ],
       "commits": false
     }
@@ -361,79 +412,34 @@
       "name": "Seal itinerary creates a new sealed version only when the draft differs from the latest one",
       "useless": {
         "trace": [
-          {
-            "type": "CLICK",
-            "id": "open-t1"
-          }
+          {"type": "CLICK", "id": "open-t1"}
         ],
-        "action": {
-          "type": "CLICK",
-          "id": "seal"
-        }
+        "action": {"type": "CLICK", "id": "seal"}
       },
       "useful": {
         "trace": [
-          {
-            "type": "CLICK",
-            "id": "open-t1"
-          },
-          {
-            "type": "TYPE",
-            "id": "stop-name-1",
-            "params": {
-              "category": "valid_typical"
-            }
-          },
-          {
-            "type": "CLICK",
-            "id": "pin-1"
-          }
+          {"type": "CLICK", "id": "open-t1"},
+          {"type": "TYPE", "id": "stop-name-1", "params": {"category": "valid_typical"}},
+          {"type": "CLICK", "id": "pin-1"}
         ],
-        "action": {
-          "type": "CLICK",
-          "id": "seal"
-        }
+        "action": {"type": "CLICK", "id": "seal"}
       }
     },
     {
       "name": "Share issues a share link only for a trip that has a sealed version",
       "useless": {
         "trace": [
-          {
-            "type": "TYPE",
-            "id": "trip-name",
-            "params": {
-              "category": "valid_typical"
-            }
-          },
-          {
-            "type": "TYPE",
-            "id": "trip-start",
-            "params": {
-              "category": "valid_typical"
-            }
-          },
-          {
-            "type": "CLICK",
-            "id": "create-trip"
-          }
+          {"type": "TYPE", "id": "trip-name", "params": {"category": "valid_typical"}},
+          {"type": "TYPE", "id": "trip-start", "params": {"category": "valid_typical"}},
+          {"type": "CLICK", "id": "create-trip"}
         ],
-        "action": {
-          "type": "CLICK",
-          "id": "share"
-        }
+        "action": {"type": "CLICK", "id": "share"}
       },
       "useful": {
         "trace": [
-          {
-            "type": "CLICK",
-            "id": "open-t1"
-          }
+          {"type": "CLICK", "id": "open-t1"}
         ],
-        "action": {
-          "type": "CLICK",
-          "id": "share"
-        }
+        "action": {"type": "CLICK", "id": "share"}
       }
     }
   ],
@@ -441,28 +447,16 @@
     {
       "name": "the Weather forecast",
       "trace": [
-        {
-          "type": "CLICK",
-          "id": "open-t1"
-        }
+        {"type": "CLICK", "id": "open-t1"}
       ],
-      "decoy": {
-        "type": "CLICK",
-        "id": "weather"
-      }
+      "decoy": {"type": "CLICK", "id": "weather"}
     },
     {
       "name": "starring a stop as a favourite",
       "trace": [
-        {
-          "type": "CLICK",
-          "id": "open-t1"
-        }
+        {"type": "CLICK", "id": "open-t1"}
       ],
-      "decoy": {
-        "type": "CLICK",
-        "id": "fav-s1"
-      }
+      "decoy": {"type": "CLICK", "id": "fav-s1"}
     }
   ],
   "faults": [
@@ -483,28 +477,14 @@
           "describes": "day 1's stops, in order, survive a reload of the planner unchanged"
         }
       ],
-      "reproduction": {
-        "replays": 2,
-        "must_all_reproduce": true
-      },
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
       "observation_horizon": 1,
       "shortest_path": 4,
       "trigger_trace": [
-        {
-          "type": "CLICK",
-          "id": "open-t1"
-        },
-        {
-          "type": "CLICK",
-          "id": "strike-s2"
-        },
-        {
-          "type": "CLICK",
-          "id": "up-s3"
-        },
-        {
-          "type": "REFRESH"
-        }
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "CLICK", "id": "strike-s2"},
+        {"type": "CLICK", "id": "up-s3"},
+        {"type": "REFRESH"}
       ],
       "patch": {
         "file": "src/static/app.js",
@@ -526,129 +506,301 @@
           "kind": "region_arithmetic",
           "where": "#/share/[0-9a-f]{16}$",
           "expression": "shown == sealed",
-          "operands": {
-            "shown": "share_shown",
-            "sealed": "share_count"
-          },
+          "operands": {"shown": "share_shown", "sealed": "share_count"},
           "describes": "the shared page lists exactly as many stops as the sealed version it names"
         }
       ],
-      "reproduction": {
-        "replays": 2,
-        "must_all_reproduce": true
-      },
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
       "observation_horizon": 0,
       "shortest_path": 4,
       "trigger_trace": [
-        {
-          "type": "CLICK",
-          "id": "open-t1"
-        },
-        {
-          "type": "TYPE",
-          "id": "stop-name-1",
-          "params": {
-            "category": "valid_typical"
-          }
-        },
-        {
-          "type": "CLICK",
-          "id": "pin-1"
-        },
-        {
-          "type": "CLICK",
-          "id": "seal"
-        },
-        {
-          "type": "TYPE",
-          "id": "stop-name-1",
-          "params": {
-            "category": "valid_typical"
-          }
-        },
-        {
-          "type": "CLICK",
-          "id": "pin-1"
-        },
-        {
-          "type": "CLICK",
-          "id": "share"
-        }
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "TYPE", "id": "stop-name-1", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "pin-1"},
+        {"type": "CLICK", "id": "seal"},
+        {"type": "TYPE", "id": "stop-name-1", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "pin-1"},
+        {"type": "CLICK", "id": "share"}
       ],
       "patch": {
         "file": "src/static/app.js",
         "find": "const shown = itineraryFor(share.trip, sealed, { preferDraft: false });",
         "replace": "const shown = itineraryFor(share.trip, sealed, { preferDraft: true });"
       }
+    },
+    {
+      "fault_id": "WAY-3",
+      "fault_class": "broken_transition",
+      "subtype": "incorrect-navigation",
+      "oracle": "extension",
+      "description": "Choosing a kind in the places catalogue keeps the page number of the list being shown instead of starting the filtered list from its first page. From page 2 of the whole catalogue, a kind with less than a page of places opens on a page past its last one: no places listed, 'Page 2 of 1'.",
+      "trigger_condition": "In Places, go to the next page, then choose a kind that has fewer places than one page holds (Food).",
+      "expected_behaviour": "A new filter starts from its first page; the page shown is never beyond the last page.",
+      "observable_violation": "The pager reads 'Page 2 of 1' and the list is empty, though five places match.",
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "#/places(\\?.*)?$",
+          "expression": "page <= pages",
+          "operands": {"page": "places_page", "pages": "places_pages"},
+          "describes": "the catalogue never shows a page beyond its last one"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 3,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "nav-places"},
+        {"type": "CLICK", "id": "places-next"},
+        {"type": "SELECT", "id": "places-kind", "params": {"option": "food"}}
+      ],
+      "patch": {
+        "file": "src/static/app.js",
+        "find": "kind: event.target.value, page: 1 }",
+        "replace": "kind: event.target.value }"
+      }
+    },
+    {
+      "fault_id": "WAY-4",
+      "fault_class": "state_corruption",
+      "subtype": "stale-state",
+      "oracle": "extension",
+      "description": "The Packing tab's badge is drawn from the counts that came with the trip, not from the list as it now stands. Ticking an item updates its row and the 'N of M packed' line in place, but the badge keeps the count from when the tab was opened.",
+      "trigger_condition": "Open a trip's Packing tab and tick an item as packed (or untick one).",
+      "expected_behaviour": "The tab's badge always shows the same packed count as the list beneath it.",
+      "observable_violation": "The badge reads 1/6 while the list says 2 of 6 packed.",
+      "assertions": [
+        {
+          "kind": "region_arithmetic",
+          "where": "#/trips/t\\d+/packing$",
+          "expression": "badge == packed",
+          "operands": {"badge": "packing_badge", "packed": "packing_done"},
+          "describes": "the Packing tab's badge and the list agree on how many items are packed"
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 3,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "CLICK", "id": "tab-packing"},
+        {"type": "CLICK", "id": "pack-k2"}
+      ],
+      "patch": {
+        "file": "src/static/app.js",
+        "find": "const badge = countPacked(packing.items); // the tab's badge follows the list as it stands",
+        "replace": "const badge = planner.trip.packing; // the tab's badge follows the list as it stands"
+      }
     }
   ],
   "benign_traces": [
     [
-      {
-        "type": "CLICK",
-        "id": "open-t1"
-      },
-      {
-        "type": "CLICK",
-        "id": "down-s1"
-      },
-      {
-        "type": "CLICK",
-        "id": "up-s3"
-      },
-      {
-        "type": "REFRESH"
-      }
+      {"type": "CLICK", "id": "open-t1"},
+      {"type": "CLICK", "id": "down-s1"},
+      {"type": "CLICK", "id": "up-s3"},
+      {"type": "REFRESH"}
     ],
     [
+      {"type": "CLICK", "id": "open-t1"},
+      {"type": "TYPE", "id": "stop-name-1", "params": {"category": "valid_typical"}},
+      {"type": "CLICK", "id": "pin-1"},
+      {"type": "CLICK", "id": "seal"},
+      {"type": "CLICK", "id": "share"}
+    ],
+    [
+      {"type": "CLICK", "id": "open-t1"},
+      {"type": "CLICK", "id": "strike-s2"},
+      {"type": "CLICK", "id": "weather"},
+      {"type": "CLICK", "id": "fav-s1"},
+      {"type": "CLICK", "id": "seal"},
+      {"type": "REFRESH"}
+    ],
+    [
+      {"type": "CLICK", "id": "nav-places"},
+      {"type": "CLICK", "id": "places-next"},
+      {"type": "CLICK", "id": "places-prev"},
+      {"type": "SELECT", "id": "places-sort", "params": {"option": "region"}},
+      {"type": "CLICK", "id": "place-p04"},
+      {"type": "CLICK", "id": "place-back"}
+    ],
+    [
+      {"type": "CLICK", "id": "open-t1"},
+      {"type": "CLICK", "id": "tab-packing"},
+      {"type": "CLICK", "id": "item-name-k2"},
+      {"type": "CLICK", "id": "item-cancel-k2"},
+      {"type": "CLICK", "id": "tab-history"},
+      {"type": "CLICK", "id": "tab-itinerary"}
+    ],
+    [
+      {"type": "CLICK", "id": "open-t1"},
+      {"type": "CLICK", "id": "stop-s2"},
+      {"type": "CLICK", "id": "stop-cancel"},
+      {"type": "CLICK", "id": "tab-packing"},
+      {"type": "CLICK", "id": "select-all"},
+      {"type": "CLICK", "id": "tab-itinerary"},
+      {"type": "BROWSER_BACK"}
+    ]
+  ],
+  "login": {
+    "path": "/login",
+    "protected": ["/", "/index.html"],
+    "public": ["/login/help", "/share/0000000000000000"],
+    "users": [
+      {"username": "noor.haddad", "name": "Noor Haddad", "roles": ["organiser"], "macro": true},
+      {"username": "sam.whitlock", "name": "Sam Whitlock", "roles": ["organiser"]},
+      {"username": "omar.farouk", "name": "Omar Farouk", "roles": ["traveller"]}
+    ],
+    "password_value": "Wayfarer-trails-26",
+    "steps": [
+      {"type": "TYPE", "id": "login-username", "params": {"value": "noor.haddad"}},
+      {"type": "TYPE", "id": "login-password", "params": {"value": "Wayfarer-trails-26"}},
+      {"type": "CLICK", "id": "login-submit"}
+    ],
+    "form": {"action": "/login", "username_field": "username", "password_field": "password"},
+    "signed_in_region": "signed_in_as",
+    "error_region": "login_error",
+    "sign_out": [
+      {"type": "CLICK", "id": "nav-account"},
+      {"type": "CLICK", "id": "sign-out"}
+    ],
+    "restricted": [
+      {"user": "omar.farouk", "path": "/#/trips/t1", "region": "access_notice"},
+      {"user": "noor.haddad", "path": "/#/trips/t90/settings", "region": "access_notice"}
+    ]
+  },
+  "database": {
+    "engine": "mongodb",
+    "isolation": "database-per-session",
+    "schema": "src/collections.js",
+    "entities": ["users", "regions", "trips", "versions", "places", "packing"],
+    "auxiliary": ["counters"],
+    "references": [
+      {"from": "trips.owner_id", "to": "users._id"},
+      {"from": "trips.region_id", "to": "regions._id"},
+      {"from": "trips.members[].user_id", "to": "users._id"},
+      {"from": "versions.trip_id", "to": "trips._id"},
+      {"from": "versions.sealed_by", "to": "users._id"},
+      {"from": "places.region_id", "to": "regions._id"},
+      {"from": "packing.trip_id", "to": "trips._id"},
+      {"from": "packing.added_by", "to": "users._id"}
+    ],
+    "probes": [
       {
-        "type": "CLICK",
-        "id": "open-t1"
-      },
-      {
-        "type": "TYPE",
-        "id": "stop-name-1",
-        "params": {
-          "category": "valid_typical"
+        "name": "a sealed version that belongs to no trip",
+        "kind": "required",
+        "collection": "versions",
+        "insert": {
+          "_id": "t1:v9",
+          "n": 9,
+          "sealed_by": "noor",
+          "sealed_at": "2026-06-10T09:00:00",
+          "next_stop": 6,
+          "days": [
+            {"day": 1, "stops": []}
+          ]
         }
       },
       {
-        "type": "CLICK",
-        "id": "pin-1"
+        "name": "a place of a kind the catalogue does not have",
+        "kind": "enum",
+        "collection": "places",
+        "insert": {
+          "_id": "p99",
+          "region_id": "coast",
+          "name": "Museum",
+          "kind": "museum",
+          "length": "1h",
+          "summary": "A museum."
+        }
       },
       {
-        "type": "CLICK",
-        "id": "seal"
+        "name": "a trip member with a role that does not exist",
+        "kind": "enum",
+        "collection": "trips",
+        "update": {"filter": {"_id": "t90"}, "update": {"$set": {"members.1.role": "editor"}}}
       },
       {
-        "type": "CLICK",
-        "id": "share"
+        "name": "a second version 1 of the coast trip",
+        "kind": "duplicate",
+        "collection": "versions",
+        "insert": {
+          "_id": "t1:v99",
+          "trip_id": "t1",
+          "n": 1,
+          "sealed_by": "noor",
+          "sealed_at": "2026-06-10T09:00:00",
+          "next_stop": 6,
+          "days": [
+            {"day": 1, "stops": []},
+            {"day": 2, "stops": []},
+            {"day": 3, "stops": []}
+          ]
+        }
       }
     ],
-    [
+    "absent_constraints": []
+  },
+  "breadth": {
+    "views": [
+      {"name": "sign-in page", "path": "/login", "as": null},
+      {"name": "sign-in help", "path": "/login/help", "as": null},
+      {"name": "public share page", "path": "/share/0000000000000000", "as": null},
+      {"name": "trip list", "path": "/#/trips"},
+      {"name": "itinerary", "path": "/#/trips/t1"},
+      {"name": "packing list", "path": "/#/trips/t1/packing"},
+      {"name": "version history", "path": "/#/trips/t1/history"},
+      {"name": "one sealed version", "path": "/#/trips/t1/versions/1"},
+      {"name": "trip settings", "path": "/#/trips/t1/settings"},
+      {"name": "shared trip, read-only", "path": "/#/trips/t90"},
+      {"name": "places catalogue", "path": "/#/places"},
+      {"name": "one place", "path": "/#/places/p02"},
+      {"name": "access notice", "path": "/#/trips/t1", "as": "omar.farouk"},
       {
-        "type": "CLICK",
-        "id": "open-t1"
+        "name": "in-app share view",
+        "workflow": "share the seeded itinerary",
+        "where": "#/share/[0-9a-f]{16}$"
       },
       {
-        "type": "CLICK",
-        "id": "strike-s2"
+        "name": "stop editor dialog",
+        "workflow": "move a stop to day 3 with the stop editor and seal it",
+        "where": "#/trips/t\\d+$"
       },
       {
-        "type": "CLICK",
-        "id": "weather"
-      },
-      {
-        "type": "CLICK",
-        "id": "fav-s1"
-      },
-      {
-        "type": "CLICK",
-        "id": "seal"
-      },
-      {
-        "type": "REFRESH"
+        "name": "delete-trip dialog",
+        "workflow": "plan a trip, then delete it through its settings",
+        "where": "#/trips/t\\d+/settings$"
       }
-    ]
-  ]
+    ],
+    "entities": {
+      "trip": {
+        "create": "plan a new two-day trip and seal its first stop",
+        "read": "check the forecast, star a stop and return to the trip list",
+        "update": "rename the trip in its settings",
+        "delete": "plan a trip, then delete it through its settings"
+      },
+      "stop": {
+        "create": "pin a stop on day 1 and seal it as version 2",
+        "read": "pin on day 2, seal, then share the new version",
+        "update": "move a stop to day 3 with the stop editor and seal it",
+        "delete": "reorder and strike on day 1, then seal"
+      },
+      "packing item": {
+        "create": "add an item to the packing list and remove another",
+        "read": "read the packing list of a trip shared with you",
+        "update": "rename a packing item in place",
+        "delete": "add an item to the packing list and remove another"
+      }
+    },
+    "patterns": {
+      "pagination": "page through the places catalogue",
+      "sort-filter": "sort the catalogue by region and open the first place",
+      "search": "search the places catalogue",
+      "modal": "move a stop to day 3 with the stop editor and seal it",
+      "tabs": "pack two items in one go",
+      "inline-edit": "rename a packing item in place",
+      "reorder": "reorder and strike on day 1, then seal",
+      "bulk-action": "pack two items in one go",
+      "client-routing": "go back to the previous page of places, then forward again"
+    }
+  }
 }

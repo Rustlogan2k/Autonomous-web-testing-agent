@@ -1,0 +1,4 @@
+[
+  {"_id": "t1", "owner_id": "noor", "region_id": "coast", "name": "Coast to Coast", "start": "2026-06-18", "days": 3, "members": [{"user_id": "noor", "role": "owner"}], "latest": 1, "share": null},
+  {"_id": "t90", "owner_id": "sam", "region_id": "lakes", "name": "Fells and lakes", "start": "2026-07-04", "days": 2, "members": [{"user_id": "sam", "role": "owner"}, {"user_id": "noor", "role": "viewer"}], "latest": 2, "share": null}
+]

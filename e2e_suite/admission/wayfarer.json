@@ -7,6 +7,16 @@
       "detail": []
     },
     {
+      "name": "suite_v2_contract",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "breadth_declared",
+      "passed": true,
+      "detail": []
+    },
+    {
       "name": "no_external_urls",
       "passed": true,
       "detail": []
@@ -27,6 +37,16 @@
       "detail": []
     },
     {
+      "name": "database_url_from_environment",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "dockerfile_copies_vendor",
+      "passed": true,
+      "detail": []
+    },
+    {
       "name": "patches_apply_exactly_once",
       "passed": true,
       "detail": null
@@ -42,12 +62,79 @@
       "detail": {
         "passed": true,
         "summary": [
-          "# tests 12",
-          "# pass 12",
+          "# tests 19",
+          "# pass 19",
           "# fail 0"
         ],
         "pass_lines": 1,
         "tail": []
+      }
+    },
+    {
+      "name": "login_http_round_trip",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "status": 303,
+        "location": "/",
+        "cookie": true,
+        "entry_status": 200,
+        "entry_path": "/",
+        "user": "noor.haddad"
+      }
+    },
+    {
+      "name": "data_model_contract",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "session_seed_cost",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "warn": false,
+        "samples": 20,
+        "p50_ms": 76.5,
+        "p95_ms": 85.0,
+        "max_ms": 95.1,
+        "limit_ms": 300.0,
+        "refused": 0,
+        "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
+      }
+    },
+    {
+      "name": "session_cap_honoured",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "cap": 4,
+        "max_live_partitions": 4,
+        "live_after_each": [
+          2,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "evicted_session_state": null,
+        "evicted_session_lands_on": "/login",
+        "every_new_session_starts_from_the_seed": true
       }
     },
     {
@@ -70,10 +157,10 @@
       "passed": true,
       "detail": {
         "passed": true,
-        "seed_sha": "6b68d91da7bd68a60d67bd651b15d09ddb1996638f3359dc21403b8f9fca51a9",
+        "seed_sha": "700b4241fab636266a4a506d1005ad005391f6fd954eb5174504dc5893926f9d",
         "fresh_context_sha": [
-          "6b68d91da7bd68a60d67bd651b15d09ddb1996638f3359dc21403b8f9fca51a9",
-          "6b68d91da7bd68a60d67bd651b15d09ddb1996638f3359dc21403b8f9fca51a9"
+          "700b4241fab636266a4a506d1005ad005391f6fd954eb5174504dc5893926f9d",
+          "700b4241fab636266a4a506d1005ad005391f6fd954eb5174504dc5893926f9d"
         ]
       }
     },
@@ -108,7 +195,7 @@
         "witness_silent_on_clean": true,
         "witness_needs_its_own_patch": true,
         "buggy_detail": [
-          "region_stable_across_reload: violated=True inconclusive=False before='Lighthouse 2 hrs Nudge up Nudge down Strike Favourite Harbour walk 1 hr "
+          "region_stable_across_reload: violated=True inconclusive=False before='Lighthouse 2 hrs sight Nudge up Nudge down Strike Favourite Harbour walk"
         ],
         "confirmed": true,
         "rejected_because": "",
@@ -119,7 +206,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 77.0
+        "seconds": 101.3
       }
     },
     {
@@ -147,7 +234,63 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 99.6
+        "seconds": 137.7
+      }
+    },
+    {
+      "name": "fault WAY-3",
+      "passed": true,
+      "detail": {
+        "fault_id": "WAY-3",
+        "subtype": "incorrect-navigation",
+        "oracle": "extension",
+        "fault_class": "broken_transition",
+        "witness_length": 3,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'page': 2.0, 'pages': 1.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 3,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 104.0
+      }
+    },
+    {
+      "name": "fault WAY-4",
+      "passed": true,
+      "detail": {
+        "fault_id": "WAY-4",
+        "subtype": "stale-state",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 3,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False badge=1 packed=2"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 3,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 98.4
       }
     },
     {
@@ -164,6 +307,44 @@
         "raw_candidates": {},
         "errors": [],
         "foreign_requests": [],
+        "responses": {
+          "count": 43,
+          "p50_ms": 6.5,
+          "p95_ms": 10.6,
+          "max_ms": 11.3,
+          "slowest": [
+            [
+              "POST",
+              "/api/trips/t1/packing/k6/delete",
+              11.3
+            ],
+            [
+              "POST",
+              "/api/trips/t1/packing/k1/delete",
+              11.0
+            ],
+            [
+              "POST",
+              "/api/trips/t1/packing/k5",
+              10.6
+            ],
+            [
+              "POST",
+              "/api/trips/t1/packing/k3",
+              10.4
+            ],
+            [
+              "GET",
+              "/api/places",
+              9.4
+            ]
+          ],
+          "limits_ms": {
+            "p95": 150.0,
+            "max": 1000.0
+          },
+          "passed": true
+        },
         "passed": true
       }
     },
@@ -173,6 +354,163 @@
       "detail": []
     },
     {
+      "name": "responses_fast",
+      "passed": true,
+      "detail": {
+        "count": 43,
+        "p50_ms": 6.5,
+        "p95_ms": 10.6,
+        "max_ms": 11.3,
+        "slowest": [
+          [
+            "POST",
+            "/api/trips/t1/packing/k6/delete",
+            11.3
+          ],
+          [
+            "POST",
+            "/api/trips/t1/packing/k1/delete",
+            11.0
+          ],
+          [
+            "POST",
+            "/api/trips/t1/packing/k5",
+            10.6
+          ],
+          [
+            "POST",
+            "/api/trips/t1/packing/k3",
+            10.4
+          ],
+          [
+            "GET",
+            "/api/places",
+            9.4
+          ]
+        ],
+        "limits_ms": {
+          "p95": 150.0,
+          "max": 1000.0
+        },
+        "passed": true
+      }
+    },
+    {
+      "name": "login_protected",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "landing": {
+          "entry": "/login",
+          "/": "/login",
+          "/index.html": "/login"
+        },
+        "public": {
+          "/login/help": {
+            "status": 200,
+            "redirected": false,
+            "path": "/login/help"
+          },
+          "/share/0000000000000000": {
+            "status": 200,
+            "redirected": false,
+            "path": "/share/0000000000000000"
+          }
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "login_macro_signs_in",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "steps_completed": 3,
+        "steps": 3,
+        "path": "/",
+        "signed_in_as": "Noor Haddad \u00b7 Trip organiser",
+        "sha_equals_seed": true
+      }
+    },
+    {
+      "name": "login_wrong_password_refused",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "path": "/login",
+        "error_region": "That username and password don't match.",
+        "session": null,
+        "errors": []
+      }
+    },
+    {
+      "name": "login_sign_out_sound",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "workflow": "pin a stop on day 1 and seal it as version 2",
+        "workflow_misses": 0,
+        "sign_out_misses": 0,
+        "landed_on": "/login",
+        "user_after_sign_out": null,
+        "entry_lands_on": "/login",
+        "sign_in_again_steps": 3,
+        "sha_resumed": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "role_restrictions_sound",
+      "passed": true,
+      "detail": [
+        {
+          "user": "omar.farouk",
+          "path": "/#/trips/t1",
+          "passed": true,
+          "signed_in_as": "Omar Farouk \u00b7 Traveller",
+          "status": null,
+          "access_region": "This trip isn't shared with you, or only its organiser can open this page.",
+          "state_unchanged": true,
+          "errors": []
+        },
+        {
+          "user": "noor.haddad",
+          "path": "/#/trips/t90/settings",
+          "passed": true,
+          "signed_in_as": "Noor Haddad \u00b7 Trip organiser",
+          "status": null,
+          "access_region": "This trip isn't shared with you, or only its organiser can open this page.",
+          "state_unchanged": true,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "name": "breadth_exercised",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "size_problems": [],
+        "workflows_failing": [],
+        "counts": {
+          "views": 16,
+          "entities": 3,
+          "patterns": [
+            "bulk-action",
+            "client-routing",
+            "inline-edit",
+            "modal",
+            "pagination",
+            "reorder",
+            "search",
+            "sort-filter",
+            "tabs"
+          ]
+        },
+        "views_failing": []
+      }
+    },
+    {
       "name": "product_intake_matches_expectation",
       "passed": true,
       "detail": {
@@ -180,77 +518,140 @@
           "languages": [
             {
               "language": "JavaScript",
-              "files": 2,
-              "bytes": 39689,
-              "share": 0.5977
+              "files": 6,
+              "bytes": 103548,
+              "share": 0.6168
             },
             {
               "language": "JSON",
-              "files": 4,
-              "bytes": 20236,
-              "share": 0.3048
+              "files": 10,
+              "bytes": 51978,
+              "share": 0.3096
             },
             {
               "language": "Markdown",
               "files": 1,
-              "bytes": 3437,
-              "share": 0.0518
+              "bytes": 6674,
+              "share": 0.0398
             },
             {
               "language": "CSS",
               "files": 1,
-              "bytes": 2386,
-              "share": 0.0359
+              "bytes": 4961,
+              "share": 0.0295
             },
             {
               "language": "HTML",
               "files": 1,
-              "bytes": 650,
-              "share": 0.0098
+              "bytes": 726,
+              "share": 0.0043
             }
           ],
           "frameworks": [],
           "build_definition": null
         },
-        "build_plan_error": "RepoIntakeError: No Dockerfile or compose file found in C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\wayfarer\\clean (searched the root and one level down). v1 requires the repository to describe its own build; see \u00a76.2.\n--- dia",
+        "build_plan_error": "RepoIntakeError: No Dockerfile or compose file found in C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\wayfarer\\clean (searched the root and one level down). v1 requires the repository to describe its own build; see \u00a76.2.\n--- diagnos",
         "product_can_build": false,
         "matches_expectation": true,
         "expectation": "refused by the current intake (no Dockerfile): the limitation this app exists to exercise"
       }
+    },
+    {
+      "name": "variant_storage_released",
+      "passed": true,
+      "detail": []
     }
   ],
   "sections": {
     "vocabulary": {
-      "keys": 65,
-      "keys_used_by_source": 65,
-      "action_keys": 12,
-      "unused_keys": [],
+      "keys": 163,
+      "keys_used_by_source": 150,
+      "action_keys": 34,
+      "unused_keys": [
+        "kind.beach",
+        "kind.food",
+        "kind.other",
+        "kind.sight",
+        "kind.walk",
+        "role.organiser",
+        "role.traveller",
+        "sort.name",
+        "sort.name_desc",
+        "sort.region",
+        "weather.cloud",
+        "weather.showers",
+        "weather.sun"
+      ],
       "default_action_labels": {
+        "act.add_item": "Add item",
+        "act.add_to_trip": "Add to the itinerary",
         "act.all_trips": "All trips",
+        "act.back_to_history": "Back to history",
+        "act.back_to_places": "Back to places",
+        "act.back_to_sign_in": "Back to sign in",
+        "act.bulk_delete": "Remove selected",
+        "act.bulk_pack": "Mark packed",
+        "act.bulk_unpack": "Mark not packed",
+        "act.cancel": "Cancel",
+        "act.confirm_delete": "Delete it",
         "act.create_trip": "Plan trip",
+        "act.delete_item": "Remove",
+        "act.delete_trip": "Delete trip",
         "act.favourite": "Favourite",
+        "act.login_help": "Forgot password?",
+        "act.next": "Next",
         "act.nudge_down": "Nudge down",
         "act.nudge_up": "Nudge up",
         "act.open": "Open",
         "act.permalink": "Link to this itinerary",
         "act.pin": "Pin stop",
+        "act.previous": "Previous",
+        "act.save_item": "Save",
+        "act.save_stop": "Save stop",
+        "act.save_trip": "Save details",
         "act.seal": "Seal itinerary",
+        "act.search": "Search",
         "act.share": "Share",
+        "act.sign_in": "Sign in",
+        "act.sign_out": "Sign out",
         "act.strike": "Strike",
+        "act.use_version": "Start a draft from this version",
         "act.weather": "Weather"
       },
       "alt_action_labels": {
+        "act.add_item": "Put on list",
+        "act.add_to_trip": "Put in the plan",
         "act.all_trips": "Back to journeys",
+        "act.back_to_history": "All versions",
+        "act.back_to_places": "All ideas",
+        "act.back_to_sign_in": "Return to log-in",
+        "act.bulk_delete": "Drop chosen",
+        "act.bulk_pack": "Tick all chosen",
+        "act.bulk_unpack": "Untick all chosen",
+        "act.cancel": "Never mind",
+        "act.confirm_delete": "Yes, remove",
         "act.create_trip": "Create trip",
+        "act.delete_item": "Drop",
+        "act.delete_trip": "Remove this trip",
         "act.favourite": "Star",
+        "act.login_help": "Can't log in?",
+        "act.next": "More",
         "act.nudge_down": "Lower",
         "act.nudge_up": "Raise",
         "act.open": "View",
         "act.permalink": "Permanent address",
         "act.pin": "Add waypoint",
+        "act.previous": "Back a page",
+        "act.save_item": "Keep",
+        "act.save_stop": "Keep changes",
+        "act.save_trip": "Update trip",
         "act.seal": "Freeze plan",
+        "act.search": "Look up",
         "act.share": "Get link",
+        "act.sign_in": "Log in",
+        "act.sign_out": "Log out",
         "act.strike": "Drop",
+        "act.use_version": "Edit from here",
         "act.weather": "Forecast"
       }
     },
@@ -266,6 +667,344 @@
         "lines_removed": 1,
         "lines_added": 1,
         "chars_changed": 9
+      },
+      "WAY-3": {
+        "file": "src/static/app.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 11
+      },
+      "WAY-4": {
+        "file": "src/static/app.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 70
+      }
+    },
+    "data_model": {
+      "passed": true,
+      "failures": [],
+      "description": {
+        "partition": "e2e_wayfarer_51288_s000001",
+        "collections": [
+          "counters",
+          "packing",
+          "places",
+          "regions",
+          "trips",
+          "users",
+          "versions"
+        ],
+        "entities_found": [
+          "packing",
+          "places",
+          "regions",
+          "trips",
+          "users",
+          "versions"
+        ],
+        "collection_count": 6,
+        "per_collection": {
+          "packing": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 6,
+            "additional_properties_false": true,
+            "enums": 0,
+            "one_of": 0,
+            "unique_indexes": [
+              "one_position_per_list"
+            ],
+            "secondary_indexes": [],
+            "compound_indexes": [
+              "one_position_per_list"
+            ],
+            "documents": 9,
+            "embedded_elements": 0,
+            "arrays_of_objects": 0,
+            "depth": 1,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          },
+          "places": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 6,
+            "additional_properties_false": true,
+            "enums": 2,
+            "one_of": 0,
+            "unique_indexes": [],
+            "secondary_indexes": [
+              "places_by_kind",
+              "places_by_region_and_kind"
+            ],
+            "compound_indexes": [
+              "places_by_kind",
+              "places_by_region_and_kind"
+            ],
+            "documents": 24,
+            "embedded_elements": 0,
+            "arrays_of_objects": 0,
+            "depth": 1,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          },
+          "regions": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 3,
+            "additional_properties_false": true,
+            "enums": 1,
+            "one_of": 0,
+            "unique_indexes": [],
+            "secondary_indexes": [],
+            "compound_indexes": [],
+            "documents": 3,
+            "embedded_elements": 36,
+            "arrays_of_objects": 3,
+            "depth": 2,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          },
+          "trips": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 9,
+            "additional_properties_false": true,
+            "enums": 1,
+            "one_of": 1,
+            "unique_indexes": [],
+            "secondary_indexes": [
+              "trips_by_member",
+              "trips_by_owner"
+            ],
+            "compound_indexes": [],
+            "documents": 2,
+            "embedded_elements": 3,
+            "arrays_of_objects": 2,
+            "depth": 2,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          },
+          "users": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 4,
+            "additional_properties_false": true,
+            "enums": 0,
+            "one_of": 0,
+            "unique_indexes": [
+              "one_account_per_username"
+            ],
+            "secondary_indexes": [],
+            "compound_indexes": [],
+            "documents": 3,
+            "embedded_elements": 0,
+            "arrays_of_objects": 0,
+            "depth": 2,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          },
+          "versions": {
+            "validator": true,
+            "validation_level": "strict",
+            "validation_action": "error",
+            "required": 7,
+            "additional_properties_false": true,
+            "enums": 2,
+            "one_of": 0,
+            "unique_indexes": [
+              "one_version_number_per_trip"
+            ],
+            "secondary_indexes": [],
+            "compound_indexes": [
+              "one_version_number_per_trip"
+            ],
+            "documents": 3,
+            "embedded_elements": 19,
+            "arrays_of_objects": 10,
+            "depth": 3,
+            "object_ids": 0,
+            "id_types": [
+              "str"
+            ]
+          }
+        },
+        "rows": {
+          "counters": 1,
+          "packing": 9,
+          "places": 24,
+          "regions": 3,
+          "trips": 2,
+          "users": 3,
+          "versions": 3
+        },
+        "validated_strict": 6,
+        "additional_properties_false": 6,
+        "enums": 6,
+        "one_of": 1,
+        "with_arrays_of_objects": 3,
+        "depth": 3,
+        "unique_indexes": 3,
+        "secondary_indexes": 7,
+        "compound_indexes": 4,
+        "object_ids": 0,
+        "volume": 102,
+        "non_empty_collections": 6
+      },
+      "probes": [
+        {
+          "name": "a sealed version that belongs to no trip",
+          "kind": "required",
+          "expected": 121,
+          "got": 121,
+          "passed": true
+        },
+        {
+          "name": "a place of a kind the catalogue does not have",
+          "kind": "enum",
+          "expected": 121,
+          "got": 121,
+          "passed": true
+        },
+        {
+          "name": "a trip member with a role that does not exist",
+          "kind": "enum",
+          "expected": 121,
+          "got": 121,
+          "passed": true
+        },
+        {
+          "name": "a second version 1 of the coast trip",
+          "kind": "duplicate",
+          "expected": 11000,
+          "got": 11000,
+          "passed": true
+        }
+      ],
+      "references": [
+        {
+          "from": "trips.owner_id",
+          "to": "users._id",
+          "values": 2,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "trips.region_id",
+          "to": "regions._id",
+          "values": 2,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "trips.members[].user_id",
+          "to": "users._id",
+          "values": 3,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "versions.trip_id",
+          "to": "trips._id",
+          "values": 3,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "versions.sealed_by",
+          "to": "users._id",
+          "values": 3,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "places.region_id",
+          "to": "regions._id",
+          "values": 24,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "packing.trip_id",
+          "to": "trips._id",
+          "values": 9,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        },
+        {
+          "from": "packing.added_by",
+          "to": "users._id",
+          "values": 9,
+          "dangling": 0,
+          "examples": [],
+          "passed": true
+        }
+      ]
+    },
+    "sessions": {
+      "cost": {
+        "passed": true,
+        "warn": false,
+        "samples": 20,
+        "p50_ms": 76.5,
+        "p95_ms": 85.0,
+        "max_ms": 95.1,
+        "limit_ms": 300.0,
+        "refused": 0,
+        "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
+      },
+      "cap": {
+        "passed": true,
+        "cap": 4,
+        "max_live_partitions": 4,
+        "live_after_each": [
+          2,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "evicted_session_state": null,
+        "evicted_session_lands_on": "/login",
+        "every_new_session_starts_from_the_seed": true
       }
     },
     "workflows": [
@@ -278,7 +1017,11 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t1"
+        ]
       },
       {
         "name": "reorder and strike on day 1, then seal [default vocabulary]",
@@ -289,7 +1032,11 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t1"
+        ]
       },
       {
         "name": "plan a new two-day trip and seal its first stop [default vocabulary]",
@@ -300,7 +1047,11 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t2"
+        ]
       },
       {
         "name": "share the seeded itinerary [default vocabulary]",
@@ -311,7 +1062,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/share/1533786f03afaa73",
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t1"
+        ]
       },
       {
         "name": "pin on day 2, seal, then share the new version [default vocabulary]",
@@ -322,7 +1078,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/share/1bea75e5e3022275",
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t1"
+        ]
       },
       {
         "name": "check the forecast, star a stop and return to the trip list [default vocabulary]",
@@ -333,7 +1094,224 @@
         "committed_state_changed": false,
         "expected_state_change": false,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t1"
+        ]
+      },
+      {
+        "name": "find a food place and add it to day 2 of the coast trip [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/places",
+          "http://127.0.0.1:49915/#/places/p02",
+          "http://127.0.0.1:49915/#/places?kind=food",
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t1"
+        ]
+      },
+      {
+        "name": "page through the places catalogue [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/places",
+          "http://127.0.0.1:49915/#/places?page=2",
+          "http://127.0.0.1:49915/#/places?page=3",
+          "http://127.0.0.1:49915/#/trips"
+        ]
+      },
+      {
+        "name": "sort the catalogue by region and open the first place [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/places",
+          "http://127.0.0.1:49915/#/places/p04",
+          "http://127.0.0.1:49915/#/places?sort=region",
+          "http://127.0.0.1:49915/#/trips"
+        ]
+      },
+      {
+        "name": "pack two items in one go [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t1",
+          "http://127.0.0.1:49915/#/trips/t1/packing"
+        ]
+      },
+      {
+        "name": "rename a packing item in place [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t1",
+          "http://127.0.0.1:49915/#/trips/t1/packing"
+        ]
+      },
+      {
+        "name": "add an item to the packing list and remove another [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t1",
+          "http://127.0.0.1:49915/#/trips/t1/packing"
+        ]
+      },
+      {
+        "name": "move a stop to day 3 with the stop editor and seal it [default vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t1"
+        ]
+      },
+      {
+        "name": "rename the trip in its settings [default vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t1",
+          "http://127.0.0.1:49915/#/trips/t1/settings"
+        ]
+      },
+      {
+        "name": "plan a trip, then delete it through its settings [default vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t2",
+          "http://127.0.0.1:49915/#/trips/t2/settings"
+        ]
+      },
+      {
+        "name": "seal a change, then start a draft from the earlier version [default vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t1",
+          "http://127.0.0.1:49915/#/trips/t1/history",
+          "http://127.0.0.1:49915/#/trips/t1/versions/1"
+        ]
+      },
+      {
+        "name": "read the packing list of a trip shared with you [default vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/trips",
+          "http://127.0.0.1:49915/#/trips/t90",
+          "http://127.0.0.1:49915/#/trips/t90/packing"
+        ]
+      },
+      {
+        "name": "search the places catalogue [default vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/places",
+          "http://127.0.0.1:49915/#/places?q=search+query",
+          "http://127.0.0.1:49915/#/trips"
+        ]
+      },
+      {
+        "name": "go back to the previous page of places, then forward again [default vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:49915/#/places",
+          "http://127.0.0.1:49915/#/places?page=2",
+          "http://127.0.0.1:49915/#/places?page=3",
+          "http://127.0.0.1:49915/#/trips"
+        ]
       },
       {
         "name": "pin a stop on day 1 and seal it as version 2 [alt vocabulary]",
@@ -344,7 +1322,11 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t1"
+        ]
       },
       {
         "name": "reorder and strike on day 1, then seal [alt vocabulary]",
@@ -355,7 +1337,11 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t1"
+        ]
       },
       {
         "name": "plan a new two-day trip and seal its first stop [alt vocabulary]",
@@ -366,7 +1352,11 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t2"
+        ]
       },
       {
         "name": "share the seeded itinerary [alt vocabulary]",
@@ -377,7 +1367,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/share/1533786f03afaa73",
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t1"
+        ]
       },
       {
         "name": "pin on day 2, seal, then share the new version [alt vocabulary]",
@@ -388,7 +1383,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/share/1bea75e5e3022275",
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t1"
+        ]
       },
       {
         "name": "check the forecast, star a stop and return to the trip list [alt vocabulary]",
@@ -399,7 +1399,224 @@
         "committed_state_changed": false,
         "expected_state_change": false,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t1"
+        ]
+      },
+      {
+        "name": "find a food place and add it to day 2 of the coast trip [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/places",
+          "http://127.0.0.1:59738/#/places/p02",
+          "http://127.0.0.1:59738/#/places?kind=food",
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t1"
+        ]
+      },
+      {
+        "name": "page through the places catalogue [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/places",
+          "http://127.0.0.1:59738/#/places?page=2",
+          "http://127.0.0.1:59738/#/places?page=3",
+          "http://127.0.0.1:59738/#/trips"
+        ]
+      },
+      {
+        "name": "sort the catalogue by region and open the first place [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/places",
+          "http://127.0.0.1:59738/#/places/p04",
+          "http://127.0.0.1:59738/#/places?sort=region",
+          "http://127.0.0.1:59738/#/trips"
+        ]
+      },
+      {
+        "name": "pack two items in one go [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t1",
+          "http://127.0.0.1:59738/#/trips/t1/packing"
+        ]
+      },
+      {
+        "name": "rename a packing item in place [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t1",
+          "http://127.0.0.1:59738/#/trips/t1/packing"
+        ]
+      },
+      {
+        "name": "add an item to the packing list and remove another [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t1",
+          "http://127.0.0.1:59738/#/trips/t1/packing"
+        ]
+      },
+      {
+        "name": "move a stop to day 3 with the stop editor and seal it [alt vocabulary]",
+        "steps": 5,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t1"
+        ]
+      },
+      {
+        "name": "rename the trip in its settings [alt vocabulary]",
+        "steps": 4,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t1",
+          "http://127.0.0.1:59738/#/trips/t1/settings"
+        ]
+      },
+      {
+        "name": "plan a trip, then delete it through its settings [alt vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t2",
+          "http://127.0.0.1:59738/#/trips/t2/settings"
+        ]
+      },
+      {
+        "name": "seal a change, then start a draft from the earlier version [alt vocabulary]",
+        "steps": 7,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": true,
+        "expected_state_change": true,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t1",
+          "http://127.0.0.1:59738/#/trips/t1/history",
+          "http://127.0.0.1:59738/#/trips/t1/versions/1"
+        ]
+      },
+      {
+        "name": "read the packing list of a trip shared with you [alt vocabulary]",
+        "steps": 2,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/trips",
+          "http://127.0.0.1:59738/#/trips/t90",
+          "http://127.0.0.1:59738/#/trips/t90/packing"
+        ]
+      },
+      {
+        "name": "search the places catalogue [alt vocabulary]",
+        "steps": 3,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/places",
+          "http://127.0.0.1:59738/#/places?q=search+query",
+          "http://127.0.0.1:59738/#/trips"
+        ]
+      },
+      {
+        "name": "go back to the previous page of places, then forward again [alt vocabulary]",
+        "steps": 6,
+        "passed": true,
+        "misses": 0,
+        "failed_expectations": [],
+        "committed_state_changed": false,
+        "expected_state_change": false,
+        "errors": [],
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:59738/#/places",
+          "http://127.0.0.1:59738/#/places?page=2",
+          "http://127.0.0.1:59738/#/places?page=3",
+          "http://127.0.0.1:59738/#/trips"
+        ]
       }
     ],
     "state_dependent": [
@@ -460,7 +1677,7 @@
         "witness_silent_on_clean": true,
         "witness_needs_its_own_patch": true,
         "buggy_detail": [
-          "region_stable_across_reload: violated=True inconclusive=False before='Lighthouse 2 hrs Nudge up Nudge down Strike Favourite Harbour walk 1 hr "
+          "region_stable_across_reload: violated=True inconclusive=False before='Lighthouse 2 hrs sight Nudge up Nudge down Strike Favourite Harbour walk"
         ],
         "confirmed": true,
         "rejected_because": "",
@@ -488,7 +1705,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 77.0
+        "seconds": 101.3
       },
       {
         "fault_id": "WAY-2",
@@ -533,7 +1750,86 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 99.6
+        "seconds": 137.7
+      },
+      {
+        "fault_id": "WAY-3",
+        "subtype": "incorrect-navigation",
+        "oracle": "extension",
+        "fault_class": "broken_transition",
+        "witness_length": 3,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False {'page': 2.0, 'pages': 1.0}"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 3,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-places"
+          },
+          {
+            "type": "CLICK",
+            "id": "places-next"
+          },
+          {
+            "type": "SELECT",
+            "id": "places-kind",
+            "params": {
+              "option": "food"
+            }
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 104.0
+      },
+      {
+        "fault_id": "WAY-4",
+        "subtype": "stale-state",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 3,
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "region_arithmetic: violated=True inconclusive=False badge=1 packed=2"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 3,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "open-t1"
+          },
+          {
+            "type": "CLICK",
+            "id": "tab-packing"
+          },
+          {
+            "type": "CLICK",
+            "id": "pack-k2"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "passed": true,
+        "seconds": 98.4
       }
     ],
     "benign": [
@@ -578,6 +1874,48 @@
         "resolves": true,
         "fired": [],
         "passed": true
+      },
+      {
+        "trace": 3,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 3,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 4,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 4,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 5,
+        "build": "clean",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "trace": 5,
+        "build": "buggy",
+        "resolves": true,
+        "fired": [],
+        "passed": true
       }
     ],
     "random_walk_clean": {
@@ -586,55 +1924,278 @@
       "raw_candidates": {},
       "errors": [],
       "foreign_requests": [],
+      "responses": {
+        "count": 43,
+        "p50_ms": 6.5,
+        "p95_ms": 10.6,
+        "max_ms": 11.3,
+        "slowest": [
+          [
+            "POST",
+            "/api/trips/t1/packing/k6/delete",
+            11.3
+          ],
+          [
+            "POST",
+            "/api/trips/t1/packing/k1/delete",
+            11.0
+          ],
+          [
+            "POST",
+            "/api/trips/t1/packing/k5",
+            10.6
+          ],
+          [
+            "POST",
+            "/api/trips/t1/packing/k3",
+            10.4
+          ],
+          [
+            "GET",
+            "/api/places",
+            9.4
+          ]
+        ],
+        "limits_ms": {
+          "p95": 150.0,
+          "max": 1000.0
+        },
+        "passed": true
+      },
       "passed": true
+    },
+    "roles": [
+      {
+        "user": "omar.farouk",
+        "path": "/#/trips/t1",
+        "passed": true,
+        "signed_in_as": "Omar Farouk \u00b7 Traveller",
+        "status": null,
+        "access_region": "This trip isn't shared with you, or only its organiser can open this page.",
+        "state_unchanged": true,
+        "errors": []
+      },
+      {
+        "user": "noor.haddad",
+        "path": "/#/trips/t90/settings",
+        "passed": true,
+        "signed_in_as": "Noor Haddad \u00b7 Trip organiser",
+        "status": null,
+        "access_region": "This trip isn't shared with you, or only its organiser can open this page.",
+        "state_unchanged": true,
+        "errors": []
+      }
+    ],
+    "breadth": {
+      "passed": true,
+      "size_problems": [],
+      "workflows_failing": [],
+      "views": [
+        {
+          "name": "in-app share view",
+          "workflow": "share the seeded itinerary",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:49915/#/share/1533786f03afaa73"
+          ]
+        },
+        {
+          "name": "stop editor dialog",
+          "workflow": "move a stop to day 3 with the stop editor and seal it",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:49915/#/trips/t1"
+          ]
+        },
+        {
+          "name": "delete-trip dialog",
+          "workflow": "plan a trip, then delete it through its settings",
+          "passed": true,
+          "visited": [
+            "http://127.0.0.1:49915/#/trips/t2/settings"
+          ]
+        },
+        {
+          "name": "sign-in page",
+          "path": "/login",
+          "as": null,
+          "status": 200,
+          "landed": "/login",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "sign-in help",
+          "path": "/login/help",
+          "as": null,
+          "status": 200,
+          "landed": "/login/help",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "public share page",
+          "path": "/share/0000000000000000",
+          "as": null,
+          "status": 200,
+          "landed": "/share/0000000000000000",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "trip list",
+          "path": "/#/trips",
+          "as": "noor.haddad",
+          "status": null,
+          "landed": "/",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "itinerary",
+          "path": "/#/trips/t1",
+          "as": "noor.haddad",
+          "status": null,
+          "landed": "/",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "packing list",
+          "path": "/#/trips/t1/packing",
+          "as": "noor.haddad",
+          "status": null,
+          "landed": "/",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "version history",
+          "path": "/#/trips/t1/history",
+          "as": "noor.haddad",
+          "status": null,
+          "landed": "/",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "one sealed version",
+          "path": "/#/trips/t1/versions/1",
+          "as": "noor.haddad",
+          "status": null,
+          "landed": "/",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "trip settings",
+          "path": "/#/trips/t1/settings",
+          "as": "noor.haddad",
+          "status": null,
+          "landed": "/",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "shared trip, read-only",
+          "path": "/#/trips/t90",
+          "as": "noor.haddad",
+          "status": null,
+          "landed": "/",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "places catalogue",
+          "path": "/#/places",
+          "as": "noor.haddad",
+          "status": null,
+          "landed": "/",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "one place",
+          "path": "/#/places/p02",
+          "as": "noor.haddad",
+          "status": null,
+          "landed": "/",
+          "errors": [],
+          "passed": true
+        },
+        {
+          "name": "access notice",
+          "path": "/#/trips/t1",
+          "as": "omar.farouk",
+          "status": null,
+          "landed": "/",
+          "errors": [],
+          "passed": true
+        }
+      ],
+      "counts": {
+        "views": 16,
+        "entities": 3,
+        "patterns": [
+          "bulk-action",
+          "client-routing",
+          "inline-edit",
+          "modal",
+          "pagination",
+          "reorder",
+          "search",
+          "sort-filter",
+          "tabs"
+        ]
+      }
     },
     "product_intake": {
       "profile": {
         "languages": [
           {
             "language": "JavaScript",
-            "files": 2,
-            "bytes": 39689,
-            "share": 0.5977
+            "files": 6,
+            "bytes": 103548,
+            "share": 0.6168
           },
           {
             "language": "JSON",
-            "files": 4,
-            "bytes": 20236,
-            "share": 0.3048
+            "files": 10,
+            "bytes": 51978,
+            "share": 0.3096
           },
           {
             "language": "Markdown",
             "files": 1,
-            "bytes": 3437,
-            "share": 0.0518
+            "bytes": 6674,
+            "share": 0.0398
           },
           {
             "language": "CSS",
             "files": 1,
-            "bytes": 2386,
-            "share": 0.0359
+            "bytes": 4961,
+            "share": 0.0295
           },
           {
             "language": "HTML",
             "files": 1,
-            "bytes": 650,
-            "share": 0.0098
+            "bytes": 726,
+            "share": 0.0043
           }
         ],
         "frameworks": [],
         "build_definition": null
       },
-      "build_plan_error": "RepoIntakeError: No Dockerfile or compose file found in C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester-e2e\\e2e_suite\\.build\\wayfarer\\clean (searched the root and one level down). v1 requires the repository to describe its own build; see \u00a76.2.\n--- dia",
+      "build_plan_error": "RepoIntakeError: No Dockerfile or compose file found in C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\wayfarer\\clean (searched the root and one level down). v1 requires the repository to describe its own build; see \u00a76.2.\n--- diagnos",
       "product_can_build": false,
       "matches_expectation": true,
       "expectation": "refused by the current intake (no Dockerfile): the limitation this app exists to exercise"
     }
   },
   "admitted": true,
-  "checks_run": 20,
+  "checks_run": 38,
   "checks_failed": [],
   "browser_checks_run": true,
   "docker_checks_run": true,
-  "wall_clock_s": 391.3
+  "wall_clock_s": 941.9
 }
