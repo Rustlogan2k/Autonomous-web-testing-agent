@@ -218,13 +218,12 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
     return policy, labeller
 
 
-def _runner_factory(urls: dict[str, str], settings):
-    from ..benchmark import make_env
+def _runner_factory(urls: dict[str, str], env_for):
     from ..oracle import PlaywrightTrajectoryRunner
 
     def runner(build: str) -> PlaywrightTrajectoryRunner:
         return PlaywrightTrajectoryRunner(
-            lambda: make_env(urls[build], settings, max_steps=120), max_steps=120
+            lambda: env_for(urls[build], max_steps=120), max_steps=120
         )
 
     return runner
@@ -254,9 +253,17 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
         manifest, name = app.manifest, app.manifest.name
         serving = serve_app(app, controls=True)
     policy, labeller = _policy(job, name, config)
+    # Suite v2 apps sit behind a sign-in: every environment - the hunt, its replays, the
+    # control builds and the invariant checks - runs the app's sign-in macro first, as the
+    # tester's session bootstrap (outside the interaction budget, as for Gitea). Apps without
+    # one get exactly the environment they always had.
+    login = list(getattr(suite_app, "login_steps", None) or []) if suite else []
+
+    def env_for(url: str, **overrides):  # noqa: ANN202
+        return make_env(url, settings, setup_actions=login or None, **overrides)
 
     with serving as urls:
-        runner = _runner_factory(urls, settings)
+        runner = _runner_factory(urls, env_for)
         if job.build == "buggy":
             controls = {f.fault_id: runner(key_for(f.fault_id)) for f in manifest.faults}
         else:
@@ -291,7 +298,7 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
             )
         else:
             monitor = primary
-        env = make_env(urls[job.build], settings)
+        env = env_for(urls[job.build])
         try:
             result = run_hunt(env, policy, monitor, budget=config.budget)
         finally:
@@ -299,7 +306,7 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
         candidates = getattr(policy, "candidates", [])
         verify_started = time.monotonic()
         verify(
-            lambda: make_env(urls[job.build], settings, max_steps=120),
+            lambda: env_for(urls[job.build], max_steps=120),
             candidates,
             replays=config.invariant_replays,
             limit=config.invariant_verify_limit,
@@ -318,12 +325,10 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
                 if candidate.reproduced == config.invariant_replays:
                     attribute(
                         candidate,
-                        lambda: make_env(urls["clean"], settings, max_steps=120),
+                        lambda: env_for(urls["clean"], max_steps=120),
                         {
                             fid: (
-                                lambda fid=fid: make_env(
-                                    urls[key_for(fid)], settings, max_steps=120
-                                )
+                                lambda fid=fid: env_for(urls[key_for(fid)], max_steps=120)
                             )
                             for fid in fault_ids
                         },
