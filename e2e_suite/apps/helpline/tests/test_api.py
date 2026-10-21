@@ -279,6 +279,14 @@ class Enlarged(unittest.TestCase):
         self.assertNotIn(102, tickets)
         self.assertEqual(tickets[107]["linked"], [])  # its link went with it
 
+    def test_deleting_a_merge_target_clears_the_merged_ticket_pointer(self):
+        self.d.post("/tickets/105/merge", {"merge_source": "106"})
+        self.assertEqual(self.d.ticket(106)["merged_into"], 105)
+        self.d.post("/tickets/105/delete", fragment=False)
+        self.assertIsNone(self.d.ticket(106)["merged_into"])
+        _, page = self.d.get("/tickets/106")
+        self.assertNotIn('id="merged-into"', page)  # no link to a ticket that is gone
+
     def test_customer_directory_pages_sorts_and_searches(self):
         _, page = self.d.get("/customers")
         self.assertEqual((self.d.region(page, "page-count"), self.d.region(page, "speed-max")), ("4", "1000"))
@@ -317,6 +325,9 @@ class Enlarged(unittest.TestCase):
         self.assertEqual(self.d.post_json("/replies/r3/title", {"title": "Refund issued"}),
                          {"ok": True, "title": "Refund issued"})
         self.assertFalse(self.d.post_json("/replies/r3/title", {"title": " "})["ok"])
+        too_long = self.d.post_json("/replies/r3/title", {"title": "A" * 2048})  # refused, not a 500
+        self.assertFalse(too_long["ok"])
+        self.assertTrue(too_long["error"])
         self.d.post("/replies/r5/delete", fragment=False)
         _, page = self.d.get("/replies")
         self.assertNotIn("Closing note", self.d.region(page, "saved-replies"))

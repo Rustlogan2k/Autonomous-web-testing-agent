@@ -105,6 +105,8 @@
   "hist.merged_into": "{who} merged it into #{other}",
   "hist.merged_from": "{who} merged #{other} into it",
   "missing.title": "Ticket not found",
+  "failure.title": "Something went wrong",
+  "failure.body": "The desk could not finish that request. Nothing else was changed.",
   "missing.body": "There's no ticket or page at that address.",
   "access.notice": "Only the team lead can open this page.",
   "access.title": "Not part of your role",

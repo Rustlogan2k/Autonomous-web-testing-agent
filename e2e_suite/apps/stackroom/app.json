@@ -693,6 +693,114 @@
         "find": "    _journal(db, stamp, user, sku, \"stock\", before, level, \"inline\")  # audited like every other change\n",
         "replace": ""
       }
+    },
+    {
+      "fault_id": "STK-4",
+      "fault_class": "broken_transition",
+      "subtype": "state-transition",
+      "oracle": "extension",
+      "crash": "uncaught-exception",
+      "description": "The item page shows the one-time 'Saved SKU-…' notice left by the last committed adjustment, but it tests for the notice by reading the notice's SKU. Once the notice has been shown it is consumed, the API answers notice: null, and reading null.sku throws: the next visit to the item page (a reload, or coming back to it) stops with an uncaught TypeError and never renders the item.",
+      "trigger_condition": "Commit an adjustment (which lands on the item page with its notice), then reload the item page.",
+      "expected_behaviour": "After the notice has been shown once, the item page renders without it.",
+      "observable_violation": "Reloading the item page raises an uncaught TypeError ('Cannot read properties of null (reading 'sku')') and the page stays on 'Loading…'.",
+      "assertions": [
+        {
+          "kind": "console_or_request_error",
+          "where": "/items/SKU-\\d+$",
+          "pattern": "Cannot read properties of null \\(reading 'sku'\\)",
+          "sources": [
+            "page"
+          ]
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 1,
+      "shortest_path": 4,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "adjust-SKU-105"
+        },
+        {
+          "type": "TYPE",
+          "id": "new-stock",
+          "params": {
+            "category": "valid_typical"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "commit-adjust"
+        },
+        {
+          "type": "REFRESH"
+        }
+      ],
+      "patch": {
+        "file": "src/static/stackroom.js",
+        "find": "  const flash = body.notice\n    ?",
+        "replace": "  const flash = body.notice.sku\n    ?"
+      }
+    },
+    {
+      "fault_id": "STK-5",
+      "fault_class": "calculation_error",
+      "subtype": "calculation",
+      "oracle": "extension",
+      "crash": "server-error",
+      "description": "Bulk 'Restock +10' adds ten units without holding the result to the stock ceiling of 999,999,999. An item already at the ceiling is pushed past it, the database's stock check refuses the update, and the bulk request answers HTTP 500 instead of restocking the selection.",
+      "trigger_condition": "Set a row's stock to the ceiling (999999999) with its inline Set field, tick that row and apply 'Restock +10'.",
+      "expected_behaviour": "Restocking an item at the ceiling leaves it at 999,999,999 and the bulk request succeeds.",
+      "observable_violation": "POST /api/bulk answers HTTP 500.",
+      "assertions": [
+        {
+          "kind": "console_or_request_error",
+          "where": "/stock",
+          "pattern": "HTTP 500 POST [^ ]*/api/bulk$",
+          "sources": [
+            "request"
+          ]
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 0,
+      "shortest_path": 4,
+      "trigger_trace": [
+        {
+          "type": "TYPE",
+          "id": "stock-SKU-101",
+          "params": {
+            "category": "boundary_max"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "pick-SKU-101"
+        },
+        {
+          "type": "SELECT",
+          "id": "bulk-action",
+          "params": {
+            "option": "restock"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "bulk-apply"
+        }
+      ],
+      "patch": {
+        "file": "src/inventory.py",
+        "find": "            level = min(MAX_LEVEL, item[\"stock\"] + RESTOCK_STEP)",
+        "replace": "            level = item[\"stock\"] + RESTOCK_STEP"
+      }
     }
   ],
   "benign_traces": [

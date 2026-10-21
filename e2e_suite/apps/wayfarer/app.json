@@ -591,6 +591,79 @@
         "find": "const badge = countPacked(packing.items); // the tab's badge follows the list as it stands",
         "replace": "const badge = planner.trip.packing; // the tab's badge follows the list as it stands"
       }
+    },
+    {
+      "fault_id": "WAY-5",
+      "fault_class": "state_corruption",
+      "subtype": "stale-state",
+      "oracle": "extension",
+      "crash": "uncaught-exception",
+      "description": "On a place's page the 'Day' choices are always drawn for the first trip in the list, so after choosing a shorter trip the last day offered does not exist in it and 'Add to trip' throws.",
+      "trigger_condition": "Own two trips of different lengths, open a place, choose the shorter trip and the last day offered.",
+      "expected_behaviour": "The days offered are always the chosen trip's days, and adding a place puts it on that day.",
+      "observable_violation": "TypeError: Cannot read properties of undefined (reading 'order'); the place is not added.",
+      "assertions": [
+        {
+          "kind": "console_or_request_error",
+          "where": "#/places/p\\d+$",
+          "pattern": "Cannot read properties of undefined \\(reading 'order'\\)",
+          "sources": ["page"]
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 9,
+      "trigger_trace": [
+        {"type": "TYPE", "id": "trip-name", "params": {"category": "valid_typical"}},
+        {"type": "TYPE", "id": "trip-start", "params": {"category": "valid_typical"}},
+        {"type": "SELECT", "id": "trip-days", "params": {"option": "2"}},
+        {"type": "CLICK", "id": "create-trip"},
+        {"type": "CLICK", "id": "nav-places"},
+        {"type": "CLICK", "id": "place-p04"},
+        {"type": "SELECT", "id": "add-trip", "params": {"option": "t2"}},
+        {"type": "SELECT", "id": "add-day", "params": {"option": "2"}},
+        {"type": "CLICK", "id": "add-to-trip"}
+      ],
+      "patch": {
+        "file": "src/static/app.js",
+        "find": "$(\"add-day\").innerHTML = dayOptions(trips.find((trip) => trip.id === event.target.value));",
+        "replace": "$(\"add-day\").innerHTML = dayOptions(trips[0]);"
+      }
+    },
+    {
+      "fault_id": "WAY-6",
+      "fault_class": "calculation_error",
+      "subtype": "calculation",
+      "oracle": "extension",
+      "crash": "server-error",
+      "description": "A new packing item's position is one after the item with the greatest id, but ids compare as text ('k6' sorts after 'k10'), so once an item numbered k10 or above exists the next item gets a position already taken and the database refuses it.",
+      "trigger_condition": "Add two items to the coast trip's packing list.",
+      "expected_behaviour": "Every item added goes to the end of the list.",
+      "observable_violation": "The second add answers HTTP 500 and the item is not added.",
+      "assertions": [
+        {
+          "kind": "console_or_request_error",
+          "where": "#/trips/t\\d+/packing$",
+          "pattern": "HTTP 500 POST [^ ]*/api/trips/t\\d+/packing$",
+          "sources": ["request"]
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 6,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "open-t1"},
+        {"type": "CLICK", "id": "tab-packing"},
+        {"type": "TYPE", "id": "item-new", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "item-add"},
+        {"type": "TYPE", "id": "item-new", "params": {"category": "valid_typical"}},
+        {"type": "CLICK", "id": "item-add"}
+      ],
+      "patch": {
+        "file": "src/server.js",
+        "find": ".sort({ n: -1 }).limit(1)",
+        "replace": ".sort({ _id: -1 }).limit(1)"
+      }
     }
   ],
   "benign_traces": [

@@ -68,3 +68,5 @@ Closed is final.
 | HELP-3 | stale-state | a hand-off from the queue does not re-index an unassigned ticket |
 | HELP-4 | incorrect-navigation | switching tabs writes the conversation tab's address, so a reload shows another tab |
 | HELP-5 | calculation | "Fastest plan first" orders customers by plan name, not speed |
+| HELP-6 | stale-state (crash: broken resource) | deleting a ticket leaves 'Merged into #N' on the tickets merged into it; the link answers 404 |
+| HELP-7 | missing-validation (crash: server error) | the in-place reply-title editor skips the 200-character limit; an over-long title answers 500 |

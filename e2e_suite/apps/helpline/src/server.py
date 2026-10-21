@@ -23,6 +23,7 @@ import json
 import os
 import re
 import sys
+import traceback
 from dataclasses import dataclass, field
 from datetime import datetime
 from http import cookies
@@ -589,15 +590,19 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/__wta/state" and not TEST_HOOKS:
             return self._send(html(b"not found", 404))
         req = Request(method, path, query, form, self.headers.get("X-Desk-Fragment") == "1", raw)
-        with STORE.open(sid) as (db, known_sid, agent_id):
-            if path == "/__wta/state":
-                response = reply_json(state(db, known_sid, agent_id))
-            elif db is None or agent_id is None:
-                response = self._signed_out(req)
-            else:
-                req.db = db
-                req.me = db.agents.find_one({"_id": agent_id}, {"pw": 0})
-                response = self._route(req)
+        try:
+            with STORE.open(sid) as (db, known_sid, agent_id):
+                if path == "/__wta/state":
+                    response = reply_json(state(db, known_sid, agent_id))
+                elif db is None or agent_id is None:
+                    response = self._signed_out(req)
+                else:
+                    req.db = db
+                    req.me = db.agents.find_one({"_id": agent_id}, {"pw": 0})
+                    response = self._route(req)
+        except Exception:  # noqa: BLE001 - a defect: logged, and answered like any web server would
+            traceback.print_exc(file=sys.stderr)
+            response = html(views.server_error(), 500)
         self._send(response)
 
     def _route(self, req: Request) -> Response:
