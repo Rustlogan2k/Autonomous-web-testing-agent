@@ -89,8 +89,14 @@ class ExtensionMonitor:
         controls: dict,
         max_trials: int = 30,
         rejection_cap: int = DEFAULT_REJECTION_CAP,
+        origin: str = "",
     ) -> None:
         ext_oracle = _harness()[0]
+        #: The app's origin, for crash faults' same-origin request rule; each step's browser
+        #: events (console, page, failed requests) are kept beside the trajectory, which the
+        #: crash-fault kind (`console_or_request_error`) reads.
+        self.origin = origin
+        self._events: list[dict] = []
         self._ext = ext_oracle
         self.app = app
         self.oracle_app = app.oracle_app()
@@ -106,6 +112,7 @@ class ExtensionMonitor:
 
     def start_episode(self, info: dict) -> None:
         self._episode = [observed_record(info)]
+        self._events = [self._ext.page_events(info, self.origin)]
         self._attempts = {}
 
     def observe(
@@ -118,7 +125,8 @@ class ExtensionMonitor:
         import time
 
         self._episode.append(observed_record(info, executed, available))
-        trajectory = build_trajectory(self._episode)
+        self._events.append(self._ext.page_events(info, self.origin))
+        trajectory = self._ext.with_events(build_trajectory(self._episode), self._events)
         confirmed = []
         for fault in self.faults:
             record = self.records[fault["fault_id"]]

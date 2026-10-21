@@ -239,10 +239,20 @@ def _origin(url: str) -> str:
     return f"{parts.scheme}://{parts.netloc}"
 
 
-def _runner_factory(urls: dict[str, str], env_for):
+def _runner_factory(urls: dict[str, str], env_for, *, events: bool = False):
+    """Replay runners per build. With `events` (suite apps), the harness's event-recording
+    runner: the primary runner unchanged, returning each step's browser events too, which
+    crash-type faults need; every other fault verifies exactly as before."""
     from ..oracle import PlaywrightTrajectoryRunner
 
     def runner(build: str) -> PlaywrightTrajectoryRunner:
+        if events:
+            from e2e_suite.harness.ext_oracle import EventTrajectoryRunner
+
+            return EventTrajectoryRunner(
+                lambda: env_for(urls[build], max_steps=120), max_steps=120,
+                origin=_origin(urls[build]),
+            )
         return PlaywrightTrajectoryRunner(
             lambda: env_for(urls[build], max_steps=120), max_steps=120
         )
@@ -285,7 +295,7 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
         return make_env(url, settings, setup_actions=login or None, **overrides)
 
     with serving as urls:
-        runner = _runner_factory(urls, env_for)
+        runner = _runner_factory(urls, env_for, events=suite)
         if job.build == "buggy":
             controls = {f.fault_id: runner(key_for(f.fault_id)) for f in manifest.faults}
         else:
@@ -316,6 +326,7 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
                     clean=runner("clean"),
                     controls=ext_controls,
                     max_trials=config.max_minimization_trials,
+                    origin=_origin(urls[job.build]),
                 ),
             )
         else:
