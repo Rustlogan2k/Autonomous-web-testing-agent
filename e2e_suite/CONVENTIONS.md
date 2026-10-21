@@ -292,6 +292,67 @@ uses `params.value` (a literal); traces never do.
   validator that would make the faulty write impossible is left out, and the omission is
   declared in `database.absent_constraints` with the reason. Plan §1d lists them.
 
+### 7a. [v2, plan §9] Crash-type faults
+
+Every development app carries **two crash-type faults** besides its functional ones: the
+failures web-testing benchmarks count, which are console errors and failed requests.
+
+- **Classes.** Each crash fault declares `"crash"`, and an app's two crash faults use
+  different classes:
+  - `uncaught-exception`: a client handler throws after a particular state change, for
+    example by reading a field that an earlier edit removed.
+  - `server-error`: an endpoint answers 5xx on an edge-case input or state.
+  - `broken-resource`: a link, form target or resource answers 404 when reached through a
+    non-obvious path.
+- **The bug's shape.** The fault is still one literal patch and a realistic defect, never a
+  `throw` or `abort(500)` planted behind a button.
+- **Context.** The trigger needs **at least two contextual steps**, so the minimized trace
+  has at least 3 steps (`MIN_CRASH_TRACE`, enforced by the fault check).
+- **Silence.** The fault must stay silent on:
+  - every benign trace, on both builds;
+  - every workflow replayed on the **buggy** build (check `crash_faults_silent_on_workflows`).
+- **The clean build has no browser errors at all.** The clean random walk and every clean
+  workflow fail on any uncaught exception, `console.error` or same-origin response ≥ 400,
+  whatever its text. A fault's `pattern` narrows only that fault's own oracle.
+- **Oracle.** Use `oracle: "extension"` with the assertion kind `console_or_request_error`:
+
+  ```json
+  {"fault_id": "STK-4", "fault_class": "broken_transition", "subtype": "state-transition",
+   "oracle": "extension", "crash": "uncaught-exception",
+   "assertions": [{"kind": "console_or_request_error", "where": "/items/SKU-\\d+$",
+                   "pattern": "Cannot read properties of null \\(reading 'sku'\\)",
+                   "sources": ["page"]}], ...}
+  ```
+
+  - **When it fires.** The assertion is violated when, on any observed step whose URL
+    matches `where`, the browser reported an event from `sources` whose text matches
+    `pattern` (`re.search`).
+  - **Sources.** There are three:
+    - `page`: an uncaught exception, including an unhandled promise rejection in an
+      `async` function. The text is the exception's message **without its type**: `Cannot
+      read properties of null (reading 'sku')`, not `TypeError: ...`.
+    - `console`: a `console.error` text, or the browser's own `Failed to load resource: the
+      server responded with a status of 404 (Not Found)`.
+    - `request`: a same-origin response with status ≥ 400, written
+      `HTTP <status> <METHOD> <absolute url>`, for example `HTTP 500 POST
+      http://127.0.0.1:PORT/tickets/new`. Requests to `/__wta/` are excluded, and so are
+      requests that never got a response.
+  - **Sources per class.** `sources` defaults to all three. A `server-error` fault must
+    read `request`; an `uncaught-exception` fault must read `page` or `console`; a
+    `broken-resource` fault must read `request` or `console`.
+  - **Regex rules.** Neither `where` nor `pattern` may match the empty string. Match the
+    path and status, never the port: write `"pattern": "HTTP 500 POST [^ ]*/tickets/new$"`.
+  - **Inconclusive.** The assertion is inconclusive when no step matched `where`.
+  - **Timing.** Events are attributed to the observation that follows the action that
+    caused them. Events still in flight when a replay ends (within 250 ms) count for its
+    last step.
+  - **Conjunction.** The assertion combines with other assertions in the same fault, like
+    every extension kind.
+- **Where the events come from.** The harness's replay runner (`ext_oracle.EventTrajectoryRunner`,
+  which wraps the primary runner unchanged) records each step's `info["page"]` events
+  next to the primary `TrajectoryView`. Nothing in `web_testing_agent` reads or needs
+  them.
+
 ## 8. Decoys and state-dependent actions
 
 - A **decoy** is an ordinary, plausibly labelled control that does not advance the workflow
@@ -390,6 +451,16 @@ sign-in of a fresh variant), over the manifest's `entities` only; exact threshol
 19. **[v2] Keep the seed facts.** Pinned figures (counts, ids, next numbers, a workflow's
     expected values) are listed in each app card of the plan; enrich around them.
 20. **[v2] Render a modal overlay at page level.** A `role="dialog" aria-modal="true"` overlay nested inside page content (a list item, a table row) is open on screen, but the tester's registry then offers no control at all, so its buttons cannot be reached (helpline, found at admission). Put every such dialog after `<main>`, as a sibling of the content, one per item if need be; native `<dialog>` elements opened with `showModal()` work where they are (clinicflow).
+21. **[v2, §7a] A defect must reach the browser as a status.** A Python stdlib `http.server`
+    handler that raises sends no response at all; the connection just drops. The crash oracle
+    ignores a request that got no status, so a `server-error` fault would never be seen. Every
+    app catches unexpected exceptions at the top of its request handling, logs the traceback
+    and answers **500** with a small page (or JSON for the API). The clean build never takes
+    that path. `wsgiref` answers 500 by itself, but clinicflow renders its own page too.
+    Express and Node `http` apps need the same catch-all.
+22. **[v2, §7a] The page source reports the message, not the type.** An uncaught `TypeError`
+    reaches the oracle as `Cannot read properties of null (reading 'sku')`. Unhandled promise
+    rejections in `async` code are reported as well. Write `pattern` against that text.
 
 ## 11. [v2] Drivers, imports and the Dockerfile
 

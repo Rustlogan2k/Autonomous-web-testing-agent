@@ -90,9 +90,9 @@
         "passed": true,
         "warn": false,
         "samples": 20,
-        "p50_ms": 38.4,
-        "p95_ms": 51.0,
-        "max_ms": 53.7,
+        "p50_ms": 48.4,
+        "p95_ms": 70.8,
+        "max_ms": 80.6,
         "limit_ms": 300.0,
         "refused": 0,
         "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
@@ -201,7 +201,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 143.5
+        "seconds": 181.7
       }
     },
     {
@@ -229,7 +229,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 69.5
+        "seconds": 91.8
       }
     },
     {
@@ -257,11 +257,76 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 150.5
+        "seconds": 240.3
+      }
+    },
+    {
+      "name": "fault ORB-4",
+      "passed": true,
+      "detail": {
+        "fault_id": "ORB-4",
+        "subtype": "wrong-target",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 4,
+        "crash": "uncaught-exception",
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "console_or_request_error: violated=True inconclusive=False step 4 page: Cannot read properties of undefined (reading 'id')"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "minimized_has_context": true,
+        "passed": true,
+        "seconds": 136.9
+      }
+    },
+    {
+      "name": "fault ORB-5",
+      "passed": true,
+      "detail": {
+        "fault_id": "ORB-5",
+        "subtype": "state-transition",
+        "oracle": "extension",
+        "fault_class": "broken_transition",
+        "witness_length": 7,
+        "crash": "server-error",
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "console_or_request_error: violated=True inconclusive=False step 7 request: HTTP 500 POST http://127.0.0.1:64510/api/boards/ops/pull-in"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 17,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "minimized_has_context": true,
+        "passed": true,
+        "seconds": 216.0
       }
     },
     {
       "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "crash_faults_silent_on_workflows",
       "passed": true,
       "detail": []
     },
@@ -273,37 +338,38 @@
         "seed": 0,
         "raw_candidates": {},
         "errors": [],
+        "error_count": 0,
         "foreign_requests": [],
         "responses": {
-          "count": 99,
-          "p50_ms": 4.6,
-          "p95_ms": 9.6,
-          "max_ms": 11.2,
+          "count": 94,
+          "p50_ms": 3.6,
+          "p95_ms": 9.4,
+          "max_ms": 14.8,
           "slowest": [
             [
               "POST",
-              "/api/cards/5/move",
-              11.2
+              "/api/cards/6/checklist/2",
+              14.8
             ],
             [
               "POST",
-              "/api/cards/6/park",
+              "/api/cards/5/move",
               10.3
             ],
             [
               "POST",
               "/api/cards/5/move",
-              10.1
-            ],
-            [
-              "POST",
-              "/api/cards/6/move",
-              10.0
+              9.4
             ],
             [
               "POST",
               "/api/cards/5/move",
-              9.6
+              9.4
+            ],
+            [
+              "POST",
+              "/api/cards/5/move",
+              9.4
             ]
           ],
           "limits_ms": {
@@ -324,35 +390,35 @@
       "name": "responses_fast",
       "passed": true,
       "detail": {
-        "count": 99,
-        "p50_ms": 4.6,
-        "p95_ms": 9.6,
-        "max_ms": 11.2,
+        "count": 94,
+        "p50_ms": 3.6,
+        "p95_ms": 9.4,
+        "max_ms": 14.8,
         "slowest": [
           [
             "POST",
-            "/api/cards/5/move",
-            11.2
+            "/api/cards/6/checklist/2",
+            14.8
           ],
           [
             "POST",
-            "/api/cards/6/park",
+            "/api/cards/5/move",
             10.3
           ],
           [
             "POST",
             "/api/cards/5/move",
-            10.1
-          ],
-          [
-            "POST",
-            "/api/cards/6/move",
-            10.0
+            9.4
           ],
           [
             "POST",
             "/api/cards/5/move",
-            9.6
+            9.4
+          ],
+          [
+            "POST",
+            "/api/cards/5/move",
+            9.4
           ]
         ],
         "limits_ms": {
@@ -453,7 +519,7 @@
       "detail": {
         "image": "e2e-suite/orbit:clean",
         "build_ok": true,
-        "build_seconds": 1.2,
+        "build_seconds": 8.3,
         "build_tail": [
           "#11 naming to docker.io/e2e-suite/orbit:clean done",
           "#11 unpacking to docker.io/e2e-suite/orbit:clean 0.1s done",
@@ -473,7 +539,7 @@
               "entry_path": "/",
               "container_sha": "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75",
               "host_sha": "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75",
-              "sign_in_ms": 37.0
+              "sign_in_ms": 40.5
             }
           }
         ],
@@ -487,7 +553,7 @@
           "entry_path": "/",
           "container_sha": "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75",
           "host_sha": "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75",
-          "sign_in_ms": 37.0
+          "sign_in_ms": 40.5
         },
         "image_mb": 80.4,
         "passed": true
@@ -504,7 +570,7 @@
         "entry_path": "/",
         "container_sha": "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75",
         "host_sha": "09d66c419001c8016cede7d36022296348277370f763654469773fad7726db75",
-        "sign_in_ms": 37.0
+        "sign_in_ms": 40.5
       }
     },
     {
@@ -517,31 +583,31 @@
               "language": "JavaScript",
               "files": 6,
               "bytes": 77851,
-              "share": 0.5697
+              "share": 0.5519
             },
             {
               "language": "JSON",
               "files": 7,
-              "bytes": 44040,
-              "share": 0.3223
+              "bytes": 47768,
+              "share": 0.3387
+            },
+            {
+              "language": "Markdown",
+              "files": 1,
+              "bytes": 7474,
+              "share": 0.053
             },
             {
               "language": "CSS",
               "files": 1,
               "bytes": 7414,
-              "share": 0.0543
-            },
-            {
-              "language": "Markdown",
-              "files": 1,
-              "bytes": 6810,
-              "share": 0.0498
+              "share": 0.0526
             },
             {
               "language": "HTML",
               "files": 1,
               "bytes": 546,
-              "share": 0.004
+              "share": 0.0039
             }
           ],
           "frameworks": [],
@@ -647,13 +713,25 @@
         "lines_removed": 1,
         "lines_added": 1,
         "chars_changed": 5
+      },
+      "ORB-4": {
+        "file": "src/static/app.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 54
+      },
+      "ORB-5": {
+        "file": "src/board.js",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 16
       }
     },
     "data_model": {
       "passed": true,
       "failures": [],
       "description": {
-        "partition": "e2e_orbit_62775_s000001",
+        "partition": "e2e_orbit_61536_s000001",
         "collections": [
           "cards",
           "counters",
@@ -888,9 +966,9 @@
         "passed": true,
         "warn": false,
         "samples": 20,
-        "p50_ms": 38.4,
-        "p95_ms": 51.0,
-        "max_ms": 53.7,
+        "p50_ms": 48.4,
+        "p95_ms": 70.8,
+        "max_ms": 80.6,
         "limit_ms": 300.0,
         "refused": 0,
         "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
@@ -936,7 +1014,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:64498/#/board/web",
+          "http://127.0.0.1:64498/#/board/web/card/4",
+          "http://127.0.0.1:64498/#/projects"
+        ]
       },
       {
         "name": "finish the contact form's checklist and ship it from the card [default vocabulary]",
@@ -947,7 +1030,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:64498/#/board/web",
+          "http://127.0.0.1:64498/#/board/web/card/8",
+          "http://127.0.0.1:64498/#/projects"
+        ]
       },
       {
         "name": "ship everything ready in Review from the column menu [default vocabulary]",
@@ -958,7 +1046,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:64498/#/board/web",
+          "http://127.0.0.1:64498/#/board/web/card/8",
+          "http://127.0.0.1:64498/#/projects"
+        ]
       },
       {
         "name": "unblock the release notes by shipping their dependency, then ship them [default vocabulary]",
@@ -969,7 +1062,13 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:64498/#/board/web",
+          "http://127.0.0.1:64498/#/board/web/card/6",
+          "http://127.0.0.1:64498/#/board/web/card/7",
+          "http://127.0.0.1:64498/#/projects"
+        ]
       },
       {
         "name": "comment on a card [default vocabulary]",
@@ -980,7 +1079,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:64498/#/board/web",
+          "http://127.0.0.1:64498/#/board/web/card/5",
+          "http://127.0.0.1:64498/#/projects"
+        ]
       },
       {
         "name": "add a card to the office move backlog [default vocabulary]",
@@ -991,7 +1095,11 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:64498/#/board/ops",
+          "http://127.0.0.1:64498/#/projects"
+        ]
       },
       {
         "name": "move a card into Review from its card [default vocabulary]",
@@ -1002,7 +1110,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:64498/#/board/ops",
+          "http://127.0.0.1:64498/#/board/ops/card/11",
+          "http://127.0.0.1:64498/#/projects"
+        ]
       },
       {
         "name": "park a Doing card, then pull in the next backlog card [alt vocabulary]",
@@ -1013,7 +1126,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:61675/#/board/web",
+          "http://127.0.0.1:61675/#/board/web/card/4",
+          "http://127.0.0.1:61675/#/projects"
+        ]
       },
       {
         "name": "finish the contact form's checklist and ship it from the card [alt vocabulary]",
@@ -1024,7 +1142,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:61675/#/board/web",
+          "http://127.0.0.1:61675/#/board/web/card/8",
+          "http://127.0.0.1:61675/#/projects"
+        ]
       },
       {
         "name": "ship everything ready in Review from the column menu [alt vocabulary]",
@@ -1035,7 +1158,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:61675/#/board/web",
+          "http://127.0.0.1:61675/#/board/web/card/8",
+          "http://127.0.0.1:61675/#/projects"
+        ]
       },
       {
         "name": "unblock the release notes by shipping their dependency, then ship them [alt vocabulary]",
@@ -1046,7 +1174,13 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:61675/#/board/web",
+          "http://127.0.0.1:61675/#/board/web/card/6",
+          "http://127.0.0.1:61675/#/board/web/card/7",
+          "http://127.0.0.1:61675/#/projects"
+        ]
       },
       {
         "name": "comment on a card [alt vocabulary]",
@@ -1057,7 +1191,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:61675/#/board/web",
+          "http://127.0.0.1:61675/#/board/web/card/5",
+          "http://127.0.0.1:61675/#/projects"
+        ]
       },
       {
         "name": "add a card to the office move backlog [alt vocabulary]",
@@ -1068,7 +1207,11 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:61675/#/board/ops",
+          "http://127.0.0.1:61675/#/projects"
+        ]
       },
       {
         "name": "move a card into Review from its card [alt vocabulary]",
@@ -1079,7 +1222,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:61675/#/board/ops",
+          "http://127.0.0.1:61675/#/board/ops/card/11",
+          "http://127.0.0.1:61675/#/projects"
+        ]
       }
     ],
     "state_dependent": [
@@ -1169,7 +1317,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 143.5
+        "seconds": 181.7
       },
       {
         "fault_id": "ORB-2",
@@ -1207,7 +1355,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 69.5
+        "seconds": 91.8
       },
       {
         "fault_id": "ORB-3",
@@ -1252,7 +1400,110 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 150.5
+        "seconds": 240.3
+      },
+      {
+        "fault_id": "ORB-4",
+        "subtype": "wrong-target",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 4,
+        "crash": "uncaught-exception",
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "console_or_request_error: violated=True inconclusive=False step 4 page: Cannot read properties of undefined (reading 'id')"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "open-project-ops"
+          },
+          {
+            "type": "CLICK",
+            "id": "card-13"
+          },
+          {
+            "type": "CLICK",
+            "id": "tab-checklist"
+          },
+          {
+            "type": "CLICK",
+            "id": "check-13-4"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "minimized_has_context": true,
+        "passed": true,
+        "seconds": 136.9
+      },
+      {
+        "fault_id": "ORB-5",
+        "subtype": "state-transition",
+        "oracle": "extension",
+        "fault_class": "broken_transition",
+        "witness_length": 7,
+        "crash": "server-error",
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "console_or_request_error: violated=True inconclusive=False step 7 request: HTTP 500 POST http://127.0.0.1:64510/api/boards/ops/pull-in"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 7,
+        "minimization_trials": 17,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "open-project-ops"
+          },
+          {
+            "type": "CLICK",
+            "id": "card-11"
+          },
+          {
+            "type": "SELECT",
+            "id": "move-target",
+            "params": {
+              "option": "review"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "move-card"
+          },
+          {
+            "type": "CLICK",
+            "id": "close-card"
+          },
+          {
+            "type": "CLICK",
+            "id": "pull-in"
+          },
+          {
+            "type": "CLICK",
+            "id": "pull-in"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "minimized_has_context": true,
+        "passed": true,
+        "seconds": 216.0
       }
     ],
     "benign": [
@@ -1313,42 +1564,87 @@
         "passed": true
       }
     ],
+    "crash_silent_on_workflows": [
+      {
+        "workflow": "park a Doing card, then pull in the next backlog card",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "finish the contact form's checklist and ship it from the card",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "ship everything ready in Review from the column menu",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "unblock the release notes by shipping their dependency, then ship them",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "comment on a card",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "add a card to the office move backlog",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "move a card into Review from its card",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
     "random_walk_clean": {
       "steps": 150,
       "seed": 0,
       "raw_candidates": {},
       "errors": [],
+      "error_count": 0,
       "foreign_requests": [],
       "responses": {
-        "count": 99,
-        "p50_ms": 4.6,
-        "p95_ms": 9.6,
-        "max_ms": 11.2,
+        "count": 94,
+        "p50_ms": 3.6,
+        "p95_ms": 9.4,
+        "max_ms": 14.8,
         "slowest": [
           [
             "POST",
-            "/api/cards/5/move",
-            11.2
+            "/api/cards/6/checklist/2",
+            14.8
           ],
           [
             "POST",
-            "/api/cards/6/park",
+            "/api/cards/5/move",
             10.3
           ],
           [
             "POST",
             "/api/cards/5/move",
-            10.1
-          ],
-          [
-            "POST",
-            "/api/cards/6/move",
-            10.0
+            9.4
           ],
           [
             "POST",
             "/api/cards/5/move",
-            9.6
+            9.4
+          ],
+          [
+            "POST",
+            "/api/cards/5/move",
+            9.4
           ]
         ],
         "limits_ms": {
@@ -1388,31 +1684,31 @@
             "language": "JavaScript",
             "files": 6,
             "bytes": 77851,
-            "share": 0.5697
+            "share": 0.5519
           },
           {
             "language": "JSON",
             "files": 7,
-            "bytes": 44040,
-            "share": 0.3223
+            "bytes": 47768,
+            "share": 0.3387
+          },
+          {
+            "language": "Markdown",
+            "files": 1,
+            "bytes": 7474,
+            "share": 0.053
           },
           {
             "language": "CSS",
             "files": 1,
             "bytes": 7414,
-            "share": 0.0543
-          },
-          {
-            "language": "Markdown",
-            "files": 1,
-            "bytes": 6810,
-            "share": 0.0498
+            "share": 0.0526
           },
           {
             "language": "HTML",
             "files": 1,
             "bytes": 546,
-            "share": 0.004
+            "share": 0.0039
           }
         ],
         "frameworks": [],
@@ -1432,9 +1728,9 @@
     }
   },
   "admitted": true,
-  "checks_run": 37,
+  "checks_run": 40,
   "checks_failed": [],
   "browser_checks_run": true,
   "docker_checks_run": true,
-  "wall_clock_s": 701.3
+  "wall_clock_s": 1284.0
 }

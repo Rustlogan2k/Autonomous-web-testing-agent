@@ -106,3 +106,13 @@ All data belongs to your browser session (`wta_sid` cookie) and starts from `see
 - The app stays CommonJS (no rewrite, plan D7), so the driver is loaded with
   `createRequire(__filename)("../vendor/node/node_modules/mongodb")` rather than
   `createRequire(import.meta.url)`; the resolved path is the same.
+
+## Crash-type faults (plan §9, 2026-10-19)
+
+| fault | class | where | what goes wrong |
+|---|---|---|---|
+| ORB-4 | uncaught exception | `app.js` (checklist click) | the item is looked up by position, not by its number: on card 13, whose numbers skip 3, ticking item 4 throws |
+| ORB-5 | server error | `board.js` (pull in) | "nothing ready" is tested with `=== null`, but the search answers `undefined`: with room in Doing and only blocked cards in the backlog, pull in answers 500 |
+
+- Seed change for ORB-4: card 13's checklist is numbered 1, 2, 4 (an item dropped before the board
+  was set up); its texts and states are unchanged, and no workflow ticks it.

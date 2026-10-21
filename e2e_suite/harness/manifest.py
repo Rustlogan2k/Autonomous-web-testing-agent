@@ -11,12 +11,15 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from web_testing_agent.envs.input_values import generate_input_value
 from web_testing_agent.envs.types import InputValueCategory
 from web_testing_agent.oracle.faults import AssertionKind, BenchmarkApp, FaultClass
+
+from .ext_oracle import CRASH_CLASSES, EVENT_SOURCES
 
 #: The suite this harness admits. `WTA_SUITE_ROOT` points it at another suite laid out the same
 #: way (the v2 validation set in `validation_suite/`), so one harness admits both.
@@ -35,7 +38,14 @@ SUBTYPES = {
     "displayed-vs-submitted", "workflow-completion", "wrong-target",
 }
 #: Extension assertion kinds (`ext_oracle`); everything else must be a primary kind.
-EXTENSION_KINDS = {"region_stable_across_reload", "input_absent", "region_arithmetic"}
+EXTENSION_KINDS = {"region_stable_across_reload", "input_absent", "region_arithmetic",
+                   "console_or_request_error"}
+#: Plan §9 crash-type faults (`console_or_request_error`): the class each declares as `crash`,
+#: the event sources that class must read (`ext_oracle.CRASH_CLASSES`), and the shortest
+#: minimized trace admitted -- at least two contextual steps before the trigger.
+CRASH_KIND = "console_or_request_error"
+CRASH_SOURCES = set(EVENT_SOURCES)
+MIN_CRASH_TRACE = 3
 #: Suite v2 database engines and the session isolation each may declare (plan §2, D1).
 ISOLATION = {"postgres": {"schema-per-session"},
              "mongodb": {"database-per-session", "tenant-field"}}
@@ -85,6 +95,12 @@ class AppManifest:
 
     def faults_by_oracle(self, oracle: str) -> list[dict]:
         return [f for f in self.faults if f.get("oracle", "existing") == oracle]
+
+    @property
+    def crash_faults(self) -> list[dict]:
+        """Plan §9 crash-type faults: those with a `console_or_request_error` assertion."""
+        return [f for f in self.faults
+                if any(a.get("kind") == CRASH_KIND for a in f.get("assertions", []))]
 
     def oracle_app(self) -> BenchmarkApp:
         """The primary oracle's view of this app: only the faults it can verify."""
@@ -239,11 +255,15 @@ def validate_manifest(app: AppManifest) -> list[str]:
             for region in filter(None, named):
                 if region not in d.get("regions", {}):
                     problems.append(f"{fid}: region {region!r} not defined")
+        problems += crash_problems(f)
         if not f.get("patch"):
             problems.append(f"{fid}: no patch")
         if not f.get("trigger_trace"):
             problems.append(f"{fid}: no trigger_trace")
         _check_trace(f.get("trigger_trace", []), f"{fid}.trigger_trace", problems)
+    crash_classes = [f.get("crash") for f in app.crash_faults]
+    if len(set(crash_classes)) != len(crash_classes):
+        problems.append(f"crash faults must use different crash classes, got {crash_classes}")
     if "login" in d:
         problems += validate_login(d.get("login") or {}, d.get("regions", {}))
     if "database" in d:
@@ -253,6 +273,48 @@ def validate_manifest(app: AppManifest) -> list[str]:
     for name, selector in d.get("regions", {}).items():
         if not (selector.startswith("#") or selector.startswith('[id="')):
             problems.append(f"region {name}: use an #id selector, got {selector!r}")
+    return problems
+
+
+def _regex_problem(value, name: str) -> str | None:
+    """Why `value` cannot serve as a crash assertion's `where`/`pattern`, or None. A regex
+    that matches the empty string matches every URL or event, so it states nothing."""
+    if not isinstance(value, str) or not value.strip():
+        return f"{name} must be a non-empty regex"
+    try:
+        compiled = re.compile(value)
+    except re.error as exc:
+        return f"{name} {value!r} is not a regex: {exc}"
+    if compiled.search(""):
+        return f"{name} {value!r} matches the empty string, so it matches everything"
+    return None
+
+
+def crash_problems(fault: dict) -> list[str]:
+    """Plan §9 rules for a fault that uses `console_or_request_error` (CONVENTIONS §7)."""
+    fid = fault.get("fault_id", "?")
+    crash_specs = [a for a in fault.get("assertions", []) if a.get("kind") == CRASH_KIND]
+    crash = fault.get("crash")
+    if not crash_specs:
+        return [f"{fid}: declares crash {crash!r} but has no {CRASH_KIND} assertion"] if crash else []
+    problems = []
+    if fault.get("oracle") != "extension":
+        problems.append(f"{fid}: {CRASH_KIND} needs oracle extension")
+    if crash not in CRASH_CLASSES:
+        problems.append(f"{fid}: crash must be one of {sorted(CRASH_CLASSES)}, got {crash!r}")
+    for spec in crash_specs:
+        for name in ("where", "pattern"):
+            problem = _regex_problem(spec.get(name), name)
+            if problem:
+                problems.append(f"{fid}: {problem}")
+        sources = spec.get("sources", sorted(CRASH_SOURCES))
+        if not isinstance(sources, list) or not sources or not set(sources) <= CRASH_SOURCES:
+            problems.append(f"{fid}: sources must be a non-empty subset of {sorted(CRASH_SOURCES)}")
+        elif crash in CRASH_CLASSES and not set(sources) & CRASH_CLASSES[crash]:
+            problems.append(f"{fid}: a {crash} fault must read one of {sorted(CRASH_CLASSES[crash])}")
+        unknown = set(spec) - {"kind", "where", "pattern", "sources"}
+        if unknown:
+            problems.append(f"{fid}: unknown {CRASH_KIND} fields {sorted(unknown)}")
     return problems
 
 

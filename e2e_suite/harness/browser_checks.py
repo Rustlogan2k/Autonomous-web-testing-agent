@@ -19,13 +19,13 @@ from web_testing_agent.benchmark.suite import EnvSettings, make_env
 from web_testing_agent.envs.types import MAX_ACTIONS
 from web_testing_agent.evaluation import ScriptedPolicy
 from web_testing_agent.evaluation.rollout import RandomPolicy
-from web_testing_agent.oracle import PlaywrightTrajectoryRunner, VerificationPipeline, verify_all, verify_fault
+from web_testing_agent.oracle import VerificationPipeline, verify_all, verify_fault
 from web_testing_agent.oracle.replay import observed_record
-from web_testing_agent.oracle.trajectory import build_trajectory, region_text, visible_text
+from web_testing_agent.oracle.trajectory import region_text, visible_text
 
 from . import ext_oracle
 from .db_checks import percentile
-from .manifest import AppManifest
+from .manifest import MIN_CRASH_TRACE, AppManifest
 
 #: The tester treats a page as settled once its DOM has been quiet for `settle_quiet_ms`
 #: (`envs/browser_session.py`); it does not wait for requests still in flight. An SPA whose
@@ -57,13 +57,24 @@ class Session:
         self.env = make_env(url, SETTINGS, max_steps=1000, setup_actions=list(login or []) or None)
         self.observation, self.info = self.env.reset()
         self.signed_in_steps = self.env._bootstrap_steps  # noqa: SLF001 - read-only
-        self.records = [observed_record(self.info)]
+        self.records = [self._record(self.info)]
         self.foreign: list[str] = []
         self.errors: list[str] = []
         #: (method, path, milliseconds) of every same-origin request that completed,
         #: measured by the browser (request start to the response's last byte).
         self.timings: list[tuple[str, str, float]] = []
         self._watch()
+
+    def _record(self, info: dict, executed=None, available=None) -> dict:  # noqa: ANN001
+        """`observed_record` plus the step's browser events (`ext_oracle.page_events`)."""
+        return {**observed_record(info, executed, available),
+                "events": ext_oracle.page_events(info, self.origin)}
+
+    def record_step(self, available: list) -> None:
+        self.records.append(self._record(self.info, self.info.get("action_spec"), available))
+
+    def view(self) -> ext_oracle.EventView:
+        return ext_oracle.view_of_records(self.records)
 
     def _watch(self) -> None:
         browser = self.env._browser  # noqa: SLF001 - read-only access to the live page
@@ -112,7 +123,7 @@ class Session:
             available = list(self.info.get("action_specs") or [])
             index = policy.act(self.observation, self.info)
             self.observation, _r, _te, _tr, self.info = self.env.step(index)
-            self.records.append(observed_record(self.info, self.info.get("action_spec"), available))
+            self.record_step(available)
         return len(policy.misses) + (0 if policy.finished else 1)
 
     def state(self) -> dict:
@@ -154,11 +165,13 @@ class Session:
         self.env.close()
 
 
-def _runner(url: str, login: list[dict] | None = None) -> PlaywrightTrajectoryRunner:
+def _runner(url: str, login: list[dict] | None = None) -> ext_oracle.EventTrajectoryRunner:
+    """The primary replay runner, returning each step's browser events as well
+    (`ext_oracle.EventTrajectoryRunner`), so crash-type faults can be verified."""
     setup = list(login or []) or None
-    return PlaywrightTrajectoryRunner(
+    return ext_oracle.EventTrajectoryRunner(
         lambda: make_env(url, SETTINGS, max_steps=REPLAY_MAX_STEPS, setup_actions=setup),
-        max_steps=REPLAY_MAX_STEPS)
+        max_steps=REPLAY_MAX_STEPS, origin=ext_oracle.origin_of(url))
 
 
 def _contains(text: str | None, wanted: str) -> bool:
@@ -184,7 +197,9 @@ def check_workflows(app: AppManifest, url: str, label: str) -> list[dict]:
             want_change = workflow.get("commits", True)
             out.append({
                 "name": f"{workflow['name']} [{label}]", "steps": len(workflow["trace"]),
-                "passed": misses == 0 and not failed and changed == want_change,
+                # The clean build is free of browser errors (plan §9): a workflow that raises
+                # an exception, logs a console error or gets a same-origin >= 400 fails.
+                "passed": misses == 0 and not failed and changed == want_change and not session.errors,
                 "misses": misses,
                 "failed_expectations": [
                     {**e, "observed": (session.region(regions[e["region"]]) or "<absent>")[:120]}
@@ -477,6 +492,8 @@ def check_faults(app: AppManifest, urls: dict[str, str], *, max_trials: int = 30
         started = time.monotonic()
         entry = {"fault_id": fid, "subtype": fault["subtype"], "oracle": fault.get("oracle", "existing"),
                  "fault_class": fault["fault_class"], "witness_length": len(witness)}
+        if fault.get("crash"):
+            entry["crash"] = fault["crash"]
 
         if entry["oracle"] == "existing":
             spec = specs[fid]
@@ -524,14 +541,37 @@ def check_faults(app: AppManifest, urls: dict[str, str], *, max_trials: int = 30
                           "minimized_still_fires": again.violated,
                           "minimized_silent_on_clean": not minimized_clean.violated,
                           "minimized_needs_its_own_patch": not minimized_control.violated})
+        if fault in app.crash_faults:  # plan §9: at least two contextual steps before the trigger
+            entry["minimized_has_context"] = bool(confirmed) and len(minimized) >= MIN_CRASH_TRACE
         entry["passed"] = bool(
             entry["witness_resolves"] and entry["witness_fires_on_buggy"]
             and entry["witness_silent_on_clean"] and entry["witness_needs_its_own_patch"]
             and confirmed and entry.get("minimized_still_fires")
-            and entry.get("minimized_silent_on_clean") and entry.get("minimized_needs_its_own_patch"))
+            and entry.get("minimized_silent_on_clean") and entry.get("minimized_needs_its_own_patch")
+            and entry.get("minimized_has_context", True))
         entry["seconds"] = round(time.monotonic() - started, 1)
         results.append(entry)
     return {"faults": results}
+
+
+def check_crash_silent_on_workflows(app: AppManifest, urls: dict[str, str]) -> list[dict]:
+    """Every workflow replayed on the **buggy** build: no crash fault may fire (plan §9).
+    A crash an ordinary workflow reaches would be found by following the app's own paths,
+    and would leave the buggy build unusable for the rest of the trace."""
+    oracle_app = app.oracle_app()
+    regions = app.data["regions"]
+    crash = app.crash_faults
+    runner = _runner(urls["buggy"], app.login_steps)
+    out = []
+    for workflow in app.data["workflows"]:
+        observed = runner.run(list(workflow["trace"]))
+        fired = [f["fault_id"] for f in crash
+                 if ext_oracle.verify(f, regions, oracle_app, observed).violated]
+        # A workflow need not resolve on the buggy build (a seeded functional fault may
+        # change its path); what it did reach must not crash.
+        out.append({"workflow": workflow["name"], "resolves": observed.replay_misses == 0,
+                    "fired": fired, "passed": not fired})
+    return out
 
 
 def check_benign(app: AppManifest, urls: dict[str, str]) -> list[dict]:
@@ -570,10 +610,9 @@ def random_walk_clean(app: AppManifest, url: str, *, steps: int = 150, seed: int
                 available = list(session.info.get("action_specs") or [])
                 index = policy.act(session.observation, session.info)
                 session.observation, _r, _te, _tr, session.info = session.env.step(index)
-                session.records.append(observed_record(session.info,
-                                                       session.info.get("action_spec"), available))
+                session.record_step(available)
                 taken += 1
-                view = build_trajectory(session.records)
+                view = session.view()
                 for verdict in verify_all(oracle_app, view):
                     if verdict.violated:
                         candidates[verdict.fault_id] = candidates.get(verdict.fault_id, 0) + 1
@@ -586,8 +625,17 @@ def random_walk_clean(app: AppManifest, url: str, *, steps: int = 150, seed: int
         finally:
             session.close()
     return {"steps": steps, "seed": seed, "raw_candidates": candidates, "errors": errors[:10],
-            "foreign_requests": foreign[:10], "responses": response_times(app, timings),
-            "passed": not candidates and not errors and not foreign}
+            "error_count": len(errors), "foreign_requests": foreign[:10],
+            "responses": response_times(app, timings),
+            "passed": walk_passed(candidates, errors, foreign)}
+
+
+def walk_passed(candidates: dict, errors: list, foreign: list) -> bool:
+    """The clean walk passes only with no fault candidate, no foreign request and **no
+    browser error of any kind**: every uncaught exception, every `console.error` and every
+    same-origin response >= 400 (harness endpoints excepted) seen by `Session`, whatever its
+    text. A crash fault's `pattern` narrows only its own oracle, never this check (plan §9)."""
+    return not candidates and not errors and not foreign
 
 
 def response_times(app: AppManifest, timings: list[tuple[str, str, float]]) -> dict:
