@@ -366,3 +366,38 @@ def test_reload_flags_only_lost_entries_not_reset_messages():
     assert checker.check(shown, refresh, reset, 1) == []  # a one-time message may go
     lost = _view("<h1>Profile</h1><p>Name: </p>")
     assert [c.invariant for c in checker.check(shown, refresh, lost, 2)] == ["reload_stability"]
+
+
+def test_paging_controls_and_the_browse_list_operator():
+    from web_testing_agent.hybrid.operators import paging_controls
+
+    html = ('<button id="sort">Sort by date</button><ul><li><a id="open-1" href="/i/1">View</a></li>'
+            '</ul><a id="p1" href="?page=1">1</a><a id="p2" href="?page=2">2</a>'
+            '<button id="more">Load more</button><button id="nxt">›</button>')
+    specs = [
+        _spec(0, ActionType.NO_OP),
+        _spec(1, ActionType.CLICK, "sort", "Sort by date"),
+        _spec(2, ActionType.CLICK, "open-1", "View"),
+        _spec(3, ActionType.CLICK, "p1", "1", href="?page=1"),
+        _spec(4, ActionType.CLICK, "p2", "2", href="?page=2"),
+        _spec(5, ActionType.CLICK, "more", "Load more"),
+        _spec(6, ActionType.CLICK, "nxt", "›"),
+    ]
+    labels = deterministic_labels("http://h:1/items", html, specs)
+    view = PageView("http://h:1/items", labels, form_signature(html), False, specs, html=html)
+    # "1" (the page already shown) is not forward; numbered pages come after named ones.
+    assert [s.index for s in paging_controls(view)] == [5, 6, 4]
+    offered = options(view, browse=True)
+    assert ("browse_list", "") in offered and ("browse_list", '[id="sort"]') in offered
+    assert not [o for o in options(view) if o[0] == "browse_list"]  # off by default
+    op = Operator("browse_list", '[id="sort"]')
+    assert [op.next(view).index for _ in range(4)] == [1, 5, 5, 2]  # sort, page, page, open
+
+
+def test_failure_feedback_weights_cells_where_errors_followed_actions():
+    archive = Archive(episode_steps=40, failure_bonus=2.0)
+    cell, _ = archive.visit("a", [], "form", 0)
+    plain = archive.weight(cell, 3)
+    cell.failures = 3
+    assert archive.weight(cell, 3) == plain * 3.0
+    assert Archive(episode_steps=40).weight(cell, 3) == plain  # off by default

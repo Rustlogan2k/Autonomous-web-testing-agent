@@ -13,6 +13,7 @@ from .action_registry import (
     LEGACY_OPTIONS,
     RegistryOptions,
     build_action_specs,
+    scan_custom_clickables,
     scan_page_elements,
 )
 from .base_env import StepContext, WebTestingEnv
@@ -70,6 +71,8 @@ class WebFunctionalEnv(WebTestingEnv):
         page = self._browser.page
         assert page is not None
         elements = scan_page_elements(page)
+        if self.registry_options.custom_clickables:
+            elements = elements + scan_custom_clickables(page)
         # The page's own URL decides whether a link is a self-link, and a self-link
         # cannot be a broken navigation. Read here rather than cached, because the scan
         # describes whatever document is loaded *now*.

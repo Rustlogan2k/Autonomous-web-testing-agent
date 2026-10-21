@@ -143,6 +143,10 @@ class BrowserSession:
         self.context: BrowserContext | None = None
         self.page: Page | None = None
         self._known_pages: set[int] = set()
+        #: Optional hook called with each episode's new page *before* it navigates, so an
+        #: observer (e.g. a code-coverage profiler) sees the page's first script load.
+        #: None by default: the episode is then exactly as it always was.
+        self.on_new_page: Callable[[Page], None] | None = None
 
     @property
     def quiet_ms(self) -> int:
@@ -162,6 +166,8 @@ class BrowserSession:
         self.context = self._browser.new_context(viewport=dict(CANONICAL_VIEWPORT))
         self.context.set_default_navigation_timeout(NAVIGATION_TIMEOUT_MS)
         self.page = self.context.new_page()
+        if self.on_new_page is not None:
+            self.on_new_page(self.page)
         logger.info("Navigating to {}", base_url)
         self.page.goto(base_url, wait_until="domcontentloaded")
         self.wait_settled()

@@ -17,6 +17,7 @@ import time
 import traceback
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from ..experiments.transfer import REPO_ROOT, Schedule, _write_json, provenance, run_schedule
 from ..utils.logging import get_logger
@@ -76,6 +77,12 @@ ARMS: dict[str, dict] = {
     # standalone curiosity Q-learning tester (WebExplor / WebRLED components only).
     "dev_hybrid_curiosity": {**HYBRID, "planner": "count", "explore": "curiosity"},
     "dev_curiosity_rl": {"kind": "curiosity_rl"},
+    # Tuning round v3 (2026-10-19, rebuilt development apps): one change per arm, then
+    # combined. Each is off in every other arm.
+    "dev_v3_browse": {**HYBRID, "planner": "count", "browse": True},
+    "dev_v3_clickables": {**HYBRID, "planner": "count", "custom_clickables": True},
+    "dev_v3_curiosity": {**HYBRID, "planner": "count", "explore": "curiosity"},
+    "dev_v3_failfeedback": {**HYBRID, "planner": "count", "failure_bonus": 2.0},
     "dev_pairwise_bandit": {
         **HYBRID,
         "planner": "bandit",
@@ -120,13 +127,20 @@ class HybridJob:
         return {**asdict(self), "job_id": self.job_id}
 
 
-def _settings(config: HybridConfig):
-    from ..benchmark import EnvSettings
+def _settings(config: HybridConfig, spec: dict | None = None):
+    from dataclasses import replace
 
+    from ..benchmark import EnvSettings
+    from ..envs.action_registry import EXTENDED_OPTIONS
+
+    registry = EXTENDED_OPTIONS
+    if (spec or {}).get("custom_clickables"):
+        registry = replace(EXTENDED_OPTIONS, custom_clickables=True)
     return EnvSettings(
         max_steps=config.episode_steps,
         settle_quiet_ms=config.settle_quiet_ms,
         capture_screenshots=False,
+        registry=registry,
     )
 
 
@@ -214,8 +228,15 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
         pairwise=bool(spec.get("pairwise", False)),
         family_choice=bool(spec.get("family_choice", False)),
         form_submit=bool(spec.get("form_submit", False)),
+        browse=bool(spec.get("browse", False)),
+        failure_bonus=float(spec.get("failure_bonus", 0.0)),
     )
     return policy, labeller
+
+
+def _origin(url: str) -> str:
+    parts = urlsplit(url)
+    return f"{parts.scheme}://{parts.netloc}"
 
 
 def _runner_factory(urls: dict[str, str], env_for):
@@ -234,8 +255,9 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
     from ..benchmark import FaultMonitor, control_key, load_app, make_env, run_hunt, serve_app
     from ..oracle import VerificationPipeline
     from .invariants import attribute, verify
+    from .metrics import CoverageCollector, FailureCounter
 
-    settings = _settings(config)
+    settings = _settings(config, ARMS[job.arm])
     suite = job.app not in DEVELOPMENT_APPS
     if suite:
         from e2e_suite.harness.variants import control_key as suite_control_key
@@ -299,8 +321,18 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
         else:
             monitor = primary
         env = env_for(urls[job.build])
+        # The literature's run metrics, beside seeded faults: unique failures (console and
+        # request errors) and client-side code coverage (`metrics.py`).
+        failures = FailureCounter()
+        coverage = CoverageCollector(_origin(urls[job.build]))
+        coverage.install(env)
+
+        def on_step(event: dict) -> None:
+            failures.observe(event["info"], event["step"])
+            coverage.sample(env)
+
         try:
-            result = run_hunt(env, policy, monitor, budget=config.budget)
+            result = run_hunt(env, policy, monitor, budget=config.budget, on_step=on_step)
         finally:
             env.close()
         candidates = getattr(policy, "candidates", [])
@@ -338,6 +370,8 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
         verify_seconds = time.monotonic() - verify_started
     payload = {
         "hunt": result.to_dict(),
+        "failures": failures.summary(),
+        "coverage": coverage.summary(),
         "arm": {"name": job.arm, **ARMS[job.arm]},
         "suite": suite,
         "invariants": {

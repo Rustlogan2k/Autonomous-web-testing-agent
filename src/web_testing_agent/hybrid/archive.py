@@ -46,6 +46,9 @@ class Cell:
     tried: set[tuple[str, str]] = field(default_factory=set)
     candidates: int = 0
     first_seen_step: int = 0
+    #: Actions from this cell after which the browser reported an error (console, page or
+    #: failed request); see `Archive.failure_bonus`.
+    failures: int = 0
 
     def to_dict(self) -> dict:
         return {
@@ -63,8 +66,12 @@ class Cell:
 
 
 class Archive:
-    def __init__(self, seed: int = 0, *, episode_steps: int = 40, depth_bias: float = 0.0) -> None:
+    def __init__(self, seed: int = 0, *, episode_steps: int = 40, depth_bias: float = 0.0,
+                 failure_bonus: float = 0.0) -> None:
         self.cells: dict[str, Cell] = {}
+        #: Extra weight for cells where errors have followed actions (0 = none): code that
+        #: already misbehaves is likelier to misbehave again nearby.
+        self.failure_bonus = failure_bonus
         #: Steps a return must leave free in the episode for the operator and exploration.
         self.min_room = 12
         self.episode_steps = episode_steps
@@ -100,7 +107,8 @@ class Archive:
         reliability = 1.0 / (1.0 + 2.0 * cell.failed_returns)
         room = 1.0 if self.episode_steps - cell.depth >= self.min_room else 0.1
         depth = 1.0 + self.depth_bias * min(cell.depth, 30) / 30.0
-        return novelty * opportunity * reliability * room * depth
+        failing = 1.0 + self.failure_bonus * min(cell.failures, 3) / 3.0
+        return novelty * opportunity * reliability * room * depth * failing
 
     def choose(self, weights: dict[str, float]) -> Cell | None:
         keys = [k for k, w in weights.items() if w > 0]

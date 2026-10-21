@@ -125,6 +125,8 @@ class HybridPolicy:
         pairwise: bool = False,
         family_choice: bool = False,
         form_submit: bool = False,
+        browse: bool = False,
+        failure_bonus: float = 0.0,
     ) -> None:
         if outcome not in OUTCOMES:
             raise ValueError(f"unknown outcome {outcome!r}; expected one of {OUTCOMES}")
@@ -132,9 +134,13 @@ class HybridPolicy:
         #: Development options (suite round 4): pairwise operators, technique-first choice,
         #: form-submitting buttons as submit controls. Off: the behaviour of rounds 1-3.
         self.pairwise, self.form_submit = pairwise, form_submit
+        #: Tuning options (round v3, 2026-10-19): the list-browsing operator, and extra
+        #: archive weight for cells where errors followed actions. Off: as before.
+        self.browse = browse
         self.labeller = labeller
         self.context = context
-        self.archive = Archive(seed, episode_steps=episode_steps, depth_bias=depth_bias)
+        self.archive = Archive(seed, episode_steps=episode_steps, depth_bias=depth_bias,
+                               failure_bonus=failure_bonus)
         #: Free exploration: role-weighted random ("weighted") or v1's fixed feature-search
         #: score ("search"), which keeps its own visit memory over every step taken.
         self.explore = explore
@@ -226,7 +232,7 @@ class HybridPolicy:
             self.stats["new_cells"] += 1
         self.base_cells.add(_without_alert(view.cell))
         if cell.key not in self.offered:
-            self.offered[cell.key] = options(view, pairwise=self.pairwise)
+            self.offered[cell.key] = options(view, pairwise=self.pairwise, browse=self.browse)
             self.planner.register(cell, self.offered[cell.key], view)
 
         spec = None
@@ -269,6 +275,10 @@ class HybridPolicy:
                 self._operator_candidates += 1
         if self.operator is not None and after_view.alert:
             self._operator_alerted = True
+        if self.archive.failure_bonus and _browser_error(after):
+            cell = self.archive.cells.get(before_view.cell)
+            if cell is not None:
+                cell.failures += 1
         if self.curiosity is not None and spec is not None:
             self.curiosity.update(
                 before_view.cell, spec, after_view.cell, after_view.specs, terminated or done
@@ -431,3 +441,9 @@ def _without_alert(cell: str) -> str:
     if len(parts) >= 6:
         parts[-2] = ""
     return "|".join(parts)
+
+
+def _browser_error(info: dict) -> bool:
+    """Did the step's outcome include a console, page or request error?"""
+    signals = info.get("bug_signals")
+    return bool(signals is not None and (signals.console_errors or signals.unexpected_http_errors))

@@ -50,11 +50,17 @@ class RegistryOptions:
     * `disambiguate_shared_names` -- radios in a group share a `name` by design, so a
       name-based selector resolves every one of them to the first. With this set, a
       non-unique name falls back to the positional selector.
+    * `custom_clickables` -- also offer controls the native scan cannot see: elements with
+      a clickable ARIA role, an inline click handler, keyboard focus (`tabindex`), or a
+      pointer cursor they set themselves. Single-page applications attach clicks to plain
+      `div`s and `li`s; a learned detector of such controls is one of WebRLED's ablated
+      gains [gu2025webrled], and this is its rule-based counterpart.
     """
 
     max_select_options: int = 1
     capture_field_labels: bool = False
     disambiguate_shared_names: bool = False
+    custom_clickables: bool = False
 
 
 #: The registry as it was for every pre-benchmark measurement.
@@ -123,6 +129,69 @@ els => els.map((el, i) => {
     };
 })
 """
+
+
+#: Most custom clickables taken from one page, in document order.
+MAX_CUSTOM_CLICKABLES = 30
+
+_CUSTOM_SCAN_JS = """
+(limit) => {
+    const NATIVE = 'a[href], button, input, select, textarea, option, label, summary';
+    const ROLES = new Set(['button', 'link', 'tab', 'menuitem', 'menuitemradio',
+        'menuitemcheckbox', 'option', 'checkbox', 'radio', 'switch', 'treeitem']);
+    const cssPath = el => {
+        const parts = [];
+        let node = el;
+        while (node && node.nodeType === 1 && node !== document.body) {
+            if (node.id) { parts.unshift(`[id="${node.id.replace(/"/g, '\\"')}"]`); break; }
+            const tag = node.tagName.toLowerCase();
+            let n = 1, sib = node;
+            while ((sib = sib.previousElementSibling)) if (sib.tagName === node.tagName) n++;
+            parts.unshift(`${tag}:nth-of-type(${n})`);
+            node = node.parentElement;
+        }
+        if (!node || node === document.body) parts.unshift('body');
+        return parts.join(' > ');
+    };
+    const out = [];
+    for (const el of document.body.querySelectorAll('*')) {
+        if (out.length >= limit) break;
+        if (el.matches(NATIVE) || el.closest(NATIVE)) continue;
+        const style = window.getComputedStyle(el);
+        const role = (el.getAttribute('role') || '').toLowerCase();
+        const tab = el.getAttribute('tabindex');
+        const parent = el.parentElement;
+        const ownPointer = style.cursor === 'pointer' && !(parent
+            && window.getComputedStyle(parent).cursor === 'pointer');
+        if (!(ROLES.has(role) || el.hasAttribute('onclick') || (tab !== null && tab !== '-1')
+              || ownPointer)) continue;
+        const rect = el.getBoundingClientRect();
+        const visible = rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden'
+            && style.display !== 'none';
+        if (!visible) continue;
+        const raw = (el.getAttribute('aria-label') || el.innerText || el.title || '').trim();
+        out.push({
+            tag: el.tagName.toLowerCase(), type: '', id: el.id || null, name: null,
+            href: null, resolvedHref: null, target: null,
+            text: raw.length > 60 ? raw.slice(0, 60) + '…' : raw,
+            disabled: el.getAttribute('aria-disabled') === 'true', visible: true,
+            inViewport: rect.bottom > 0 && rect.top < window.innerHeight
+                && rect.right > 0 && rect.left < window.innerWidth,
+            options: null, label: '', custom: true, cssPath: cssPath(el),
+        });
+    }
+    return out;
+}
+"""
+
+
+def scan_custom_clickables(page: "Page", limit: int = MAX_CUSTOM_CLICKABLES) -> list[dict]:
+    """Clickable controls outside the native scan (see `RegistryOptions.custom_clickables`)."""
+    try:
+        return page.evaluate(_CUSTOM_SCAN_JS, limit)
+    except Exception:  # noqa: BLE001 - navigation mid-scan, detached DOM, etc.
+        logger.warning("Failed to scan custom clickables; offering none")
+        return []
 
 
 def scan_page_elements(page: "Page") -> list[dict]:
@@ -331,9 +400,11 @@ def build_action_specs(elements: list[dict], page_url: str = "",
         el_type = el.get("type") or ""
         in_viewport = bool(el.get("inViewport"))
 
-        is_clickable = tag in ("a", "button") or (tag == "input" and el_type in ("button", "submit"))
+        native = tag in ("a", "button") or (tag == "input" and el_type in ("button", "submit"))
+        is_clickable = native or bool(el.get("custom"))
         if is_clickable:
-            selector = _selector_for(el)
+            selector = (f'[id="{_escape_attr(el["id"])}"]' if el.get("custom") and el.get("id")
+                        else el["cssPath"] if el.get("custom") else _selector_for(el))
             label = el.get("text") or el.get("href") or el.get("name") or selector
             clicks.append(
                 ActionSpec(
