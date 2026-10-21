@@ -185,6 +185,13 @@ class StackroomApi(unittest.TestCase):
         self.assertIn("SKU-103 archive active>archived bulk", client.log_lines())
         self.assertEqual(client.post("/api/bulk", {"action": "delete", "skus": ["SKU-101"]})[0], 422)
 
+    def test_restock_holds_an_item_at_the_stock_ceiling(self):
+        client = Browser()
+        self.assertEqual(client.post("/api/items/SKU-101/stock", {"stock": "999999999"})[0], 200)
+        status, done = client.post("/api/bulk", {"action": "restock", "skus": ["SKU-101"], "view": {}})
+        self.assertEqual((status, done["changed"]), (200, 1))
+        self.assertEqual(client.stock("SKU-101"), 999999999)
+
     def test_adjustment_saves_to_the_named_item_and_leaves_a_one_time_notice(self):
         client = Browser()
         status, saved = client.post("/api/adjustments", {

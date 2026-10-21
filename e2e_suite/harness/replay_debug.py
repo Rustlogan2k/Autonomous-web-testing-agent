@@ -38,9 +38,13 @@ def main() -> None:
             for result in verdict.results:
                 print(f"   {result.kind}: violated={result.violated} inconclusive={result.inconclusive} "
                       f"{result.detail} | observed={str(getattr(result, 'observed', ''))[:120]!r}")
-            for step in observed.steps:
+            events = getattr(observed, "events", None) or [{} for _ in observed.steps]
+            for step, step_events in zip(observed.steps, events):
                 act = step.action or {}
                 print(f"   {act.get('type', '-'):7} {str(act.get('id', '')):22} -> {step.url.split('/', 3)[-1][:70]}")
+                for source, texts in step_events.items():
+                    for text in texts:
+                        print(f"           {source}: {text[:110]}")
 
 
 if __name__ == "__main__":

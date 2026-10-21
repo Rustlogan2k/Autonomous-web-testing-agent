@@ -98,6 +98,8 @@ Every collection has a `$jsonSchema` validator (strict, error); ids are strings,
 | WAY-2 | `app.js` (share view) | the share view prefers this browser's draft, leaking unsealed stops into the shared itinerary |
 | WAY-3 | `app.js` (catalogue filter) | choosing a kind keeps the page number: from page 2, "Food" opens on "Page 2 of 1" with nothing listed |
 | WAY-4 | `app.js` (packing counts) | the Packing tab's badge keeps the counts loaded with the trip, so after ticking an item it disagrees with "N of M packed" |
+| WAY-5 | `app.js` (place page) | crash, uncaught exception: the Day choices are always the first trip's, so adding a place to the last day offered for a shorter trip throws |
+| WAY-6 | `server.js` (add packing item) | crash, server error: the new item's position follows the item with the greatest id compared as text ('k6' after 'k10'), so the second item added collides with the first and answers 500 |
 
 ## Suite v2 notes (2026-10-17)
 

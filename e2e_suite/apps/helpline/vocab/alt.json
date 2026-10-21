@@ -105,6 +105,8 @@
   "hist.merged_into": "{who} folded it into #{other}",
   "hist.merged_from": "{who} folded #{other} into it",
   "missing.title": "Not found",
+  "failure.title": "Server problem",
+  "failure.body": "That request failed on our side.",
   "missing.body": "Nothing lives at that address.",
   "access.notice": "This page is for the lead.",
   "access.title": "No access",

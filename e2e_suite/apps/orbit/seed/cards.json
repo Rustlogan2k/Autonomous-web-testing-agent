@@ -232,7 +232,7 @@
     "checklist": [
       {"n": 1, "text": "Order the line", "done": false},
       {"n": 2, "text": "Book the engineer", "done": false},
-      {"n": 3, "text": "Test the router", "done": false}
+      {"n": 4, "text": "Test the router", "done": false}
     ],
     "blocked_by": [], "labels": ["it"], "assignee_ids": [],
     "comments": [],

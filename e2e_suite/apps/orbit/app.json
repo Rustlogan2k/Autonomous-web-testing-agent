@@ -108,7 +108,10 @@
     "form": {"action": "/login", "username_field": "username", "password_field": "password"},
     "signed_in_region": "signed_in_as",
     "error_region": "login_error",
-    "sign_out": [{"type": "CLICK", "id": "nav-account"}, {"type": "CLICK", "id": "sign-out"}],
+    "sign_out": [
+      {"type": "CLICK", "id": "nav-account"},
+      {"type": "CLICK", "id": "sign-out"}
+    ],
     "restricted": [
       {"user": "ola.nwosu", "path": "/#/board/ops", "region": "access_notice"},
       {"user": "mei.tanaka", "path": "/#/board/web/settings", "region": "access_notice"}
@@ -131,22 +134,64 @@
       {"from": "cards.activity[].by", "to": "users._id"}
     ],
     "probes": [
-      {"name": "a card that belongs to no project", "kind": "required", "collection": "cards",
-       "insert": {"_id": 90, "column": "backlog", "position": 90, "title": "Orphan",
-                  "description": "", "checklist": [], "blocked_by": [], "labels": [],
-                  "assignee_ids": [], "comments": [], "activity": []}},
-      {"name": "a card in a column boards do not have", "kind": "enum", "collection": "cards",
-       "insert": {"_id": 91, "project_id": "web", "column": "archive", "position": 91,
-                  "title": "Archived", "description": "", "checklist": [], "blocked_by": [],
-                  "labels": [], "assignee_ids": [], "comments": [], "activity": []}},
-      {"name": "a project member with a role that does not exist", "kind": "enum",
-       "collection": "projects",
-       "update": {"filter": {"_id": "web"}, "update": {"$set": {"members.1.role": "admin"}}}},
-      {"name": "a second account with Mei's username", "kind": "duplicate", "collection": "users",
-       "insert": {"_id": "meitwo", "username": "mei.tanaka", "name": "Mei Tanaka",
-                  "pw": {"salt": "a83f17c29e5b40d68c2e91f7b3a0d4e6",
-                         "hash": "be146818bb4e7537c273f461c4a40395b27ecbba8e6afe8de40039cae645fc53",
-                         "iter": 20000}}}
+      {
+        "name": "a card that belongs to no project",
+        "kind": "required",
+        "collection": "cards",
+        "insert": {
+          "_id": 90,
+          "column": "backlog",
+          "position": 90,
+          "title": "Orphan",
+          "description": "",
+          "checklist": [],
+          "blocked_by": [],
+          "labels": [],
+          "assignee_ids": [],
+          "comments": [],
+          "activity": []
+        }
+      },
+      {
+        "name": "a card in a column boards do not have",
+        "kind": "enum",
+        "collection": "cards",
+        "insert": {
+          "_id": 91,
+          "project_id": "web",
+          "column": "archive",
+          "position": 91,
+          "title": "Archived",
+          "description": "",
+          "checklist": [],
+          "blocked_by": [],
+          "labels": [],
+          "assignee_ids": [],
+          "comments": [],
+          "activity": []
+        }
+      },
+      {
+        "name": "a project member with a role that does not exist",
+        "kind": "enum",
+        "collection": "projects",
+        "update": {"filter": {"_id": "web"}, "update": {"$set": {"members.1.role": "admin"}}}
+      },
+      {
+        "name": "a second account with Mei's username",
+        "kind": "duplicate",
+        "collection": "users",
+        "insert": {
+          "_id": "meitwo",
+          "username": "mei.tanaka",
+          "name": "Mei Tanaka",
+          "pw": {
+            "salt": "a83f17c29e5b40d68c2e91f7b3a0d4e6",
+            "hash": "be146818bb4e7537c273f461c4a40395b27ecbba8e6afe8de40039cae645fc53",
+            "iter": 20000
+          }
+        }
+      }
     ],
     "absent_constraints": []
   },
@@ -417,6 +462,71 @@
         "find": "handler: toggleChecklistItem, persist: true",
         "replace": "handler: toggleChecklistItem, persist: false"
       }
+    },
+    {
+      "fault_id": "ORB-4",
+      "fault_class": "state_corruption",
+      "subtype": "wrong-target",
+      "oracle": "extension",
+      "crash": "uncaught-exception",
+      "description": "Ticking a checklist box looks the item up by position (its number minus one) instead of by its number, so on a checklist whose numbers skip one (the office's 'Internet line' card, whose item 3 was dropped) the last box finds no item and the click handler throws.",
+      "trigger_condition": "Open a card whose checklist numbers are not 1, 2, 3, ... and tick the item after the gap.",
+      "expected_behaviour": "Ticking any checklist box asks the server to change that item.",
+      "observable_violation": "TypeError: Cannot read properties of undefined (reading 'id'); nothing is saved.",
+      "assertions": [
+        {
+          "kind": "console_or_request_error",
+          "where": "#/board/[a-z]+/card/\\d+$",
+          "pattern": "Cannot read properties of undefined \\(reading '(id|done)'\\)",
+          "sources": ["page"]
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 4,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "open-project-ops"},
+        {"type": "CLICK", "id": "card-13"},
+        {"type": "CLICK", "id": "tab-checklist"},
+        {"type": "CLICK", "id": "check-13-4"}
+      ],
+      "patch": {
+        "file": "src/static/app.js",
+        "find": "const item = card.checklist.find((entry) => entry.id === Number(box.dataset.item));",
+        "replace": "const item = card.checklist[Number(box.dataset.item) - 1];"
+      }
+    },
+    {
+      "fault_id": "ORB-5",
+      "fault_class": "broken_transition",
+      "subtype": "state-transition",
+      "oracle": "extension",
+      "crash": "server-error",
+      "description": "'Pull in' checks for 'nothing ready to start' with `=== null`, but the search for the next card answers undefined when every backlog card is blocked, so pulling in with room in Doing and only blocked cards left fails on the server instead of saying there is nothing to start.",
+      "trigger_condition": "Make room in Doing, pull in the one unblocked backlog card, then pull in again while the only card left in the backlog is blocked.",
+      "expected_behaviour": "Pull in either starts the next unblocked backlog card or says that nothing is ready.",
+      "observable_violation": "The pull-in request answers HTTP 500 and the board says something went wrong.",
+      "assertions": [
+        {
+          "kind": "console_or_request_error",
+          "where": "#/board/[a-z]+$",
+          "pattern": "HTTP 500 POST [^ ]*/api/boards/[a-z]+/pull-in$",
+          "sources": ["request"]
+        }
+      ],
+      "reproduction": {"replays": 2, "must_all_reproduce": true},
+      "observation_horizon": 0,
+      "shortest_path": 7,
+      "trigger_trace": [
+        {"type": "CLICK", "id": "open-project-ops"},
+        {"type": "CLICK", "id": "card-11"},
+        {"type": "SELECT", "id": "move-target", "params": {"option": "review"}},
+        {"type": "CLICK", "id": "move-card"},
+        {"type": "CLICK", "id": "close-card"},
+        {"type": "CLICK", "id": "pull-in"},
+        {"type": "CLICK", "id": "pull-in"}
+      ],
+      "patch": {"file": "src/board.js", "find": "  if (!next) {", "replace": "  if (next === null) {"}
     }
   ],
   "benign_traces": [

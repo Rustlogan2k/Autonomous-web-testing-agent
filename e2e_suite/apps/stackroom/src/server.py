@@ -20,6 +20,7 @@ import json
 import os
 import re
 import sys
+import traceback
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -195,6 +196,9 @@ class StockroomHandler(BaseHTTPRequestHandler):
                 kind, status, result = self._route(visit, verb, path, query, is_page)
         except Rejected as exc:
             kind, status, result = "json", exc.status, {"error": exc.message, "field": exc.field}
+        except Exception:  # noqa: BLE001 - a defect: rolled back by visit(), logged, answered 500
+            traceback.print_exc(file=sys.stderr)
+            kind, status, result = "json", 500, {"error": t("msg.failed")}
         if kind == "redirect":
             return self._redirect(result)
         if kind == "html":

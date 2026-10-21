@@ -654,6 +654,15 @@ def reports_page(db, breaches: list[dict], counts, me) -> bytes:
     return document(t("reports.title"), main, counts, me)
 
 
+def server_error() -> bytes:
+    """The answer to a request the desk could not handle (HTTP 500). Rendered without the
+    desk's frame, which needs the database that may be what failed."""
+    body = (f'<main id="main"><h1>{h(t("failure.title"))}</h1><p>{h(t("failure.body"))}</p>'
+            f'<p><a id="failure-back" href="/queue">{h(t("nav.back"))}</a></p></main>')
+    return (f'<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><link rel="icon" href="data:,"><title>{h(t("failure.title"))}</title>'
+            f'<link rel="stylesheet" href="/static/desk.css"></head><body>{body}</body></html>').encode("utf-8")
+
+
 def not_found(counts, me) -> bytes:
     main = f"""<h1>{h(t("missing.title"))}</h1><p>{h(t("missing.body"))}</p>
 <p><a id="missing-back" href="/queue">{h(t("nav.back"))}</a></p>"""

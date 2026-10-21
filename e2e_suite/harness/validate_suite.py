@@ -146,6 +146,11 @@ def validate(app: AppManifest, *, browser: bool, docker: bool, walk_steps: int) 
             add(_check("benign_traces_silent_on_both_builds", all(b["passed"] for b in benign),
                        [b for b in benign if not b["passed"]]))
             report["sections"]["benign"] = benign
+            if app.crash_faults:
+                quiet = bc.check_crash_silent_on_workflows(app, urls)
+                add(_check("crash_faults_silent_on_workflows", all(q["passed"] for q in quiet),
+                           [q for q in quiet if not q["passed"]]))
+                report["sections"]["crash_silent_on_workflows"] = quiet
             walk = bc.random_walk_clean(app, urls["clean"], steps=walk_steps)
             add(_check("clean_random_walk_no_candidates_errors_or_network", walk["passed"], walk))
             report["sections"]["random_walk_clean"] = walk

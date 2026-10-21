@@ -1714,6 +1714,139 @@
         "find": "    \"speed\": [(\"plan.speed_mbps\", pymongo.DESCENDING), ",
         "replace": "    \"speed\": [(\"plan.name\", pymongo.DESCENDING), "
       }
+    },
+    {
+      "fault_id": "HELP-6",
+      "fault_class": "state_corruption",
+      "subtype": "stale-state",
+      "oracle": "extension",
+      "crash": "broken-resource",
+      "description": "Deleting a ticket is meant to clear every 'merged into' pointer at it, but the clean-up compares the ticket number as text with the numbers stored on the merged tickets, so it matches nothing. A ticket that was merged into the deleted one keeps a 'Merged into #N' link to a ticket that no longer exists, and following it answers 404.",
+      "trigger_condition": "Merge one ticket into another, delete the receiving ticket, then open the merged ticket and follow its 'Merged into' link.",
+      "expected_behaviour": "Once a ticket is deleted, no other ticket links to it: the merged ticket shows no 'Merged into' link.",
+      "observable_violation": "The merged ticket's 'Merged into #105' link leads to 'Ticket not found' (HTTP 404).",
+      "assertions": [
+        {
+          "kind": "console_or_request_error",
+          "where": "/tickets/\\d+$",
+          "pattern": "HTTP 404 GET [^ ]*/tickets/\\d+$",
+          "sources": [
+            "request"
+          ]
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 0,
+      "shortest_path": 10,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "open-105"
+        },
+        {
+          "type": "CLICK",
+          "id": "open-merge"
+        },
+        {
+          "type": "SELECT",
+          "id": "merge-source",
+          "params": {
+            "option": "106"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "merge-confirm"
+        },
+        {
+          "type": "CLICK",
+          "id": "delete-ticket"
+        },
+        {
+          "type": "CLICK",
+          "id": "confirm-delete-ticket"
+        },
+        {
+          "type": "SELECT",
+          "id": "filter-status",
+          "params": {
+            "option": "all"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "apply-filters"
+        },
+        {
+          "type": "CLICK",
+          "id": "open-106"
+        },
+        {
+          "type": "CLICK",
+          "id": "merged-into"
+        }
+      ],
+      "patch": {
+        "file": "src/desk.py",
+        "find": "    db.tickets.update_many({\"merged_into\": ticket_id}, {\"$set\": {\"merged_into\": None}})",
+        "replace": "    db.tickets.update_many({\"merged_into\": str(ticket_id)}, {\"$set\": {\"merged_into\": None}})"
+      }
+    },
+    {
+      "fault_id": "HELP-7",
+      "fault_class": "constraint_bypass",
+      "subtype": "missing-validation",
+      "oracle": "extension",
+      "crash": "server-error",
+      "description": "The in-place title editor on Saved replies checks only that a title is not blank; the 200-character limit the add form enforces is missing. An over-long title therefore reaches the database, whose validator refuses it, and the unhandled write error answers the editor's save with HTTP 500 instead of the 'title needed' message.",
+      "trigger_condition": "On Saved replies, rename a reply in place with a title longer than 200 characters and save.",
+      "expected_behaviour": "An over-long title is refused with the editor's message and the title is unchanged; the save request succeeds.",
+      "observable_violation": "The save request answers HTTP 500.",
+      "assertions": [
+        {
+          "kind": "console_or_request_error",
+          "where": "/replies",
+          "pattern": "HTTP 500 POST [^ ]*/replies/r\\d+/title$",
+          "sources": [
+            "request"
+          ]
+        }
+      ],
+      "reproduction": {
+        "replays": 2,
+        "must_all_reproduce": true
+      },
+      "observation_horizon": 0,
+      "shortest_path": 4,
+      "trigger_trace": [
+        {
+          "type": "CLICK",
+          "id": "nav-replies"
+        },
+        {
+          "type": "CLICK",
+          "id": "edit-title-r3"
+        },
+        {
+          "type": "TYPE",
+          "id": "title-input-r3",
+          "params": {
+            "category": "boundary_max"
+          }
+        },
+        {
+          "type": "CLICK",
+          "id": "save-title-r3"
+        }
+      ],
+      "patch": {
+        "file": "src/desk.py",
+        "find": "    title = title.strip()\n    if not title or len(title) > TEXT_LIMIT:",
+        "replace": "    title = title.strip()\n    if not title:"
+      }
     }
   ],
   "benign_traces": [
