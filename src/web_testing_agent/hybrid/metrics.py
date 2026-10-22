@@ -13,6 +13,11 @@ The profiler is attached to each episode's page before it navigates
 starts, so attaching later would miss a single-page app's whole script. Caveat (stated
 wherever it is reported): this is executed-byte (block) coverage of client-side code, not the
 Istanbul branch coverage the papers report; arms are compared on the same measure.
+
+For applications whose client code is instrumented with Istanbul (the external benchmark's
+subject applications, as WebExplor and WebRLED measured them), `IstanbulCollector` reads the
+instrumented code's own counters (`window.__coverage__`) and reports **branch coverage** in
+the papers' sense.
 """
 
 from __future__ import annotations
@@ -142,6 +147,116 @@ class CoverageCollector:
             "js_bytes_covered": covered,
             "js_coverage": round(covered / total, 4) if total else None,
             "scripts": len(self.scripts),
+            "samples": self.samples,
+            "sample_errors": self.errors,
+        }
+
+
+#: Compact view of Istanbul's counters: per file, the branch ids and which of each branch's
+#: arms have executed ("1"/"0" per arm), plus statement hits. Kept small because it is read
+#: after every step.
+_ISTANBUL_SNAPSHOT = """() => {
+  const out = {};
+  const pack = (cov) => {
+    for (const [file, data] of Object.entries(cov || {})) {
+      const b = {};
+      for (const [id, arms] of Object.entries(data.b || {})) {
+        b[id] = arms.map((c) => (c > 0 ? "1" : "0")).join("");
+      }
+      const s = Object.keys(data.s || {}).length;
+      const sh = Object.values(data.s || {}).filter((c) => c > 0).length;
+      out[file] = Object.assign(out[file] || {}, { b, s, sh });
+    }
+  };
+  try { pack(JSON.parse(sessionStorage.getItem("__wta_istanbul_prev") || "{}")); } catch (e) {}
+  pack(window.__coverage__);
+  return out;
+}"""
+
+#: Before a page unloads (a full navigation resets `window.__coverage__`), keep the counters
+#: it reached in the tab's session storage so the next sample still sees them.
+_ISTANBUL_KEEP_ON_UNLOAD = """
+window.addEventListener("pagehide", () => {
+  try {
+    if (window.__coverage__) {
+      sessionStorage.setItem("__wta_istanbul_prev", JSON.stringify(window.__coverage__));
+    }
+  } catch (e) {}
+});
+"""
+
+
+class IstanbulCollector:
+    """Branch coverage of Istanbul-instrumented client code, unioned over a run.
+
+    Every episode starts a fresh browser context, and multi-page applications reset the
+    counters on each navigation; the collector therefore keeps, per file, the set of branch
+    arms ever seen executed, and the number of arms each branch has. Coverage is covered arms
+    over all arms of the files the application loaded, as Istanbul's own report computes it.
+    """
+
+    def __init__(self) -> None:
+        #: file -> branch id -> (arms, covered-arm bit set)
+        self.branches: dict[str, dict[str, tuple[int, int]]] = {}
+        #: file -> (statements, statements ever hit), the hit count kept as a maximum
+        self.statements: dict[str, tuple[int, int]] = {}
+        self.samples = 0
+        self.errors = 0
+
+    def install(self, env) -> None:  # noqa: ANN001
+        """Chain onto the session's new-page hook, keeping any hook already installed."""
+        session = env._browser  # noqa: SLF001 - the session's documented hook
+        previous = session.on_new_page
+
+        def hook(page) -> None:  # noqa: ANN001
+            if previous is not None:
+                previous(page)
+            try:
+                page.add_init_script(_ISTANBUL_KEEP_ON_UNLOAD)
+            except Exception as exc:  # noqa: BLE001 - coverage must never fail a run
+                self.errors += 1
+                logger.debug("istanbul unload hook not installed: {}", exc)
+
+        session.on_new_page = hook
+
+    def sample(self, env) -> None:  # noqa: ANN001
+        page = getattr(getattr(env, "_browser", None), "page", None)
+        if page is None:
+            return
+        try:
+            snapshot = page.evaluate(_ISTANBUL_SNAPSHOT)
+        except Exception as exc:  # noqa: BLE001 - a navigating page costs one sample
+            self.errors += 1
+            if self.errors <= 3:
+                logger.debug("istanbul sample skipped: {}", exc)
+            return
+        self.samples += 1
+        self.merge(snapshot or {})
+
+    def merge(self, snapshot: dict) -> None:
+        for file, data in snapshot.items():
+            known = self.branches.setdefault(file, {})
+            for branch_id, arms in (data.get("b") or {}).items():
+                bits = int(arms[::-1], 2) if arms else 0
+                count, covered = known.get(branch_id, (len(arms), 0))
+                known[branch_id] = (max(count, len(arms)), covered | bits)
+            total, hit = self.statements.get(file, (0, 0))
+            self.statements[file] = (max(total, int(data.get("s", 0))),
+                                     max(hit, int(data.get("sh", 0))))
+
+    def summary(self) -> dict:
+        arms = sum(n for branches in self.branches.values() for n, _ in branches.values())
+        covered = sum(bits.bit_count() for branches in self.branches.values()
+                      for _, bits in branches.values())
+        statements = sum(t for t, _ in self.statements.values())
+        hit = sum(h for _, h in self.statements.values())
+        return {
+            "files": len(self.branches),
+            "branches": arms,
+            "branches_covered": covered,
+            "branch_coverage": round(covered / arms, 4) if arms else None,
+            "statements": statements,
+            "statements_hit_max": hit,
             "samples": self.samples,
             "sample_errors": self.errors,
         }
