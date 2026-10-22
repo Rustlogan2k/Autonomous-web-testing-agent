@@ -84,6 +84,8 @@ class AgentChoice:
     key: str
     name: str
     summary: str
+    #: The learning method in a few words, shown on the agent's card.
+    method: str = ""
     research_stage: bool = False
     available: bool = True
     unavailable_reason: str = ""
@@ -148,7 +150,7 @@ class TestSettings:
 
     episodes: int = 2
     steps: int = 25
-    agent: str = "hybrid_nolearn"
+    agent: str = "hybrid_bandit"
     seed: int = 0
     #: Browser interactions for a test session (the learning tester's unit of effort).
     budget: int = 400
