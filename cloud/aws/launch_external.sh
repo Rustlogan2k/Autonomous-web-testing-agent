@@ -32,6 +32,9 @@ MAX_HOURS="${MAX_HOURS:-12}"
 IDLE_MINUTES="${IDLE_MINUTES:-100}"
 VOLUME_GB="${VOLUME_GB:-100}"
 TIME_BUDGET="${TIME_BUDGET:-3600}"
+# SUBNET picks the availability zone, for when one zone has no spot capacity.
+SUBNET_ARGS=()
+if [ -n "${SUBNET:-}" ]; then SUBNET_ARGS=(--subnet-id "$SUBNET"); fi
 A=(--profile "$PROFILE" --region "$REGION")
 
 CALLER="$("$AWS" sts get-caller-identity --query Arn --output text "${A[@]}")"
@@ -101,7 +104,7 @@ bash -n <(printf '%s\n' "$USER_DATA") && echo "user-data: shell syntax ok ($(pri
 LAUNCH=(ec2 run-instances "${A[@]}" --image-id "$AMI" --instance-type "$INSTANCE_TYPE"
   --instance-market-options '{"MarketType":"spot","SpotOptions":{"SpotInstanceType":"one-time","InstanceInterruptionBehavior":"terminate"}}'
   --instance-initiated-shutdown-behavior terminate
-  --iam-instance-profile Name=wta-worker-profile
+  --iam-instance-profile Name=wta-worker-profile "${SUBNET_ARGS[@]}"
   --block-device-mappings "[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"VolumeSize\":$VOLUME_GB,\"VolumeType\":\"gp3\",\"DeleteOnTermination\":true}}]"
   --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=wta-$RUN_NAME},{Key=project,Value=wta},{Key=commit,Value=$SHORT}]"
   --user-data "$USER_DATA" --query 'Instances[0].InstanceId' --output text)
