@@ -5,230 +5,253 @@ describe the system, §5 is the dated history of how every decision was reached 
 full, including negative results and retractions), §6–§7 record scoping and design
 decisions, §8 the current risks, §9 the ordered next steps, §10 the environment.
 
-Last updated: 2026-10-07.
+Last updated: 2026-10-22.
 
 ---
 
-## 0. Read this first — where the project stands (2026-10-06)
+## 0. Read this first — where the project stands (2026-10-22)
+
+> **Documents removed on 2026-10-22.** At the owner's request the repository now keeps only
+> two Markdown documents, this file and `README.md` (plus third-party licence files under
+> `e2e_suite/vendor/` and two README files that are test fixtures). Everything this file
+> cites under `docs/` (pre-registrations, amendments, the v2 plan, the literature review,
+> `docs/llm_reward.md`), the mentor documents (`run-project.md`,
+> `project-progress-report.md`, `experimentation-results.md`), the suite plans
+> (`e2e_suite/CONVENTIONS.md`, `SUITE_V2_PLAN.md`, `validation_suite/PLAN.md`), the app READMEs
+> and every `reports/*.md` is preserved at tag **`docs-archive-2026-10-22`**. Read one with
+> `git show docs-archive-2026-10-22:<path>`. The JSON results under `reports/` are unchanged.
 
 ### 0.1 What the project is now
 
-An **RL-based automated functional tester for web applications**. A browser environment
-(Playwright) exposes a live application; a transferable deep RL agent explores it; a
-**dynamic LLM reward** judges, online, how far each page the agent actually reaches has
-progressed through a task; a **deterministic seeded-fault oracle** verifies candidate
-faults (replay ×2, per-fault controls, delta-debugging minimization); a product layer turns
-any URL / static site / Dockerfile repository into an exploration session with evidence and
-a readable report. **Security testing is out of scope** (the title's "security" half,
-Agent A, was dropped); the project is functional testing only.
+An **RL-based automated functional tester for web applications**, with two generations:
 
-**Both frozen evaluations are complete** (primary transfer experiment 2026-10-05, contextual
-diagnostic 2026-10-06). Their results are in §0.2 and §0.3 and are final; nothing about
-either may be changed now. What remains is reporting, the suite's Docker checks, and
-agent or product work that the owner has not yet approved (§9).
+- **v1 (frozen)**: an action-conditioned dueling Double DQN with prioritised n-step replay,
+  a residual adaptation head, search-guided ε-exploration and an optional dynamic LLM
+  progress reward. Two pre-registered experiments are complete (§0.2, §0.3).
+- **v2, the hybrid tester**: page abstraction into cells, a Go-Explore archive with exact
+  replay, test operators from standard test design, and a light online decision layer
+  (Thompson-sampling bandit, or count-based curiosity Q-learning). Its pre-registered
+  held-out evaluation is complete and frozen (§0.6). It is now being **re-tuned** on
+  rebuilt full-stack development apps (§0.7) before an external comparison with WebExplor and
+  WebRLED (§0.8).
+
+Both use the same **deterministic seeded-fault oracle**: replay ×2, a per-fault control
+build and ddmin minimisation, now extended with crash-type faults
+(`console_or_request_error`). A product layer (CLI and web UI) turns a URL, a static site, a
+Dockerfile repository or a suite app into a test run with evidence and a report. **Security
+testing is out of scope**; Agent A was dropped.
 
 | Component | Where | State |
 |---|---|---|
-| Browser environment, action registry, triggers | `src/web_testing_agent/envs/` | built; extended registry used by benchmark and product |
-| Learner: action-conditioned dueling Double DQN, shared per-action scorer, zero-initialised residual head for adaptation, prioritized n-step replay, search-guided ε-exploration; bandit variant; opt-in input masks (diagnostic only) | `rl/agent.py`, `rl/network.py`, `rl/replay.py`, `rl/masks.py` | built, frozen (features v3.1); masks off by default |
-| Dynamic LLM progress reward (`qwen2.5:7b-instruct`, digest `845dbda0ea48`, prompt `progress-v3`, live judgments + content-addressed cache) | `reward/progress.py`, `rl/reward.py`, spec `docs/llm_reward.md` | built, frozen |
-| Seeded-fault oracle (assertion grammar, per-fault controls, replay, ddmin) | `oracle/` | built, frozen |
-| Six-application benchmark, admission validator | `tests/fixtures/benchmark/`, `benchmark/`, `scripts/validate_benchmark.py` | 6/6 admitted, 12 faults, 5 classes |
-| Transfer experiment runner + analysis | `experiments/transfer.py`, `scripts/run_transfer.py`, `scripts/analyze_transfer.py` | **run complete**: `reports/transfer_final.{md,json}`, `reports/transfer_final_addendum.md` |
-| Contextual diagnostic: generator, 12 variants, probe sets, runner, evaluator, analysis | `ctxbench/`, `tests/fixtures/ctxbench/` | **run complete**: `reports/contextual_diagnostic.md` (+ `_numbers.md`, `.json`) |
-| Product tester (URL / site / repo / benchmark → report) | `tester/`, `scripts/test_app.py` | works end to end on fixtures; repo path requires a Dockerfile |
-| Web UI | `app/` (`python -m web_testing_agent.app`) | works; static-site upload and URL sessions verified |
-| Cloud launcher (restricted IAM, spot, self-terminating, S3 sync) | `cloud/aws/` | used for the primary run's CPU half |
-| End-to-end application suite (8 apps, isolated, **no RL**) | branch `e2e-suite` (`70608b4`), worktree `../RL web tester-e2e/e2e_suite/` | all 8 admitted, 23/23 faults; Docker checks pending (§0.6) |
+| Browser environment, action registry (incl. optional ARIA/onclick custom clickables), triggers, `on_new_page` hook | `src/web_testing_agent/envs/` | built |
+| v1 learner (AC-DQN, bandit variant, masks) | `rl/` | frozen (features v3.1) |
+| Dynamic LLM progress reward (`qwen2.5:7b-instruct`, prompt `progress-v3`) | `reward/progress.py`, `rl/reward.py` | frozen; no detectable benefit |
+| Seeded-fault oracle | `oracle/` | frozen; suite extensions in `e2e_suite/harness/ext_oracle.py` |
+| Hybrid tester: cells, archive, operators (incl. `browse_list`), bandit, curiosity Q-learning, failure feedback | `hybrid/` (`policy.py`, `archive.py`, `operators.py`, `learner.py`, `curiosity.py`) | built; held-out config frozen at tag `v2-eval-freeze` |
+| Hybrid runner, analysis, run metrics (unique failures, V8 JS coverage) | `hybrid/run.py`, `hybrid/analyze.py`, `hybrid/metrics.py`, `hybrid/suite.py` | built |
+| Six-application benchmark | `tests/fixtures/benchmark/`, `benchmark/` | 6/6 admitted, 12 faults |
+| Contextual diagnostic | `ctxbench/`, `tests/fixtures/ctxbench/` | complete |
+| Development suite v2 (8 apps, PostgreSQL/MongoDB, sign-in) | `e2e_suite/` | rebuilt and merged (`d8eefd7`); crash faults on 4 apps (§0.7) |
+| Validation suite (8 apps) | `validation_suite/` | admitted 20/20 each (`5f45a26`); used once, by the held-out evaluation |
+| Product tester and web UI | `tester/`, `app/` | works end to end; the UI offers the RL agents and random |
+| Cloud launcher | `cloud/aws/` | used for the v1 primary run's CPU half |
 
-### 0.2 The primary experiment — complete
+### 0.2 v1 primary experiment (transfer) — complete, frozen
 
 **Question**: does pretraining on five applications speed up verified-fault discovery on a
-held-out sixth (leave-one-application-out), against scratch learners and information-matched
-non-learning baselines, with and without the dynamic LLM reward?
+held-out sixth (leave-one-application-out)? Compared against scratch learners and
+information-matched non-learning baselines, with and without the dynamic LLM reward.
 
-- **Method**: `docs/methodology/2026-09-18-transfer-preregistration.md`, amended by
-  `2026-10-01-transfer-amendment.md` and `2026-10-03-transfer-amendment-2.md` (all before the
-  run). Ten arms; 2,000 interactions per hunt; seeds 0–2 plus the mechanical top-up; primary
-  statistic the per-fold paired difference in time to first verified fault (median across
-  folds, fold bootstrap), stratified log-rank secondary; all six folds and the four pristine
-  folds (`admin_records`, `support_portal`, `media_library`, `account_hub`) reported.
-- **Execution**: 291 jobs, **0 failures**, identical configuration everywhere, clean trees.
-  LLM arms on the local RTX 4050 (`runs/final-local`, 105 jobs incl. 27 top-up); non-LLM arms
-  on four AWS `m7i-flex.large` spot instances (`runs/final-cpu-1..4`, 186 jobs); merged in
-  `runs/final-merged`. Commits recorded: `1fef49d`, `c10699c`, `811094a` (documents and the
-  cloud-provenance fix only; no computation differs). AWS: ≈ $1.6 estimated usage ($0.00
-  billed at last check), far under the $20 cap. The local half was suspended by Modern
-  Standby on 2026-10-04 and resumed on 2026-10-05; interrupted jobs restarted from scratch.
-- **Results** (frozen analysis, unchanged; `reports/transfer_final.md` + addendum):
+- **Method**: pre-registration `docs/methodology/2026-09-18-transfer-preregistration.md` with
+  amendments of 2026-10-01 and 2026-10-03 (archived). Ten arms, 2,000 interactions per hunt,
+  seeds 0–2 plus a mechanical top-up. Primary statistic: the per-fold paired difference in
+  time to the first verified fault (median across folds, fold bootstrap).
+- **Execution**: 291 jobs, 0 failures. LLM arms ran locally (`runs/final-local`), non-LLM arms
+  on four AWS spot instances (`runs/final-cpu-1..4`, ≈ $1.6), merged in `runs/final-merged`.
+- **Results** (`reports/transfer_final.json`):
 
 | Comparison | All folds | Pristine folds | Reading |
 |---|---|---|---|
-| **Primary**: `dqn_pretrained − dqn_scratch` | median Δ +0 [−749, +290], 2/6 folds, log-rank p = 0.53 | −310 [−879, +469], p = 0.66 | **no evidence that pretraining helps the DQN** |
-| Pre-registered C − B (`bandit_pretrained − bandit_scratch`) | −280 [−732, +188], 4/6, p = 0.086 | −280, p = 0.11 | inconclusive (direction favours pretraining) |
-| LLM reward (`dqn_pretrained − dqn_pretrained_nollm`; `dqn_scratch − dqn_scratch_nollm`) | +17, p = 0.75; −57, p = 0.62 | — | **no detectable benefit** |
-| Online adaptation (`dqn_pretrained − dqn_zeroshot`) | −84, p = 0.53 | — | not resolved |
-| Learned vs non-learning (`dqn_pretrained` vs search_A0 / random) | p = 0.006 / 0.02 | p = 0.23 / 0.53 | learners find more faults; clearest effect, carried largely by `shop_catalog` |
+| **Primary**: `dqn_pretrained − dqn_scratch` | median Δ +0 [−749, +290], log-rank p = 0.53 | −310, p = 0.66 | no evidence that pretraining helps |
+| `bandit_pretrained − bandit_scratch` | −280 [−732, +188], p = 0.086 | −280, p = 0.11 | inconclusive |
+| LLM reward on vs off | +17, p = 0.75; −57, p = 0.62 | — | no detectable benefit |
+| `dqn_pretrained` vs search_A0 / random | p = 0.006 / 0.02 | p = 0.23 / 0.53 | learners find more faults (mainly `shop_catalog`) |
 
-  Discovery rates: bandit_pretrained 0.42, both DQN arms 0.33, search_S 0.17, random 0.11,
-  search_A0 0.06. `admin_records` and `booking_desk`: 0/6 for both DQN arms (difference 0 by
-  censoring). **0 verified findings on any clean build** (2 raw assertion firings, both
-  rejected by the per-fault control). The script's comparison table omitted the
-  pre-registered `dqn_scratch − dqn_scratch_nollm`; the addendum computes it with the same
-  functions.
-- **Post-hoc description (not a pre-registered test)**: in every learned arm about 84% of
-  hunt actions were the network's greedy choice, 12% the search guide's and 4% uniform. The
-  learned Q drives behaviour, yet pretrained and scratch DQN find faults in the same share
-  of runs (9/27 each): what helps is learned inside the application under test.
+Discovery rates: bandit_pretrained 0.42, DQN arms 0.33, search_S 0.17, random 0.11,
+search_A0 0.06. There were 0 verified findings on any clean build.
 
-### 0.3 The contextual diagnostic — complete
+### 0.3 v1 contextual diagnostic — complete, frozen
 
-Pre-registered in `docs/methodology/2026-10-04-contextual-diagnostic-preregistration.md`
-(`c10699c`, before any primary result). Separate applications, runs and report; **never
-pooled with primary statistics**.
-
-- **Build** (all committed before any arm ran): seeded generator and 12 variants of one
-  request workflow (`4002d39`; vocabulary V0/V1 training, VS synonyms / VU1 unseen words /
-  VU2 pseudo-words held out with zero token overlap; structures S1/S2 training, S3 tabs / S4
-  modal / S5 reordered held out; decoy D1); 12/12 admitted by the unchanged primary
-  validator (`reports/ctx_admission.json`); held-out label similarity in
-  `reports/ctx_vocabulary.json`; input masks (`d26b361`); probe sets with
-  execution-labelled action effects (`11cff61`); evaluator and analysis with every open
-  choice fixed in its docstring (`e308539`, `6bf7d86`).
-- **Run**: 228 jobs (12 pretrainings, 216 hunts), 0 failures, clean tree `6bf7d86`, local
-  GPU only (`runs/ctx-main`). Suspended 23:22–02:54 by a closed lid; budgets are in
-  interactions, so no result changed.
-- **Verdicts** (rules applied to `ctx_full`, the primary agent):
+228 jobs over 12 generated variants of one workflow (`runs/ctx-main`,
+`reports/contextual_diagnostic.json`).
 
 | Hypothesis | Verdict | Deciding numbers |
 |---|---|---|
-| H-ctx: genuine state–action contextual learning | **not supported** | within-label AUROC 0.51 [0.44, 0.59] (needed ≥ 0.70); label × state is 7% of Q's variance |
-| H-act: action memorization | inconclusive | decoy probe rate 0.31 [0.00, 0.91]: seed 1 nearly always takes the decoy, seeds 0 and 2 never |
-| H-lex: lexical memorization | inconclusive | top-1 ratio on unseen vocabulary 0.88 [0.35, 1.18] |
-| H-app: application memorization | inconclusive | mean top-1 ratio on held-out structures 0.63 [0.44, 0.88]; tabs 0.35, modal 0.58 |
+| H-ctx: state–action contextual learning | **not supported** | within-label AUROC 0.51 [0.44, 0.59] (needed ≥ 0.70) |
+| H-act / H-lex / H-app memorisation | inconclusive | decoy rate 0.31 [0.00, 0.91]; unseen-vocabulary ratio 0.88; new-structure ratio 0.63 |
 
-  Permutation invariance passed. Probe top-1 progress accuracy: training 0.56 (search_S
-  0.31, random 0.18); vocabulary shifts cost little, the tab and modal structures cost a lot.
-  Hunts on the eight held-out variants: `label_blind` 20/24, `ctx_full` 19/24,
-  `lexical_only` 4/24, `action_only` 4/24, search_S 2/24, random 2/24 — the arms that see the
-  state find the faults, and the label channel is not what helps.
-- **Reading**: the agent learns useful, state-driven behaviour inside an application, but its
-  preference for an action does not depend on whether that action is useful in the current
-  state, and nothing shows it transfers knowledge of *which control matters where*. This is
-  claim limit A, now measured.
+The state-aware arms found the faults on held-out variants in 19–20 of 24 runs, against 2 of
+24 for search and random. The label channel is not what helps.
 
-### 0.4 Claim limits (owner-mandated, apply to every report and presentation)
+### 0.4 Claim limits (owner-mandated; apply to every report and presentation)
 
-- **A. Context**: the policy state (25 numbers: episode history, page-composition counts,
-  form fill, LLM history) has **no page semantics** — no heading, text or URL. The
-  diagnostic found no state–action contextual learning (H-ctx not supported). Claim only
-  in-application, state-driven learning.
-- **B. Generalization**: six applications built from one designer's contract, and twelve
-  generated variants of one workflow, establish at most **within-family** results; no
-  zero-shot or real-world claim. The primary found no transfer benefit for the DQN.
-- **C. LLM reward**: its contribution is reported only through the frozen LLM vs no-LLM
-  comparisons, which show no detectable benefit; implemented ≠ useful.
-- **D. Warm-up exposure (disclose)**: amendment 1 says only the validator and uniform-random
-  exploration touched the pristine apps before the run, but the LLM cache warm-up
-  (`scripts/warm_caches.py`) also ran `search_S` on them (LLM judgments only, no oracle,
-  no tuning used them; logs `runs/warm_caches.log`, `runs/warm_v3.log`, checksums recorded).
-  The oracle review also ran scripted traces on MEDIA-02 / ADMIN-01 and motivated the
-  per-fault-control fix (instrument, not agent). Do not redefine "pristine".
-- **E. Representation leakage**: a control without a visible label falls back to its
-  description (can embed a DOM field name or radio `name#value`); the 14 page-composition
-  counts can fingerprint pages within an app. The diagnostic does not test this (its
-  variants share DOM ids). No claim of perfect identity invariance.
-- **F. Product completeness**: the uploaded-repository tester is not yet usable end to end
-  for Dockerfile-less repositories or without a specification; this is the next product
-  work, pending the owner's approval.
+- **A. Context**: v1's state has no page semantics, and H-ctx is not supported. Claim only
+  in-application, state-driven learning for v1.
+- **B. Generalisation**: v1 showed no transfer benefit. The suite apps and their seeded
+  faults were built by the same developer as the tester (disclose this). Make no real-world
+  claim before the external benchmark (§0.8).
+- **C. LLM**: the progress reward showed no detectable benefit; the page labeller failed both
+  gates (0.68/0.78; 0.61/0.75 on fresh pages). The LLM is not on the decision path.
+- **D. Warm-up exposure (v1, disclose)**: the LLM cache warm-up ran `search_S` on the pristine
+  apps before the run (logs `runs/warm_caches.log`, `runs/warm_v3.log`).
+- **E. Representation leakage (v1)**: label fallbacks can embed DOM names; page-composition
+  counts can fingerprint pages.
+- **F. Product**: repository intake requires a Dockerfile. Without a specification,
+  findings rest on generic triggers and crash signals.
+- **G. v2 held-out**: all four pre-registered comparisons are **inconclusive**. Descriptive
+  differences (distinct faults, mean times) are not significance claims.
+- **H. Learner**: across five development rounds and seven variants, no learning component
+  beat the hybrid's structure. Do not present the bandit or curiosity layer as the source of
+  the hybrid's results.
+- **I. Tuning data**: development and tuning rounds (incl. v3) are tuning data, never
+  evidence of generalisation. The held-out result belongs to the frozen `v2-eval-freeze`
+  version, not to the re-tuned tester.
 
 ### 0.5 Rules for anyone working on this repository now
 
-- Both evaluations are **closed**. Their code, methodology, fixtures, probes, run outputs and
-  reports are evidence: do not edit them; any reanalysis is new, labelled post-hoc, and
-  reported beside — never in place of — the frozen output.
-- Any improvement to the agent (§9) is a **new, separately pre-registered** version with its
-  own held-out evaluation; it never reuses the frozen runs as its result.
-- AWS: restricted IAM user `wta-operator` (profile `wta`), never root; region `ap-south-1`;
-  hard cap **$20** total (≈ $1.6 used); spot only; launcher enforces a hard cap, idle
-  watchdog, self-termination and EBS deletion. Free plan: free-tier instance types only;
-  GPU quota rejected.
-- Never push to GitHub without asking; never start "M0/M1" or other new build work without
-  explicit approval.
+- Frozen work (v1 experiments, the v2 held-out evaluation) is **evidence**. Do not edit its
+  code paths, fixtures, run outputs or results. Any reanalysis is new, labelled post-hoc, and
+  reported beside the original, never in place of it.
+- **Independence rule**: nobody (human or agent) looks at the external benchmark's subject
+  apps until the re-tuned tester is frozen.
+- **Never edit `src/` in the main checkout while a round is starting jobs**: each job imports
+  the code when it starts, and mixed versions spoiled a development round. Use a worktree.
+- Commit locally; push to GitHub only when the owner asks. Never print secrets (`.env` is
+  git-ignored).
+- AWS: restricted IAM user `wta-operator` (profile `wta`), never root; `ap-south-1`; hard cap
+  **$20** (≈ $1.6 used); spot only.
+- Check files on disk before reporting any status.
 
-### 0.6 The end-to-end application suite (isolated; no RL)
+### 0.6 v2 hybrid tester: held-out evaluation — complete, frozen
 
-Eight genuinely different small web applications with real backends, built as a testbed for
-the product. Branch `e2e-suite` (`70608b4`), worktree `../RL web tester-e2e/e2e_suite/`;
-`CONVENTIONS.md` (incl. lessons from the pilots), `harness/` (variants, launcher,
-static/API/browser/Docker checks, isolated oracle extensions `region_stable_across_reload`,
-`input_absent`, `region_arithmetic`), admission reports in `admission/`, diversity report
-`suite.md`. Invisible to the primary benchmark (no `faults.json`; an isolation test proves
-primary `discover()` still returns its six apps).
+- **Pre-registration** frozen on owner approval: `5592fd0`, tag `v2-eval-freeze`;
+  analysis protocol `freeze-2026-10-08` in `hybrid/analyze.py`.
+- **Apps**: the 8 validation apps (tree `ffd4fda3`, versions without a database server or
+  sign-in), 24 seeded faults. They were planned independently of the tester.
+- **Arms**: random, `hybrid_nolearn` (primary), `hybrid_bandit`, and `v1_dqn_pretrained`
+  (v1's best AC-DQN with the frozen checkpoints; seed s → fold `V1_FOLDS[s % 6]`, pretraining
+  seed s % 3; added by the owner at approval).
+- **Run**: seeds 0–4 × 2,000 interactions = 160 hunts plus 32 clean-build controls,
+  2026-10-08 23:12 → 10-09 06:35 (`runs/v2-eval`, `reports/v2_evaluation.json`). One
+  infrastructure failure (a Windows file lock) was rerun unchanged, as pre-registered.
 
-| App | Domain | Architecture | Stack | Status |
+| | Comparison | Median Δ RMST | 95% interval | Log-rank p | Verdict |
+|---|---|---|---|---|---|
+| H1 (primary) | `hybrid_nolearn − random` | −324 | [−665, +148] | 0.159 | inconclusive |
+| H2 | `hybrid_bandit − hybrid_nolearn` | +86 | [−304, +285] | 0.781 | inconclusive |
+| H3 | `hybrid_bandit − random` | −191 | [−801, +67] | 0.180 | inconclusive |
+| H4 | `hybrid_nolearn − v1_dqn_pretrained` | +42 | [−196, +574] | 0.276 | inconclusive |
+
+| Arm | Runs that found a fault | RMST | Distinct faults (of 24) | Clean false positives |
 |---|---|---|---|---|
-| tidewater | banking | SPA, hash router, JSON API | Python stdlib + SQLite | admitted 20/20 |
-| bagstreet | e-commerce | server-rendered pages, HTML forms (PRG) | Python stdlib + SQLite | admitted 20/20 |
-| helpline | support desk | server-rendered + HTML fragment updates | Python stdlib + SQLite | admitted 20/20 |
-| clinicflow | appointments | branching wizard, server drafts in URL, client conditionals | Python stdlib (WSGI) + SQLite per session | admitted 20/20 |
-| orbit | kanban | modal-heavy SPA | Node built-ins, JSON per session | admitted 20/20 |
-| wayfarer | trip planner | client drafts (localStorage) + server sealed versions, **no Dockerfile** | Node built-ins | admitted 19/19 |
-| ledgerly | expense claims, multi-role | Node server-rendered + client form island | Node built-ins, event log | admitted 20/20 |
-| stackroom | inventory admin | data grid, server-side paging/sort/filter, bulk ops | Python stdlib + SQLite | admitted 20/20 |
+| `v1_dqn_pretrained` | 34/40 | **595** | 17 | 0/8 |
+| `hybrid_nolearn` | 30/40 | 737 | 18 | 0/8 |
+| `hybrid_bandit` | 34/40 | 769 | **19** | 0/8 |
+| `random` | 32/40 | 978 | 13 | 0/8 |
 
-23/23 seeded faults confirmed (11 subtypes; 16 in the primary grammar, 7 needing the
-isolated extensions); diversity check passes (largest shared-source overlap 3.2%).
-**Pending: the `--docker` checks** for the seven apps with a Dockerfile (needs Docker
-Desktop running), then merging the branch.
+**Descriptive reading:**
 
-### 0.7 Known limitations of the tester (product work, pending approval)
+- The held-out faults were easy for random (80% of runs, against 43% in development).
+- The hybrid arms verified 9 faults that no random run found.
+- The blind spot was list paging: skylark's "Load more", where `hybrid_nolearn` scored 0/5.
+  It motivated the `browse_list` operator.
+- The specification-free invariants produced 3 clean-build candidates on quizcraft. All were
+  false alarms (an unsaved working copy is lost on reload by design).
 
-- The environment treats a page as settled after the DOM is quiet; it does not wait for
-  in-flight requests, so slow async SPA transitions can be recorded early (the suite's
-  harness uses a 400 ms window).
-- Repository intake requires a Dockerfile (`wayfarer` exists to exercise this); Compose is
-  refused by design.
-- Without a specification, functional findings get only generic triggers and an unverified
-  LLM review; the suite's extension kinds are candidates for spec-less invariants.
-- The agent's state carries no page meaning (claim limit A); improving that is agent work,
-  not product work (§9).
+### 0.7 Now: tuning round v3 on the rebuilt development apps
 
-### 0.9 The hybrid tester (v2) — in development (approved 2026-10-06, deadline ≈ 2026-10-27)
+**Development suite v2** (merged `d8eefd7`). All 8 apps have their own database, a sign-in
+page and a richer data model. clinicflow, helpline, wayfarer, ledgerly and bagstreet were
+also enlarged: ≥ 12 views, ≥ 3 CRUD entities, ≥ 5 interaction patterns and 2 new non-form
+faults each. Each session gets its own partition: a schema per session (PostgreSQL) or a
+database per session (MongoDB). The sign-in macro is passed to the runner as
+`setup_actions`. Drivers are vendored (pg8000, pymongo, pg, mongodb). Admission adds a
+data-model contract, a breadth contract and crash checks.
 
-Design, data split, concerns and gates: `docs/methodology/2026-10-06-hybrid-v2-plan.md`
-(+ addenda §8–§10). Evaluation pre-registration (**draft**, needs the owner's approval before
-any agent runs on the suite): `docs/methodology/hybrid-v2-evaluation-preregistration.md`.
-Code: `src/web_testing_agent/hybrid/`.
+| App | DB | Faults | Crash-type faults |
+|---|---|---|---|
+| tidewater | PostgreSQL | 3 | — |
+| clinicflow | PostgreSQL | 5 | — (shelved) |
+| stackroom | PostgreSQL | 5 | 2 (pending admission) |
+| ledgerly | PostgreSQL | 5 | — (shelved) |
+| bagstreet | MongoDB | 5 | — (shelved) |
+| helpline | MongoDB | 7 | 2 (pending admission) |
+| orbit | MongoDB | 5 | 2 (admitted 40/40) |
+| wayfarer | MongoDB | 6 | 2 (pending admission) |
 
-- **Data split**: development = the 6 benchmark apps, ctxbench, Gitea (non-admin user
-  `devtester`); held-out = the 8 suite apps (`e2e_suite/`, merged into the working branch).
-- **Pipeline**: markup-derived page abstraction (kind, path template, main heading, form
-  signature, alert) → archive of abstract states with exact replay (walks pruned of steps
-  that change neither the page fingerprint nor the cell) → test operators from standard test
-  design (complete_step, invalid_input, edit_after_review, back/reload_and_resume,
-  double_submit, collection_churn) → Thompson-sampling bandit over semantic keys (optional
-  cross-app prior) → v1's oracle unchanged + specification-free invariants (reload stability,
-  typed-value round trip, validation consistency) replayed twice and attributed to seeded
-  faults by per-fault controls.
-- **LLM labels**: Stage 0 gate failed (0.68 / 0.78); labeller v3 failed its re-test on fresh
-  pages (0.61 / 0.75; 0.93 / 0.83 on its revision data) → deterministic labels are final; the
-  owner chose an exploratory LLM-labels arm (option A).
-- **Verified so far**: suite infrastructure test 23/23 witnesses confirmed, 0 benign findings
-  (`reports/v2_suite_smoke.json`); Gitea: 34/34 logins, invariant false alarms found and
-  fixed; replay bug (pruned notice-raising steps) found on support_portal and fixed (failed
-  returns 6/14 → 0/28).
-- **Arms for the evaluation** (draft): random, search_S, v1_dqn (no LLM reward), hybrid_nolearn,
-  hybrid_bandit (primary), hybrid_bandit_prior, hybrid_bandit_llm (exploratory).
+Crash-type faults surface as console, page or failed-request errors. The extension oracle
+(`console_or_request_error`) attributes them through the per-fault controls. The runner
+passes browser events to it (`857689f`). The owner chose crash faults for a subset of apps
+only. Those for the other four apps are shelved in a `git stash` on branch `suite-v2`
+(worktree `../rlwt-suite-v2`). The admission reruns for helpline, stackroom and wayfarer are
+still to do.
 
-### 0.8 Where to look
+**Tuning round v3** (`runs/v3-tune`, started 2026-10-22): 8 arms × 8 apps × 3 seeds = 192
+jobs, 3 workers. The arms are:
 
-`reports/transfer_final.md` + `transfer_final_addendum.md` (primary results),
-`reports/contextual_diagnostic.md` (diagnostic), `docs/methodology/` (all pre-registrations
-and amendments), `docs/llm_reward.md`, `docs/literature_review.md` + `docs/references/`,
-`docs/benchmark/CONTRACT.md`, `reports/benchmark_suite.md`, `reports/dev_tuning.md`,
-`cloud/aws/SETUP.md`, `e2e_suite/CONVENTIONS.md` and `e2e_suite/suite.md` (branch
-`e2e-suite`).
+- the baselines: `random`, `hybrid_nolearn`, `hybrid_bandit`, `v1_dqn_pretrained`;
+- one tuning option each: `dev_v3_browse` (the `browse_list` operator), `dev_v3_clickables`
+  (ARIA/onclick custom clickables), `dev_v3_curiosity` (curiosity Q-learning chooses the free
+  exploration) and `dev_v3_failfeedback` (archive weight for cells where errors followed).
+
+Every result records verified faults, unique failures (trigger signatures) and V8 precise JS
+coverage (call-count mode, attached before navigation). An interim look (12 matched runs on
+orbit, helpline, stackroom and wayfarer, 2026-10-22 12:16) showed every arm at 12/12, with
+v1 AC-DQN highest on coverage. This is tuning data, not a result.
+
+**Next**: analyse faults, unique failures and coverage on matched runs; choose the
+configuration; freeze it as a new version.
+
+### 0.8 Then: the external benchmark (WebExplor / WebRLED)
+
+The mentor asked for a comparison with the literature. The plan:
+
+1. Set up the WebExplor/WebRLED subject applications with branch coverage and failure
+   counting.
+2. Pre-register the comparison.
+3. Run the frozen re-tuned tester for 1-hour runs.
+4. Compare with the published numbers (WebRLED, arXiv 2504.19237): WebExplor 55.5% branch
+   coverage and 3.1 failures; WebRLED 64.2% and 4.1 failures (1-hour runs, 5 repetitions,
+   console-error failures deduplicated manually).
+
+The subject apps are off limits until the freeze (§0.5). The candidates are dimeshift,
+pagekit, splittypie, phoenix-trello, retroboard, petclinic, timeoff, realworld, 4gaBoards,
+parabank, gadael and agilefant.
+
+### 0.9 Known limitations of the tester
+
+- The page is treated as settled once the DOM is quiet. In-flight requests are not awaited.
+- Repository intake requires a Dockerfile; Compose is refused by design.
+- The specification-free invariants cannot tell saved state from unsaved state (the
+  quizcraft false alarms).
+- The hybrid's operators are form-centred. `browse_list` (paging, sort and filter) is being
+  tuned, not frozen.
+
+### 0.10 Where to look
+
+- **Results (JSON)**: `reports/transfer_final.json`, `reports/contextual_diagnostic.json`,
+  `reports/v2_evaluation.json`, `reports/benchmark_validation.json`. Run files are in
+  `runs/<round>/results/`. The web UI's Evaluation page (`app/evaluation.py`) renders every
+  round from them.
+- **Archived documents**: tag `docs-archive-2026-10-22`. It holds `experimentation-results.md`
+  (all results to 9 Oct), `project-progress-report.md` (every arm and why it exists),
+  `run-project.md`, `docs/methodology/*` and `docs/literature_review.md`.
+- **Checkpoints kept locally** (not in git): `runs/final-cpu-1..4/checkpoints` (the v1 primary
+  experiment, including the `dqn_nollm` checkpoints `v1_dqn_pretrained` loads) and
+  `runs/ctx-main/checkpoints` (diagnostic). Older diagnostics and ablation checkpoints were
+  deleted on 2026-10-22.
+- **Worktrees**: `../rlwt-suite-v2` (branch `suite-v2`), `../rlwt-tune` (`tune-v3`) and
+  `../rlwt-ui` (`ui-v3`, the web UI redesign `80b1d60`, to merge after tuning round v3).
 
 ---
 
@@ -3609,6 +3632,92 @@ Recorded in full in `docs/methodology/2026-10-03-transfer-amendment-2.md`; the s
 - Post-hoc description of the primary hunts (§0.2): ~84% of every learned arm's actions are
   greedy, so the null transfer result is not the exploration guide masking the network.
 
+### 2026-10-06 → 10-07 — the hybrid tester (v2) is approved and built
+
+- The owner approved v2 with three weeks left. The plan (`docs/methodology/2026-10-06-hybrid-v2-plan.md`,
+  archived) replaces learning-heavy exploration with structure, because v1 showed no
+  transfer and no contextual learning. The parts: a page abstraction, a Go-Explore archive
+  with exact replay, test operators, and a Thompson-sampling bandit as the online learner.
+- The LLM page labeller failed its Stage 0 gate (0.68/0.78) and the re-test on fresh pages
+  (0.61/0.75; 0.93/0.83 on its own revision data). Deterministic labels are final, and the
+  owner kept one exploratory LLM-labels arm (option A).
+- **Data split revised before any agent ran on the suite**. Development is now the 6
+  benchmark apps, ctxbench, Gitea and the 8 suite apps. A new 8-app validation set was
+  planned by an independent subagent (`validation_suite/`), built, and admitted 20/20 per app
+  (`5f45a26`).
+
+### 2026-10-07 → 10-08 — development rounds
+
+Twelve rounds on development data (`runs/v2-dev*`, `runs/v2-suite-dev1..5`):
+
+- **Kept from the benchmark rounds**: a depth preference with weighted exploration, cells
+  that record *whether* a submit is offered, and prefix matching of role cues.
+- **Kept from the suite rounds**: site chrome never submits, and operators take a page's
+  submit controls in turn (`d2b80fe`).
+- **No difference**: two corrected bandit rewards, novelty and surprise (`f2f6759`). The
+  reward is not the bottleneck.
+- **Worse, not adopted**: the pairwise operator with technique-first choice (`f6dfc2f`).
+- **Curiosity Q-learning (WebExplor/WebRLED components)**: inside the hybrid it was no
+  better (29/42 vs 32/42); standalone it was at random level (17/42 vs 18/42).
+
+Across five suite rounds and seven variants, no learner was distinguishable from
+`hybrid_nolearn`. The diagnosis: about 5 of 14 apps fall within the first few decisions; the
+unfound faults need two deviations in one walk; and the option space is small enough to
+cover systematically.
+
+### 2026-10-08 — suite v2 rebuild approved
+
+The owner observed that the suite apps had no real database or login. The approved plan
+rebuilds the apps on PostgreSQL or MongoDB with sign-in and richer schemas, with two builder
+agents. Builder A owned the harness and the Python apps; Builder B owned vendoring and the
+Node apps. The harness, CONVENTIONS v2 and the pilots (stackroom `80801f2`, orbit and the
+vendored drivers `d01020b`, a line-ending fix `bdfd8e6`) were admitted 37/37, including
+Docker.
+
+### 2026-10-08 → 10-09 — v2 held-out evaluation (pre-registered)
+
+The owner chose "freeze now, then run" on the current validation apps (without a database
+or sign-in) and added v1's best AC-DQN as an arm. The freeze is `5592fd0` (tag
+`v2-eval-freeze`). The run took 2026-10-08 23:12 → 10-09 06:35 with no other workload. All
+four comparisons were inconclusive (§0.6). The results were written up in
+`experimentation-results.md` (`3499421`, archived). No tuning was done on these apps
+afterwards.
+
+### 2026-10-17 → 10-19 — the development apps are finished, and enlarged
+
+The mentor asked for a literature benchmark. The owner chose the WebExplor/WebRLED subject
+applications as the external evaluation, and decided to re-tune on the development suite
+first. Only the 5 remaining development apps were to be rebuilt, and they had to be big
+enough to tune on. Suite plan addendum §8 (`f5cb9b2`) set the bar at ≥ 12 views, ≥ 3 CRUD
+entities, ≥ 5 interaction patterns and 2 new non-form faults each. All 8 development apps
+were merged on 2026-10-19 (`d8eefd7`). The web UI's agent picker was limited to the held-out
+evaluation's arms.
+
+### 2026-10-22 — crash-type faults, tuning metrics, tuning round v3
+
+- **Why crash faults:** the external benchmark counts failures as console and request
+  errors, which the seeded-fault oracle ignored. Crash-type faults and their oracle kind were
+  added (`1bd81dd`); orbit's two were admitted 40/40. Helpline, stackroom and wayfarer were
+  given theirs, pending admission (`5ae1a33`). On the owner's instruction ("no need to have
+  crash faults for all apps"), the other four apps' crash faults were shelved.
+- **Runner fix:** browser events now reach the extension oracle (`857689f`). It was verified
+  end to end on ORB-4.
+- **Run metrics** (`db3b58c`): unique failures and V8 precise JS coverage.
+- **Tuning options**: `browse_list` (paging, sort and filter, from the skylark blind spot),
+  custom clickables, and failure feedback.
+- **Tuning round v3 started** on the 8 development apps (§0.7).
+- **Web UI redesign** ("test bench") on branch `ui-v3` (`80b1d60`). The UI now offers
+  v1 AC-DQN, hybrid + bandit (the default), hybrid + curiosity and random. It merges after
+  the round.
+- **Repository cleanup** at the owner's request:
+  - Markdown was reduced to `README.md` and this file; everything else is archived at tag
+    `docs-archive-2026-10-22`.
+  - Superseded checkpoints were deleted: `models/checkpoints` (diagnostics, ablations,
+    contextual-bandit and post-Markov runs), `runs/final-local/checkpoints`, and the sanity
+    and local-check runs. Kept: `runs/final-cpu-1..4` and `runs/ctx-main`.
+  - Stray logs, caches and an unused `.venv` were removed. The LLM cache
+    (`data/llm_cache/`), generated report Markdown and Gradle caches are now git-ignored.
+
 ---
 
 ## 6. Scoping decisions
@@ -3657,55 +3766,37 @@ Two decisions that shape what the project can claim:
 
 ---
 
-## 8. Current risks (rewritten 2026-10-06)
+## 8. Current risks (rewritten 2026-10-22)
 
-The August-era risk register is preserved in git (`PROJECT_CONTEXT.md` at commit `afa5045`)
-and in §5; the 2026-10-04 register (risks before the results) at `811094a`. Both evaluations
-have answered their questions, so the risks now are about what is claimed and what is built
-next:
+Earlier registers: commits `afa5045` (August) and `811094a` (2026-10-04), and this file at
+tag `docs-archive-2026-10-22` (2026-10-06).
 
-| # | Risk | Severity | Evidence | Addressed by |
-|---|---|---|---|---|
-| 1 | Over-claiming: presenting the agent as contextual or as transferring across applications | major | H-ctx not supported; primary Δ +0 | claim limits A–C in every report; a claims table (shown / not shown) in the final report |
-| 2 | The headline positive result is narrow: learners beat search/random mainly on a development fold and on one generated family | major | pristine-fold p = 0.23 / 0.53; diagnostic is one workflow | state it with its fold breakdown; external validity only via real-site demos |
-| 3 | Statistical power: 3 seeds left the diagnostic's memorization hypotheses unresolved and the bandit result at p = 0.086 | moderate | decoy rate split 0 / 0.9 / 0 by seed | reported as inconclusive; any follow-up pre-registers more seeds |
-| 4 | No functional oracle for arbitrary uploaded apps | major for the product | generic triggers + unverified LLM review only | user-supplied `faults.json` assertions; spec-less invariants (suite extensions) as product work |
-| 5 | Repository intake requires a Dockerfile | moderate for the product | `wayfarer` | stack templates, pending approval |
-| 6 | Unattended local runs are suspended by Windows (screen timeout, lid, battery budget) | operational | 2026-10-04 and 2026-10-06 suspensions | screen-off timeout 0 on AC, lid open, charger in; every job resumable and step-budgeted |
+| # | Risk | Severity | Addressed by |
+|---|---|---|---|
+| 1 | Over-claiming: presenting the learner as the source of the hybrid's results, or the held-out descriptives as wins | major | claim limits G–I; a claims table (shown / not shown) in the final report |
+| 2 | Tuning on the development apps overfits them, so the external benchmark disappoints | major | tune only general mechanisms (operators, metrics), freeze before anyone sees the subject apps, report whatever comes out |
+| 3 | External comparison is not like for like: the published numbers are branch coverage and manually deduplicated failures over 1-hour runs | major | pre-register the metric mapping (JS coverage vs branch coverage, failure signatures vs manual dedup) and state the differences |
+| 4 | Time: deadline ≈ 2026-10-27 with tuning, freeze, benchmark set-up, runs, report and demo left | major | order in §9; the external benchmark can shrink to fewer apps or seeds if needed, as long as it is stated |
+| 5 | Crash faults for helpline, stackroom and wayfarer are not yet admitted, but tuning already uses them | moderate | admit them before the freeze; if one fails admission, drop it from the tuning analysis |
+| 6 | Unattended local runs are suspended by Windows (lid, screen, battery) | operational | lid action "do nothing" on AC, screen timeout 0, keep-awake process, resumable runners |
 
 ---
 
-## 9. Next steps, in order (rewritten 2026-10-06)
+## 9. Next steps, in order (rewritten 2026-10-22)
 
-Items 1–2 need no new approval; items 3 onward are proposals that start only when the owner
-approves them (no "M0/M1" without explicit approval).
-
-1. **Application suite**: run the `--docker` checks for the seven Dockerfile apps (start
-   Docker Desktop), commit, then merge `e2e-suite`.
-2. **Final report and presentation**: methodology with every amendment and deviation;
-   primary results exactly as produced (all folds and pristine folds, plus the addendum);
-   the diagnostic in its own section; a claims table (shown / not shown) under limits A–F;
-   AWS cost; literature positioning (agent, curiosity bonus and LLM potential are not novel;
-   the contribution is the combination and the evaluation discipline).
-3. **Cheap analyses on existing data** (descriptive, labelled post-hoc): how well the LLM's
-   progress judgments agree with the ctxbench ground-truth progress counter (does the reward
-   carry the signal it is meant to?); for `admin_records` and `booking_desk`, how close the
-   agents got to each fault's trigger.
-4. **Agent v2 (new pre-registration)**, chosen in the light of the diagnostic:
-   - page semantics in the state and per-control context (title, headings, the section a
-     control belongs to), with vocabulary-randomised training to limit memorization;
-   - a broader training family (many generated variants of several workflows; the suite as
-     strictly held-out evaluation);
-   - archive-and-return exploration (Go-Explore style, using the oracle's deterministic
-     replay) for faults that need 9–16 contextual steps;
-   - more seeds and applications, sized by a power estimate from the frozen results.
-5. **Product completeness (F)**: uploaded-repo tester end to end through the UI;
-   Dockerfile-less repositories (stack templates, `wayfarer` as the test case); spec-less
-   functional verification (generic invariants measured against the suite's ground truth);
-   settle on in-flight requests.
-6. **Before the demo**: three end-to-end runs (ZIP with assertions → verified findings; a
-   Dockerfile repo through the UI; a live URL with generic triggers and the unverified
-   review).
+1. **Finish tuning round v3** (`runs/v3-tune`). Analyse verified faults, unique failures and
+   JS coverage on matched runs, and pick the configuration.
+2. **Admit the pending crash faults** (helpline rerun, stackroom, wayfarer) and commit their
+   admission reports.
+3. **Merge `ui-v3`** (the web UI redesign) once no jobs are starting.
+4. **Freeze the re-tuned tester** as a new version, with a tag and a pre-registration of the
+   external comparison.
+5. **External benchmark**: set up the WebExplor/WebRLED subject apps with coverage and
+   failure counting, run 1-hour runs, and compare with the published numbers (§0.8).
+6. **Final report, presentation and demo** (by ≈ 2026-10-27). Include v1's two negative
+   results, the v2 structure and its held-out result, the tuning round, the external
+   comparison and the claims table. For the demo: a suite app through the UI, a live URL,
+   and a report download.
 
 ---
 
@@ -3751,7 +3842,8 @@ Two consequences worth knowing before relying on a clone: the Gitea corpora and 
   before an unattended local run.
 - **Python on Windows writes CRLF** through `Path.write_text`; the `e2e-suite` branch pins
   LF via `.gitattributes` because patch anchors contain newlines.
-- **Second worktree**: `../RL web tester-e2e` on branch `e2e-suite` (the application suite).
+- **Worktrees** (2026-10-22): `../rlwt-suite-v2` (`suite-v2`), `../rlwt-tune` (`tune-v3`),
+  `../rlwt-ui` (`ui-v3`). The old `../RL web tester-e2e` worktree (`e2e-suite`) is merged.
 - **Added 2026-10-06.** Modern Standby also starts when the lid closes or the charger is
   unplugged, and then hibernates on the battery budget; the screen-off timeout does not
   prevent that. For unattended runs: timeout 0 on AC, charger in, lid open (or set the
@@ -3760,3 +3852,9 @@ Two consequences worth knowing before relying on a clone: the Gitea corpora and 
 - **Binary fixtures under an `eol=lf` rule**: `tests/fixtures/ctxbench/probes/*.gz` is
   marked `binary` in `.gitattributes`; any new binary file under a text-normalised path
   needs the same, or git rewrites its CR LF bytes.
+- **Added 2026-10-22.** The AC lid action is "do nothing" (`powercfg /setacvalueindex
+  SCHEME_CURRENT SUB_BUTTONS LIDACTION 0`; restore with 1). Long rounds also run a
+  `SetThreadExecutionState` keep-awake process. Restore the screen timeout afterwards with
+  `powercfg /change monitor-timeout-ac 5`.
+- **Suite databases**: PostgreSQL and MongoDB serve the development suite; the harness
+  (`e2e_suite/harness/dbctl.py`) starts and resets them. Node 22 runs the Node apps.

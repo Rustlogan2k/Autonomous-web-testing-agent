@@ -1,120 +1,180 @@
-# Semantic-Aware Web Testing Agent
+# RL-based Automated Web Testing Agent
 
-An **RL-based automated functional tester for web applications**, with a **dynamic LLM
-reward** and a **deterministic, verifiable fault oracle**.
+An automated **functional** tester for web applications that uses reinforcement learning.
+It drives a real browser (Playwright) through a live application and explores it, looking
+for faults. A fault counts only when it is **verified** by deterministic means: it must
+replay twice in fresh sessions, be absent from that fault's control build, and survive
+delta-debugging minimisation. A product layer turns a URL, a static site, a Dockerfile
+repository or a bundled test application into a test run with evidence and a report, from
+the command line or a web UI.
 
-A browser environment (Playwright) exposes a live application. A transferable deep RL
-agent explores it. A local language model judges, online, how far each page the agent
-actually reaches has progressed through a task, and that judgment shapes the reward.
-Candidate faults are confirmed only by deterministic means: replay, per-fault controls and
-delta-debugging minimization. A product layer turns a URL, a static site, a Dockerfile
-repository or a benchmark application into an exploration session with evidence and a
-readable report.
+Final-year B.Tech project. Security testing is out of scope.
 
-Final-year B.Tech project. Security testing is out of scope; this is functional testing.
-
-> **Status (2026-10-06).** Both frozen evaluations are complete.
->
-> - **Transfer experiment** (291 jobs): learned agents find planted faults in more runs than non-learning baselines, but pretraining on other applications does not speed up fault discovery, and the LLM reward shows no detectable benefit. The oracle produced no false positives.
-> - **Contextual diagnostic** (228 jobs): the agent's preference for an action does not depend on whether that action is useful in the current state (contextual learning not supported); the memorization hypotheses are inconclusive.
-> - **Application suite**: eight apps admitted with 23/23 faults on the `e2e-suite` branch; Docker checks pending.
->
-> `PROJECT_CONTEXT.md` §0 is the authoritative state of the project.
+> **Status (2026-10-22).** v1 (deep RL, two pre-registered experiments) and the v2 hybrid
+> tester's held-out evaluation are complete and frozen. The 8 development applications have
+> been rebuilt as full-stack apps, with PostgreSQL or MongoDB, sign-in and crash-type faults.
+> **Tuning round v3** on them is running. Next: freeze the tuned tester, then compare it with
+> the published WebExplor / WebRLED results on their subject applications.
+> `PROJECT_CONTEXT.md` §0 is the authoritative project state.
 
 ---
 
 ## How it works
 
 ```
- application (URL / static site / Dockerfile repo / benchmark app)
+ application (URL / static site / Dockerfile repo / suite app with clean, faulty and control builds)
         │
- Playwright environment ── action registry: clicks, typed value categories, selects,
-        │                  toggles, navigation; ≤100 actions per page, no ids or slots
+ Playwright environment ── fresh browser context per episode; sign-in macro for apps behind login
+        │                   action registry: clicks, typed value categories, selects, toggles,
+        │                   ARIA/onclick "custom clickables" (optional)
         ▼
- features v3.1 ── 95-d per action (type, MiniLM-PCA label, role, flags, value category,
-        │          history), 25-d state (episode history, page composition, form fill,
-        │          LLM history)
+ page abstraction ("cell") ── page kind, path template, heading, form fill, alert, submit offered
         ▼
- Q(s,a): action-conditioned dueling Double DQN — one scorer shared by every action,
-        │ a zero-initialised residual head for adaptation, prioritized 3-step replay,
-        │ ε-exploration guided by a fixed search priority
+ archive of cells (Go-Explore) ── choose by novelty / untried options / depth, return by exact replay
         ▼
- reward = environment terms (count-decayed novelty, capped gate reveals, costs, triggers)
-        + dynamic LLM terms (episodic progress record + outcome bonus; qwen2.5:7b-instruct,
-          temperature 0, rendered-page snapshot, content-addressed cache, live on misses)
+ test operator from standard test design ── complete the step, each dropdown option, invalid
+        │                                    input, edit after review, back/reload and resume,
+        │                                    double submit, collection churn, browse a list
         ▼
- seeded-fault oracle — declarative assertions on recorded pages; a candidate is confirmed
- only if it reproduces twice, does NOT occur on the build without that fault's own patch,
- and survives ddmin minimization → evidence, replay trace, report
+ decision layer (the learning part) ── Thompson-sampling bandit over operators, or count-based
+        │                               curiosity Q-learning over page transitions, or none
+        ▼
+ oracle ── seeded faults: replay ×2, per-fault control build, ddmin → evidence + report
+           crash faults: console / page / failed-request errors attributed the same way
+           specification-free invariants (reload stability etc.): reported separately
 ```
 
-`docs/llm_reward.md` specifies exactly what the model sees, what it judges, how that
-becomes reward, caching, failure behaviour and validation.
+The v1 learner it grew out of is still runnable as an arm. It is an action-conditioned
+dueling Double DQN, Q(s, φ(a)), with prioritised 3-step replay, a residual adaptation head,
+search-guided ε-exploration and an optional LLM progress reward (`qwen2.5:7b-instruct`).
 
-## What is built
+## Agents (arms)
 
-| Part | Code | Notes |
+| Agent | Learning | Where it stands |
 |---|---|---|
-| Browser environment, action registry, deterministic triggers | `src/web_testing_agent/envs/` | headless Chromium; fresh context per episode |
-| Learner (DQN and contextual-bandit variants) | `src/web_testing_agent/rl/` | permutation-equivariant; transfer via residual head |
-| Dynamic LLM progress reward | `src/web_testing_agent/reward/progress.py`, `rl/reward.py` | prompt `progress-v3`; never sees faults |
-| Seeded-fault oracle | `src/web_testing_agent/oracle/` | 8 assertion kinds, per-fault controls, replay, ddmin |
-| Six-application benchmark + admission validator | `tests/fixtures/benchmark/`, `src/web_testing_agent/benchmark/` | 12 faults, 5 classes; `reports/benchmark_suite.md` |
-| Transfer experiment (resumable, parallel, top-up rule) | `src/web_testing_agent/experiments/transfer.py` | `scripts/run_transfer.py`, `scripts/analyze_transfer.py` |
-| Contextual diagnostic (generated app family, probes, masked arms) | `src/web_testing_agent/ctxbench/`, `tests/fixtures/ctxbench/` | `python -m web_testing_agent.ctxbench.runner`, `.probe_eval`, `.analyze` |
-| Product tester | `src/web_testing_agent/tester/` | URL / site / repo / benchmark → `report.md` + `report.html` + evidence |
-| Web UI | `src/web_testing_agent/app/` | sessions, uploads, live progress, reports |
-| Repository intake (sandboxed build and run) | `src/web_testing_agent/intake/` | Dockerfile repos; Compose refused by policy |
-| Cloud launcher | `cloud/aws/` | restricted IAM, spot only, hard cap, self-termination, S3 sync |
+| `v1_dqn_pretrained` | AC-DQN pretrained on the 6 benchmark apps, adapting online | held-out: 34/40 runs, lowest mean time to first fault |
+| `hybrid_bandit` | hybrid tester + Thompson-sampling operator bandit | held-out: 34/40 runs, most distinct faults (19/24) |
+| `hybrid_curiosity` (`dev_v3_curiosity`) | hybrid tester + count-based curiosity Q-learning | tuning round v3 |
+| `hybrid_nolearn` | hybrid tester, untried operators in turn, no learner | held-out primary arm: 30/40 runs, 18/24 faults |
+| `random` | uniform over valid actions | the baseline: 32/40 runs, 13/24 faults |
+
+The web UI offers the RL agents and random. Development-only arms (`dev_*`) are defined in
+`src/web_testing_agent/hybrid/run.py`.
+
+## Results so far
+
+| # | Question | Result | Status |
+|---|---|---|---|
+| 1 | Does pretraining an RL tester on other apps help on a new app? (v1, 6 apps, 210 runs) | No: pretrained − scratch median Δ 0 [−749, +290], p = 0.53 | pre-registered, frozen |
+| 2 | Does the v1 network learn which action helps in which state? (228 jobs) | Not supported: within-label AUROC 0.51 (rule ≥ 0.70) | pre-registered, frozen |
+| 3 | Does the LLM progress reward point at faults? | Only on the apps it was tuned on (AUROC 1.00 vs 0.38–0.73) | post-hoc |
+| 4 | Can a local LLM label pages and controls reliably? | No: gates failed (0.68/0.78; 0.61/0.75 on fresh pages) | gated in advance |
+| 5 | Does a learner help on top of the hybrid tester? (development, 5 rounds, 7 variants) | Not distinguishable from no learner | development |
+| 6 | Does curiosity-driven RL (WebExplor/WebRLED components) find functional faults? | At random level (17/42 vs 18/42) | development |
+| 7 | **Held-out** (8 unseen apps, 160 runs + 32 clean controls): hybrid vs random, vs v1 AC-DQN, bandit vs none | **All four comparisons inconclusive.** Hybrid arms verified the most distinct faults (19, 18 of 24 vs random 13), including 9 no random run found; 0 false positives | pre-registered (tag `v2-eval-freeze`), frozen |
+
+Held-out per arm:
+
+| Arm | Runs that found a fault | Restricted mean time | Distinct faults (of 24) | Clean-build false positives |
+|---|---|---|---|---|
+| `v1_dqn_pretrained` | 34/40 | **595** | 17 | 0/8 |
+| `hybrid_nolearn` | 30/40 | 737 | 18 | 0/8 |
+| `hybrid_bandit` | 34/40 | 769 | **19** | 0/8 |
+| `random` | 32/40 | 978 | 13 | 0/8 |
+
+The held-out evaluation exposed one blind spot, list paging (skylark's "Load more"). It led
+to the `browse_list` operator now being tuned.
+
+The result files are `reports/transfer_final.json`, `reports/contextual_diagnostic.json`,
+`reports/v2_evaluation.json` and `runs/*/results/`. The web UI's **Evaluation** page shows
+every arm and round live from these files.
+
+## Test applications
+
+| Set | Apps | Role |
+|---|---|---|
+| Benchmark (`tests/fixtures/benchmark/`) | 6 small apps, 12 seeded faults | v1 experiments; development for v2 |
+| Development suite (`e2e_suite/apps/`) | tidewater, clinicflow, stackroom, ledgerly (PostgreSQL); bagstreet, helpline, orbit, wayfarer (MongoDB) | tuning. Full stack with sign-in (clinicflow, helpline, wayfarer, ledgerly and bagstreet enlarged to ≥ 12 views and ≥ 3 CRUD entities); 41 seeded faults, 8 of them crash-type (orbit, helpline, stackroom, wayfarer) |
+| Validation suite (`validation_suite/apps/`) | dutyday, fosterly, larder, markbook, quizcraft, sideline, skylark, tally | held-out evaluation (frozen as evaluated); 24 faults |
+| External (planned) | the WebExplor / WebRLED subject apps | final comparison with published numbers. Nobody looks at them before the tuned tester is frozen |
+
+Every suite app has a clean build, a build with all faults, and one control build per fault.
+Each must pass mechanical admission (witness, control, replay, minimisation, benign traces,
+a clean random walk, database contract, Docker build) before any agent runs on it. The
+database drivers are vendored (`e2e_suite/vendor/`), so builds need no network.
 
 ## Quick start
 
-Requirements: Python 3.11, the packages in `requirements.txt`, Playwright Chromium
-(`python -m playwright install chromium`), and for the LLM reward,
-[Ollama](https://ollama.com) with `qwen2.5:7b-instruct`. Docker is needed only for
-repository uploads and container builds.
+Requirements: Python 3.11 and Playwright Chromium. Node.js 22 is needed for the Node suite
+apps, and PostgreSQL and MongoDB (or Docker) for the development suite. Ollama with
+`qwen2.5:7b-instruct` is optional, only for the LLM components. Docker is optional, for
+repository uploads and container checks.
 
 ```bash
-pip install -r requirements.txt && pip install -e .
-python -m playwright install chromium
-ollama pull qwen2.5:7b-instruct          # optional: without it, use --no-llm
+python -m venv venv
+./venv/Scripts/python.exe -m pip install -r requirements.txt
+./venv/Scripts/python.exe -m pip install -e .
+./venv/Scripts/python.exe -m playwright install chromium
+ollama pull qwen2.5:7b-instruct            # optional
+./venv/Scripts/python.exe -m pytest tests -q   # ~1,300 tests; browser/Docker/torch tests skip when unavailable
 ```
-
-### Test an application
-
-```bash
-python scripts/test_app.py --url https://example.org/            # a live site
-python scripts/test_app.py --site "demo app/www"                 # a static site (folder or .zip)
-python scripts/test_app.py --repo path/to/repo                   # a repository with a Dockerfile
-python scripts/test_app.py --benchmark booking_desk              # a benchmark application
-```
-
-Options: `--budget` (interactions, default 600), `--agent rl|search|random`, `--no-llm`,
-and `--login-steps FILE` (scripted steps run at the start of every episode, for
-applications behind a login). The run writes `session.json`, `report.md`, `report.html`,
-`reward_log.jsonl` and `evidence/` under `reports/sessions/`.
 
 ### Web UI
 
 ```bash
-python -m web_testing_agent.app          # http://127.0.0.1:8000
+./venv/Scripts/python.exe -m web_testing_agent.app      # http://127.0.0.1:8000
 ```
 
-New Test → a demo, a live URL, or an upload (a static site, or a Dockerfile repository
-when Docker is running). It binds to localhost by default, because it builds and runs
-user-supplied code.
+New Test → a demo app, a live URL, or an upload (a static site, or a Dockerfile repository
+while Docker is running). Pick an agent, watch the live event stream, then open or download
+the report (HTML, Markdown, JSON). Evaluation shows the research results. It binds to
+localhost because it builds and runs uploaded code.
 
-### Benchmark and experiment
+### Command-line tester
 
 ```bash
-python scripts/validate_benchmark.py --help        # admission checks per application
-python scripts/benchmark_report.py --validation <dir>
-python scripts/run_transfer.py --out-dir runs/dev --folds shop_catalog --arms search_S dqn_scratch --seeds 0 --budget 1000
-python scripts/analyze_transfer.py runs/<run> --out reports/<name>
+./venv/Scripts/python.exe scripts/test_app.py --url https://example.org/
+./venv/Scripts/python.exe scripts/test_app.py --site "demo app/www"
+./venv/Scripts/python.exe scripts/test_app.py --repo path/to/repo
+./venv/Scripts/python.exe scripts/test_app.py --benchmark booking_desk
 ```
 
-`run_transfer.py` is resumable: rerunning the same command skips every finished job. It
-refuses to start on applications that `reports/benchmark_validation.json` does not admit.
+Options: `--budget N`, `--agent`, `--no-llm`, `--login-steps FILE`, `--seed N`, `--out DIR`.
+
+### Hybrid tester runs (development and evaluation)
+
+```bash
+# Hunts: any benchmark or suite apps by name, several arms and seeds (resumable)
+./venv/Scripts/python.exe -m web_testing_agent.hybrid.run --out-dir runs/v3-tune \
+    --apps orbit helpline stackroom wayfarer tidewater clinicflow bagstreet ledgerly \
+    --arms random hybrid_bandit v1_dqn_pretrained dev_v3_curiosity --seeds 0 1 2 --workers 3
+#   add --clean for clean-build control runs
+
+# Survival analysis per arm and app (the held-out protocol is frozen as freeze-2026-10-08)
+./venv/Scripts/python.exe -m web_testing_agent.hybrid.analyze --runs runs/v2-eval \
+    --out reports/v2_evaluation --protocol freeze-2026-10-08
+```
+
+Each result records verified faults, unique failures (error signatures) and V8 JavaScript
+coverage.
+
+### Suite admission (no agent)
+
+```bash
+./venv/Scripts/python.exe -m e2e_suite.harness.validate_suite --browser            # add --docker
+WTA_SUITE_ROOT=validation_suite ./venv/Scripts/python.exe -m e2e_suite.harness.validate_suite --apps dutyday --browser
+```
+
+### v1 experiments
+
+```bash
+./venv/Scripts/python.exe scripts/run_transfer.py --out-dir runs/dev --folds shop_catalog --arms search_S dqn_scratch --seeds 0 --budget 1000
+./venv/Scripts/python.exe scripts/analyze_transfer.py runs/<run> --out reports/<name>
+./venv/Scripts/python.exe -m web_testing_agent.ctxbench.runner --out-dir runs/ctx-main --workers 4
+```
+
+The v1 AC-DQN checkpoints are loaded from `runs/final-cpu-*/checkpoints`. They are not in
+git; copy them from the machine that ran the experiment.
 
 ### Docker image
 
@@ -123,100 +183,53 @@ docker build -t web-testing-agent .
 docker run --rm -p 8000:8000 -e OLLAMA_HOST=http://host.docker.internal:11434 web-testing-agent
 ```
 
-CPU-only torch is pinned in the image; dependency versions match `docker/requirements-runtime.txt`.
+### Practical notes
 
-## Results
-
-### Transfer experiment (pre-registered, complete)
-
-**Question:** does pretraining on five applications make verified-fault discovery on a
-held-out sixth faster than learning from scratch, against information-matched non-learning
-baselines, and with or without the dynamic LLM reward?
-
-- **Method:** `docs/methodology/2026-09-18-transfer-preregistration.md` and amendments
-  `2026-10-01` and `2026-10-03` (all before the run). Ten arms; 2,000 interactions per hunt;
-  seeds 0–2 with a mechanical top-up; per-fold paired difference in time to first verified
-  fault (median across folds, fold bootstrap) and stratified log-rank; all six folds and the
-  four pristine folds reported.
-- **Run:** 291 jobs, 0 failures; LLM arms on a local RTX 4050, non-LLM arms on four AWS spot
-  instances (≈ $1.6 of the $20 cap).
-
-| Comparison | All folds | Pristine folds |
-|---|---|---|
-| Pretrained vs scratch DQN (primary) | median Δ +0 [−749, +290], p = 0.53 | −310, p = 0.66 |
-| Pretrained vs scratch bandit | −280 [−732, +188], p = 0.086 | −280, p = 0.11 |
-| With vs without LLM reward | +17 (p = 0.75); −57 (p = 0.62) | — |
-| Pretrained DQN vs search_A0 / random | p = 0.006 / 0.02 | p = 0.23 / 0.53 |
-
-Faults found per run: pretrained bandit 42%, both DQN arms 33%, feature search 17%, random
-11%, hand-priority search 6%. No verified finding on any fault-free build. Full output:
-`reports/transfer_final.md` and `reports/transfer_final_addendum.md`.
-
-### Contextual diagnostic (pre-registered, complete, reported separately)
-
-Does the policy rank an action by the state it is in, or has it memorized actions, words or
-layouts? Twelve generated variants of one workflow vary vocabulary (including pseudo-words),
-workflow structure and decoys; four agent arms differ only in which inputs the network sees.
-
-| Hypothesis | Verdict |
-|---|---|
-| Genuine state–action contextual learning | **not supported** (within-label AUROC 0.51, needed ≥ 0.70) |
-| Action / lexical / application memorization | inconclusive (three seeds; wide intervals) |
-
-The learned arms that see the state find the faults on held-out variants in 19–20 of 24
-runs, against 2 of 24 for search and random; the arm that never sees labels does as well as
-the full one. Full output: `reports/contextual_diagnostic.md`.
+- **Long runs on a Windows laptop:** Modern Standby suspends processes when the lid closes
+  or the screen sleeps. Stay plugged in, turn the screen timeout off and set lid-close to "do
+  nothing". Every runner is resumable: rerunning the command skips finished jobs.
+- Never edit `src/` while a round is starting jobs, because each job imports the code when
+  it starts. Use a git worktree instead.
+- AWS (`cloud/aws/`): restricted IAM user only, spot instances, hard $20 cap,
+  self-terminating workers.
 
 ## Claim limits
 
-These are stated up front:
-
-- **Context:** the agent's state has no page semantics (no heading, text or URL). The diagnostic found no state–action contextual learning; claims are limited to in-application, state-driven learning.
-- **Generalization:** six applications from one design contract support at most within-family results, and pretraining showed no transfer benefit. There is no zero-shot or real-world generalization claim.
-- **LLM reward:** its contribution comes only from the frozen LLM-vs-no-LLM ablations, which show no detectable benefit.
-- **Product:** repository intake requires a Dockerfile. Without a specification, findings on arbitrary applications rest on generic triggers and an LLM review marked unverified. The seeded-fault oracle verifies only declared faults.
-- **Disclosures:** representation leakage paths and pre-run exposure of the held-out applications are recorded in `PROJECT_CONTEXT.md` §0.4.
-
-## End-to-end application suite (branch `e2e-suite`)
-
-Eight small, genuinely different web applications with real backends: tidewater
-(banking SPA), bagstreet (server-rendered shop), helpline (fragment-updated support desk),
-clinicflow (branching booking wizard), orbit (modal-heavy kanban), ledgerly (multi-role
-expenses), stackroom (inventory data grid) and wayfarer (draft/seal trip planner, with no
-Dockerfile by design).
-
-They have zero dependencies, run offline and are deterministic. Each ships seeded faults
-that must pass mechanical admission: witness, per-fault control, replay, minimization,
-benign traces, and a clean random walk. All eight are admitted (23/23 faults); the Docker
-checks are pending. The suite is a testbed for the product and is kept separate from the
-frozen experiment. See `e2e_suite/CONVENTIONS.md` and `e2e_suite/admission/suite.md` on
-that branch.
+- **No transfer claim for v1**, and no state–action contextual learning (Experiments 1–2).
+- **Learner:** on functional faults, no learning component has been shown to beat the
+  hybrid tester's structure (abstraction, archive with exact returns, test operators).
+- **Held-out:** every pre-registered comparison is inconclusive. The descriptive advantages
+  above are not significance claims.
+- **Generalisation:** the suite apps and seeded faults were built by the same developer as
+  the tester (disclosed). The external WebExplor/WebRLED comparison is what addresses this.
+- **LLM:** the progress reward and the page labeller did not generalise beyond their tuning
+  data, so the LLM is not on the decision path.
+- Tuning-round results (v3) are development data, never evidence.
 
 ## Repository map
 
 ```
-src/web_testing_agent/   envs, rl, reward, oracle, benchmark, experiments, ctxbench, tester, app, intake
-scripts/                 test_app, run_transfer, analyze_transfer, validate_benchmark, warm_caches, ...
-tests/                   unit tests; fixtures (benchmark apps, ctxbench variants and probes, demo sites)
-docs/                    methodology (pre-registrations), llm_reward, literature_review, benchmark contract
-reports/                 experiment and diagnostic results, benchmark validation, development evidence
-cloud/aws/               launcher, IAM policies, setup guide
+src/web_testing_agent/   envs, rl (v1 AC-DQN), reward, oracle, benchmark, experiments, ctxbench,
+                         hybrid (v2 tester, runner, analysis, metrics), tester, app (web UI), intake
+e2e_suite/               development suite: apps, harness (builds, admission, DB control), vendored drivers
+validation_suite/        held-out validation apps and their admission reports
+tests/                   unit tests and fixtures (benchmark apps, ctxbench variants, demo sites)
+scripts/                 command-line entry points and v1 analyses
+reports/                 result files (JSON) of every experiment and evaluation
+docs/references/         bibliography (references.bib)
+cloud/aws/               launcher and IAM policies
 PROJECT_CONTEXT.md       authoritative project state and full decision history
 ```
 
-## Tests
-
-```bash
-python -m pytest tests -q
-```
-
-About 1,240 tests. Browser-, Docker- and torch-dependent modules are skipped automatically
-when those are unavailable.
+Earlier documents were removed on 2026-10-22: the pre-registrations, mentor reports,
+literature review, suite plans and Markdown reports. They are preserved at git tag
+`docs-archive-2026-10-22`, for example
+`git show docs-archive-2026-10-22:docs/methodology/hybrid-v2-evaluation-preregistration.md`.
 
 ## Stack
 
-Python 3.11, Playwright, PyTorch, sentence-transformers (MiniLM), Ollama (qwen2.5:7b-instruct),
-FastAPI, SQLite, Docker, AWS (EC2 spot, S3).
+Python 3.11, Playwright, PyTorch, sentence-transformers (MiniLM), Ollama
+(qwen2.5:7b-instruct), FastAPI, PostgreSQL, MongoDB, Node.js, Docker, AWS (EC2 spot, S3).
 
 ## License
 

@@ -138,11 +138,21 @@ docs/references/pdf/
 # Per-process shards of the semantic label cache (regenerable).
 models/semantic/label_store/
 
-# Per-process shards of the LLM judgment cache; `compact()` merges them into
-# data/llm_cache/progress.jsonl, which is tracked.
-data/llm_cache/progress.shard.*.jsonl
+# The LLM judgment and label caches (per-process shards plus the compacted
+# progress.jsonl): machine-local and regenerable from the local model.
+data/llm_cache/
 
 # Experiment working directories: raw per-job results, checkpoints, reward logs.
 # Final analyses are written to reports/ and committed from there.
 runs/
 runs_*.log
+
+# Documentation lives in README.md and PROJECT_CONTEXT.md only (cleanup 2026-10-22; the
+# earlier documents are at tag docs-archive-2026-10-22). Analyses still write Markdown
+# beside their JSON; the JSON is the committed result.
+reports/**/*.md
+e2e_suite/admission/*.md
+validation_suite/admission/*.md
+
+# Gradle caches created when the manifest fixtures are opened in an IDE.
+.gradle/
