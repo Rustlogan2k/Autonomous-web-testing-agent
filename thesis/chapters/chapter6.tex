@@ -103,11 +103,21 @@ tally & a club election by ranked ballot & Node.js, JSON files & 3 \\
 \label{sec:external}
 
 To compare with published RL web testers on their own ground, the final evaluation uses the
-subject applications of WebExplor~\cite{zheng2021webexplor} and WebRLED~\cite{gu2025webrled}.
-These are open-source web applications that the WebRLED paper evaluates with branch coverage
-and failure counts over one-hour runs. To keep the comparison honest, nobody looked at these
-applications before the re-tuned tester was frozen. \pending{Subject applications set up,
-instrumentation for coverage and failures, and the pre-registered comparison.}
+six subject applications of WebExplor~\cite{zheng2021webexplor}, which WebRLED's first
+benchmark~\cite{gu2025webrled} also uses:
+\begin{itemize}[noitemsep]
+  \item Dimeshift, an expense tracker;
+  \item Pagekit, a content management system, tested in its admin area;
+  \item Splittypie, which splits bills;
+  \item Phoenix, a Trello clone;
+  \item Retroboard, a retrospective board;
+  \item Petclinic, the Spring demonstration application.
+\end{itemize}
+They are open-source applications not written by this project. They run from the Docker
+images of the DIG replication material~\cite{biagiola2019diversity}, which instrument the
+client JavaScript with Istanbul, so branch coverage is measured the way the papers measured
+it. To keep the comparison honest, nobody looked at these applications before the re-tuned
+tester was frozen and the comparison pre-registered (Section~\ref{sec:extresults}).
 
 \section{Admission}
 \label{sec:admission}

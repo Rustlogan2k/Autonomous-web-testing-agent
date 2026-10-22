@@ -174,27 +174,121 @@ and are not evidence of generalisation.
 
 \subsection{Results}
 
-\pending{Per-arm table: runs that found a fault, RMST, distinct faults, unique failures per
-run, JavaScript coverage; matched comparisons against \code{hybrid\_nolearn}; per-app
-breakdown; crash-type faults found.}
+All 192 runs completed, none failed. Table~\ref{tab:tuning-arms} summarises each arm.
+Table~\ref{tab:tuning-matched} compares each arm with \code{hybrid\_nolearn} on matched
+(application, seed) pairs.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Tuning round v3 per arm: 24 runs each on the eight rebuilt development
+applications, which hold 41 seeded faults (8 of them crash-type).}
+\label{tab:tuning-arms}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Arm & Found a fault & RMST & Distinct faults & Crash faults & Unique failures / run & JS coverage \\
+\midrule
+\code{dev\_v3\_failfeedback} & 21 / 24 & \textbf{450} & 19 / 41 & 3 / 8 & 3.79 & 0.893 \\
+\code{random} & \textbf{23} / 24 & 498 & 19 / 41 & 1 / 8 & 5.38 & 0.861 \\
+\code{dev\_v3\_browse} & 20 / 24 & 545 & 19 / 41 & 3 / 8 & 3.12 & 0.885 \\
+\code{hybrid\_nolearn} & 21 / 24 & 560 & 19 / 41 & \textbf{4} / 8 & 2.88 & 0.896 \\
+\code{v1\_dqn\_pretrained} & 20 / 24 & 564 & 19 / 41 & 2 / 8 & 4.75 & \textbf{0.909} \\
+\code{dev\_v3\_clickables} & 19 / 24 & 638 & 17 / 41 & 3 / 8 & 2.50 & 0.891 \\
+\code{dev\_v3\_curiosity} & 20 / 24 & 650 & 16 / 41 & 2 / 8 & \textbf{5.67} & 0.894 \\
+\code{hybrid\_bandit} & 19 / 24 & 692 & 16 / 41 & 3 / 8 & 2.83 & 0.896 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Tuning round v3 against \code{hybrid\_nolearn}: per-application mean difference in
+$T$ (negative = faster), median over applications with a 95\% bootstrap interval. Apps
+with no difference are not counted as faster or slower.}
+\label{tab:tuning-matched}
+\begin{tabular}{@{}lrrc@{}}
+\toprule
+Arm & Median & 95\% interval & Apps faster / slower \\
+\midrule
+\code{dev\_v3\_browse} & $-20$ & $[-79, 0]$ & 6 / 1 \\
+\code{dev\_v3\_failfeedback} & 0 & $[-379, 0]$ & 3 / 1 \\
+\code{random} & $-18$ & $[-285, +186]$ & 5 / 3 \\
+\code{v1\_dqn\_pretrained} & $-45$ & $[-182, +265]$ & 5 / 3 \\
+\code{dev\_v3\_clickables} & 0 & $[0, +286]$ & 0 / 3 \\
+\code{dev\_v3\_curiosity} & $+43$ & $[-248, +549]$ & 4 / 4 \\
+\code{hybrid\_bandit} & $+140$ & $[+112, +416]$ & 1 / 7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading.}
+\begin{itemize}
+  \item \textbf{\code{browse\_list} helps consistently but modestly.} It was faster on six of
+        seven applications and slower on one, and lost no fault.
+  \item \textbf{Failure feedback gave the best restricted mean time} (450).
+  \item \textbf{Custom clickables did not help.} They were never faster, and verified fewer
+        distinct faults.
+  \item \textbf{The bandit was slower than no learner} on seven of eight applications. Its
+        interval excludes zero.
+  \item \textbf{Curiosity Q-learning triggered the most unique browser errors} (5.67 per
+        run) but verified fewer seeded faults.
+  \item \textbf{Random exploration was strong on these applications.} It found a fault in 23
+        of 24 runs and triggered many errors, but verified only one crash-type fault.
+  \item \textbf{The rebuilt applications are hard.} 15 of the 41 faults were verified by no
+        arm.
+\end{itemize}
 
 \subsection{Configuration chosen}
 
-\pending{The configuration frozen for the external comparison, and why.}
+The two options that did not hurt any measure, \code{browse\_list} and failure feedback,
+were combined (\code{dev\_v3\_combined}) and checked in 24 further runs on the same
+applications and seeds before freezing. The combination found a fault in 22 of 24 runs,
+with restricted mean $T$ 465. It verified 22 of the 41 faults, more than any single arm, and
+4 of the 8 crash-type faults. Against \code{hybrid\_nolearn} it was faster on six of seven
+applications (median $-52$, interval $[-145, 0]$). It was frozen as \code{hybrid\_final},
+and the commit was tagged before anyone looked at the external benchmark's applications.
+Custom clickables and the bandit were not adopted.
 
 \section{Comparison with WebExplor and WebRLED}
 \label{sec:extresults}
 
 \subsection{Design}
 
-The WebRLED paper~\cite{gu2025webrled} reports, on its web subject applications with
-one-hour runs and five repetitions, an average branch coverage of 55.5\% and 3.1 failures for
-WebExplor, and 64.2\% and 4.1 failures for WebRLED. Its failures are console errors,
-deduplicated by hand. The comparison here runs the frozen re-tuned tester on the same
-subject applications under the same time budget.
-\pending{Pre-registered comparison: applications, repetitions, how branch coverage and
-failures are measured and deduplicated here, and how differences in measurement are
-handled.}
+The WebRLED paper~\cite{gu2025webrled} reports results on WebExplor's six subject
+applications (Dimeshift, Pagekit, Splittypie, Phoenix, Retroboard and Petclinic), with
+one-hour runs and five repetitions. WebExplor averaged 55.54\% client-side branch coverage
+and 3.1 failures; WebRLED averaged 64.18\% and 4.1. Coverage was measured with Istanbul on
+the instrumented client code. Failures were console errors, deduplicated by hand.
+
+The comparison was pre-registered when \code{hybrid\_final} was frozen, before anyone
+looked at the subject applications.
+\begin{itemize}
+  \item \textbf{Applications.} The same six applications, from the Docker images of the
+        DIG replication material~\cite{biagiola2019diversity}, which WebExplor's benchmark
+        reuses. Each image instruments its client JavaScript with Istanbul before the
+        application starts.
+  \item \textbf{Arms.} \code{hybrid\_final}; the hybrid with curiosity Q-learning, the RL
+        arm closest to WebExplor and WebRLED; and random.
+  \item \textbf{Runs.} One hour of wall-clock time per run, three repetitions (seeds 0--2),
+        and a fresh application instance per run, so $3 \times 6 \times 3 = 54$ runs.
+  \item \textbf{Measures.} Branch coverage of the instrumented client code, read from
+        Istanbul's counters after every step and unioned over the run; and unique failures,
+        meaning console errors, page errors and failed requests, deduplicated automatically
+        by kind, page and normalised message.
+  \item \textbf{Analysis.} A descriptive comparison with the published averages, with no
+        significance test against numbers from other machines and runs, and a per-application
+        comparison between our arms.
+\end{itemize}
+
+Two decisions were made during set-up and recorded before any run. First, Pagekit and
+Phoenix start with a sign-in macro using their documented accounts. Second, requests to a
+development live-reload server and to web analytics, which the images' pages make, are
+answered with an empty response. Left alone, they would add the same console failure to
+every run of every arm. Two differences from the published protocol remain and are
+reported: three repetitions instead of five, and automatic instead of manual deduplication
+of failures.
 
 \subsection{Results}
 
