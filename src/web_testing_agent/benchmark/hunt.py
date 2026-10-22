@@ -75,6 +75,8 @@ class HuntResult:
     verify_seconds: float = 0.0
     wall_clock_s: float = 0.0
     steps_per_second: float = 0.0
+    #: What ended the run: the interaction budget, or the wall-clock limit (`deadline_s`).
+    stopped_by: str = "budget"
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -86,8 +88,13 @@ _TRACKED_COMPONENTS = ("step_cost", "novelty_bonus", "reveal_bonus", "exploratio
 
 
 def run_hunt(env, policy: HuntPolicy, monitor: FaultMonitor, *, budget: int,
-             on_step: Callable[[dict], None] | None = None) -> HuntResult:
+             on_step: Callable[[dict], None] | None = None,
+             deadline_s: float | None = None) -> HuntResult:
     """Run `policy` on `env` for `budget` interactions with `monitor` checking every step.
+
+    `deadline_s` adds a wall-clock limit, for comparisons with tools evaluated on a time
+    budget (the external benchmark's one-hour runs); the run stops at whichever comes first.
+    Without it the run is budgeted in interactions only, exactly as before.
 
     `on_step` receives a small per-step dict (`step`, `episode`, `reward`, `state_key`,
     `action`, `info`) and exists for reward logging and traces; it must not mutate `info`.
@@ -99,7 +106,15 @@ def run_hunt(env, policy: HuntPolicy, monitor: FaultMonitor, *, budget: int,
     learn = getattr(policy, "observe_transition", None)
     started = time.monotonic()
 
-    while result.steps < budget:
+    def running() -> bool:
+        if result.steps >= budget:
+            return False
+        if deadline_s is not None and time.monotonic() - started >= deadline_s:
+            result.stopped_by = "deadline"
+            return False
+        return True
+
+    while running():
         observation, info = env.reset()
         policy.reset()
         monitor.start_episode(info)
@@ -109,7 +124,7 @@ def run_hunt(env, policy: HuntPolicy, monitor: FaultMonitor, *, budget: int,
         result.episodes += 1
         seen_states.add(info.get("state_key", ""))
 
-        while result.steps < budget:
+        while running():
             available: list[ActionSpec] = list(info.get("action_specs") or [])
             state_before = info.get("state_key", "")
             action = int(policy.act(observation, info))
