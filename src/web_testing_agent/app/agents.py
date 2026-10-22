@@ -1,17 +1,18 @@
 """Which exploration policies the product offers.
 
-The product offers exactly the four agents of the held-out evaluation, so what a user runs
-is what was measured. Each is built by `tester.session.build_agent` from the frozen
-evaluation's own configuration and checkpoints; the UI renders whatever
-`available_agents()` returns.
+The product offers the project's reinforcement-learning agents and the random baseline they
+are measured against, so a user can watch each learner on an application of their own. Each
+is built by `tester.session.build_agent` from the experiments' own configuration and
+checkpoints; the UI renders whatever `available_agents()` returns.
 
 **Honesty rules enforced here, not in the templates.**
 
 * An agent whose checkpoint is not on disk is offered as *unavailable* with the reason,
   rather than being listed and then failing when chosen.
-* Each summary states the agent's held-out result, so the choice is an informed one.
-* Nothing here trains. Training is an experiment, runs for hours, and is not something a
-  web request may start.
+* Each summary states what is known about the agent's results, so the choice is an
+  informed one.
+* Nothing here trains offline. Pretraining is an experiment, runs for hours, and is not
+  something a web request may start; learners adapt online inside the run only.
 """
 
 from __future__ import annotations
@@ -23,21 +24,20 @@ from .models import AgentChoice
 
 logger = get_logger(__name__)
 
-AGENT_HYBRID = "hybrid_nolearn"
 AGENT_HYBRID_BANDIT = "hybrid_bandit"
+AGENT_HYBRID_CURIOSITY = "hybrid_curiosity"
 AGENT_V1_DQN = "v1_dqn_pretrained"
 AGENT_RANDOM = "random"
 
-#: The product offers exactly the agents of the held-out evaluation
-#: (docs/methodology/hybrid-v2-evaluation-preregistration.md, tag `v2-eval-freeze`), built by
-#: `tester.session.build_agent` as that evaluation built them. The default is the hybrid tester
-#: without a learner: it verified a fault in the most development runs and is the simplest.
-DEFAULT_AGENT = AGENT_HYBRID
+#: The RL agents and the random baseline. The default is the hybrid tester with the bandit
+#: learner: it needs no checkpoint, so it is always available, and it found the most
+#: distinct faults in the held-out evaluation.
+DEFAULT_AGENT = AGENT_HYBRID_BANDIT
 
 #: Every offered agent runs through the test-session path (`tester.run_session`); the key is
 #: also the session's name for it.
-SESSION_AGENTS = {key: key for key in (AGENT_HYBRID, AGENT_HYBRID_BANDIT, AGENT_V1_DQN,
-                                       AGENT_RANDOM)}
+SESSION_AGENTS = {key: key for key in (AGENT_V1_DQN, AGENT_HYBRID_BANDIT,
+                                       AGENT_HYBRID_CURIOSITY, AGENT_RANDOM)}
 
 
 def _torch_available() -> bool:
@@ -59,35 +59,19 @@ def _v1_checkpoint_ok() -> tuple[bool, str]:
 
 
 def available_agents() -> list[AgentChoice]:
-    """The held-out evaluation's four agents, resolved against this machine."""
+    """The RL agents and the random baseline, resolved against this machine."""
     torch_ok = _torch_available()
     checkpoint_ok, why = _v1_checkpoint_ok()
     v1_ok = torch_ok and checkpoint_ok
     return [
         AgentChoice(
-            key=AGENT_HYBRID,
-            name="Hybrid tester (recommended)",
-            summary="Structured exploration: pages abstracted by function, an archive of "
-                    "reached states it returns to exactly, and test operators from standard "
-                    "test design (complete the step, each dropdown option, invalid input, edit "
-                    "after review, back/reload and resume, double submit). Held-out "
-                    "evaluation: verified a fault in 30 of 40 runs, 18 of 24 distinct faults.",
-        ),
-        AgentChoice(
-            key=AGENT_HYBRID_BANDIT,
-            name="Hybrid tester + learner",
-            summary="The hybrid tester with a Thompson-sampling bandit that learns, inside "
-                    "this application, which test operators pay off where. Held-out "
-                    "evaluation: 34 of 40 runs, 19 of 24 distinct faults; not distinguishable "
-                    "from the tester without the learner.",
-        ),
-        AgentChoice(
             key=AGENT_V1_DQN,
-            name="AC-DQN, pretrained (v1)",
-            summary="Action-conditioned dueling double DQN pretrained on the benchmark "
-                    "applications, adapting online through a residual head. Held-out "
-                    "evaluation: 34 of 40 runs, the lowest mean time to a first fault, 17 of "
-                    "24 distinct faults.",
+            name="AC-DQN, pretrained",
+            method="Deep Q-learning",
+            summary="Action-conditioned dueling double DQN (prioritised replay, n-step "
+                    "returns) pretrained on the benchmark applications, adapting online "
+                    "through a residual head. Held-out evaluation: a fault in 34 of 40 runs, "
+                    "the lowest mean time to a first fault, 17 of 24 distinct faults.",
             research_stage=True,
             available=v1_ok,
             unavailable_reason=("" if v1_ok else
@@ -95,11 +79,32 @@ def available_agents() -> list[AgentChoice]:
                                 f"Pretraining checkpoints not on this machine ({why})."),
         ),
         AgentChoice(
+            key=AGENT_HYBRID_BANDIT,
+            name="Hybrid tester + bandit",
+            method="Thompson-sampling bandit",
+            summary="Structured exploration (pages abstracted by function, an archive of "
+                    "reached states it returns to exactly, test operators from standard test "
+                    "design) with a Thompson-sampling bandit that learns, inside this "
+                    "application, which operators pay off where. Held-out evaluation: a "
+                    "fault in 34 of 40 runs, 19 of 24 distinct faults, the most of any agent.",
+        ),
+        AgentChoice(
+            key=AGENT_HYBRID_CURIOSITY,
+            name="Hybrid tester + curiosity",
+            method="Count-based Q-learning",
+            summary="The hybrid tester choosing where to explore with tabular Q-learning "
+                    "over page transitions, rewarded by curiosity (rarely seen transitions "
+                    "and states new to the episode), after WebExplor and WebRLED. A tuning "
+                    "round agent: not part of the held-out evaluation.",
+            research_stage=True,
+        ),
+        AgentChoice(
             key=AGENT_RANDOM,
             name="Random (baseline)",
+            method="No learning",
             summary="Uniform-random over the currently valid actions; the floor every "
-                    "experiment is measured against. Held-out evaluation: 32 of 40 runs, 13 "
-                    "of 24 distinct faults.",
+                    "experiment is measured against. Held-out evaluation: a fault in 32 of 40 "
+                    "runs, 13 of 24 distinct faults.",
         ),
     ]
 

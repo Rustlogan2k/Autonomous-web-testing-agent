@@ -99,13 +99,20 @@ def _llm_available(model: str) -> tuple[bool, str]:
 #: their configuration is read from `hybrid.run.ARMS` at the freeze, never restated.
 FROZEN_HYBRID_AGENTS = ("hybrid_nolearn", "hybrid_bandit")
 
+#: Hybrid agents a session can run, by session key -> `hybrid.run.ARMS` key. The frozen arms
+#: keep their names; `hybrid_curiosity` is tuning round v3's curiosity arm (count-based
+#: Q-learning over page transitions chooses where to explore).
+HYBRID_AGENTS = {**{key: key for key in FROZEN_HYBRID_AGENTS},
+                 "hybrid_curiosity": "dev_v3_curiosity"}
+
 
 def _hybrid_agent(settings: SessionSettings, app_name: str):
     from ..hybrid.learner import BanditPlanner
     from ..hybrid.policy import HybridPolicy
     from ..hybrid.run import ARMS
 
-    spec = ARMS[settings.agent]
+    arm = HYBRID_AGENTS[settings.agent]
+    spec = ARMS[arm]
     policy = HybridPolicy(
         context=app_name,
         seed=settings.seed,
@@ -113,8 +120,12 @@ def _hybrid_agent(settings: SessionSettings, app_name: str):
         episode_steps=settings.episode_steps,
         explore=spec.get("explore", "weighted"),
         depth_bias=float(spec.get("depth_bias", 0.0)),
+        browse=bool(spec.get("browse", False)),
+        failure_bonus=float(spec.get("failure_bonus", 0.0)),
     )
-    return policy, {"agent": settings.agent, "mode": "held-out evaluation configuration"}
+    mode = ("held-out evaluation configuration" if arm in FROZEN_HYBRID_AGENTS
+            else f"tuning-round configuration ({arm})")
+    return policy, {"agent": settings.agent, "mode": mode}
 
 
 def _v1_pretrained_agent(settings: SessionSettings, app_name: str, degradations: list[str]):
@@ -153,7 +164,7 @@ def build_agent(settings: SessionSettings, app_name: str, degradations: list[str
 
     if settings.agent == "random":
         return RandomPolicy(MAX_ACTIONS, seed=settings.seed, valid_only=True), {"agent": "random"}
-    if settings.agent in FROZEN_HYBRID_AGENTS:
+    if settings.agent in HYBRID_AGENTS:
         return _hybrid_agent(settings, app_name)
     if settings.agent == "v1_dqn_pretrained":
         return _v1_pretrained_agent(settings, app_name, degradations)

@@ -68,21 +68,18 @@
 
   <div class="card mt-24">
     <div class="card-head"><h2>How a test runs</h2></div>
-    <div class="card-body">
-      <p class="muted small mb-16">
-        Each stage below is performed by the existing testing system; this interface
-        orchestrates it and reports what happened.
-      </p>
-      <div class="grid cols-3">
+    <div class="card-body tight">
+      <div class="stages">
         {% for title, body in [
-          ('1 · Validate', 'The archive is checked for traversal, symlinks and expansion limits, then the build definition is read and passed through the security policy gate.'),
-          ('2 · Sandbox', 'A container image is built and started with all capabilities dropped, a read-only root filesystem, no new privileges, CPU/memory/PID limits and an internal-only network.'),
-          ('3 · Explore', 'A headless browser drives the application. The selected agent chooses actions from a page-derived, masked action space.'),
-          ('4 · Judge', 'Deterministic triggers watch for console errors, unexpected HTTP failures, stuck pages and broken navigation on every step.'),
-          ('5 · Evidence', 'Page bodies and frames are content-addressed as the run proceeds, so every reported finding can be traced back to what produced it.'),
-          ('6 · Report', 'Verified findings are deduplicated into a report with minimal reproductions, viewable in the browser and downloadable as HTML, Markdown or JSON.')
+          ('Validate', 'The archive is checked for traversal, symlinks and expansion limits, then the build definition is read and passed through the security policy gate.'),
+          ('Sandbox', 'A container image is built and started with all capabilities dropped, a read-only root filesystem, no new privileges, CPU/memory/PID limits and an internal-only network.'),
+          ('Explore', 'A headless browser drives the application. The selected agent chooses actions from a page-derived, masked action space.'),
+          ('Judge', 'Deterministic triggers watch for console errors, unexpected HTTP failures, stuck pages and broken navigation on every step.'),
+          ('Evidence', 'Page bodies and frames are content-addressed as the run proceeds, so every reported finding can be traced back to what produced it.'),
+          ('Report', 'Verified findings are deduplicated into a report with minimal reproductions, viewable in the browser and downloadable as HTML, Markdown or JSON.')
         ] %}
           <div>
+            <span class="n">{{ '%02d' % loop.index }}</span>
             <h3>{{ title }}</h3>
             <p class="muted small mt-8 mb-0">{{ body }}</p>
           </div>

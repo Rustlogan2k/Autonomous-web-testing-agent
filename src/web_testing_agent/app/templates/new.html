@@ -120,19 +120,30 @@
     <span class="small muted">Applies to whichever test you start</span>
   </div>
   <div class="card-body">
-    <div class="grid cols-3">
-      <label class="field">
-        <span class="name">Agent</span>
-        <select id="agent">
-          {% for agent in agents %}
-            <option value="{{ agent.key }}" {{ 'selected' if agent.key == default_agent }}
-                    {{ 'disabled' if not agent.available }}>
-              {{ agent.name }}{% if not agent.available %} — unavailable{% endif %}
-            </option>
-          {% endfor %}
-        </select>
-        <span class="hint" id="agent-hint"></span>
-      </label>
+    <div class="field">
+      <span class="field-label">Agent</span>
+      {#- The cards are the control; the select stays the single source of the chosen value. -#}
+      <div class="agent-picker" role="radiogroup" aria-label="Agent">
+        {% for agent in agents %}
+          <label class="agent-card">
+            <input type="radio" name="agent-card" value="{{ agent.key }}"
+                   {{ 'checked' if agent.key == default_agent }} {{ 'disabled' if not agent.available }}>
+            <span class="agent-name">{{ agent.name }}</span>
+            <span class="agent-method">{{ agent.method }}{% if agent.research_stage %} · research{% endif %}</span>
+            {% if not agent.available %}<span class="agent-unavailable">{{ agent.unavailable_reason }}</span>{% endif %}
+          </label>
+        {% endfor %}
+      </div>
+      <select id="agent" class="hidden" aria-hidden="true" tabindex="-1">
+        {% for agent in agents %}
+          <option value="{{ agent.key }}" {{ 'selected' if agent.key == default_agent }}
+                  {{ 'disabled' if not agent.available }}>{{ agent.name }}</option>
+        {% endfor %}
+      </select>
+      <p class="small muted mt-0" id="agent-hint"></p>
+    </div>
+
+    <div class="grid cols-2">
       <label class="field">
         <span class="name">Interaction budget</span>
         <input type="number" id="budget" value="400" min="50" max="3000" step="50">
@@ -209,6 +220,13 @@
       : chosen.summary + ' — ' + chosen.unavailable_reason;
   }
   document.getElementById('agent').addEventListener('change', describeAgent);
+  document.querySelectorAll('.agent-card input').forEach(function (radio) {
+    radio.addEventListener('change', function () {
+      var select = document.getElementById('agent');
+      select.value = radio.value;
+      select.dispatchEvent(new Event('change'));
+    });
+  });
   describeAgent();
 
   // -- upload ------------------------------------------------------------

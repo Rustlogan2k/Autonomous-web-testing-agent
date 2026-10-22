@@ -5,19 +5,26 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ product_name }}{% endblock %}</title>
+  <link rel="preload" href="/static/fonts/BigShouldersDisplay-800.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/static/fonts/IBMPlexSans-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/fonts/fonts.css">
   <link rel="stylesheet" href="/static/app.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232a6df4'/><text x='16' y='22' font-size='16' font-family='sans-serif' font-weight='700' fill='white' text-anchor='middle'>W</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%231c1a16'/><path d='M4 18h6l3-9 5 15 3-9h7' fill='none' stroke='%23f5a524' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 </head>
 <body>
 <div class="shell">
   <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-mark">W</div>
+    <a class="brand" href="/" style="color: inherit; text-decoration: none">
+      <div class="brand-mark" aria-hidden="true">
+        {#- a probe trace: flat signal, one excursion, flat again -#}
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4"
+             stroke-linecap="round" stroke-linejoin="round"><path d="M3 18h6l3-9 5 15 3-9h9"/></svg>
+      </div>
       <div>
         <div class="brand-name">Autonomous<br>Web Testing</div>
-        <div class="brand-sub">Platform</div>
+        <div class="brand-sub">Test bench</div>
       </div>
-    </div>
+    </a>
 
     <nav class="nav">
       {% set sections = [
@@ -39,6 +46,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                  stroke-linecap="round" stroke-linejoin="round"><path d="{{ path }}"/></svg>
             {{ label }}
+            {% if key == 'runs' %}<span class="key hidden" id="live-count"></span>{% endif %}
           </a>
         {% endfor %}
       {% endfor %}
@@ -46,18 +54,24 @@
 
     <div class="sidebar-foot">
       <div class="row">
-        <span>Research build</span>
+        <span class="mono" id="bench-state">Bench idle</span>
         <button class="btn sm" id="theme-toggle" type="button" title="Toggle theme">◐</button>
       </div>
       <div class="mt-8 faint">
-        Agent development is ongoing. Runtime behaviour reflects the agent selected per run.
+        Research build. Each run uses the agent chosen for it; findings are replayed before
+        they are reported.
       </div>
     </div>
   </aside>
 
   <div class="main">
+    <div class="signal-bar" id="signal-bar" aria-hidden="true"></div>
     <header class="topbar">
       <div>
+        {% set eyebrows = {'dashboard': 'Overview', 'new': 'Configure a run', 'runs': 'Run history',
+                           'run': 'Run', 'report': 'Report', 'findings': 'Verified faults',
+                           'reports': 'Downloads', 'evaluation': 'Research results'} %}
+        <div class="eyebrow">{% block eyebrow %}{{ eyebrows.get(nav, '') }}{% endblock %}</div>
         <h1>{% block heading %}{% endblock %}</h1>
         <div class="sub">{% block subheading %}{% endblock %}</div>
       </div>
@@ -84,6 +98,26 @@
       root.dataset.theme = isDark ? 'light' : 'dark';
       try { localStorage.setItem('wta-theme', root.dataset.theme); } catch (e) {}
     });
+  })();
+
+  // The bench's live signal: the bar under the top bar sweeps and the sidebar shows a
+  // count while any run is active. Polls the stats API; a failed poll leaves it idle.
+  (function () {
+    var bar = document.getElementById('signal-bar');
+    var count = document.getElementById('live-count');
+    var state = document.getElementById('bench-state');
+    function update() {
+      fetch('/api/stats').then(function (r) { return r.ok ? r.json() : null; }).then(function (s) {
+        var live = s ? s.active_runs || 0 : 0;
+        bar.classList.toggle('live', live > 0);
+        count.classList.toggle('hidden', live === 0);
+        count.textContent = live + ' live';
+        state.textContent = live ? live + ' run' + (live > 1 ? 's' : '') + ' live' : 'Bench idle';
+        state.style.color = live ? 'var(--signal)' : '';
+      }).catch(function () {});
+    }
+    update();
+    setInterval(update, 5000);
   })();
 </script>
 {% block scripts %}{% endblock %}
