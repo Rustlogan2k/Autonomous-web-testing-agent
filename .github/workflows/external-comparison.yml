@@ -1,0 +1,84 @@
+# External comparison (PROJECT_CONTEXT §0.8) on GitHub-hosted runners: one job per run, in
+# parallel. A backup to the laptop and AWS runners; started by hand only.
+#
+#   Actions -> "External comparison" -> Run workflow (apps, arms, seeds as space-separated
+#   lists). Each job runs one (app, arm, seed) for the pre-registered one hour and uploads its
+#   result JSON as an artifact named after the job.
+name: External comparison
+
+on:
+  workflow_dispatch:
+    inputs:
+      apps:
+        description: "applications (space-separated, from configs/external_apps.json)"
+        default: "phoenix retroboard petclinic"
+      arms:
+        description: "arms"
+        default: "hybrid_final hybrid_curiosity random"
+      seeds:
+        description: "seeds"
+        default: "0 1 2"
+      time_budget:
+        description: "seconds per run"
+        default: "3600"
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - id: plan
+        env:
+          APPS: ${{ inputs.apps }}
+          ARMS: ${{ inputs.arms }}
+          SEEDS: ${{ inputs.seeds }}
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_OUTPUT"
+          import itertools, json, os
+          runs = [{"app": a, "arm": r, "seed": s} for a, r, s in itertools.product(
+              os.environ["APPS"].split(), os.environ["ARMS"].split(), os.environ["SEEDS"].split())]
+          print("matrix=" + json.dumps({"include": runs}))
+          EOF
+
+  run:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: docker/requirements-runtime.txt
+      - name: Install
+        run: |
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu "torch==2.6.0+cpu" -r docker/requirements-runtime.txt
+          pip install --no-deps -e .
+          python -m playwright install --with-deps chromium
+      - name: Pull the application image
+        run: |
+          IMAGE=$(python -c "import json; print(json.load(open('configs/external_apps.json'))['${{ matrix.app }}']['up'][-2])")
+          docker pull -q "$IMAGE"
+      - name: Run
+        env:
+          WTA_GIT_COMMIT: ${{ github.sha }}
+        run: |
+          python -m web_testing_agent.hybrid.external --out-dir runs/ext-eval-gha \
+            --apps-file configs/external_apps.json --apps ${{ matrix.app }} \
+            --arms ${{ matrix.arm }} --seeds ${{ matrix.seed }} --workers 1 \
+            --time-budget ${{ inputs.time_budget }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ext-${{ matrix.app }}-${{ matrix.arm }}-${{ matrix.seed }}
+          path: runs/ext-eval-gha/results/
+          if-no-files-found: warn
