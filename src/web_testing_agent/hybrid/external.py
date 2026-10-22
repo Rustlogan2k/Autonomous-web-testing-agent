@@ -17,7 +17,8 @@ Applications are described in a JSON file (`--apps-file`), one entry per applica
                    "up": ["docker", "compose", "-f", "...", "up", "-d"],
                    "down": ["docker", "compose", "-f", "...", "down", "-v"],
                    "ready": "http://127.0.0.1:3000/",
-                   "login": [ ...optional setup actions run at every episode start... ]}}
+                   "login": [ ...optional setup actions run at every episode start... ],
+                   "stub": [ ...optional extra hosts to answer with an empty 200... ]}}
 
 Runs of the same application are serialised (one instance per application at a time);
 different applications run in parallel, up to `--workers`.
@@ -109,6 +110,31 @@ def _wait_ready(url: str, timeout: float) -> None:
     raise TimeoutError(f"{url} not ready after {timeout:.0f}s ({last})")
 
 
+#: Hosts that are not part of any subject application but that its pages call: the
+#: development live-reload server some images still reference, and web analytics. Answered
+#: with an empty success so they neither fail (a console error in every run of every arm,
+#: whatever the tester does) nor leave the machine. Extended per application with "stub".
+STUB_HOSTS = ("localhost:35729", "127.0.0.1:35729", "www.google-analytics.com",
+              "analytics.google.com", "www.googletagmanager.com", "stats.g.doubleclick.net")
+
+
+def stub_third_party(env, hosts) -> None:  # noqa: ANN001
+    """Answer requests to `hosts` with an empty 200, on every episode's page."""
+    from urllib.parse import urlsplit
+
+    session = env._browser  # noqa: SLF001 - the session's documented hook
+    previous = session.on_new_page
+    hosts = frozenset(hosts)
+
+    def hook(page) -> None:  # noqa: ANN001
+        if previous is not None:
+            previous(page)
+        page.route(lambda url: urlsplit(url).netloc in hosts,
+                   lambda route: route.fulfill(status=200, body=""))
+
+    session.on_new_page = hook
+
+
 def run_external_job(job: HybridJob, spec: dict, config: ExternalConfig) -> dict:
     """One time-budgeted run of `job.arm` on a fresh instance of the application."""
     from ..benchmark import make_env, run_hunt
@@ -131,6 +157,7 @@ def run_external_job(job: HybridJob, spec: dict, config: ExternalConfig) -> dict
         istanbul = IstanbulCollector()
         coverage.install(env)
         istanbul.install(env)  # chains onto the V8 collector's hook
+        stub_third_party(env, (*STUB_HOSTS, *(spec.get("stub") or ())))
 
         def on_step(event: dict) -> None:
             failures.observe(event["info"], event["step"])

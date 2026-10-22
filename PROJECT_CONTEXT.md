@@ -265,6 +265,23 @@ any result exists.
 **Infrastructure failures.** A job that fails for an infrastructure reason (the application
 does not start, the browser crashes) is rerun unchanged, and the failure is recorded.
 
+**Set-up record (2026-10-23, after the freeze, before any run; no exploration code
+changed).**
+- **Applications:** the DIG/WebExplor Docker images `dockercontainervm/<app>:latest`
+  (FSE'19 DIG replication material, which WebExplor's benchmark reuses), each started with
+  its own `run-code-instrumentation.sh` (nyc instruments the client JavaScript before the
+  app starts). All six run and expose Istanbul counters. Each run uses a fresh container;
+  host ports and commands are in `configs/external_apps.json`.
+- **Sign-in macros:** Pagekit (admin area, `admin` / documented password) and Phoenix (the
+  documented pre-registered user). The other four have no login, or register users
+  in-app.
+- **Third-party requests are stubbed** (`hybrid.external.STUB_HOSTS`): the images' pages
+  call a development live-reload server (`localhost:35729`) and web analytics. Left
+  alone, these add the same console failure to every run of every arm, whatever the
+  tester does. This is a deviation, declared here before any run.
+- **Smoke check:** 2-minute runs on Pagekit, Phoenix and Petclinic confirmed the deadline,
+  coverage collection and failure counting. Those runs are not results.
+
 **Claims.** If `hybrid_final`'s average coverage or failures reach the published WebExplor or
 WebRLED averages, we say so, with the measurement differences above. If they do not, we say
 that too. Either way, the result belongs to `v3-freeze`.

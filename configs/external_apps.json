@@ -1,0 +1,64 @@
+{
+  "dimeshift": {
+    "url": "http://127.0.0.1:18001/",
+    "ready": "http://127.0.0.1:18001/",
+    "up": ["docker", "run", "-d", "-t", "--name", "wta-ext-dimeshift", "--workdir", "/home/dimeshift-application",
+           "-p", "18001:8080", "--entrypoint", "./run-code-instrumentation.sh",
+           "dockercontainervm/dimeshift:latest", "bash"],
+    "down": ["docker", "rm", "-f", "wta-ext-dimeshift"]
+  },
+  "pagekit": {
+    "url": "http://127.0.0.1:18002/pagekit/index.php/admin/login",
+    "ready": "http://127.0.0.1:18002/pagekit/index.php/admin/login",
+    "up": ["docker", "run", "-d", "-t", "--name", "wta-ext-pagekit", "--workdir", "/var/www/html/pagekit",
+           "-p", "18002:80", "--entrypoint", "./run-code-instrumentation.sh",
+           "dockercontainervm/pagekit:latest", "bash"],
+    "down": ["docker", "rm", "-f", "wta-ext-pagekit"],
+    "login": [
+      {"type": "TYPE", "selector": "input[name=\"credentials[username]\"]", "params": {"value": "admin"}},
+      {"type": "TYPE", "selector": "input[name=\"credentials[password]\"]", "params": {"value": "asdfghjkl123"}},
+      {"type": "CLICK", "text": "LOGIN"}
+    ]
+  },
+  "splittypie": {
+    "url": "http://127.0.0.1:18003/",
+    "ready": "http://127.0.0.1:18003/",
+    "up": ["docker", "run", "-d", "-t", "--name", "wta-ext-splittypie", "--workdir", "/home/splittypie",
+           "-p", "18003:4200", "--entrypoint", "./run-code-instrumentation.sh",
+           "dockercontainervm/splittypie:latest", "bash"],
+    "down": ["docker", "rm", "-f", "wta-ext-splittypie"]
+  },
+  "phoenix": {
+    "url": "http://127.0.0.1:18004/",
+    "ready": "http://127.0.0.1:18004/",
+    "up": ["docker", "run", "-d", "-t", "--name", "wta-ext-phoenix", "--workdir", "/home/phoenix-trello",
+           "-p", "18004:4000",
+           "--env", "PATH=/root/.kiex/elixirs/elixir-1.3.1/bin:/root/.kiex/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+           "--entrypoint", "./run-code-instrumentation.sh",
+           "dockercontainervm/phoenix-trello:latest", "bash"],
+    "down": ["docker", "rm", "-f", "wta-ext-phoenix"],
+    "login": [
+      {"type": "TYPE", "id": "user_email", "params": {"value": "john@phoenix-trello.com"}},
+      {"type": "TYPE", "id": "user_password", "params": {"value": "12345678"}},
+      {"type": "CLICK", "text": "Sign in"}
+    ]
+  },
+  "retroboard": {
+    "url": "http://127.0.0.1:18005/",
+    "ready": "http://127.0.0.1:18005/",
+    "up": ["docker", "run", "-d", "-t", "--name", "wta-ext-retroboard", "--workdir", "/home/retro-board",
+           "-p", "18005:8080", "--entrypoint", "./run-code-instrumentation.sh",
+           "dockercontainervm/retroboard:latest", "bash"],
+    "down": ["docker", "rm", "-f", "wta-ext-retroboard"]
+  },
+  "petclinic": {
+    "url": "http://127.0.0.1:18006/",
+    "ready": "http://127.0.0.1:18006/",
+    "up": ["docker", "run", "-d", "-t", "--name", "wta-ext-petclinic", "--workdir", "/home/spring-petclinic-angularjs",
+           "-p", "18006:8080",
+           "--env", "PATH=/root/workspace/maven/apache-maven-3.5.4/bin:/root/workspace/java/jdk1.8.0_181/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+           "--entrypoint", "./run-code-instrumentation.sh",
+           "dockercontainervm/petclinic:latest", "bash"],
+    "down": ["docker", "rm", "-f", "wta-ext-petclinic"]
+  }
+}
