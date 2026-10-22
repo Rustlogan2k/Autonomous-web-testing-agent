@@ -300,6 +300,12 @@ changed).**
     mixed across platforms.
   - If both platforms complete, the GitHub runs are reported separately, as a replication on
     other hardware.
+- **Phoenix sign-in fix (2026-10-23 01:12, before any result was read).** Phoenix redirects
+  to its boards page about a second after the sign-in click, so episodes started on a stale
+  sign-in page. Two wait (no-op) steps were added to the macro. Every Phoenix run started
+  before this commit (AWS `ext-eval-aws1`/`aws3`/`aws4` Phoenix jobs, the first GitHub
+  workflow's Phoenix jobs) is discarded unread. Phoenix's nine runs are redone with the fix
+  on AWS (`ext-eval-aws1b`, `ext-eval-aws4b`) and on GitHub Actions.
 - **Smoke check:** 2-minute runs on Pagekit, Phoenix and Petclinic confirmed the deadline,
   coverage collection and failure counting. Those runs are not results.
 

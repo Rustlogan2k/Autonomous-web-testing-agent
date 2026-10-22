@@ -40,7 +40,9 @@
     "login": [
       {"type": "TYPE", "id": "user_email", "params": {"value": "john@phoenix-trello.com"}},
       {"type": "TYPE", "id": "user_password", "params": {"value": "12345678"}},
-      {"type": "CLICK", "text": "Sign in"}
+      {"type": "CLICK", "text": "Sign in"},
+      {"type": "NO_OP"},
+      {"type": "NO_OP"}
     ]
   },
   "retroboard": {

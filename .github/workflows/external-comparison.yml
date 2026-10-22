@@ -36,7 +36,7 @@ jobs:
     steps:
       - id: plan
         env:
-          APPS: ${{ inputs.apps || 'phoenix retroboard petclinic' }}
+          APPS: ${{ inputs.apps || 'phoenix' }}
           ARMS: ${{ inputs.arms || 'hybrid_final hybrid_curiosity random' }}
           SEEDS: ${{ inputs.seeds || '0 1 2' }}
         run: |
