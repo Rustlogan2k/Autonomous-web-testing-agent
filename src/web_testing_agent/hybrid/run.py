@@ -85,6 +85,11 @@ ARMS: dict[str, dict] = {
     "dev_v3_failfeedback": {**HYBRID, "planner": "count", "failure_bonus": 2.0},
     # The two options round v3 adopted, together (checked before the freeze, 2026-10-22).
     "dev_v3_combined": {**HYBRID, "planner": "count", "browse": True, "failure_bonus": 2.0},
+    # FROZEN 2026-10-23 (tag v3-freeze) for the external comparison: round v3's combined
+    # configuration (22/24 runs, 22/41 distinct faults on the rebuilt development suite).
+    "hybrid_final": {**HYBRID, "planner": "count", "browse": True, "failure_bonus": 2.0},
+    # The external comparison's RL arm: round v3's curiosity configuration, unchanged.
+    "hybrid_curiosity": {**HYBRID, "planner": "count", "explore": "curiosity"},
     "dev_pairwise_bandit": {
         **HYBRID,
         "planner": "bandit",
