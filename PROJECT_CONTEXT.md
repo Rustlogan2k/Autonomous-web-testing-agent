@@ -212,21 +212,62 @@ v1 AC-DQN highest on coverage. This is tuning data, not a result.
 **Next**: analyse faults, unique failures and coverage on matched runs; choose the
 configuration; freeze it as a new version.
 
-### 0.8 Then: the external benchmark (WebExplor / WebRLED)
+### 0.8 External comparison (WebExplor / WebRLED) — PRE-REGISTERED 2026-10-23, tag `v3-freeze`
 
-The mentor asked for a comparison with the literature. The plan:
+Frozen before anyone (human or agent) has looked at, installed or run any subject
+application. Everything below is fixed; deviations are reported as deviations.
 
-1. Set up the WebExplor/WebRLED subject applications with branch coverage and failure
-   counting.
-2. Pre-register the comparison.
-3. Run the frozen re-tuned tester for 1-hour runs.
-4. Compare with the published numbers (WebRLED, arXiv 2504.19237): WebExplor 55.5% branch
-   coverage and 3.1 failures; WebRLED 64.2% and 4.1 failures (1-hour runs, 5 repetitions,
-   console-error failures deduplicated manually).
+**The tester version.** `hybrid_final` in `hybrid/run.py` at tag `v3-freeze`:
+`hybrid_nolearn` plus the `browse_list` operator and failure feedback (archive weight 2.0).
+It was chosen by tuning round v3 plus a 24-run check of the combination
+(`runs/v3-tune`, `runs/v3-check`): 22/24 runs found a fault, 22/41 distinct faults (the most
+of any arm), and it was faster than `hybrid_nolearn` on 6 of 7 apps. No code that affects
+exploration changes after the tag.
 
-The subject apps are off limits until the freeze (§0.5). The candidates are dimeshift,
-pagekit, splittypie, phoenix-trello, retroboard, petclinic, timeoff, realworld, 4gaBoards,
-parabank, gadael and agilefant.
+**Applications.** The first benchmark of WebRLED (arXiv 2504.19237, Table 3), which is
+WebExplor's benchmark: Dimeshift, Pagekit, Splittypie, Phoenix (trello), Retroboard and
+Petclinic. An application that cannot be deployed with instrumented client code is excluded
+before any agent runs on it, and the reason is reported. No application is excluded after
+any result exists.
+
+**Arms.**
+- `hybrid_final`: the frozen tester.
+- `hybrid_curiosity`: the hybrid with count-based curiosity Q-learning (round v3's
+  `dev_v3_curiosity`, unchanged). This is the RL arm closest to WebExplor and WebRLED.
+- `random`: uniform over the valid actions.
+
+**Protocol.**
+- A 1-hour wall-clock budget per run, as in the papers (`hybrid.external`, `deadline_s=3600`).
+- Seeds 0, 1 and 2, so 3 repetitions. The papers used 5; we disclose the difference.
+- A fresh application instance for every run, one instance per application at a time, and
+  3 workers on the local machine.
+- Sign-in, where an application needs it, is a fixed setup macro, as for the suite apps.
+
+**Measures.**
+1. **Branch coverage** of the Istanbul-instrumented client code (`IstanbulCollector`):
+   covered branch arms over all arms of the files loaded, unioned over the run. This is the
+   papers' measure.
+2. **Unique failures**: distinct console errors, page errors and failed requests
+   (`FailureCounter`), deduplicated automatically by kind, page path and normalised message.
+   The papers deduplicated by hand ("differ only in parameters"); ours is mechanical, and the
+   difference is stated.
+3. V8 byte coverage is recorded and reported as secondary.
+
+**Analysis.**
+- Per application: the mean and range over the 3 runs, for each arm and measure.
+- Averages over the six applications, compared descriptively with the published numbers.
+  The papers' averages are WebExplor 55.54% branch coverage and 3.1 failures, and WebRLED
+  64.18% and 4.1, with per-application values in WebRLED's Table 3. No significance test
+  against published numbers: they come from other machines and runs.
+- Between our arms: the per-application mean difference, its median over the 6 applications
+  with a bootstrap interval over applications. This is descriptive, with n = 6.
+
+**Infrastructure failures.** A job that fails for an infrastructure reason (the application
+does not start, the browser crashes) is rerun unchanged, and the failure is recorded.
+
+**Claims.** If `hybrid_final`'s average coverage or failures reach the published WebExplor or
+WebRLED averages, we say so, with the measurement differences above. If they do not, we say
+that too. Either way, the result belongs to `v3-freeze`.
 
 ### 0.9 Known limitations of the tester
 
