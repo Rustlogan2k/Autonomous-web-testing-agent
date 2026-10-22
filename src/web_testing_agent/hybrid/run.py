@@ -83,6 +83,8 @@ ARMS: dict[str, dict] = {
     "dev_v3_clickables": {**HYBRID, "planner": "count", "custom_clickables": True},
     "dev_v3_curiosity": {**HYBRID, "planner": "count", "explore": "curiosity"},
     "dev_v3_failfeedback": {**HYBRID, "planner": "count", "failure_bonus": 2.0},
+    # The two options round v3 adopted, together (checked before the freeze, 2026-10-22).
+    "dev_v3_combined": {**HYBRID, "planner": "count", "browse": True, "failure_bonus": 2.0},
     "dev_pairwise_bandit": {
         **HYBRID,
         "planner": "bandit",
