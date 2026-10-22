@@ -1,0 +1,277 @@
+\label{chap.4}
+
+The first-generation tester (v1) is a deep RL agent. This chapter formulates the testing
+problem as an MDP (Section~\ref{sec:v1-mdp}), describes the agent
+(Section~\ref{sec:v1-agent}) and its reward, including the LLM progress term
+(Section~\ref{sec:v1-reward}), and reports the three studies that tested it: a
+pre-registered transfer experiment (Section~\ref{sec:exp1}), a pre-registered contextual
+diagnostic (Section~\ref{sec:exp2}), and checks of the LLM components
+(Section~\ref{sec:llm-checks}). Section~\ref{sec:v1-lessons} draws the conclusions that
+shaped v2.
+
+\section{Testing as a Markov decision process}
+\label{sec:v1-mdp}
+
+An \emph{episode} is a walk of at most 40 actions from the application's entry page. A
+\emph{run} (or hunt) is a sequence of episodes on one application until a budget of
+$B = 2{,}000$ browser interactions is spent. The state $s_t$ is a summary of the episode so
+far and the current page; the actions are those the registry offers on the current page
+(Section~\ref{sec:env}), so the action set changes at every step; and the reward is
+described in Section~\ref{sec:v1-reward}. The agent never sees the seeded faults or the
+oracle's verdicts: learning from them would leak the answer key into the policy.
+
+\paragraph{State.} The state vector has 25 numbers: the episode's history (step, distinct
+pages, recent repetitions), the page's composition (counts of links, buttons, fields,
+forms, by kind), how much of the current form is filled, and the history of the LLM's
+progress judgments. It deliberately carries no page text, heading or URL.
+
+\paragraph{Action features.} Each candidate action $a$ is described by a 95-dimensional
+vector $\phi(a)$: its type; a sentence embedding of its label (MiniLM, reduced by PCA); its
+role inferred from markup (submit, navigate, edit, remove and so on); flags such as being in
+the viewport or inside a form; the category of value to type; and how often it has been
+taken in the episode.
+
+\section{The agent: an action-conditioned dueling double DQN}
+\label{sec:v1-agent}
+
+A fixed output head, one unit per action slot, cannot work here: slot $k$ means a different
+control on every page. The agent instead scores each (state, action) pair with one shared
+network, $Q(s, \phi(a))$, following the relevance network of He et al.~\cite{he2016drrn}.
+The state is encoded by a 64-unit layer and each action by a 96-unit layer; a 128-unit scorer
+combines them into an advantage, and a separate state-value head makes the network
+dueling~\cite{wang2016dueling}. Because one scorer is shared by every action, the network is
+permutation-equivariant over the action set and accepts any number of actions.
+
+Training uses Double DQN targets~\cite{vanhasselt2016double}, 3-step
+returns~\cite{hessel2018rainbow} with $\gamma = 0.95$, and prioritised
+replay~\cite{schaul2016prioritized} ($\alpha = 0.6$, $\beta_0 = 0.4$, a buffer of 30{,}000
+transitions, batches of 64, learning rate $3\times10^{-4}$, target update every 200 steps).
+
+\paragraph{Search-guided exploration.} With uniform $\epsilon$-greedy exploration,
+pretraining never reached the order-confirmation pages of the development applications, so
+the reward for completing a task never paid. Exploratory actions are therefore taken, with
+probability 0.75, from a fixed search priority (the same linear score over the action
+features that the \code{search\_S} baseline uses), and otherwise uniformly at random. On the held-out application every learning arm
+uses one $\epsilon$ schedule (0.50 decaying to 0.05 over half the budget), so arms do not
+differ in how much search they receive.
+
+\paragraph{Online adaptation.} For transfer, the pretrained network is kept and a small
+residual head, initialised to zero, is added and trained on the new application. The
+pretrained agent therefore starts exactly where pretraining left it and adapts from there.
+
+\paragraph{Bandit variant.} The same network with $\gamma = 0$ (no bootstrapping) is a
+contextual bandit. It tests whether multi-step credit assignment adds anything.
+
+\section{Reward}
+\label{sec:v1-reward}
+
+The reward has an environment part and an optional LLM part:
+\begin{equation}
+  r_t = r^{\mathrm{env}}_t + \lambda\, r^{\mathrm{LLM}}_t .
+\end{equation}
+
+\paragraph{Environment terms.} A small step cost; a novelty bonus that decays with the
+visit count of the abstracted state; a bonus for revealing new controls, capped at one
+control per step so that a single-page application does not dominate the scale; a
+repetition penalty; and one-time bonuses for the deterministic triggers (console error,
+failed request, broken navigation). The total is clipped to $[-6, 6]$.
+
+\paragraph{The LLM progress term.} A local LLM (\code{qwen2.5:7b-instruct}, temperature 0)
+reads a text rendering of each newly reached page and rates how far it is through a task, as
+a potential $\Phi(s) \in [0,1]$. Judgments are cached by page content, so each distinct page
+is judged once. The first design was potential-based shaping~\cite{ng1999policy},
+$\lambda(\gamma\Phi(s') - \Phi(s))$. It preserves the optimal policy, and that is why it
+failed: once novelty is exhausted, nothing in the optimal policy reaches outcome pages, and
+an agent pretrained on one application never reached its confirmation page in 1{,}500
+steps. The term actually used is an \emph{episodic progress record},
+\begin{equation}
+  r^{\mathrm{LLM}}_t = \max\!\Big(0,\; \Phi(s_{t+1}) - \max_{k \le t} \Phi(s_k)\Big),
+\end{equation}
+which pays only for a new maximum within the episode, so revisiting or looping earns
+nothing and the total per episode is at most 1. A sparse \emph{outcome bonus} of 3 pays the
+first time in an episode that a page the model places in the "outcome displayed" stage is
+reached, because the model rated any form page highly and completing a task added almost
+nothing. Neither term sees the seeded faults.
+
+\section{Experiment 1: does pretraining transfer?}
+\label{sec:exp1}
+
+\paragraph{Question.} Does pretraining on five applications make verified-fault discovery on
+a held-out sixth faster than learning from scratch? The comparison is against
+information-matched non-learning baselines, with and without the LLM reward.
+
+\paragraph{Design.} The design was pre-registered: hypotheses, arms, analysis code and
+decision rule were committed before any result existed. It is leave-one-application-out
+over the six benchmark applications (Chapter~\ref{chap.6}); four applications were never
+used during development (the \emph{pristine} folds). Ten arms ran (Table~\ref{tab:exp1}):
+uniform random; two fixed search heuristics (\code{search\_A0}, hand-weighted priority;
+\code{search\_S}, the feature-based score that guides exploration); the DQN from scratch and
+pretrained, each with and without the LLM reward; the pretrained DQN frozen (zero-shot); and
+the bandit from scratch and pretrained. Pretraining used 1{,}500 steps per training
+application. Each hunt had $B = 2{,}000$ interactions, with seeds 0--2 and a mechanical
+top-up rule. The outcome was $T$, interactions to the first verified fault, right-censored
+at $B$. The primary statistic was the per-fold paired difference in restricted mean $T$,
+summarised by its median across folds with a fold-level bootstrap interval; the stratified
+log-rank test was secondary.
+
+\paragraph{Execution.} There were 291 jobs and 0 failures. The LLM arms ran on a local RTX 4050 GPU
+and the other arms on four AWS spot instances (about US\$1.6). The analysis was exactly the
+pre-registered one.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Experiment 1: discovery per arm over all folds (runs of 2{,}000 interactions).}
+\label{tab:exp1}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Arm & Runs & Found a fault & Rate & Restricted mean $T$ \\
+\midrule
+\code{dqn\_pretrained\_nollm} & 18 & 7 & 0.39 & 1{,}402 \\
+\code{bandit\_pretrained} & 24 & 10 & 0.42 & 1{,}483 \\
+\code{dqn\_pretrained} & 27 & 9 & 0.33 & 1{,}520 \\
+\code{dqn\_scratch} & 27 & 9 & 0.33 & 1{,}610 \\
+\code{dqn\_zeroshot} & 18 & 4 & 0.22 & 1{,}664 \\
+\code{bandit\_scratch} & 24 & 5 & 0.21 & 1{,}727 \\
+\code{dqn\_scratch\_nollm} & 18 & 5 & 0.28 & 1{,}748 \\
+\code{search\_S} & 18 & 3 & 0.17 & 1{,}844 \\
+\code{random} & 18 & 2 & 0.11 & 1{,}947 \\
+\code{search\_A0} & 18 & 1 & 0.06 & 1{,}953 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Experiment 1: pre-registered comparisons (negative $\Delta$ = faster).}
+\label{tab:exp1-comp}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Comparison & Median $\Delta$ & 95\% interval & Log-rank $p$ \\
+\midrule
+\code{dqn\_pretrained} $-$ \code{dqn\_scratch} (primary) & 0 & $[-749, +290]$ & 0.527 \\
+\code{bandit\_pretrained} $-$ \code{bandit\_scratch} & $-280$ & $[-732, +188]$ & 0.086 \\
+\code{dqn\_pretrained} $-$ \code{search\_S} & $-169$ & $[-884, 0]$ & 0.087 \\
+\code{dqn\_pretrained} $-$ \code{search\_A0} & $-170$ & $[-1{,}212, 0]$ & 0.006 \\
+\code{dqn\_pretrained} $-$ \code{random} & $-151$ & $[-1{,}212, 0]$ & 0.022 \\
+LLM reward on $-$ off (pretrained DQN) & $+17$ & $[-122, +378]$ & 0.754 \\
+Adaptation on $-$ off & $-84$ & $[-430, 0]$ & 0.534 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Results.} Pretraining gave no measurable benefit. The primary comparison has a
+median difference of 0 interactions, with an interval reaching far on both sides; on the four
+pristine folds it was $-310$ ($p = 0.66$). The LLM reward made no detectable difference.
+Learned arms found a fault in more runs than search or random (0.33--0.42 against
+0.06--0.17), but their fold-level intervals reach zero and the effect rests largely on one
+development fold. Faults 9--16 contextual steps deep, on two applications, were never found
+by any arm. The oracle produced no verified finding on any clean build.
+
+A post-hoc description of the hunts showed that about 84\% of each learned arm's actions
+were the network's own greedy choice. The null result is not the exploration guide masking
+the network: the learned $Q$ drives behaviour, yet pretrained and scratch DQN find faults in
+the same share of runs (9 of 27 each). What helped was learned inside the application under
+test. This matches the literature's prediction for five training applications per
+fold~\cite{cobbe2019quantifying, zhao2024dinodroid}.
+
+\section{Experiment 2: context or memorisation?}
+\label{sec:exp2}
+
+\paragraph{Question.} Does the network rank an action by the state it is in, or has it
+memorised actions, words or layouts?
+
+\paragraph{Design.} This experiment was also pre-registered, with separate applications,
+runs and report. A seeded generator produced 12 variants of one request workflow. They vary
+the vocabulary (training words; synonyms, unseen words and pseudo-words held out with zero
+token overlap), the structure (training layouts; tabs, a modal and reordered steps held out)
+and add a decoy control. Four agent arms differ only in which inputs the network sees: the
+full agent; a label-blind agent; a lexical-only agent; and an action-only agent that never
+sees the state. Probe sets of states, with each action's effect labelled by actually
+executing it, were fixed before any arm ran. There were 228 jobs (12 pretrainings, 216 hunts)
+and 0 failures.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Experiment 2: pre-registered verdicts for the full agent.}
+\label{tab:exp2}
+\begin{tabularx}{\textwidth}{@{}lXl@{}}
+\toprule
+Hypothesis & Deciding numbers & Verdict \\
+\midrule
+H-ctx: state--action contextual learning & within-label AUROC 0.51 $[0.44, 0.59]$; rule $\ge 0.70$ & \textbf{not supported} \\
+H-act: action memorisation & decoy probe rate 0.31 $[0.00, 0.91]$ & inconclusive \\
+H-lex: lexical memorisation & top-1 ratio on unseen vocabulary 0.88 $[0.35, 1.18]$ & inconclusive \\
+H-app: application memorisation & top-1 ratio on new structures 0.63 $[0.44, 0.88]$ & inconclusive \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Results.} Contextual learning was not supported. Within a label, the network's
+ranking of an action barely depends on whether that action helps in the current state
+(AUROC 0.51, chance level), and only 7\% of the variance of $Q$ came from the label $\times$
+state interaction: the state moves every action's value together and almost never reorders
+them. The agent does rank useful actions above chance overall (top-1 accuracy 0.56, against
+0.18 for random); this held up under vocabulary changes but not under every layout change
+(tabs 0.35, modal 0.58). On the eight held-out variants, the arms that see the state found
+the fault in 19--20 of 24 hunts, against 2 of 24 for search and random, and the label-blind
+arm did as well as the full one. The memorisation hypotheses stayed inconclusive with three
+seeds: on the decoy, one seed nearly always took it and the other two never did.
+
+\section{Checks of the LLM components}
+\label{sec:llm-checks}
+
+\paragraph{Is the progress reward rewarding the right thing?} This post-hoc, descriptive
+check asked whether the LLM's progress score separates pages where a fault becomes
+observable from pages a random walk visits. On the two development applications, where the
+prompt was tuned, it separated them perfectly (AUROC 1.00). On the four pristine
+applications it did not (0.73, 0.52, 0.47, 0.38). The score rewards the "happy path", while
+many faults need deviations (invalid input, an edit after review), and most of what it paid
+duplicated the novelty bonus. This agrees with the warning that small LLM judges make noisy
+reward models~\cite{lin2024noisy}.
+
+\paragraph{Can the LLM label pages reliably?} For v2, an LLM labeller was to classify page
+kinds and control roles once per page. It had to pass gates fixed in advance: page-kind
+accuracy $\ge 0.85$ and control-role accuracy $\ge 0.80$.
+
+\begin{table}[H]
+\centering
+\small
+\caption{LLM labeller accuracy against ground truth (gates 0.85 / 0.80).}
+\label{tab:labeller}
+\begin{tabular}{@{}lrrl@{}}
+\toprule
+Test & Page kind & Control role & Gate \\
+\midrule
+Stage 0, generated variants & 0.68 & 0.78 & failed \\
+Revised labeller, 69 fresh pages & 0.61 & 0.75 & failed \\
+Revised labeller, on its own revision data & 0.93 & 0.83 & (would have passed) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both gates failed. The last row shows why the re-test had to use fresh pages: judged on the
+data it was revised from, the labeller would have been adopted.
+
+\section{What v1 taught}
+\label{sec:v1-lessons}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Findings from v1 and the design consequences for v2.}
+\label{tab:lessons}
+\begin{tabularx}{\textwidth}{@{}XX@{}}
+\toprule
+Finding & Consequence for v2 \\
+\midrule
+Pretraining did not transfer; learning inside the application helped & keep learning, but online, inside each application \\
+No state--action contextual learning & make the state explicit: page kind, task stage, form status \\
+The LLM reward is misaligned with faults; the labeller failed its gates & remove the LLM from the reward and from the decision path; label pages from markup \\
+Deep faults were never reached & explore by remembering states and returning to them (Go-Explore) \\
+Faults need deviations from the happy path & deviate deliberately, with test-design operators \\
+\bottomrule
+\end{tabularx}
+\end{table}

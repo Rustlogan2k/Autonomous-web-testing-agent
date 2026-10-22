@@ -1,0 +1,182 @@
+\label{chap.3}
+
+This chapter describes the parts shared by both generations of the tester: the browser
+environment and its action space (Section~\ref{sec:env}), the oracle that decides what is a
+fault (Section~\ref{sec:oracle}), and the product layer that turns an application into a
+test run and a report (Section~\ref{sec:product}). Figure~\ref{fig:system} shows how they fit
+together. The explorer in the middle is the part that differs between v1
+(Chapter~\ref{chap.4}) and v2 (Chapter~\ref{chap.5}).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=1.0cm,
+              text width=3.5cm, font=\small, execute at begin node={\hyphenpenalty=10000}},
+  arr/.style={-{Latex[length=2mm]}, thick}]
+  \node[box] (in) {Application\\\footnotesize URL, static site, Dockerfile repo, suite app};
+  \node[box, right=1.0cm of in] (sb) {Intake and sandbox\\\footnotesize policy gate, container};
+  \node[box, right=1.0cm of sb] (env) {Browser\\ environment\\\footnotesize Playwright,\\ action registry};
+  \node[box, below=1.0cm of env, fill=gray!12] (ex) {Explorer\\\footnotesize v1: AC-DQN\\ v2: hybrid tester};
+  \node[box, left=1.7cm of ex] (or) {Oracle\\\footnotesize triggers, seeded faults, replay, controls, ddmin};
+  \node[box, left=1.25cm of or] (rep) {Report\\\footnotesize findings, evidence;\\ HTML, MD, JSON};
+  \draw[arr] (in) -- (sb);
+  \draw[arr] (sb) -- (env);
+  \draw[arr] (env.south) ++(-0.4,0) -- ++(0,-1.0) node[midway, left, font=\footnotesize]{page};
+  \draw[arr] (ex.north) ++(0.4,0) -- ++(0,1.0) node[midway, right, font=\footnotesize]{action};
+  \draw[arr] (ex) -- node[above, font=\footnotesize]{trajectory} (or);
+  \draw[arr] (or) -- node[above, font=\footnotesize]{verified} (rep);
+\end{tikzpicture}
+\caption{The system around the explorer. Only the explorer differs between v1 and v2.}
+\label{fig:system}
+\end{figure}
+
+\section{The browser environment}
+\label{sec:env}
+
+The environment exposes a live application through Playwright and headless Chromium. Each
+\emph{episode} starts in a fresh browser context from the application's entry page, so
+cookies and local storage do not leak between episodes. For applications behind a login, a
+scripted sign-in macro runs at the start of every episode; it is outside the agent's
+decisions but inside the interaction budget. Server state is reset between runs, and for the
+database-backed suite applications each browser context gets its own data partition
+(Chapter~\ref{chap.6}).
+
+After every action the environment waits for the page to settle. It watches the DOM with a
+mutation observer and treats the page as settled after a quiet period, rather than waiting
+for the network to go idle, which applications that poll or hold a websocket never
+satisfy.
+
+\subsection{Action registry}
+
+At each step the registry scans the page and builds the set of available actions, at most
+100. It combines page-independent actions (no-op, scroll, resize the viewport, browser
+back, forward and refresh) with actions derived from the page's interactive elements:
+
+\begin{itemize}[noitemsep]
+  \item \textbf{click} on links, buttons and toggles, and \textbf{rapid click} (a double
+        submit) on buttons;
+  \item \textbf{type} into text fields, with one value from each of five categories: a
+        valid typical value, the boundary minimum, the boundary maximum, an empty string,
+        and a value of the wrong type;
+  \item \textbf{select} an option of a dropdown;
+  \item optionally, \textbf{custom clickables}: elements made interactive by ARIA roles,
+        click handlers, tab index or a pointer cursor, which plain HTML scanning misses.
+\end{itemize}
+
+When a page has more candidates than slots, the budget is filled in priority order: fixed
+actions, then clicks (needed to progress any flow), then valid typed values (so forms can be
+submitted), then selects and rapid clicks, then the boundary and invalid variants. Elements
+visible in the viewport are allocated before those below the fold. Actions are identified by
+stable selectors (an element's id or name, else a structural path), so the same control
+keeps its identity across visits.
+
+\subsection{Deterministic triggers}
+
+On every step the environment records generic failure signals: console errors, uncaught
+page errors, unexpected HTTP failures (4xx and 5xx responses to the application's own
+requests), a page that never settles, and broken navigation (a navigational click that
+leaves the URL unchanged). A link back to the page the agent is already on is not
+navigational, so it does not count as broken. These triggers are the implicit oracle that
+published RL web testers use. Here they feed the reward and the crash-type faults; on their
+own they are never reported as verified findings.
+
+\section{The verified-fault oracle}
+\label{sec:oracle}
+
+\subsection{Seeded faults and assertions}
+
+Every evaluation application is written with a list of \emph{seeded faults}. Each fault is
+a literal source patch: an anchor string that must occur exactly once in a file, and its
+replacement. Applying every patch to the clean source gives the \emph{faulty} build that
+agents test. For each fault $F$ there is also a \emph{control build}: the faulty build
+without $F$'s patch.
+
+Each fault declares how it shows itself, as an assertion over the recorded trajectory. The
+assertion language is deliberately closed, with eight kinds:
+
+\begin{itemize}[noitemsep]
+  \item \code{text\_equals}, \code{text\_contains}, \code{text\_absent}: a named page region
+        must equal, contain or not contain a literal;
+  \item \code{echoes\_input}: a value the agent typed earlier must appear on a later page
+        (the core check for corrupted state);
+  \item \code{numeric\_equals}: a number on the page must equal an arithmetic expression
+        over recorded inputs (for example, a total over quantities);
+  \item \code{url\_matches}: the step's URL must match a pattern (for broken transitions);
+  \item \code{reached\_with\_invalid\_input}: a guarded state was reached although the input
+        that guards it was invalid;
+  \item \code{region\_empty}: a region the application's contract says must carry a value is
+        empty.
+\end{itemize}
+
+Regions are named in the application's manifest, so an assertion never contains a CSS
+selector. Assertions are evaluated on the recorded pages without a browser, so checking is
+a pure, reproducible function of the record. The development suite added four extension
+kinds: a region stable across reload, an input absent after submission, arithmetic between
+regions, and \code{console\_or\_request\_error} for crash-type faults (Section~\ref{sec:crash}).
+
+\subsection{From candidate to verified finding}
+
+A violation of a fault's assertion during exploration is only a \emph{candidate}.
+Verification has three steps:
+
+\begin{enumerate}
+  \item \textbf{Replay.} The trajectory is replayed twice in fresh browser sessions against
+        the faulty build. The violation must recur both times.
+  \item \textbf{Per-fault control.} The same trajectory is replayed against the control
+        build without $F$. If the violation still occurs, it is not caused by $F$ (another
+        fault or the application's normal behaviour produces it), and the candidate is
+        rejected.
+  \item \textbf{Minimisation.} Delta debugging~\cite{zeller2002simplifying} removes steps
+        while the violation still reproduces, giving a short reproduction.
+\end{enumerate}
+
+Only candidates that pass all three are \emph{verified findings}. The rule makes false
+positives measurable: a run on the \emph{clean} build has no seeded faults, so any verified
+finding there would be a false positive. Every evaluation in this thesis includes such
+clean-build control runs, and none produced a verified finding.
+
+\subsection{Crash-type faults}
+\label{sec:crash}
+
+The external benchmark (Chapter~\ref{chap.7}) counts failures as console and request
+errors, which seeded assertions over page content do not capture. A subset of the
+development applications therefore also seeds \emph{crash-type faults}: patches that make a
+specific interaction raise an uncaught script error or a failing request. Their assertion,
+\code{console\_or\_request\_error}, matches the error's signature. Verification is the
+same: the error must recur on replay and be absent from that fault's control build, so a
+generic console error elsewhere in the application is not attributed to the fault.
+
+\subsection{Specification-free invariants}
+
+Seeded assertions verify only what was seeded. For arbitrary applications, the v2 tester
+also checks three invariants that need no specification: a value the user entered must
+survive a reload; it must not come back altered; and the same field on the same page must
+not be rejected once and accepted another time. Their candidates are replayed twice and
+attributed to seeded faults through the control builds. They are reported separately and
+never counted as verified seeded faults.
+
+\section{The product layer}
+\label{sec:product}
+
+\paragraph{Intake and sandbox.} An uploaded repository must contain a Dockerfile. Its build
+definition is parsed and passed through a security policy gate before anything runs. The
+gate refuses privileged containers, host mounts, host networking and Compose features that
+would merge in a second, unvalidated file. The container then runs with all capabilities
+dropped, a read-only root filesystem, no new privileges, CPU, memory and process limits,
+and an internal-only network.
+
+\paragraph{Test sessions and reports.} A test session runs the chosen agent within an
+interaction budget, verifies candidates as above, and writes a report with three parts:
+verified findings with minimal reproductions; unverified candidates; and, separately, any
+observations from the language model, marked unverified. Page bodies and frames are stored
+content-addressed as the run proceeds, so every finding can be traced to what produced it.
+Reports are available in HTML, Markdown and JSON.
+
+\paragraph{Interfaces.} A command-line tool tests a URL, a static site, a Dockerfile
+repository or a bundled application. A web interface (FastAPI with server-rendered
+templates) offers the same as a guided flow. The user picks a demo application, enters a
+URL or uploads an archive; chooses an agent (the RL agents or the random baseline) and a
+budget; watches a live event stream of the run; and opens or downloads the report. A
+research page shows every evaluation and development round, read live from the result
+files. The interface binds to the local machine by default, because it builds and runs
+uploaded code.

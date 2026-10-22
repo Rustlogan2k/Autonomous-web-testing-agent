@@ -1,0 +1,236 @@
+%AMRITA UNIVERSITY PH.D latex template...Created by Chungath, CYS-CBE%
+% Adapted for the B.Tech thesis "Reinforcement Learning for Automated Functional Testing of
+% Web Applications". Build: pdflatex mythesis; bibtex mythesis; pdflatex mythesis (x2).
+
+\documentclass[a4paper, 12pt]{report}
+%\renewcommand{\bibname}{References}
+\usepackage[margin=0.8in]{geometry}
+
+\usepackage{bold-extra}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage [english]{babel}
+\usepackage [autostyle, english = american]{csquotes}
+\MakeOuterQuote{"}
+\usepackage{setspace}
+\onehalfspacing
+\graphicspath{{images/}}
+\usepackage{amsthm}
+\usepackage{array}
+\usepackage{cite}
+\usepackage{longtable}
+\usepackage{fancyhdr}
+\usepackage{titletoc}
+% Added for this thesis: tables, colour, diagrams, code paths.
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, fit, shapes.geometric}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\emergencystretch=2em
+\theoremstyle{definition}
+\newtheorem{Definition}{Definition}[section]
+
+% Marks text that is written after tuning round v3 and the external evaluation.
+\newcommand{\pending}[1]{\textcolor{red}{\textbf{[PENDING:} #1\textbf{]}}}
+% Code identifiers (arm names, modules).
+\newcommand{\code}[1]{\texttt{\small #1}}
+
+%-------------------------------------------------------------
+% title page
+\begin{document}
+	\pagenumbering{gobble}
+	\thispagestyle{empty}
+	\begin{large}
+		\begin{center}
+			{\Large\bfseries{REINFORCEMENT LEARNING FOR AUTOMATED FUNCTIONAL TESTING OF WEB APPLICATIONS: FROM DEEP Q-LEARNING TO A STRUCTURED HYBRID TESTER}}\\
+			\vspace{1.3cm}
+			A Thesis \\
+			\vspace{.1cm}
+			Submitted in partial fulfilment for the Degree of\\
+			\vspace{.1cm}
+			BACHELOR OF TECHNOLOGY\\
+			\vspace{.1cm}
+            in
+            \vspace{.1cm}
+            \\ COMPUTER SCIENCE AND ENGINEERING (ARTIFICIAL INTELLIGENCE) \\
+			\vspace{1cm}
+			by\\ \vspace{0.2cm}
+			\vspace{.1cm}
+			{\Large\bfseries{WRITE YOUR NAME (ROLL NUMBER)}} \\
+            {\Large\bfseries{WRITE YOUR NAME (ROLL NUMBER)}} \\
+            {\Large\bfseries{WRITE YOUR NAME (ROLL NUMBER)}} \\
+            {\Large\bfseries{WRITE YOUR NAME (ROLL NUMBER)}} \\
+            \vspace{3cm}
+
+			\includegraphics[scale=0.8]{univA.png}\\
+			\vfill
+			DEPARTMENT OF ARTIFICIAL INTELLIGENCE\\
+			\Large{\textbf{AMRITA VISHWA VIDYAPEETHAM}}\\
+			{\large COIMBATORE CAMPUS (INDIA)}\\
+			\vspace*{.3cm}
+			October 2026
+		\end{center}
+	\end{large}
+	%------------------------------------------------------------------------------------
+	% bonafide certificate
+	\newpage
+	\begin{center}
+
+		{\large DEPARTMENT OF ARTIFICIAL INTELLIGENCE}\\
+		\Large{ \textbf{AMRITA VISHWA VIDYAPEETHAM}}\\
+			{\large COIMBATORE CAMPUS}\\
+		\vspace*{2.2cm}
+		\includegraphics[scale=0.8]{univA.png}\\
+		\vspace*{1.5cm}
+		{\Large \textbf{BONAFIDE CERTIFICATE}}
+	\end{center}
+	\vspace*{.8cm}
+	\noindent This is to certify that the thesis entitled \enquote{\textbf{Reinforcement Learning for Automated Functional Testing of Web Applications: From Deep Q-Learning to a Structured Hybrid Tester}} submitted by \textbf{Name of the Student., Roll. No:............}, \textbf{Name of the Student., Roll. No:............}, \textbf{Name of the Student., Roll. No:............} and \textbf{Name of the Student., Roll. No:............} for the award of the \textbf{Degree of Bachelor of Technology} under the \textbf{Faculty of Engineering} is a bonafide record of the work carried out by him/her under my guidance and supervision at \enquote{Department of Artificial Intelligence}, Amrita Vishwa Vidyapeetham, Coimbatore Campus.\\
+    \vfill
+    Submitted for the examination held on .........
+    \vfill
+    \textbf{INTERNAL EXAMINER}    \hspace{5cm}      \textbf{EXTERNAL EXAMINER}
+    \vfill
+\begin{center}
+		\textbf{Name of the Thesis Advisor}\\
+	Thesis Advisor,\\
+	Thesis advisor's designation,\\
+	Department of Artificial Intelligence,\\
+	Amrita Vishwa Vidyapeetham,\\
+	Coimbatore Campus,\\
+	India.
+\end{center}
+
+	%-------------------------------------------------------------------------------
+	% Declaration page
+	\newpage
+	\begin{center}
+	{\large DEPARTMENT OF ARTIFICIAL INTELLIGENCE}\\
+	\Large{ \textbf{AMRITA VISHWA VIDYAPEETHAM}}\\
+
+	{\large COIMBATORE CAMPUS}\\
+
+
+		\vspace*{2.5cm}
+		\large {\textbf{DECLARATION}}
+		\vspace*{.3cm}
+	\end{center}
+
+	\noindent We,\textbf{ Name of the Student.},  \textbf{Reg. No:......}, \textbf{ Name of the Student.},  \textbf{Reg. No:......}, \textbf{ Name of the Student.},  \textbf{Reg. No:......} and \textbf{ Name of the Student.},  \textbf{Reg. No:......} hereby declare that this thesis entitled \enquote{\textbf{Reinforcement Learning for Automated Functional Testing of Web Applications: From Deep Q-Learning to a Structured Hybrid Tester}} is the record of the original work done by us under the guidance of \textbf{Name of Thesis Advisor}, his/her designation, Department of Artificial Intelligence, Amrita Vishwa Vidyapeetham, Coimbatore Campus. To the best of our knowledge, this work has not formed the basis for the award of any degree/diploma/associateship/fellowship or a similar award to any candidate in any University.\\\\
+
+	\vspace*{1cm}
+	\noindent{\bf Place:\hfill Signature of the Students} \\
+	\noindent {\bf Date: }
+	\vfill
+	\begin{center}
+		\large{COUNTERSIGNED}\\
+	\end{center}
+	\vspace{0.6in}
+
+\begin{center}
+		\textbf{Dr. K.P Soman}\\
+	Professor and Dean, \\
+	Department of Artificial Intelligence \\ Amrita Vishwa Vidyapeetham,\\
+	Coimbatore Campus,\\
+	India.
+\end{center}
+
+	%-----------------------------------------------------------------------------
+	\clearpage
+	\pagenumbering{roman}
+	\tableofcontents
+
+	\chapter*{Acknowledgements}
+	\addcontentsline{toc}{chapter}{Acknowledgements}
+	\pending{Acknowledgements, written by the authors.}\\
+	\vspace{1cm}
+	\begin{flushright}
+		(your name in CAPS)
+	\end{flushright}
+	\listoffigures
+	\addcontentsline{toc}{chapter}{List of figures}
+	\listoftables
+	\addcontentsline{toc}{chapter}{List of tables}
+	\newpage
+\section*{{\huge Abbreviations}\hfill} \addcontentsline{toc}{chapter}{\textbf{Abbreviations}}
+\vspace{1.2cm}
+\begin{tabular}{lll}
+AC-DQN ~~~~&--&~~~~ Action-Conditioned Deep Q-Network\\
+AUROC ~~~~&--&~~~~ Area Under the Receiver Operating Characteristic curve\\
+CRUD ~~~~&--&~~~~ Create, Read, Update, Delete\\
+DOM ~~~~&--&~~~~ Document Object Model\\
+DQN ~~~~&--&~~~~ Deep Q-Network\\
+GUI ~~~~&--&~~~~ Graphical User Interface\\
+LLM ~~~~&--&~~~~ Large Language Model\\
+MDP ~~~~&--&~~~~ Markov Decision Process\\
+PER ~~~~&--&~~~~ Prioritised Experience Replay\\
+RL ~~~~&--&~~~~ Reinforcement Learning\\
+RMST ~~~~&--&~~~~ Restricted Mean Survival Time\\
+SPA ~~~~&--&~~~~ Single-Page Application\\
+UI ~~~~&--&~~~~ User Interface\\
+\end{tabular}
+\newpage
+\section*{{\huge List of symbols}\hfill} \addcontentsline{toc}{chapter}{\textbf{List of symbols}}
+\vspace{1.2cm}
+\begin{tabular}{lll}
+$s, s'$ ~~~~&--&~~~~ State before and after an action\\
+$a$ ~~~~&--&~~~~ Action (one browser interaction)\\
+$\phi(a)$ ~~~~&--&~~~~ Feature vector describing action $a$\\
+$Q(s, \phi(a))$ ~~~~&--&~~~~ Action-conditioned action value\\
+$\gamma$ ~~~~&--&~~~~ Discount factor\\
+$\epsilon$ ~~~~&--&~~~~ Exploration rate\\
+$\Phi(s)$ ~~~~&--&~~~~ LLM-assessed task progress of state $s$, in $[0,1]$\\
+$\lambda$ ~~~~&--&~~~~ Weight of the LLM reward term\\
+$B$ ~~~~&--&~~~~ Interaction budget of one run (2{,}000)\\
+$T$ ~~~~&--&~~~~ Interactions to the first verified fault ($T=B$ if none)\\
+$\mathrm{Beta}(\alpha, \beta)$ ~~~~&--&~~~~ Beta posterior of a bandit key\\
+$N(s, a, s')$ ~~~~&--&~~~~ Visit count of a page transition\\
+\end{tabular}
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\input{chapters/abstract}
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\chapter{Introduction}
+\input{chapters/introduction}
+\chapter{Background and Related Work}
+\input{chapters/chapter2}
+\chapter{System Overview and the Verified-Fault Oracle}
+\input{chapters/chapter3}
+\chapter{A Deep Reinforcement Learning Tester (v1)}
+\input{chapters/chapter4}
+\chapter{The Hybrid Tester (v2)}
+\input{chapters/chapter5}
+\chapter{Test Applications and Evaluation Methodology}
+\input{chapters/chapter6}
+\chapter{Evaluation}
+\input{chapters/chapter7}
+\chapter{Conclusion and Scope for Further Research}
+\input{chapters/conclusion}
+\appendix
+\chapter{Agent Configurations}
+\input{chapters/appendix}
+
+\newpage
+\renewcommand{\bibname}{References}
+\bibliographystyle{ieeetr}
+\addcontentsline{toc}{chapter}{References}
+\bibliography{references}
+
+\chapter*{List of Publications \\ \large(Based on the Research Work)}
+\addcontentsline{toc}{chapter}{List of Publications Based on the Research Work}
+\pending{List any papers published or communicated from this work, or remove this page.}
+
+\end{document}

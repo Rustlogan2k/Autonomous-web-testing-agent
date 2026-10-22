@@ -1,0 +1,208 @@
+\label{chap.7}
+
+This chapter reports three evaluations of the hybrid tester. The pre-registered held-out
+evaluation on the validation suite (Section~\ref{sec:heldout}) is complete. The final tuning
+round on the rebuilt development suite (Section~\ref{sec:tuning}) and the external comparison
+with WebExplor and WebRLED (Section~\ref{sec:extresults}) follow it.
+
+\section{Held-out evaluation (pre-registered)}
+\label{sec:heldout}
+
+\subsection{Design}
+
+The pre-registration was frozen on the project owner's approval, and the commit was tagged,
+before any agent ran on any validation application.
+
+\begin{itemize}
+  \item \textbf{Applications}: the eight validation applications (Table~\ref{tab:valsuite}),
+        24 seeded faults.
+  \item \textbf{Arms}:
+        \begin{itemize}[noitemsep]
+          \item \code{random}, uniform over the page's valid actions;
+          \item \code{hybrid\_nolearn}, the primary arm;
+          \item \code{hybrid\_bandit};
+          \item \code{v1\_dqn\_pretrained}, v1's best AC-DQN arm from Experiment 1: pretrained
+                without the LLM reward and adapting online, using that experiment's own
+                checkpoints. Seed $s$ loads the checkpoint of fold $s \bmod 6$, pretraining
+                seed $s \bmod 3$.
+        \end{itemize}
+  \item \textbf{Runs}: seeds 0--4, $B = 2{,}000$ interactions, 160 hunts, plus 32 clean-build
+        control runs (one per arm and application). The run took about seven and a half
+        hours with four workers and no other workload.
+  \item \textbf{Hypotheses} (difference in restricted mean $T$, decision rule of
+        Section~\ref{sec:stats}):
+        \begin{itemize}[noitemsep]
+          \item H1 (primary): the hybrid tester is faster than random;
+          \item H2: the bandit makes the hybrid faster;
+          \item H3: the hybrid with the bandit is faster than random;
+          \item H4: the hybrid is faster than v1's best AC-DQN.
+        \end{itemize}
+\end{itemize}
+
+One of 192 jobs failed for an infrastructure reason: Windows held a file lock while the
+temporary build folder of a clean-build control was being deleted. As pre-registered, the job
+was rerun unchanged; it completed with no finding.
+
+\subsection{Results}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Held-out evaluation: pre-registered comparisons (negative $\Delta$ = first arm faster).}
+\label{tab:heldout-h}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}llrrrrl@{}}
+\toprule
+& Comparison & Median $\Delta$ & 95\% interval & Apps favouring & Log-rank $p$ & Verdict \\
+\midrule
+H1 & \code{hybrid\_nolearn} $-$ \code{random} & $-324$ & $[-665, +148]$ & 6/8 & 0.159 & inconclusive \\
+H2 & \code{hybrid\_bandit} $-$ \code{hybrid\_nolearn} & $+86$ & $[-304, +285]$ & 4/8 & 0.781 & inconclusive \\
+H3 & \code{hybrid\_bandit} $-$ \code{random} & $-191$ & $[-801, +67]$ & 5/8 & 0.180 & inconclusive \\
+H4 & \code{hybrid\_nolearn} $-$ \code{v1\_dqn\_pretrained} & $+42$ & $[-196, +574]$ & 4/8 & 0.276 & inconclusive \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Held-out evaluation per arm (40 runs each).}
+\label{tab:heldout-arms}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Arm & Found a fault & RMST & Faults per run & Distinct faults & Clean false positives \\
+\midrule
+\code{v1\_dqn\_pretrained} & 34 (0.85) & \textbf{595} & 1.18 & 17 / 24 & 0 / 8 \\
+\code{hybrid\_nolearn} & 30 (0.75) & 737 & 1.15 & 18 / 24 & 0 / 8 \\
+\code{hybrid\_bandit} & 34 (0.85) & 769 & \textbf{1.23} & \textbf{19} / 24 & 0 / 8 \\
+\code{random} & 32 (0.80) & 978 & 1.00 & 13 / 24 & 0 / 8 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Held-out evaluation per application: runs that found a fault (of 5) and mean $T$.}
+\label{tab:heldout-apps}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+App & \code{random} & \code{v1\_dqn\_pretrained} & \code{hybrid\_nolearn} & \code{hybrid\_bandit} \\
+\midrule
+dutyday & 4/5 $\cdot$ 1{,}217 & \textbf{5/5 $\cdot$ 281} & 4/5 $\cdot$ 788 & 4/5 $\cdot$ 778 \\
+fosterly & 5/5 $\cdot$ 1{,}262 & 4/5 $\cdot$ 763 & 4/5 $\cdot$ 681 & \textbf{5/5 $\cdot$ 370} \\
+larder & 5/5 $\cdot$ 411 & 5/5 $\cdot$ 407 & \textbf{5/5 $\cdot$ 211} & 5/5 $\cdot$ 393 \\
+markbook & 1/5 $\cdot$ 1{,}805 & \textbf{4/5 $\cdot$ 567} & 3/5 $\cdot$ 1{,}141 & 4/5 $\cdot$ 1{,}442 \\
+quizcraft & 5/5 $\cdot$ 299 & 5/5 $\cdot$ 97 & \textbf{5/5 $\cdot$ 81} & 5/5 $\cdot$ 366 \\
+sideline & 2/5 $\cdot$ 1{,}623 & 1/5 $\cdot$ 1{,}759 & \textbf{4/5 $\cdot$ 620} & 3/5 $\cdot$ 822 \\
+skylark & 5/5 $\cdot$ 980 & \textbf{5/5 $\cdot$ 614} & 0/5 $\cdot$ 2{,}000 & 3/5 $\cdot$ 1{,}696 \\
+tally & 5/5 $\cdot$ \textbf{229} & 5/5 $\cdot$ 276 & 5/5 $\cdot$ 376 & 5/5 $\cdot$ 284 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All four pre-registered comparisons are inconclusive (Table~\ref{tab:heldout-h}). As the
+pre-registration anticipated, eight applications give the median rule wide intervals, and no
+comparison was supported or refuted. The per-fault counts are in
+Appendix~\ref{app:faults}.
+
+\subsection{What the held-out data shows (descriptive)}
+
+\begin{enumerate}
+  \item \textbf{The held-out faults were easier for random exploration than the development
+        ones.} Random verified a fault in 80\% of runs, against 43\% (18 of 42) on the
+        development suite. Several faults sit one or two interactions from a page that
+        random visits constantly. Three faults were verified in 5 of 5 runs by every arm,
+        which compresses every difference.
+  \item \textbf{The hybrid arms reached the deeper faults.} 22 of the 24 faults were
+        verified by at least one arm; two by none. Of the 16 faults random verified in at
+        most one of five runs, the two hybrid arms together verified 14 at least once, and
+        \code{v1\_dqn\_pretrained} 9. Nine faults were verified by a hybrid arm and by no
+        random run. This is where test operators help: completing forms validly, invalid
+        input, edits after review.
+  \item \textbf{One clear blind spot: list paging.} All three skylark faults sit behind its
+        feed's "Load more" button. Random presses it often by chance. The hybrid's operators
+        work on forms and none pages through a list, so \code{hybrid\_nolearn} reached the
+        right pages in every run but never repeated the paging (0 of 5). This cost H1 one
+        of its eight applications. It was reported, not fixed, because the code was frozen;
+        it motivated the \code{browse\_list} operator (Section~\ref{sec:v3-options}).
+  \item \textbf{v1's pretrained AC-DQN did better here than on its own benchmark}: discovery
+        0.85 and the lowest mean time, notably on dutyday and markbook. Whether that
+        reflects the method or the applications' shallower faults cannot be separated with
+        eight applications (H4 inconclusive).
+  \item \textbf{The learner (H2).} \code{hybrid\_bandit} found a fault in more runs than
+        \code{hybrid\_nolearn} (34 against 30) and more distinct faults (19 against 18), with
+        a slightly higher mean time (769 against 737). As in development, the learner is
+        not distinguishable from no learner.
+  \item \textbf{Zero false positives.} No clean-build control verified a seeded fault
+        (0 of 32 runs).
+\end{enumerate}
+
+\paragraph{Specification-free invariants.} As pre-registered, they are reported separately.
+They flagged no seeded fault for any arm. On clean builds they produced three reproduced
+candidates (two for \code{hybrid\_nolearn}, one for \code{hybrid\_bandit}), all on
+quizcraft's editor, all of the form "an entered value is gone after reload". On inspection,
+quizcraft keeps its working copy in page memory until the user saves, so losing unsaved
+edits on reload is intended. They are false alarms: the reload invariant cannot tell saved
+state from unsaved state.
+
+\section{Tuning round v3 on the rebuilt development suite}
+\label{sec:tuning}
+
+\subsection{Design}
+
+After the held-out evaluation, the development suite was rebuilt (Section~\ref{sec:devsuite})
+and the tester re-tuned on it before the external comparison. Eight arms ran on the eight
+development applications with seeds 0--2, 192 runs of 2{,}000 interactions:
+
+\begin{itemize}[noitemsep]
+  \item the references: \code{random}, \code{hybrid\_nolearn}, \code{hybrid\_bandit} and
+        \code{v1\_dqn\_pretrained};
+  \item one option each (Section~\ref{sec:v3-options}):
+        \begin{itemize}[noitemsep]
+          \item \code{dev\_v3\_browse},
+          \item \code{dev\_v3\_clickables},
+          \item \code{dev\_v3\_curiosity},
+          \item \code{dev\_v3\_failfeedback}.
+        \end{itemize}
+\end{itemize}
+
+Each run records verified faults (including crash-type faults), unique failures and
+JavaScript coverage. These are development data: they choose the configuration to freeze,
+and are not evidence of generalisation.
+
+\subsection{Results}
+
+\pending{Per-arm table: runs that found a fault, RMST, distinct faults, unique failures per
+run, JavaScript coverage; matched comparisons against \code{hybrid\_nolearn}; per-app
+breakdown; crash-type faults found.}
+
+\subsection{Configuration chosen}
+
+\pending{The configuration frozen for the external comparison, and why.}
+
+\section{Comparison with WebExplor and WebRLED}
+\label{sec:extresults}
+
+\subsection{Design}
+
+The WebRLED paper~\cite{gu2025webrled} reports, on its web subject applications with
+one-hour runs and five repetitions, an average branch coverage of 55.5\% and 3.1 failures for
+WebExplor, and 64.2\% and 4.1 failures for WebRLED. Its failures are console errors,
+deduplicated by hand. The comparison here runs the frozen re-tuned tester on the same
+subject applications under the same time budget.
+\pending{Pre-registered comparison: applications, repetitions, how branch coverage and
+failures are measured and deduplicated here, and how differences in measurement are
+handled.}
+
+\subsection{Results}
+
+\pending{Coverage and failures per application against the published numbers; verified
+findings.}
+
+\section{Discussion}
+\label{sec:discussion}
+
+\pending{Discussion across all evaluations: what the structure contributes, what learning
+contributes, how the tester compares with the literature, and the limits of the evidence.}

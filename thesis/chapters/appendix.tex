@@ -1,0 +1,92 @@
+\label{app:a}
+
+\section{Arms}
+\label{app:arms}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Every arm used in the evaluations, by generation.}
+\label{tab:arms}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+Arm & Configuration \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{Baselines}} \\
+\code{random} & uniform choice among the page's valid actions \\
+\code{search\_A0} & fixed hand-weighted action priority; no learning \\
+\code{search\_S} & fixed linear score over the action features; no learning \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{v1: action-conditioned DQN (Chapter~\ref{chap.4})}} \\
+\code{dqn\_scratch} & learns on the target only; LLM reward on \\
+\code{dqn\_scratch\_nollm} & as above, LLM reward off \\
+\code{dqn\_pretrained} & pretrained on the other five applications with the LLM reward; residual head adapts \\
+\code{dqn\_pretrained\_nollm} & pretrained without the LLM reward; residual head adapts (\code{v1\_dqn\_pretrained} in v2 evaluations) \\
+\code{dqn\_zeroshot} & pretrained network frozen; no adaptation \\
+\code{bandit\_scratch}, \code{bandit\_pretrained} & the same network with $\gamma = 0$ \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{v2: hybrid tester (Chapter~\ref{chap.5}); all with depth preference $\beta_d = 2$}} \\
+\code{hybrid\_nolearn} & untried (operator, target) pairs first, at random \\
+\code{hybrid\_bandit} & Thompson-sampling bandit over semantic keys \\
+\code{dev\_bandit\_novelty}, \code{dev\_bandit\_surprise} & bandit rewarded only for new pages / for unexpected responses \\
+\code{dev\_pairwise\_bandit}, \code{dev\_pairwise\_nolearn} & pairwise operator and technique-first choice \\
+\code{dev\_hybrid\_curiosity} & curiosity Q-learning chooses the free exploration \\
+\code{dev\_curiosity\_rl} & standalone curiosity Q-learning tester (no operators) \\
+\code{dev\_v3\_browse} & with the \code{browse\_list} operator \\
+\code{dev\_v3\_clickables} & with custom clickables in the action registry \\
+\code{dev\_v3\_curiosity} & curiosity Q-learning for free exploration (rebuilt suite) \\
+\code{dev\_v3\_failfeedback} & archive weight for cells where errors followed actions \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Hyperparameters.}
+\label{tab:hyper}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+Component & Values \\
+\midrule
+Run & budget 2{,}000 interactions; episodes of at most 40 actions \\
+v1 network & state encoder 64, action encoder 96, scorer 128 units; dueling \\
+v1 learning & Double DQN, 3-step returns, $\gamma = 0.95$, learning rate $3\times10^{-4}$, batch 64, buffer 30{,}000, target update 200, PER $\alpha = 0.6$, $\beta_0 = 0.4$ \\
+v1 exploration & guide probability 0.75; target $\epsilon$ 0.50 $\to$ 0.05 over half the budget; pretraining 1{,}500 steps per application \\
+v1 reward & LLM weight $\lambda = 1$ (LLM arms), outcome bonus 3, reveal cap 1.5, clip $\pm 6$ \\
+Hybrid archive & weight of Section~\ref{sec:archive}; depth preference $\beta_d = 2$ \\
+Bandit & Beta posteriors; back-off weight 0.3 \\
+Curiosity Q-learning & $\alpha = 0.5$, $\gamma = 0.9$, $\epsilon = 0.1$, episodic bonus 0.5, optimistic initialisation $R_{\max}/(1-\gamma)$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Held-out evaluation per fault}
+\label{app:faults}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Held-out evaluation: runs (of 5) that verified each fault.}
+\label{tab:heldout-faults}
+\begin{tabular}{@{}lrrrr@{\hspace{1.5cm}}lrrrr@{}}
+\toprule
+Fault & R & V1 & HN & HB & Fault & R & V1 & HN & HB \\
+\midrule
+DUTY-1 & 3 & 3 & 0 & 3 & QUIZ-1 & 5 & 5 & 5 & 5 \\
+DUTY-2 & 4 & 3 & 4 & 4 & QUIZ-2 & 0 & 2 & 1 & 2 \\
+DUTY-3 & 0 & 1 & 1 & 0 & QUIZ-3 & 0 & 1 & 2 & 0 \\
+FOST-1 & 5 & 3 & 4 & 5 & SIDE-1 & 0 & 0 & 1 & 1 \\
+FOST-2 & 0 & 0 & 0 & 0 & SIDE-2 & 1 & 1 & 2 & 2 \\
+FOST-3 & 0 & 2 & 1 & 1 & SIDE-3 & 1 & 0 & 4 & 3 \\
+LARD-1 & 1 & 0 & 3 & 4 & SKY-1 & 0 & 3 & 0 & 1 \\
+LARD-2 & 5 & 5 & 5 & 5 & SKY-2 & 3 & 1 & 0 & 1 \\
+LARD-3 & 1 & 0 & 2 & 1 & SKY-3 & 5 & 5 & 0 & 2 \\
+MARK-1 & 0 & 0 & 2 & 2 & TALLY-1 & 5 & 5 & 5 & 5 \\
+MARK-2 & 0 & 1 & 2 & 1 & TALLY-2 & 0 & 2 & 1 & 0 \\
+MARK-3 & 1 & 4 & 1 & 1 & TALLY-3 & 0 & 0 & 0 & 0 \\
+\bottomrule
+\multicolumn{10}{@{}l}{\footnotesize R = \code{random}, V1 = \code{v1\_dqn\_pretrained}, HN = \code{hybrid\_nolearn}, HB = \code{hybrid\_bandit}.}
+\end{tabular}
+\end{table}

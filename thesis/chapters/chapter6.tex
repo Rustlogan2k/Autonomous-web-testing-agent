@@ -1,0 +1,193 @@
+\label{chap.6}
+
+A tester can only be evaluated on applications whose faults are known. This chapter
+describes the four sets of test applications (Sections~\ref{sec:benchmark}--\ref{sec:external}),
+how an application is admitted before any agent touches it
+(Section~\ref{sec:admission}), how applications were split between development and
+evaluation (Section~\ref{sec:split}), and the metrics and statistics
+(Section~\ref{sec:stats}). Section~\ref{sec:threats} states the threats to validity.
+
+\section{The six-application benchmark}
+\label{sec:benchmark}
+
+Six small web applications were built to one design contract for the v1 experiments: an
+account hub, an admin records system, a booking desk, a media library, a shop catalogue and a
+support portal. Each carries two seeded faults, 12 in total, in five classes: calculation
+error, constraint bypass, persistence failure, state corruption and broken transition. Some
+faults sit 9--16 contextual steps deep. Two applications (the shop catalogue and the
+booking desk) were used during development; the other four stayed pristine until the
+transfer experiment.
+
+\section{The generated application family}
+
+For Experiment 2, a seeded generator produced twelve variants of one loan-request workflow.
+They differ in vocabulary, structure and decoys, and each was admitted by the same validator
+as the benchmark (Section~\ref{sec:exp2}).
+
+\section{The development suite}
+\label{sec:devsuite}
+
+Eight applications were built to be genuinely different from each other and from the
+benchmark: different domains, architectures and stacks (Table~\ref{tab:devsuite}). They were
+first built as zero-dependency applications. Then, at the project owner's request, they were
+rebuilt as full-stack applications. Each now has its own database (PostgreSQL or MongoDB), a
+sign-in page and a richer data model. The five rebuilt last were also enlarged to at least 12
+views, 3 entities with full create, read, update and delete, 5 interaction patterns, and 2
+new faults that are not about forms.
+
+\begin{table}[H]
+\centering
+\small
+\caption{The development suite (version 2).}
+\label{tab:devsuite}
+\begin{tabularx}{\textwidth}{@{}l X l l r r@{}}
+\toprule
+App & Domain and architecture & Server & Database & Faults & Crash \\
+\midrule
+tidewater & personal banking; single-page app over a JSON API & Python & PostgreSQL & 3 & -- \\
+clinicflow & clinic front desk; server-rendered branching wizard & Python & PostgreSQL & 5 & -- \\
+stackroom & stockroom inventory; data grid with server-side paging, sorting, bulk actions & Python & PostgreSQL & 5 & 2 \\
+ledgerly & expense claims with multi-role approval; server-rendered forms & Node.js & PostgreSQL & 5 & -- \\
+bagstreet & small shop; server-rendered pages and HTML forms & Python & MongoDB & 5 & -- \\
+helpline & broadband care desk; pages with HTML fragment updates & Python & MongoDB & 7 & 2 \\
+orbit & kanban boards; modal-heavy single-page app & Node.js & MongoDB & 5 & 2 \\
+wayfarer & trip itinerary builder; client drafts and sealed server versions & Node.js & MongoDB & 6 & 2 \\
+\midrule
+& & & & 41 & 8 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Isolation between sessions.} Every signed-in browser context gets its own data
+partition: a schema per session in PostgreSQL, a database per session in MongoDB. This
+resets the application between episodes and keeps parallel runs independent. The database
+drivers are vendored and pinned, so a build needs no network.
+
+\paragraph{Crash-type faults.} Four applications also carry two crash-type faults each
+(Section~\ref{sec:crash}), so that the tuned tester is exercised on the kind of failure the
+external benchmark counts. By the project owner's decision only a subset of applications has
+them. Orbit's were admitted (40 of 40 checks, including Docker); those of helpline, stackroom
+and wayfarer were \pending{admitted / status after the admission reruns}.
+
+\section{The validation suite}
+\label{sec:valsuite}
+
+Eight further applications were planned by an independent agent working only from the
+suite's design contract, without access to the tester's code or results, and built for the
+held-out evaluation (Table~\ref{tab:valsuite}). Each has three seeded faults, 24 in total,
+and each was admitted with 20 of 20 checks. They were evaluated in their first version
+(without a database server or sign-in) and have not been changed since.
+
+\begin{table}[H]
+\centering
+\small
+\caption{The validation suite, used once, for the held-out evaluation.}
+\label{tab:valsuite}
+\begin{tabularx}{\textwidth}{@{}l X l r@{}}
+\toprule
+App & Domain & Stack & Faults \\
+\midrule
+dutyday & a food bank's volunteer rota & Python, SQLite & 3 \\
+fosterly & an application to become a foster carer, saved section by section & Node.js, JSON files & 3 \\
+larder & a personal recipe box with scaling and unit conversion & Node.js, JSON files & 3 \\
+markbook & a teacher's markbook with a student view & Python, SQLite & 3 \\
+quizcraft & a survey editor with undo, redo and a respondent preview & Python, SQLite & 3 \\
+sideline & a football league's results, confirmations and table & Python, SQLite & 3 \\
+skylark & a nature group's bird-sightings register with a paged feed & Node.js, JSON files & 3 \\
+tally & a club election by ranked ballot & Node.js, JSON files & 3 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{The external benchmark}
+\label{sec:external}
+
+To compare with published RL web testers on their own ground, the final evaluation uses the
+subject applications of WebExplor~\cite{zheng2021webexplor} and WebRLED~\cite{gu2025webrled}.
+These are open-source web applications that the WebRLED paper evaluates with branch coverage
+and failure counts over one-hour runs. To keep the comparison honest, nobody looked at these
+applications before the re-tuned tester was frozen. \pending{Subject applications set up,
+instrumentation for coverage and failures, and the pre-registered comparison.}
+
+\section{Admission}
+\label{sec:admission}
+
+Before any agent runs on an application, a harness must admit it mechanically. For each
+fault, a scripted \emph{witness} trace must trigger the fault's assertion on the faulty build
+and not on that fault's control build. The witness must replay deterministically and
+minimise to a short reproduction. Benign traces must trigger nothing. A random walk on the
+clean build must produce no candidate. The faulty build must differ from the clean build
+\emph{only} by the declared patches; a diff audit checks this. The development suite adds a
+data-model contract (seeded record counts per entity), a breadth contract (views, entities,
+interaction patterns), sign-in checks, crash checks and a Docker build. An application that
+fails any check is not used. A diversity check also confirms that the suite's applications
+do not share code (the largest overlap was 3.2\%).
+
+\section{Data split and independence}
+\label{sec:split}
+
+\begin{itemize}
+  \item \textbf{Development} (used for tuning and design decisions): the six benchmark
+        applications, the generated family, Gitea (a real open-source application, as a
+        non-admin user), and the eight development suite applications.
+  \item \textbf{Held-out}: the eight validation applications, used once, by the
+        pre-registered evaluation of Chapter~\ref{chap.7}.
+  \item \textbf{External}: the WebExplor and WebRLED subject applications, used once, by
+        the final comparison.
+\end{itemize}
+
+The split was fixed before any agent ran on the suites. Development results are tuning data.
+They are never presented as evidence of generalisation, and the held-out result belongs to
+the version of the tester frozen before it ran.
+
+\section{Metrics and statistics}
+\label{sec:stats}
+
+\paragraph{Outcome.} For a run with budget $B$, $T$ is the number of interactions until the
+first verified fault. Every browser action counts, including replays and returns. A run that
+finds nothing is right-censored at $T = B$.
+
+\paragraph{Per arm.} The \emph{discovery rate} is the share of runs that verified at least
+one fault. The \emph{restricted mean} of $T$ (RMST~\cite{royston2013rmst}) averages $T$
+over runs with censored runs at $B$. \emph{Distinct faults} counts how many of the seeded
+faults an arm verified in at least one run. Clean-build control runs give the false-positive
+count. For the tuning round two descriptive metrics were added. \emph{Unique failures} counts
+distinct browser-error signatures (console, page and failed-request errors). \emph{JavaScript
+coverage} is the share of the application's client-side code executed, measured with V8's
+precise coverage through the Chrome DevTools Protocol, attached before the first navigation.
+
+\paragraph{Comparisons.} Applications differ far more than seeds do, so the
+\emph{application} is the unit of inference. For two arms, the per-application difference
+in restricted mean $T$ is computed on matched (application, seed) pairs; the median across
+applications summarises it, with a 95\% bootstrap interval resampling
+applications~\cite{agarwal2021precipice}. The stratified log-rank test is
+secondary~\cite{herrera2021seed}. The pre-registered decision rule:
+\begin{itemize}[noitemsep]
+  \item \emph{supported} if the median difference is negative (faster) and its interval
+        excludes zero;
+  \item \emph{refuted} if it is positive and the interval excludes zero;
+  \item otherwise \emph{inconclusive}.
+\end{itemize}
+
+\paragraph{Pre-registration.} For every pre-registered experiment, the hypotheses, arms,
+applications, budget, seeds, analysis code and decision rule were committed to the
+repository, and the commit was tagged before any agent ran on the evaluation
+applications~\cite{klees2018evaluating}. Deviations, such as rerunning a job lost to an
+infrastructure failure, follow rules written in advance and are reported.
+
+\section{Threats to validity}
+\label{sec:threats}
+
+\begin{itemize}
+  \item \textbf{Same developer.} The test applications and their seeded faults were built
+        by the same project as the tester. Independent planning of the validation suite and
+        the external benchmark reduce, but do not remove, this threat.
+  \item \textbf{Seeded faults.} Seeded faults are an incomplete proxy for real
+        faults~\cite{just2014mutants}, and the oracle sees only what was seeded.
+  \item \textbf{Scale.} Eight applications per evaluation leave wide intervals at the
+        application level. Small effects cannot be told apart from noise.
+  \item \textbf{Fault difficulty.} If the held-out faults are shallow, every arm finds them
+        and differences compress. Chapter~\ref{chap.7} reports that this happened.
+  \item \textbf{Tuning leakage.} Decisions made on development data can overfit it; the
+        held-out and external evaluations exist to measure that.
+\end{itemize}

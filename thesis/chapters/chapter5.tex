@@ -1,0 +1,258 @@
+\label{chap.5}
+
+The second-generation tester (v2) follows from the conclusions of Chapter~\ref{chap.4}. It
+makes the page state explicit instead of hoping a network learns it; it remembers reached
+states and returns to them exactly, so depth does not depend on luck; it deviates from the
+happy path deliberately, with operators from standard test design; and it keeps learning
+light and online, inside the application under test. Figure~\ref{fig:hybrid} shows the
+loop. Sections~\ref{sec:abstraction}--\ref{sec:decision} describe its parts,
+Section~\ref{sec:v3-options} the options added for the final tuning round, and
+Section~\ref{sec:devrounds} the development rounds that shaped it.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=0.9cm,
+              text width=2.6cm, font=\small, execute at begin node={\hyphenpenalty=10000}},
+  arr/.style={-{Latex[length=2mm]}, thick}]
+  \node[box] (obs) {Observe page};
+  \node[box, right=0.6cm of obs] (abs) {Abstract into a cell};
+  \node[box, right=0.6cm of abs] (arc) {Archive of cells};
+  \node[box, right=0.6cm of arc, fill=gray!12] (dec) {Decide\\\footnotesize bandit / curiosity / none};
+  \node[box, below=1.1cm of dec] (ret) {Return to cell by exact replay};
+  \node[box, left=0.6cm of ret] (op) {Apply a test operator, follow through};
+  \node[box, left=0.6cm of op] (chk) {Check\\\footnotesize oracle, invariants};
+  \node[box, left=0.6cm of chk] (ver) {Verify and report};
+  \draw[arr] (obs) -- (abs);
+  \draw[arr] (abs) -- (arc);
+  \draw[arr] (arc) -- (dec);
+  \draw[arr] (dec) -- (ret);
+  \draw[arr] (ret) -- (op);
+  \draw[arr] (op) -- (chk);
+  \draw[arr] (chk) -- (ver);
+  \draw[arr, dashed] (op.north) -- ++(0,0.45) -| node[pos=0.25, above, font=\footnotesize]{new pages} (obs.south);
+\end{tikzpicture}
+\caption{The hybrid tester's loop. Every replayed action counts towards the budget.}
+\label{fig:hybrid}
+\end{figure}
+
+\section{Page abstraction}
+\label{sec:abstraction}
+
+Each page becomes a small symbolic \emph{cell}, computed deterministically from the markup:
+
+\begin{itemize}[noitemsep]
+  \item the page kind, from a closed vocabulary (home, list, detail, form, review, outcome,
+        info, login, error, other);
+  \item the URL path with identifiers replaced (\code{/orders/\{n\}});
+  \item the main heading;
+  \item whether the form on the page is empty, partly filled or full;
+  \item whether an error or alert is shown;
+  \item whether the page offers a submit action.
+\end{itemize}
+
+Controls get roles from markup cues: submit, edit, remove, add, back, navigate. Two rules
+came from development evidence. Links and buttons in the page's navigation, header or
+footer are never "submit": they start a new journey rather than complete the current one.
+And role cues match word prefixes, so "Saving" and "Save" share a role.
+
+Experiment 2 showed that the network does not learn these distinctions by itself, and the
+literature finds that the choice of state abstraction drives results in both web
+testing~\cite{chang2023webqt, liu2026webgui} and count-based
+exploration~\cite{tang2017exploration}. The granularity was tuned on development
+applications only: exact field combinations gave 150--225 cells on one application, so form
+state was reduced to empty, partial and full, which gave about 20.
+
+\section{Archive with exact return}
+\label{sec:archive}
+
+The tester keeps an archive of every cell it has reached, with the shortest known action
+sequence to it, its visit count, and the operators already tried there. At the start of an
+excursion it chooses a cell with probability proportional to a weight
+\begin{equation}
+  w(c) = \frac{1}{\sqrt{1 + n_c}}\cdot\Big(1 + \frac{\min(u_c, 10)}{5}\Big)\cdot
+         \frac{1}{1 + 2 f_c}\cdot \rho_c \cdot \Big(1 + \beta_d\,\frac{\min(d_c, 30)}{30}\Big),
+\end{equation}
+where $n_c$ is the number of visits, $u_c$ the number of untried operators, $f_c$ the
+number of failed returns, $\rho_c$ is 1 if enough of the episode remains after reaching the
+cell and 0.1 otherwise, $d_c$ the cell's depth, and $\beta_d = 2$ a preference for depth
+(faults sit many steps into a workflow). The tester then \emph{returns} to the cell by
+replaying its path exactly, and acts from there. This is
+Go-Explore~\cite{ecoffet2021first}: poor exploration comes from forgetting how to get back to
+promising states, and the deep, unfound faults of Experiment 1 were exactly that case.
+
+Paths are pruned of steps that change neither the page nor the cell, and every replayed
+action counts towards the interaction budget, so returning is not a hidden advantage. One
+replay bug, in which pruning removed steps that raised a notice the next step depended on,
+was found on a development application and fixed; failed returns fell from 6 of 14 to 0 of
+28.
+
+\section{Test operators}
+\label{sec:operators}
+
+From a cell the tester applies a \emph{test operator}, a short procedure from standard test
+design~\cite{myers2011art, beizer1990software}:
+
+\begin{itemize}[noitemsep]
+  \item \code{complete\_step}: fill the form validly and submit (the path deeper);
+  \item \code{choose\_option}: take each option of a dropdown in turn (equivalence classes);
+  \item \code{invalid\_input}: enter an empty value, a value of the wrong type, or a boundary
+        minimum or maximum (boundary-value analysis);
+  \item \code{edit\_after\_review}: reach a review step, go back and change an earlier
+        answer (state-transition testing);
+  \item \code{back\_and\_resume}, \code{reload\_and\_resume}: interrupt a flow and continue;
+  \item \code{double\_submit}: submit twice in quick succession;
+  \item \code{collection\_churn}: add and remove items in a collection;
+  \item \code{combine} (development option, not adopted): two deviations on one form, such
+        as a dropdown option together with an invalid field (pairwise testing);
+  \item \code{browse\_list} (option, Section~\ref{sec:v3-options}): sort or filter a list,
+        page forward, and open an item on a later page.
+\end{itemize}
+
+Each operator then \emph{follows through}: it continues the task to submission, for up to
+four submissions, because a deviation usually shows its effect only on a later page. When a
+page offers several submit actions (for example, "Update bag" and "Go to checkout"),
+operators take them in turn on repeat visits. Operators are chosen by technique, not from
+any application's faults. They are how the tester leaves the happy path, which the LLM
+progress reward could not do.
+
+\section{The decision layer}
+\label{sec:decision}
+
+The decision layer chooses which cell to return to and which operator to apply on which
+target. Three variants exist; each is an arm.
+
+\paragraph{No learner (\code{hybrid\_nolearn}).} Cells by the archive weight; at a cell,
+untried (operator, target) pairs first, in random order. This is the non-learning
+reference.
+
+\paragraph{Thompson-sampling bandit (\code{hybrid\_bandit}).} A Bayesian bandit learns,
+online inside the application, which operator pays off on which kind of target. Its keys
+are semantic and back off from specific to general:
+\[
+  (\text{page kind}, \text{operator}, \text{target type}) \;\rightarrow\;
+  (\text{operator}, \text{target type}) \;\rightarrow\; (\text{operator}).
+\]
+Each key has a $\mathrm{Beta}(\alpha, \beta)$ posterior over the probability that the
+operator produces an interesting outcome. A specific key's prior is the more general keys'
+evidence, discounted by 0.3, so a new combination starts from what similar ones did. At each
+decision the tester samples from every candidate's posterior and takes the best
+sample~\cite{thompson1933likelihood, russo2018tutorial}. The reward is the tester's own
+observation, never the seeded-fault oracle: an alert shown, new cells reached, or an
+invariant candidate. A bandit was chosen over a deep network for three reasons:
+Experiment 1 found no gain from bootstrapped multi-step learning; a 2{,}000-interaction run
+makes only about 50--135 decisions, enough for a bandit over a few dozen interpretable keys
+but far too few for a network; and keys based on page kinds, not application text, can carry
+across applications.
+
+\paragraph{Curiosity Q-learning (\code{hybrid\_curiosity}).} This variant adopts the
+literature's design for the free exploration steps between operators. Following
+WebExplor~\cite{zheng2021webexplor} and WebRLED~\cite{gu2025webrled}, a tabular
+Q-learner over cells is rewarded on every step for curiosity:
+\begin{equation}
+  r = \frac{1}{\sqrt{N(c, a, c')}} + 0.5\cdot\mathbb{1}[c' \text{ not yet seen this episode}],
+\end{equation}
+where $N(c, a, c')$ counts the transition. It learns with $\alpha = 0.5$, $\gamma = 0.9$ and
+$\epsilon = 0.1$, with untried actions initialised optimistically at
+$R_{\max}/(1-\gamma)$, so that an action that changes nothing cannot outrank untried ones by
+bootstrapping off itself. Being off-policy, it learns from every transition, about 2{,}000
+updates per run, against about 135 outcomes for the bandit. A standalone tester built only
+from these components (no operators, no bandit) was also run, as
+\code{dev\_curiosity\_rl}.
+
+\section{Options for the final tuning round}
+\label{sec:v3-options}
+
+After the held-out evaluation (Chapter~\ref{chap.7}) and the rebuild of the development
+applications, three options were added, each switched on in its own tuning arm:
+
+\begin{itemize}
+  \item \textbf{\code{browse\_list}} (\code{dev\_v3\_browse}). The held-out evaluation
+        exposed a blind spot: the operators work on forms, and no operator pages through a
+        list. This operator applies a sort or filter control, presses "next" or "load more"
+        up to twice, and opens an item on the later page.
+  \item \textbf{Custom clickables} (\code{dev\_v3\_clickables}). The registry also offers
+        elements made clickable by ARIA roles, click handlers or styling, such as kanban
+        cards and tab strips.
+  \item \textbf{Failure feedback} (\code{dev\_v3\_failfeedback}). Cells where a browser
+        error followed an action get extra archive weight (up to $\times 3$), since code
+        that already misbehaves is likelier to misbehave again nearby.
+\end{itemize}
+
+The curiosity variant (\code{dev\_v3\_curiosity}) is the fourth tuning arm.
+
+\section{Development rounds}
+\label{sec:devrounds}
+
+The design was tuned on development data only: the six benchmark applications, a generated
+application family, Gitea, and the eight development suite applications
+(Chapter~\ref{chap.6}). Each round compared arms on the same applications and seeds, and
+ended with a recorded decision. Table~\ref{tab:devrounds} lists them.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Development rounds of the hybrid tester and their decisions.}
+\label{tab:devrounds}
+\begin{tabularx}{\textwidth}{@{}lX X@{}}
+\toprule
+Round & Tested & Decision \\
+\midrule
+Benchmark 1 & bandit, no learner, random (4 apps) & discarded (code changed mid-round); replay bug found and fixed \\
+Benchmark 2 & bandit vs no learner, with clean builds (6 apps) & validation invariant narrowed; form fixes \\
+Benchmark 3 & free-exploration variants & depth preference and weighted exploration adopted \\
+Benchmark 4--5 & which submit actions a cell records & cells record \emph{whether} a submit is offered \\
+Benchmark 6--7 & whole-word vs prefix matching of role cues & prefix matching adopted \\
+Suite 1 & bandit vs no learner, 8 suite apps & site navigation never submits; submit actions taken in turn \\
+Suite 2 & the same after the fix, 14 apps & kept; learner not ahead \\
+Suite 3 & two corrected bandit rewards (novelty, surprise) & no difference: reward not the bottleneck \\
+Suite 4 & pairwise operator + technique-first choice & worse; not adopted \\
+Suite 5 & curiosity Q-learning, in the hybrid and standalone & neither adopted \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{All arms on the same runs: suite rounds 2--5, 14 applications $\times$ 3 seeds.
+Difference is the per-application mean $T$ against \code{hybrid\_nolearn}, with a bootstrap
+interval over applications (negative = faster).}
+\label{tab:devarms}
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+Arm & Found a fault & Median $T$ & Mean $T$ & Difference [95\% interval] \\
+\midrule
+\code{hybrid\_nolearn} & 32 / 42 & 742 & 889 & reference \\
+\code{hybrid\_bandit} & 30 / 42 & 335 & 840 & $-49$ $[-279, +190]$ \\
+\code{dev\_bandit\_surprise} & 31 / 42 & 586 & 844 & $-46$ $[-257, +143]$ \\
+\code{dev\_bandit\_novelty} & 31 / 42 & 486 & 854 & $-35$ $[-252, +190]$ \\
+\code{dev\_pairwise\_bandit} & 27 / 42 & 757 & 943 & $+53$ $[-121, +227]$ \\
+\code{dev\_hybrid\_curiosity} & 29 / 42 & 612 & 978 & $+89$ $[-38, +202]$ \\
+\code{dev\_pairwise\_nolearn} & 26 / 40 & 1{,}069 & 1{,}046 & $+119$ $[-37, +281]$ \\
+\code{dev\_curiosity\_rl} & 17 / 42 & 2{,}000 & 1{,}313 & $+423$ $[+142, +744]$ \\
+\code{random} & 18 / 42 & 2{,}000 & 1{,}355 & $+465$ $[+178, +790]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Is the learner helping?} The top four arms in Table~\ref{tab:devarms} are
+statistically tied. \code{hybrid\_nolearn} verified a fault in the most runs, and
+\code{hybrid\_bandit} was fastest when it found one. No learner variant improved on no
+learner: three bandit reward signals, the pairwise operator, and curiosity Q-learning. The
+standalone curiosity tester was fast on shallow faults but never found the deep ones, and
+was significantly worse than the hybrid, level with random. It is a tester built from the
+published components, not a reproduction of WebExplor or WebRLED; their published results
+(coverage and crash-type failures over long runs) are not contradicted by it.
+
+The design leaves the learner little to decide, for four reasons. On about 5 of the 14
+applications a fault is found within the first few decisions, before learning can matter.
+The faults no arm finds need two deviations in one walk (for example, express delivery
+\emph{and} an empty address), which choosing one operator more cleverly cannot produce. The
+option space is small: about 28 cells times 8 operators can mostly be covered in about 135
+decisions, so trying untried options systematically already does most of the work. And
+operators with many targets crowd out the rest: invalid input took 30\% of all decisions
+because pages have many fields. This agrees with the Humanoid authors' observation that
+their learned model was not the main reason for their gains~\cite{li2019humanoid}: on
+functional faults, the structure (abstraction, archive with exact return, operators) does
+the work.

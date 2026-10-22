@@ -1,0 +1,35 @@
+Web applications fail in ways that are easy to describe and hard to find: a total that
+ignores a changed quantity, a validation rule that holds on one path and not on another, a
+value that is lost on reload. Automated exploratory testers can reach such states, but they
+face two problems. They must decide where to go in a large, stateful interface where the
+decisive actions are many steps deep, and they must prove what they find, or their reports
+are noise. This thesis builds and evaluates an automated functional tester for web
+applications that uses reinforcement learning (RL). It confirms a fault only when the fault
+reproduces twice in fresh browser sessions, is absent from a control build without that
+fault, and survives delta-debugging minimisation.
+
+The work has two generations. The first (v1) is an action-conditioned dueling double deep
+Q-network that scores every available browser action, with prioritised multi-step replay, a
+residual head for online adaptation, and a reward shaped by a local large language model
+(LLM) that judges task progress. Two pre-registered experiments tested it. Pretraining on
+five applications did not speed up fault discovery on a sixth (median difference 0
+interactions, 95\% interval $[-749, +290]$). A diagnostic over twelve generated application
+variants found that the network does not learn which action helps in which state
+(within-label AUROC 0.51). Post-hoc checks showed that the LLM's progress score and its page
+labels did not generalise beyond the data they were tuned on.
+
+These findings shaped the second generation (v2), a hybrid tester. It abstracts pages
+explicitly, keeps an archive of reached states that it returns to by exact replay
+(Go-Explore), and applies test operators from standard test design. A light online learner
+(a Thompson-sampling bandit, or count-based curiosity Q-learning) decides which operator to
+try. On eight held-out applications, in a pre-registered evaluation of 160 runs with 32
+clean-build controls, the hybrid arms verified the most distinct faults (19 and 18 of 24,
+against 13 for random exploration) with zero false positives. All four pre-registered
+comparisons of time to first fault were inconclusive.
+\pending{Results of tuning round v3 on the rebuilt full-stack development applications, and
+of the external comparison with WebExplor and WebRLED on their subject applications; final
+sentence on the overall conclusion.}
+
+\vspace{0.5cm}
+\noindent\textbf{Keywords:} automated web testing, reinforcement learning, deep Q-network,
+Go-Explore, Thompson sampling, test oracle, seeded faults, survival analysis.

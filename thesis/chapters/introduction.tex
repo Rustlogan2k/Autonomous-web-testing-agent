@@ -1,0 +1,102 @@
+\label{chap.1}
+
+\section{Motivation}
+
+Web applications carry much of everyday business: shops, banking, booking, support desks,
+internal tools. Their functional faults are rarely crashes. More often a page shows the
+wrong total after a quantity changes, accepts an input on one path that it rejects on
+another, or loses a value when the page is reloaded. Such faults sit behind sequences of
+interactions: a user must sign in, fill a form, reach a review step, go back and change
+something. A tester has to perform the right sequence and then notice that the result is
+wrong.
+
+Writing scripted end-to-end tests for every such sequence is expensive, and the scripts
+cover only what their authors thought of. Automated exploratory testing instead drives a real
+browser through the application and searches for misbehaviour. The simplest explorer clicks
+at random. More capable explorers learn where to go, and reinforcement learning (RL) is a
+natural fit: the tester is an agent, the application is its environment, and reaching new or
+suspicious behaviour can be rewarded. Several RL web testers have been published, including
+WebExplor~\cite{zheng2021webexplor}, WebQT~\cite{chang2023webqt} and
+WebRLED~\cite{gu2025webrled}.
+
+Two problems limit these testers. The first is \emph{where to go}. The decisive actions are
+often many steps into a workflow, the set of available actions changes on every page, and a
+reward based on novelty pays for reaching new pages, not for testing them. The second is
+\emph{what counts as a fault}. Published RL web testers report errors in the browser console
+as failures~\cite{zheng2021webexplor, gu2025webrled}. That is an implicit
+oracle~\cite{barr2015oracle}: it cannot see a page that renders the wrong content without an
+error, and it cannot say whether a reported error is reproducible or matters.
+
+\section{Problem statement}
+
+This thesis asks whether reinforcement learning can make an automated functional tester for
+web applications find \emph{verified} faults sooner, and under what design. A fault is
+verified when it reproduces twice in fresh browser sessions, is absent from a control build
+that lacks that one fault, and survives delta-debugging minimisation~\cite{zeller2002simplifying}.
+The main measure is the number of browser interactions until the first verified fault, with
+runs that find nothing treated as right-censored at the budget.
+
+\section{Objectives}
+
+\begin{enumerate}
+  \item Build a browser environment and a deterministic, replay-verified oracle for seeded
+        faults that makes false positives measurable and rare.
+  \item Build a deep RL tester and test, under pre-registration, whether pretraining on other
+        applications transfers to a new one, and whether the network learns which action
+        helps in which state.
+  \item Measure whether a small, local large language model (LLM) is a useful source of
+        reward or page labels for testing.
+  \item Use those findings to design a tester whose exploration does not depend on what the
+        deep network failed to learn, and evaluate it on held-out applications under
+        pre-registration.
+  \item Compare the final tester with published RL web testers on their own subject
+        applications. \pending{Outcome of this objective.}
+  \item Package the tester as a usable product: a command-line tool and a web interface that
+        test a URL, a static site, a Dockerfile repository or a bundled application and
+        produce a report with evidence.
+\end{enumerate}
+
+\section{Contributions}
+
+\begin{enumerate}
+  \item \textbf{A verified-fault oracle for web testing.} Each seeded fault has its own
+        control build. A candidate counts only if it reproduces twice, does not occur on
+        that control, and survives minimisation. The oracle produced zero false positives in
+        every clean-build control run of every evaluation.
+  \item \textbf{A pre-registered transfer experiment for deep RL web testing}, using
+        leave-one-application-out evaluation and censoring-aware statistics. Its result is
+        negative: pretraining gave no measurable benefit.
+  \item \textbf{A pre-registered diagnostic separating contextual learning from
+        memorisation.} It uses a generated application family and probe states labelled by
+        execution, and shows that the v1 network does not learn context.
+  \item \textbf{Two negative results for small local LLMs in testing}, each measured
+        against ground truth: as a progress reward, and as a page and control labeller.
+  \item \textbf{A hybrid tester} combining page abstraction, an archive with exact return,
+        test operators from standard test design, and a light online learner. It was
+        evaluated on eight held-out applications under pre-registration, and verified the
+        most distinct faults with zero false positives.
+  \item \textbf{Sixteen test applications with real backends and seeded faults}, each
+        admitted by mechanical checks. The eight development applications run on PostgreSQL
+        or MongoDB, with sign-in and crash-type faults.
+  \item \pending{External comparison with WebExplor and WebRLED.}
+\end{enumerate}
+
+\section{Scope}
+
+The project began with two agents: one for security testing and one for functional testing.
+The security agent was dropped early so that one agent could be built and evaluated end to
+end. \textbf{Security testing is out of scope}; this thesis is about functional testing.
+The applications are small to medium web applications with seeded faults. Claims about
+production sites or real-world fault rates are outside what the evidence supports, and
+Chapter~\ref{chap.6} states the limits on generalisation.
+
+\section{Organisation of the thesis}
+
+Chapter~\ref{chap.2} reviews RL web and GUI testing, the deep RL and exploration methods
+used here, LLM-derived rewards, test oracles and evaluation statistics.
+Chapter~\ref{chap.3} describes the system around the tester: the browser environment, the
+action registry, the verified-fault oracle and the product layer. Chapter~\ref{chap.4}
+presents the first-generation deep RL tester and the experiments that tested it.
+Chapter~\ref{chap.5} presents the hybrid tester designed from those results, and its
+development rounds. Chapter~\ref{chap.6} describes the test applications and the evaluation
+methodology. Chapter~\ref{chap.7} reports the evaluations. Chapter~\ref{chap.8} concludes.

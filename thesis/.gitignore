@@ -1,0 +1,10 @@
+# LaTeX build files (the PDF is committed so drafts can be read without a TeX install)
+*.aux
+*.log
+*.toc
+*.lof
+*.lot
+*.bbl
+*.blg
+*.out
+*.synctex.gz
