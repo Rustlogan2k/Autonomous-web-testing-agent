@@ -7,6 +7,9 @@
 name: External comparison
 
 on:
+  # A push to this branch runs the default plan (the inputs' defaults below).
+  push:
+    branches: [ext-gha]
   workflow_dispatch:
     inputs:
       apps:
@@ -33,9 +36,9 @@ jobs:
     steps:
       - id: plan
         env:
-          APPS: ${{ inputs.apps }}
-          ARMS: ${{ inputs.arms }}
-          SEEDS: ${{ inputs.seeds }}
+          APPS: ${{ inputs.apps || 'phoenix retroboard petclinic' }}
+          ARMS: ${{ inputs.arms || 'hybrid_final hybrid_curiosity random' }}
+          SEEDS: ${{ inputs.seeds || '0 1 2' }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import itertools, json, os
@@ -75,7 +78,7 @@ jobs:
           python -m web_testing_agent.hybrid.external --out-dir runs/ext-eval-gha \
             --apps-file configs/external_apps.json --apps ${{ matrix.app }} \
             --arms ${{ matrix.arm }} --seeds ${{ matrix.seed }} --workers 1 \
-            --time-budget ${{ inputs.time_budget }}
+            --time-budget ${{ inputs.time_budget || '3600' }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:

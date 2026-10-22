@@ -290,6 +290,16 @@ changed).**
     have taken about 18 h.
   - The first laptop launch, at 00:48, was stopped after 10 minutes so the laptop would run
     only its three applications. Those partial runs were discarded unread.
+- **Backup and replication on GitHub Actions (owner, 2026-10-23, before any result):**
+  the AWS applications (Phoenix, Retroboard, Petclinic) also run on GitHub-hosted runners
+  (`.github/workflows/external-comparison.yml`, branch `ext-gha`; one job per run; 4 vCPU,
+  16 GB). **Which results count is fixed now, by completion, never by score:**
+  - AWS is primary.
+  - An application's GitHub runs replace its AWS runs only if AWS does not complete all 9 of
+    that application's runs. All 9 are then taken from GitHub, so an application is never
+    mixed across platforms.
+  - If both platforms complete, the GitHub runs are reported separately, as a replication on
+    other hardware.
 - **Smoke check:** 2-minute runs on Pagekit, Phoenix and Petclinic confirmed the deadline,
   coverage collection and failure counting. Those runs are not results.
 
