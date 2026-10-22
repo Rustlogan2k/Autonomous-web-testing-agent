@@ -279,6 +279,17 @@ changed).**
   call a development live-reload server (`localhost:35729`) and web analytics. Left
   alone, these add the same console failure to every run of every arm, whatever the
   tester does. This is a deviation, declared here before any run.
+- **Two machines (decided 2026-10-23, after the first launch, before any result):**
+  - Dimeshift, Pagekit and Splittypie run on the development laptop (`runs/ext-eval`, 3 at a
+    time).
+  - Phoenix, Retroboard and Petclinic run on four AWS `m7i-flex.large` spot instances, one
+    run at a time each (`runs/ext-eval-aws1..4`, `cloud/aws/launch_external.sh`).
+  - Every run of a given application uses the same kind of machine, so the arms are compared
+    on equal hardware within an application.
+  - Why: the laptop's memory allows three parallel runs, so finishing on the laptop would
+    have taken about 18 h.
+  - The first laptop launch, at 00:48, was stopped after 10 minutes so the laptop would run
+    only its three applications. Those partial runs were discarded unread.
 - **Smoke check:** 2-minute runs on Pagekit, Phoenix and Petclinic confirmed the deadline,
   coverage collection and failure counting. Those runs are not results.
 
