@@ -47,8 +47,8 @@ COMMIT="$(git rev-parse HEAD)"; SHORT="${COMMIT:0:10}"
 # The plan as runner invocations and the application images it needs.
 COMMANDS=""
 IMAGES=""
-IFS=';' read -ra GROUPS <<< "$PLAN"
-for GROUP in "${GROUPS[@]}"; do
+IFS=';' read -ra PLAN_GROUPS <<< "$PLAN"
+for GROUP in "${PLAN_GROUPS[@]}"; do
   IFS=':' read -r G_APPS G_ARMS G_SEEDS <<< "$GROUP"
   [ -n "$G_APPS" ] && [ -n "$G_ARMS" ] && [ -n "$G_SEEDS" ] || { echo "bad plan group: $GROUP" >&2; exit 2; }
   COMMANDS+="python -m web_testing_agent.hybrid.external --out-dir runs/$RUN_NAME"
