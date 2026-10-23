@@ -57,7 +57,7 @@
       "detail": {
         "passed": true,
         "summary": [
-          "Ran 17 tests in 2.631s",
+          "Ran 18 tests in 3.451s",
           "OK"
         ],
         "pass_lines": null,
@@ -89,9 +89,9 @@
         "passed": true,
         "warn": false,
         "samples": 20,
-        "p50_ms": 79.9,
-        "p95_ms": 101.8,
-        "max_ms": 127.9,
+        "p50_ms": 82.7,
+        "p95_ms": 92.3,
+        "max_ms": 95.0,
         "limit_ms": 300.0,
         "refused": 0,
         "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
@@ -201,7 +201,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 82.5
+        "seconds": 89.4
       }
     },
     {
@@ -230,7 +230,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 78.5
+        "seconds": 84.3
       }
     },
     {
@@ -258,11 +258,76 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 44.5
+        "seconds": 48.0
+      }
+    },
+    {
+      "name": "fault STK-4",
+      "passed": true,
+      "detail": {
+        "fault_id": "STK-4",
+        "subtype": "state-transition",
+        "oracle": "extension",
+        "fault_class": "broken_transition",
+        "witness_length": 4,
+        "crash": "uncaught-exception",
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "console_or_request_error: violated=True inconclusive=False step 4 page: Cannot read properties of null (reading 'sku')"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "minimized_has_context": true,
+        "passed": true,
+        "seconds": 108.0
+      }
+    },
+    {
+      "name": "fault STK-5",
+      "passed": true,
+      "detail": {
+        "fault_id": "STK-5",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 4,
+        "crash": "server-error",
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "console_or_request_error: violated=True inconclusive=False step 4 request: HTTP 500 POST http://127.0.0.1:64122/api/bulk"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "minimized_has_context": true,
+        "passed": true,
+        "seconds": 103.8
       }
     },
     {
       "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "crash_faults_silent_on_workflows",
       "passed": true,
       "detail": []
     },
@@ -274,37 +339,38 @@
         "seed": 0,
         "raw_candidates": {},
         "errors": [],
+        "error_count": 0,
         "foreign_requests": [],
         "responses": {
           "count": 201,
-          "p50_ms": 10.3,
-          "p95_ms": 18.4,
-          "max_ms": 45.7,
+          "p50_ms": 10.0,
+          "p95_ms": 18.9,
+          "max_ms": 43.4,
           "slowest": [
             [
               "POST",
               "/api/bulk",
-              45.7
+              43.4
             ],
             [
               "POST",
               "/api/bulk",
-              39.6
+              37.9
             ],
             [
               "POST",
               "/api/bulk",
-              33.9
+              33.6
             ],
             [
               "POST",
               "/api/bulk",
-              30.3
+              28.9
             ],
             [
               "POST",
               "/api/bulk",
-              27.0
+              23.6
             ]
           ],
           "limits_ms": {
@@ -326,34 +392,34 @@
       "passed": true,
       "detail": {
         "count": 201,
-        "p50_ms": 10.3,
-        "p95_ms": 18.4,
-        "max_ms": 45.7,
+        "p50_ms": 10.0,
+        "p95_ms": 18.9,
+        "max_ms": 43.4,
         "slowest": [
           [
             "POST",
             "/api/bulk",
-            45.7
+            43.4
           ],
           [
             "POST",
             "/api/bulk",
-            39.6
+            37.9
           ],
           [
             "POST",
             "/api/bulk",
-            33.9
+            33.6
           ],
           [
             "POST",
             "/api/bulk",
-            30.3
+            28.9
           ],
           [
             "POST",
             "/api/bulk",
-            27.0
+            23.6
           ]
         ],
         "limits_ms": {
@@ -447,11 +513,11 @@
       "detail": {
         "image": "e2e-suite/stackroom:clean",
         "build_ok": true,
-        "build_seconds": 1.1,
+        "build_seconds": 0.8,
         "build_tail": [
           "#11 naming to docker.io/e2e-suite/stackroom:clean done",
-          "#11 unpacking to docker.io/e2e-suite/stackroom:clean 0.0s done",
-          "#11 DONE 0.1s"
+          "#11 unpacking to docker.io/e2e-suite/stackroom:clean 0.1s done",
+          "#11 DONE 0.2s"
         ],
         "route": "host",
         "attempts": [
@@ -467,7 +533,7 @@
               "entry_path": "/stock",
               "container_sha": "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6",
               "host_sha": "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6",
-              "sign_in_ms": 46.1
+              "sign_in_ms": 58.7
             }
           }
         ],
@@ -481,7 +547,7 @@
           "entry_path": "/stock",
           "container_sha": "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6",
           "host_sha": "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6",
-          "sign_in_ms": 46.1
+          "sign_in_ms": 58.7
         },
         "image_mb": 44.5,
         "passed": true
@@ -498,7 +564,7 @@
         "entry_path": "/stock",
         "container_sha": "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6",
         "host_sha": "76ed3584e79c252c87b0e8d25aab31a5723e56c8a4636349322740c1d61a91f6",
-        "sign_in_ms": 46.1
+        "sign_in_ms": 58.7
       }
     },
     {
@@ -508,46 +574,40 @@
         "profile": {
           "languages": [
             {
-              "language": "Python",
-              "files": 3,
-              "bytes": 39506,
-              "share": 0.3495
-            },
-            {
               "language": "JSON",
               "files": 5,
-              "bytes": 36328,
-              "share": 0.3214
+              "bytes": 40199,
+              "share": 0.3593
+            },
+            {
+              "language": "Python",
+              "files": 3,
+              "bytes": 39746,
+              "share": 0.3553
             },
             {
               "language": "JavaScript",
               "files": 1,
               "bytes": 21400,
-              "share": 0.1893
-            },
-            {
-              "language": "Markdown",
-              "files": 1,
-              "bytes": 5265,
-              "share": 0.0466
+              "share": 0.1913
             },
             {
               "language": "SQL",
               "files": 1,
               "bytes": 4048,
-              "share": 0.0358
+              "share": 0.0362
             },
             {
               "language": "CSS",
               "files": 1,
               "bytes": 3731,
-              "share": 0.033
+              "share": 0.0334
             },
             {
               "language": "HTML",
               "files": 3,
               "bytes": 2746,
-              "share": 0.0243
+              "share": 0.0245
             }
           ],
           "frameworks": [],
@@ -559,7 +619,7 @@
         },
         "build_plan": {
           "kind": "dockerfile",
-          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\stackroom\\clean\\Dockerfile"
+          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\e2e_suite\\.build\\stackroom\\clean\\Dockerfile"
         },
         "product_can_build": true,
         "matches_expectation": true,
@@ -637,6 +697,18 @@
         "lines_removed": 2,
         "lines_added": 1,
         "chars_changed": 104
+      },
+      "STK-4": {
+        "file": "src/static/stackroom.js",
+        "lines_removed": 2,
+        "lines_added": 2,
+        "chars_changed": 10
+      },
+      "STK-5": {
+        "file": "src/inventory.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 44
       }
     },
     "data_model": {
@@ -939,9 +1011,9 @@
         "passed": true,
         "warn": false,
         "samples": 20,
-        "p50_ms": 79.9,
-        "p95_ms": 101.8,
-        "max_ms": 127.9,
+        "p50_ms": 82.7,
+        "p95_ms": 92.3,
+        "max_ms": 95.0,
         "limit_ms": 300.0,
         "refused": 0,
         "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
@@ -987,7 +1059,11 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:64113/stock?category=Fasteners&q=&sort=sku&dir=asc&page=1",
+          "http://127.0.0.1:64113/stock?category=all&q=&sort=sku&dir=asc&page=1"
+        ]
       },
       {
         "name": "adjust one item's stock level [default vocabulary]",
@@ -998,7 +1074,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:64113/items/SKU-105",
+          "http://127.0.0.1:64113/items/SKU-105/adjust?at=4&category=all&q=&sort=sku&dir=asc",
+          "http://127.0.0.1:64113/stock?category=all&q=&sort=sku&dir=asc&page=1"
+        ]
       },
       {
         "name": "archive an item, then find it in the audit log [default vocabulary]",
@@ -1009,7 +1090,11 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:64113/log",
+          "http://127.0.0.1:64113/stock?category=all&q=&sort=sku&dir=asc&page=1"
+        ]
       },
       {
         "name": "set a lamp's stock inline, then check the audit log [default vocabulary]",
@@ -1020,7 +1105,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:64113/log",
+          "http://127.0.0.1:64113/stock?category=Lighting&q=&sort=sku&dir=asc&page=1",
+          "http://127.0.0.1:64113/stock?category=all&q=&sort=sku&dir=asc&page=1"
+        ]
       },
       {
         "name": "sort by stock to find the scarcest lines [default vocabulary]",
@@ -1031,7 +1121,11 @@
         "committed_state_changed": false,
         "expected_state_change": false,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:64113/stock?category=all&q=&sort=sku&dir=asc&page=1",
+          "http://127.0.0.1:64113/stock?category=all&q=&sort=stock&dir=asc&page=1"
+        ]
       },
       {
         "name": "restock every item on the second page [default vocabulary]",
@@ -1042,7 +1136,11 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:64113/stock?category=all&q=&sort=sku&dir=asc&page=1",
+          "http://127.0.0.1:64113/stock?category=all&q=&sort=sku&dir=asc&page=2"
+        ]
       },
       {
         "name": "restock two fastener lines in bulk [alt vocabulary]",
@@ -1053,7 +1151,11 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55483/stock?category=Fasteners&q=&sort=sku&dir=asc&page=1",
+          "http://127.0.0.1:55483/stock?category=all&q=&sort=sku&dir=asc&page=1"
+        ]
       },
       {
         "name": "adjust one item's stock level [alt vocabulary]",
@@ -1064,7 +1166,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55483/items/SKU-105",
+          "http://127.0.0.1:55483/items/SKU-105/adjust?at=4&category=all&q=&sort=sku&dir=asc",
+          "http://127.0.0.1:55483/stock?category=all&q=&sort=sku&dir=asc&page=1"
+        ]
       },
       {
         "name": "archive an item, then find it in the audit log [alt vocabulary]",
@@ -1075,7 +1182,11 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55483/log",
+          "http://127.0.0.1:55483/stock?category=all&q=&sort=sku&dir=asc&page=1"
+        ]
       },
       {
         "name": "set a lamp's stock inline, then check the audit log [alt vocabulary]",
@@ -1086,7 +1197,12 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55483/log",
+          "http://127.0.0.1:55483/stock?category=Lighting&q=&sort=sku&dir=asc&page=1",
+          "http://127.0.0.1:55483/stock?category=all&q=&sort=sku&dir=asc&page=1"
+        ]
       },
       {
         "name": "sort by stock to find the scarcest lines [alt vocabulary]",
@@ -1097,7 +1213,11 @@
         "committed_state_changed": false,
         "expected_state_change": false,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55483/stock?category=all&q=&sort=sku&dir=asc&page=1",
+          "http://127.0.0.1:55483/stock?category=all&q=&sort=stock&dir=asc&page=1"
+        ]
       },
       {
         "name": "restock every item on the second page [alt vocabulary]",
@@ -1108,7 +1228,11 @@
         "committed_state_changed": true,
         "expected_state_change": true,
         "errors": [],
-        "foreign_requests": []
+        "foreign_requests": [],
+        "urls": [
+          "http://127.0.0.1:55483/stock?category=all&q=&sort=sku&dir=asc&page=1",
+          "http://127.0.0.1:55483/stock?category=all&q=&sort=sku&dir=asc&page=2"
+        ]
       }
     ],
     "state_dependent": [
@@ -1198,7 +1322,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 82.5
+        "seconds": 89.4
       },
       {
         "fault_id": "STK-2",
@@ -1244,7 +1368,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 78.5
+        "seconds": 84.3
       },
       {
         "fault_id": "STK-3",
@@ -1281,7 +1405,103 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 44.5
+        "seconds": 48.0
+      },
+      {
+        "fault_id": "STK-4",
+        "subtype": "state-transition",
+        "oracle": "extension",
+        "fault_class": "broken_transition",
+        "witness_length": 4,
+        "crash": "uncaught-exception",
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "console_or_request_error: violated=True inconclusive=False step 4 page: Cannot read properties of null (reading 'sku')"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "adjust-SKU-105"
+          },
+          {
+            "type": "TYPE",
+            "id": "new-stock",
+            "params": {
+              "category": "valid_typical"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "commit-adjust"
+          },
+          {
+            "type": "REFRESH"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "minimized_has_context": true,
+        "passed": true,
+        "seconds": 108.0
+      },
+      {
+        "fault_id": "STK-5",
+        "subtype": "calculation",
+        "oracle": "extension",
+        "fault_class": "calculation_error",
+        "witness_length": 4,
+        "crash": "server-error",
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "console_or_request_error: violated=True inconclusive=False step 4 request: HTTP 500 POST http://127.0.0.1:64122/api/bulk"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "TYPE",
+            "id": "stock-SKU-101",
+            "params": {
+              "category": "boundary_max"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "pick-SKU-101"
+          },
+          {
+            "type": "SELECT",
+            "id": "bulk-action",
+            "params": {
+              "option": "restock"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "bulk-apply"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "minimized_has_context": true,
+        "passed": true,
+        "seconds": 103.8
       }
     ],
     "benign": [
@@ -1328,42 +1548,81 @@
         "passed": true
       }
     ],
+    "crash_silent_on_workflows": [
+      {
+        "workflow": "restock two fastener lines in bulk",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "adjust one item's stock level",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "archive an item, then find it in the audit log",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "set a lamp's stock inline, then check the audit log",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "sort by stock to find the scarcest lines",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "restock every item on the second page",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
     "random_walk_clean": {
       "steps": 150,
       "seed": 0,
       "raw_candidates": {},
       "errors": [],
+      "error_count": 0,
       "foreign_requests": [],
       "responses": {
         "count": 201,
-        "p50_ms": 10.3,
-        "p95_ms": 18.4,
-        "max_ms": 45.7,
+        "p50_ms": 10.0,
+        "p95_ms": 18.9,
+        "max_ms": 43.4,
         "slowest": [
           [
             "POST",
             "/api/bulk",
-            45.7
+            43.4
           ],
           [
             "POST",
             "/api/bulk",
-            39.6
+            37.9
           ],
           [
             "POST",
             "/api/bulk",
-            33.9
+            33.6
           ],
           [
             "POST",
             "/api/bulk",
-            30.3
+            28.9
           ],
           [
             "POST",
             "/api/bulk",
-            27.0
+            23.6
           ]
         ],
         "limits_ms": {
@@ -1390,46 +1649,40 @@
       "profile": {
         "languages": [
           {
-            "language": "Python",
-            "files": 3,
-            "bytes": 39506,
-            "share": 0.3495
-          },
-          {
             "language": "JSON",
             "files": 5,
-            "bytes": 36328,
-            "share": 0.3214
+            "bytes": 40199,
+            "share": 0.3593
+          },
+          {
+            "language": "Python",
+            "files": 3,
+            "bytes": 39746,
+            "share": 0.3553
           },
           {
             "language": "JavaScript",
             "files": 1,
             "bytes": 21400,
-            "share": 0.1893
-          },
-          {
-            "language": "Markdown",
-            "files": 1,
-            "bytes": 5265,
-            "share": 0.0466
+            "share": 0.1913
           },
           {
             "language": "SQL",
             "files": 1,
             "bytes": 4048,
-            "share": 0.0358
+            "share": 0.0362
           },
           {
             "language": "CSS",
             "files": 1,
             "bytes": 3731,
-            "share": 0.033
+            "share": 0.0334
           },
           {
             "language": "HTML",
             "files": 3,
             "bytes": 2746,
-            "share": 0.0243
+            "share": 0.0245
           }
         ],
         "frameworks": [],
@@ -1441,7 +1694,7 @@
       },
       "build_plan": {
         "kind": "dockerfile",
-        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\stackroom\\clean\\Dockerfile"
+        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\e2e_suite\\.build\\stackroom\\clean\\Dockerfile"
       },
       "product_can_build": true,
       "matches_expectation": true,
@@ -1449,9 +1702,9 @@
     }
   },
   "admitted": true,
-  "checks_run": 37,
+  "checks_run": 40,
   "checks_failed": [],
   "browser_checks_run": true,
   "docker_checks_run": true,
-  "wall_clock_s": 487.2
+  "wall_clock_s": 758.8
 }

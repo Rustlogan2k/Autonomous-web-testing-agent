@@ -62,7 +62,7 @@
       "detail": {
         "passed": true,
         "summary": [
-          "Ran 22 tests in 5.200s",
+          "Ran 23 tests in 6.677s",
           "OK"
         ],
         "pass_lines": null,
@@ -94,9 +94,9 @@
         "passed": true,
         "warn": false,
         "samples": 20,
-        "p50_ms": 91.3,
-        "p95_ms": 100.0,
-        "max_ms": 113.2,
+        "p50_ms": 91.9,
+        "p95_ms": 108.2,
+        "max_ms": 110.6,
         "limit_ms": 300.0,
         "refused": 0,
         "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
@@ -206,7 +206,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 137.7
+        "seconds": 150.3
       }
     },
     {
@@ -235,7 +235,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 77.9
+        "seconds": 84.5
       }
     },
     {
@@ -263,7 +263,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 65.0
+        "seconds": 70.0
       }
     },
     {
@@ -291,7 +291,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 90.5
+        "seconds": 97.2
       }
     },
     {
@@ -319,11 +319,76 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 91.8
+        "seconds": 98.5
+      }
+    },
+    {
+      "name": "fault HELP-6",
+      "passed": true,
+      "detail": {
+        "fault_id": "HELP-6",
+        "subtype": "stale-state",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 10,
+        "crash": "broken-resource",
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "console_or_request_error: violated=True inconclusive=False step 10 request: HTTP 404 GET http://127.0.0.1:55678/tickets/105"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 10,
+        "minimization_trials": 27,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "minimized_has_context": true,
+        "passed": true,
+        "seconds": 417.0
+      }
+    },
+    {
+      "name": "fault HELP-7",
+      "passed": true,
+      "detail": {
+        "fault_id": "HELP-7",
+        "subtype": "missing-validation",
+        "oracle": "extension",
+        "fault_class": "constraint_bypass",
+        "witness_length": 4,
+        "crash": "server-error",
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "console_or_request_error: violated=True inconclusive=False step 4 request: HTTP 500 POST http://127.0.0.1:55678/replies/r3/title"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "minimized_has_context": true,
+        "passed": true,
+        "seconds": 111.6
       }
     },
     {
       "name": "benign_traces_silent_on_both_builds",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "crash_faults_silent_on_workflows",
       "passed": true,
       "detail": []
     },
@@ -335,37 +400,38 @@
         "seed": 0,
         "raw_candidates": {},
         "errors": [],
+        "error_count": 0,
         "foreign_requests": [],
         "responses": {
-          "count": 195,
-          "p50_ms": 5.8,
-          "p95_ms": 22.7,
-          "max_ms": 32.2,
+          "count": 213,
+          "p50_ms": 5.9,
+          "p95_ms": 23.2,
+          "max_ms": 35.4,
           "slowest": [
             [
               "POST",
               "/tickets/101/handoff",
-              32.2
+              35.4
             ],
             [
               "POST",
               "/tickets/101/resolve",
-              30.9
-            ],
-            [
-              "POST",
-              "/tickets/101/customer-reply",
-              28.2
+              30.8
             ],
             [
               "POST",
               "/tickets/101/handoff",
+              29.8
+            ],
+            [
+              "POST",
+              "/tickets/101/customer-reply",
               27.9
             ],
             [
               "POST",
               "/tickets/101/resolve",
-              26.9
+              27.1
             ]
           ],
           "limits_ms": {
@@ -386,35 +452,35 @@
       "name": "responses_fast",
       "passed": true,
       "detail": {
-        "count": 195,
-        "p50_ms": 5.8,
-        "p95_ms": 22.7,
-        "max_ms": 32.2,
+        "count": 213,
+        "p50_ms": 5.9,
+        "p95_ms": 23.2,
+        "max_ms": 35.4,
         "slowest": [
           [
             "POST",
             "/tickets/101/handoff",
-            32.2
+            35.4
           ],
           [
             "POST",
             "/tickets/101/resolve",
-            30.9
-          ],
-          [
-            "POST",
-            "/tickets/101/customer-reply",
-            28.2
+            30.8
           ],
           [
             "POST",
             "/tickets/101/handoff",
+            29.8
+          ],
+          [
+            "POST",
+            "/tickets/101/customer-reply",
             27.9
           ],
           [
             "POST",
             "/tickets/101/resolve",
-            26.9
+            27.1
           ]
         ],
         "limits_ms": {
@@ -533,11 +599,11 @@
       "detail": {
         "image": "e2e-suite/helpline:clean",
         "build_ok": true,
-        "build_seconds": 1.1,
+        "build_seconds": 1.5,
         "build_tail": [
           "#11 naming to docker.io/e2e-suite/helpline:clean done",
           "#11 unpacking to docker.io/e2e-suite/helpline:clean 0.1s done",
-          "#11 DONE 0.3s"
+          "#11 DONE 0.2s"
         ],
         "route": "host",
         "attempts": [
@@ -553,7 +619,7 @@
               "entry_path": "/queue",
               "container_sha": "5c808a0710ef0cf12e0469a08f7fc60b70ddb1db0063fcdd97f3e788adcff818",
               "host_sha": "5c808a0710ef0cf12e0469a08f7fc60b70ddb1db0063fcdd97f3e788adcff818",
-              "sign_in_ms": 80.6
+              "sign_in_ms": 76.3
             }
           }
         ],
@@ -567,7 +633,7 @@
           "entry_path": "/queue",
           "container_sha": "5c808a0710ef0cf12e0469a08f7fc60b70ddb1db0063fcdd97f3e788adcff818",
           "host_sha": "5c808a0710ef0cf12e0469a08f7fc60b70ddb1db0063fcdd97f3e788adcff818",
-          "sign_in_ms": 80.6
+          "sign_in_ms": 76.3
         },
         "image_mb": 44.5,
         "passed": true
@@ -584,7 +650,7 @@
         "entry_path": "/queue",
         "container_sha": "5c808a0710ef0cf12e0469a08f7fc60b70ddb1db0063fcdd97f3e788adcff818",
         "host_sha": "5c808a0710ef0cf12e0469a08f7fc60b70ddb1db0063fcdd97f3e788adcff818",
-        "sign_in_ms": 80.6
+        "sign_in_ms": 76.3
       }
     },
     {
@@ -596,32 +662,26 @@
             {
               "language": "Python",
               "files": 5,
-              "bytes": 94554,
-              "share": 0.4719
+              "bytes": 95458,
+              "share": 0.4733
             },
             {
               "language": "JSON",
               "files": 4,
-              "bytes": 88755,
-              "share": 0.443
+              "bytes": 93455,
+              "share": 0.4634
             },
             {
               "language": "JavaScript",
               "files": 1,
               "bytes": 8078,
-              "share": 0.0403
+              "share": 0.0401
             },
             {
               "language": "CSS",
               "files": 1,
               "bytes": 4690,
-              "share": 0.0234
-            },
-            {
-              "language": "Markdown",
-              "files": 1,
-              "bytes": 4271,
-              "share": 0.0213
+              "share": 0.0233
             }
           ],
           "frameworks": [],
@@ -633,7 +693,7 @@
         },
         "build_plan": {
           "kind": "dockerfile",
-          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\helpline\\clean\\Dockerfile"
+          "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\e2e_suite\\.build\\helpline\\clean\\Dockerfile"
         },
         "product_can_build": true,
         "matches_expectation": true,
@@ -648,8 +708,8 @@
   ],
   "sections": {
     "vocabulary": {
-      "keys": 229,
-      "keys_used_by_source": 176,
+      "keys": 231,
+      "keys_used_by_source": 178,
       "action_keys": 43,
       "unused_keys": [
         "act.first",
@@ -827,13 +887,25 @@
         "lines_removed": 1,
         "lines_added": 1,
         "chars_changed": 32
+      },
+      "HELP-6": {
+        "file": "src/desk.py",
+        "lines_removed": 1,
+        "lines_added": 1,
+        "chars_changed": 47
+      },
+      "HELP-7": {
+        "file": "src/desk.py",
+        "lines_removed": 2,
+        "lines_added": 2,
+        "chars_changed": 28
       }
     },
     "data_model": {
       "passed": true,
       "failures": [],
       "description": {
-        "partition": "e2e_helpline_53549_s000001",
+        "partition": "e2e_helpline_50169_s000001",
         "collections": [
           "agents",
           "counters",
@@ -1127,9 +1199,9 @@
         "passed": true,
         "warn": false,
         "samples": 20,
-        "p50_ms": 91.3,
-        "p95_ms": 100.0,
-        "max_ms": 113.2,
+        "p50_ms": 91.9,
+        "p95_ms": 108.2,
+        "max_ms": 110.6,
         "limit_ms": 300.0,
         "refused": 0,
         "regime": "WTA_SESSION_CAP=4: every sign-in after the cap also evicts"
@@ -1177,8 +1249,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/tickets/101"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/tickets/101"
         ]
       },
       {
@@ -1192,9 +1264,9 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/queue?status=open&assignee=none",
-          "http://127.0.0.1:57286/tickets/102"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/queue?status=open&assignee=none",
+          "http://127.0.0.1:55667/tickets/102"
         ]
       },
       {
@@ -1208,8 +1280,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/tickets/105"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/tickets/105"
         ]
       },
       {
@@ -1223,8 +1295,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/queue?status=open&assignee=none"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/queue?status=open&assignee=none"
         ]
       },
       {
@@ -1238,8 +1310,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/tickets/107"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/tickets/107"
         ]
       },
       {
@@ -1253,8 +1325,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/tickets/107"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/tickets/107"
         ]
       },
       {
@@ -1268,8 +1340,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/queue?status=open&assignee=any"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/queue?status=open&assignee=any"
         ]
       },
       {
@@ -1283,8 +1355,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/tickets/103"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/tickets/103"
         ]
       },
       {
@@ -1298,10 +1370,10 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/queue?status=all&assignee=any",
-          "http://127.0.0.1:57286/tickets/108",
-          "http://127.0.0.1:57286/tickets/108?tab=history"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/queue?status=all&assignee=any",
+          "http://127.0.0.1:55667/tickets/108",
+          "http://127.0.0.1:55667/tickets/108?tab=history"
         ]
       },
       {
@@ -1315,9 +1387,9 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/customers",
-          "http://127.0.0.1:57286/customers?q=&sort=name&page=4",
-          "http://127.0.0.1:57286/queue"
+          "http://127.0.0.1:55667/customers",
+          "http://127.0.0.1:55667/customers?q=&sort=name&page=4",
+          "http://127.0.0.1:55667/queue"
         ]
       },
       {
@@ -1331,9 +1403,9 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/customers",
-          "http://127.0.0.1:57286/customers?q=&sort=speed",
-          "http://127.0.0.1:57286/queue"
+          "http://127.0.0.1:55667/customers",
+          "http://127.0.0.1:55667/customers?q=&sort=speed",
+          "http://127.0.0.1:55667/queue"
         ]
       },
       {
@@ -1347,9 +1419,9 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/customers",
-          "http://127.0.0.1:57286/customers?q=search+query&sort=name",
-          "http://127.0.0.1:57286/queue"
+          "http://127.0.0.1:55667/customers",
+          "http://127.0.0.1:55667/customers?q=search+query&sort=name",
+          "http://127.0.0.1:55667/queue"
         ]
       },
       {
@@ -1363,11 +1435,11 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/customers",
-          "http://127.0.0.1:57286/customers/c36?done=added",
-          "http://127.0.0.1:57286/customers/new",
-          "http://127.0.0.1:57286/customers?done=deleted",
-          "http://127.0.0.1:57286/queue"
+          "http://127.0.0.1:55667/customers",
+          "http://127.0.0.1:55667/customers/c36?done=added",
+          "http://127.0.0.1:55667/customers/new",
+          "http://127.0.0.1:55667/customers?done=deleted",
+          "http://127.0.0.1:55667/queue"
         ]
       },
       {
@@ -1381,11 +1453,11 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/customers",
-          "http://127.0.0.1:57286/customers/c10",
-          "http://127.0.0.1:57286/customers/c10/edit",
-          "http://127.0.0.1:57286/customers/c10?done=saved",
-          "http://127.0.0.1:57286/queue"
+          "http://127.0.0.1:55667/customers",
+          "http://127.0.0.1:55667/customers/c10",
+          "http://127.0.0.1:55667/customers/c10/edit",
+          "http://127.0.0.1:55667/customers/c10?done=saved",
+          "http://127.0.0.1:55667/queue"
         ]
       },
       {
@@ -1399,11 +1471,11 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/tickets/111",
-          "http://127.0.0.1:57286/tickets/new",
-          "http://127.0.0.1:57286/tickets/new/details?customer=c10",
-          "http://127.0.0.1:57286/tickets/new/review?customer=c10&subject=Test+User+Input&channel=email&priority=urgent&message=This+is+a+typical+multi-line%0D%0Acomment+used+for+functional+testing."
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/tickets/111",
+          "http://127.0.0.1:55667/tickets/new",
+          "http://127.0.0.1:55667/tickets/new/details?customer=c10",
+          "http://127.0.0.1:55667/tickets/new/review?customer=c10&subject=Test+User+Input&channel=email&priority=urgent&message=This+is+a+typical+multi-line%0D%0Acomment+used+for+functional+testing."
         ]
       },
       {
@@ -1417,9 +1489,9 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/queue?deleted=103",
-          "http://127.0.0.1:57286/tickets/103"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/queue?deleted=103",
+          "http://127.0.0.1:55667/tickets/103"
         ]
       },
       {
@@ -1433,8 +1505,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/replies"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/replies"
         ]
       },
       {
@@ -1448,8 +1520,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/replies"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/replies"
         ]
       },
       {
@@ -1463,8 +1535,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/replies"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/replies"
         ]
       },
       {
@@ -1478,9 +1550,9 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/replies",
-          "http://127.0.0.1:57286/replies?done=deleted"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/replies",
+          "http://127.0.0.1:55667/replies?done=deleted"
         ]
       },
       {
@@ -1494,8 +1566,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/tickets/101"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/tickets/101"
         ]
       },
       {
@@ -1509,9 +1581,9 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:57286/queue",
-          "http://127.0.0.1:57286/tickets/104",
-          "http://127.0.0.1:57286/tickets/104?tab=history"
+          "http://127.0.0.1:55667/queue",
+          "http://127.0.0.1:55667/tickets/104",
+          "http://127.0.0.1:55667/tickets/104?tab=history"
         ]
       },
       {
@@ -1525,8 +1597,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/tickets/101"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/tickets/101"
         ]
       },
       {
@@ -1540,9 +1612,9 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/queue?status=open&assignee=none",
-          "http://127.0.0.1:55065/tickets/102"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/queue?status=open&assignee=none",
+          "http://127.0.0.1:50381/tickets/102"
         ]
       },
       {
@@ -1556,8 +1628,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/tickets/105"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/tickets/105"
         ]
       },
       {
@@ -1571,8 +1643,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/queue?status=open&assignee=none"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/queue?status=open&assignee=none"
         ]
       },
       {
@@ -1586,8 +1658,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/tickets/107"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/tickets/107"
         ]
       },
       {
@@ -1601,8 +1673,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/tickets/107"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/tickets/107"
         ]
       },
       {
@@ -1616,8 +1688,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/queue?status=open&assignee=any"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/queue?status=open&assignee=any"
         ]
       },
       {
@@ -1631,8 +1703,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/tickets/103"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/tickets/103"
         ]
       },
       {
@@ -1646,10 +1718,10 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/queue?status=all&assignee=any",
-          "http://127.0.0.1:55065/tickets/108",
-          "http://127.0.0.1:55065/tickets/108?tab=history"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/queue?status=all&assignee=any",
+          "http://127.0.0.1:50381/tickets/108",
+          "http://127.0.0.1:50381/tickets/108?tab=history"
         ]
       },
       {
@@ -1663,9 +1735,9 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/customers",
-          "http://127.0.0.1:55065/customers?q=&sort=name&page=4",
-          "http://127.0.0.1:55065/queue"
+          "http://127.0.0.1:50381/customers",
+          "http://127.0.0.1:50381/customers?q=&sort=name&page=4",
+          "http://127.0.0.1:50381/queue"
         ]
       },
       {
@@ -1679,9 +1751,9 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/customers",
-          "http://127.0.0.1:55065/customers?q=&sort=speed",
-          "http://127.0.0.1:55065/queue"
+          "http://127.0.0.1:50381/customers",
+          "http://127.0.0.1:50381/customers?q=&sort=speed",
+          "http://127.0.0.1:50381/queue"
         ]
       },
       {
@@ -1695,9 +1767,9 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/customers",
-          "http://127.0.0.1:55065/customers?q=search+query&sort=name",
-          "http://127.0.0.1:55065/queue"
+          "http://127.0.0.1:50381/customers",
+          "http://127.0.0.1:50381/customers?q=search+query&sort=name",
+          "http://127.0.0.1:50381/queue"
         ]
       },
       {
@@ -1711,11 +1783,11 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/customers",
-          "http://127.0.0.1:55065/customers/c36?done=added",
-          "http://127.0.0.1:55065/customers/new",
-          "http://127.0.0.1:55065/customers?done=deleted",
-          "http://127.0.0.1:55065/queue"
+          "http://127.0.0.1:50381/customers",
+          "http://127.0.0.1:50381/customers/c36?done=added",
+          "http://127.0.0.1:50381/customers/new",
+          "http://127.0.0.1:50381/customers?done=deleted",
+          "http://127.0.0.1:50381/queue"
         ]
       },
       {
@@ -1729,11 +1801,11 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/customers",
-          "http://127.0.0.1:55065/customers/c10",
-          "http://127.0.0.1:55065/customers/c10/edit",
-          "http://127.0.0.1:55065/customers/c10?done=saved",
-          "http://127.0.0.1:55065/queue"
+          "http://127.0.0.1:50381/customers",
+          "http://127.0.0.1:50381/customers/c10",
+          "http://127.0.0.1:50381/customers/c10/edit",
+          "http://127.0.0.1:50381/customers/c10?done=saved",
+          "http://127.0.0.1:50381/queue"
         ]
       },
       {
@@ -1747,11 +1819,11 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/tickets/111",
-          "http://127.0.0.1:55065/tickets/new",
-          "http://127.0.0.1:55065/tickets/new/details?customer=c10",
-          "http://127.0.0.1:55065/tickets/new/review?customer=c10&subject=Test+User+Input&channel=email&priority=urgent&message=This+is+a+typical+multi-line%0D%0Acomment+used+for+functional+testing."
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/tickets/111",
+          "http://127.0.0.1:50381/tickets/new",
+          "http://127.0.0.1:50381/tickets/new/details?customer=c10",
+          "http://127.0.0.1:50381/tickets/new/review?customer=c10&subject=Test+User+Input&channel=email&priority=urgent&message=This+is+a+typical+multi-line%0D%0Acomment+used+for+functional+testing."
         ]
       },
       {
@@ -1765,9 +1837,9 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/queue?deleted=103",
-          "http://127.0.0.1:55065/tickets/103"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/queue?deleted=103",
+          "http://127.0.0.1:50381/tickets/103"
         ]
       },
       {
@@ -1781,8 +1853,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/replies"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/replies"
         ]
       },
       {
@@ -1796,8 +1868,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/replies"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/replies"
         ]
       },
       {
@@ -1811,8 +1883,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/replies"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/replies"
         ]
       },
       {
@@ -1826,9 +1898,9 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/replies",
-          "http://127.0.0.1:55065/replies?done=deleted"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/replies",
+          "http://127.0.0.1:50381/replies?done=deleted"
         ]
       },
       {
@@ -1842,8 +1914,8 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/tickets/101"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/tickets/101"
         ]
       },
       {
@@ -1857,9 +1929,9 @@
         "errors": [],
         "foreign_requests": [],
         "urls": [
-          "http://127.0.0.1:55065/queue",
-          "http://127.0.0.1:55065/tickets/104",
-          "http://127.0.0.1:55065/tickets/104?tab=history"
+          "http://127.0.0.1:50381/queue",
+          "http://127.0.0.1:50381/tickets/104",
+          "http://127.0.0.1:50381/tickets/104?tab=history"
         ]
       }
     ],
@@ -1965,7 +2037,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 137.7
+        "seconds": 150.3
       },
       {
         "fault_id": "HELP-2",
@@ -2011,7 +2083,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 77.9
+        "seconds": 84.5
       },
       {
         "fault_id": "HELP-3",
@@ -2052,7 +2124,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 65.0
+        "seconds": 70.0
       },
       {
         "fault_id": "HELP-4",
@@ -2089,7 +2161,7 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 90.5
+        "seconds": 97.2
       },
       {
         "fault_id": "HELP-5",
@@ -2130,7 +2202,128 @@
         "minimized_silent_on_clean": true,
         "minimized_needs_its_own_patch": true,
         "passed": true,
-        "seconds": 91.8
+        "seconds": 98.5
+      },
+      {
+        "fault_id": "HELP-6",
+        "subtype": "stale-state",
+        "oracle": "extension",
+        "fault_class": "state_corruption",
+        "witness_length": 10,
+        "crash": "broken-resource",
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "console_or_request_error: violated=True inconclusive=False step 10 request: HTTP 404 GET http://127.0.0.1:55678/tickets/105"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 10,
+        "minimization_trials": 27,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "open-105"
+          },
+          {
+            "type": "CLICK",
+            "id": "open-merge"
+          },
+          {
+            "type": "SELECT",
+            "id": "merge-source",
+            "params": {
+              "option": "106"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "merge-confirm"
+          },
+          {
+            "type": "CLICK",
+            "id": "delete-ticket"
+          },
+          {
+            "type": "CLICK",
+            "id": "confirm-delete-ticket"
+          },
+          {
+            "type": "SELECT",
+            "id": "filter-status",
+            "params": {
+              "option": "all"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "apply-filters"
+          },
+          {
+            "type": "CLICK",
+            "id": "open-106"
+          },
+          {
+            "type": "CLICK",
+            "id": "merged-into"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "minimized_has_context": true,
+        "passed": true,
+        "seconds": 417.0
+      },
+      {
+        "fault_id": "HELP-7",
+        "subtype": "missing-validation",
+        "oracle": "extension",
+        "fault_class": "constraint_bypass",
+        "witness_length": 4,
+        "crash": "server-error",
+        "witness_resolves": true,
+        "witness_fires_on_buggy": true,
+        "witness_silent_on_clean": true,
+        "witness_needs_its_own_patch": true,
+        "buggy_detail": [
+          "console_or_request_error: violated=True inconclusive=False step 4 request: HTTP 500 POST http://127.0.0.1:55678/replies/r3/title"
+        ],
+        "confirmed": true,
+        "rejected_because": "",
+        "minimized_length": 4,
+        "minimization_trials": 6,
+        "replays": 2,
+        "minimized_trace": [
+          {
+            "type": "CLICK",
+            "id": "nav-replies"
+          },
+          {
+            "type": "CLICK",
+            "id": "edit-title-r3"
+          },
+          {
+            "type": "TYPE",
+            "id": "title-input-r3",
+            "params": {
+              "category": "boundary_max"
+            }
+          },
+          {
+            "type": "CLICK",
+            "id": "save-title-r3"
+          }
+        ],
+        "minimized_still_fires": true,
+        "minimized_silent_on_clean": true,
+        "minimized_needs_its_own_patch": true,
+        "minimized_has_context": true,
+        "passed": true,
+        "seconds": 111.6
       }
     ],
     "benign": [
@@ -2219,42 +2412,177 @@
         "passed": true
       }
     ],
+    "crash_silent_on_workflows": [
+      {
+        "workflow": "answer a new ticket and resolve it",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "hand a ticket to Kai from its page, then check the unassigned list",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "merge a duplicate billing ticket",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "show only unassigned tickets",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "log a phone reply on a ticket waiting for the customer",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "resolve and close an answered ticket",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "hand a ticket to Kai from the queue",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "triage a new ticket and start work on it",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "read a resolved ticket's history",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "browse the customer directory to its last page",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "list customers with the fastest plans first",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "search the directory for a customer nobody has",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "add a customer, then delete the record",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "update a customer's phone number",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "open a ticket for a customer with the wizard",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "delete a ticket opened by mistake",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "add a saved reply",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "move a saved reply to the top",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "rename a saved reply in place",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "delete a saved reply after confirming",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "answer with a saved reply",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      },
+      {
+        "workflow": "reload a ticket on its history tab",
+        "resolves": true,
+        "fired": [],
+        "passed": true
+      }
+    ],
     "random_walk_clean": {
       "steps": 150,
       "seed": 0,
       "raw_candidates": {},
       "errors": [],
+      "error_count": 0,
       "foreign_requests": [],
       "responses": {
-        "count": 195,
-        "p50_ms": 5.8,
-        "p95_ms": 22.7,
-        "max_ms": 32.2,
+        "count": 213,
+        "p50_ms": 5.9,
+        "p95_ms": 23.2,
+        "max_ms": 35.4,
         "slowest": [
           [
             "POST",
             "/tickets/101/handoff",
-            32.2
+            35.4
           ],
           [
             "POST",
             "/tickets/101/resolve",
-            30.9
-          ],
-          [
-            "POST",
-            "/tickets/101/customer-reply",
-            28.2
+            30.8
           ],
           [
             "POST",
             "/tickets/101/handoff",
+            29.8
+          ],
+          [
+            "POST",
+            "/tickets/101/customer-reply",
             27.9
           ],
           [
             "POST",
             "/tickets/101/resolve",
-            26.9
+            27.1
           ]
         ],
         "limits_ms": {
@@ -2287,7 +2615,7 @@
           "workflow": "open a ticket for a customer with the wizard",
           "passed": true,
           "visited": [
-            "http://127.0.0.1:57286/tickets/new/details?customer=c10"
+            "http://127.0.0.1:55667/tickets/new/details?customer=c10"
           ]
         },
         {
@@ -2295,7 +2623,7 @@
           "workflow": "open a ticket for a customer with the wizard",
           "passed": true,
           "visited": [
-            "http://127.0.0.1:57286/tickets/new/review?customer=c10&subject=Test+User+Input&channel=email&priority=urgent&message=This+is+a+typical+multi-line%0D%0Acomment+used+for+functional+testing."
+            "http://127.0.0.1:55667/tickets/new/review?customer=c10&subject=Test+User+Input&channel=email&priority=urgent&message=This+is+a+typical+multi-line%0D%0Acomment+used+for+functional+testing."
           ]
         },
         {
@@ -2428,32 +2756,26 @@
           {
             "language": "Python",
             "files": 5,
-            "bytes": 94554,
-            "share": 0.4719
+            "bytes": 95458,
+            "share": 0.4733
           },
           {
             "language": "JSON",
             "files": 4,
-            "bytes": 88755,
-            "share": 0.443
+            "bytes": 93455,
+            "share": 0.4634
           },
           {
             "language": "JavaScript",
             "files": 1,
             "bytes": 8078,
-            "share": 0.0403
+            "share": 0.0401
           },
           {
             "language": "CSS",
             "files": 1,
             "bytes": 4690,
-            "share": 0.0234
-          },
-          {
-            "language": "Markdown",
-            "files": 1,
-            "bytes": 4271,
-            "share": 0.0213
+            "share": 0.0233
           }
         ],
         "frameworks": [],
@@ -2465,7 +2787,7 @@
       },
       "build_plan": {
         "kind": "dockerfile",
-        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\rlwt-suite-v2\\e2e_suite\\.build\\helpline\\clean\\Dockerfile"
+        "path": "C:\\Users\\reach\\OneDrive\\Code files\\SEM7\\RL web tester\\e2e_suite\\.build\\helpline\\clean\\Dockerfile"
       },
       "product_can_build": true,
       "matches_expectation": true,
@@ -2473,9 +2795,9 @@
     }
   },
   "admitted": true,
-  "checks_run": 41,
+  "checks_run": 44,
   "checks_failed": [],
   "browser_checks_run": true,
   "docker_checks_run": true,
-  "wall_clock_s": 964.9
+  "wall_clock_s": 1673.2
 }

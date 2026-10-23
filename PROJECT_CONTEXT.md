@@ -182,12 +182,12 @@ data-model contract, a breadth contract and crash checks.
 |---|---|---|---|
 | tidewater | PostgreSQL | 3 | — |
 | clinicflow | PostgreSQL | 5 | — (shelved) |
-| stackroom | PostgreSQL | 5 | 2 (pending admission) |
+| stackroom | PostgreSQL | 5 | 2 (admitted 40/40) |
 | ledgerly | PostgreSQL | 5 | — (shelved) |
 | bagstreet | MongoDB | 5 | — (shelved) |
-| helpline | MongoDB | 7 | 2 (pending admission) |
+| helpline | MongoDB | 7 | 2 (admitted 44/44) |
 | orbit | MongoDB | 5 | 2 (admitted 40/40) |
-| wayfarer | MongoDB | 6 | 2 (pending admission) |
+| wayfarer | MongoDB | 6 | 2 (admitted 41/41) |
 
 Crash-type faults surface as console, page or failed-request errors. The extension oracle
 (`console_or_request_error`) attributes them through the per-fault controls. The runner
