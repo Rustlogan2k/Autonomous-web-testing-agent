@@ -26,9 +26,14 @@ try. On eight held-out applications, in a pre-registered evaluation of 160 runs 
 clean-build controls, the hybrid arms verified the most distinct faults (19 and 18 of 24,
 against 13 for random exploration) with zero false positives. All four pre-registered
 comparisons of time to first fault were inconclusive.
-\pending{Results of tuning round v3 on the rebuilt full-stack development applications, and
-of the external comparison with WebExplor and WebRLED on their subject applications; final
-sentence on the overall conclusion.}
+After re-tuning on rebuilt full-stack development applications, the frozen tester was
+compared with WebExplor and WebRLED on their six subject applications, measured as they were
+measured: one-hour runs, Istanbul branch coverage and console failures. It did not reach
+their published numbers. It averaged 44.3\% branch coverage against 55.5\% and 64.2\%, and
+1.8 distinct console failures against 3.1 and 4.1. An exploratory run suggests the gap comes
+from which elements the tester can act on rather than from its policy. The evidence supports
+a modest conclusion: the structure of a tester, more than the learning in it, determines
+which functional faults it verifies.
 
 \vspace{0.5cm}
 \noindent\textbf{Keywords:} automated web testing, reinforcement learning, deep Q-network,

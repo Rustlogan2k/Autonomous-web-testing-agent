@@ -2,19 +2,59 @@
 
 \section{Conclusion}
 
-\pending{Written after the tuning round and the external comparison. To cover: the answer to
-the problem statement; what v1 showed (no transfer, no contextual learning, LLM components
-not generalising); what v2 showed (structure finds deep faults with zero false positives;
-learning not distinguishable from no learning); the external comparison; the product.}
+This thesis asked whether reinforcement learning can make an automated functional tester for
+web applications find verified faults sooner, and under what design. The answer has three
+parts.
+
+First, a deep RL tester (v1) learned useful behaviour inside an application, but not in a
+way that transferred or used context. Pretraining on five applications did not speed up
+discovery on a sixth, and the network ranked actions without regard to whether they helped
+in the current state. A small local LLM did not help, either as a progress reward or as a
+page labeller; neither generalised beyond the data it was tuned on.
+
+Second, a hybrid tester built around structure rather than learning (page abstraction, an
+archive with exact return, test-design operators) verified deep faults that random
+exploration missed, with no false positives in any control run. On held-out applications its
+arms verified the most distinct faults, though no pre-registered comparison of speed reached
+a verdict. Across every evaluation, no learning layer improved on the same structure without
+learning.
+
+Third, on WebExplor's own benchmark, measured as the published work measures, the frozen
+tester did not reach WebExplor's or WebRLED's coverage or failure counts. A diagnostic
+suggests the limit is the set of elements the tester can act on, not its policy.
+
+The evidence therefore supports a modest claim. For finding verified functional faults, the
+structure of the tester matters more than the learning in it. For broad reach over an
+interface, what a tester can perceive and act on bounds any policy. Learning, as used here
+and in the literature it builds on, was not what made the difference.
 
 \section{Limitations}
 
-\pending{Same-developer applications; seeded faults as a proxy; eight applications per
-evaluation; the oracle sees only seeded faults; repository intake requires a Dockerfile.}
+\begin{itemize}
+  \item Each evaluation used six to eight applications, so most comparisons are inconclusive
+        and the claims are descriptive.
+  \item The development and validation applications and their seeded faults were built
+        within the project.
+  \item Seeded faults are an incomplete proxy for real faults, and the oracle verifies only
+        what was seeded; the specification-free invariants raised false alarms on unsaved
+        state.
+  \item The external comparison used three repetitions instead of five, different machines,
+        and automatic failure deduplication, against published numbers that could not be
+        re-run.
+  \item Repository intake requires a Dockerfile.
+\end{itemize}
 
 \section{Scope for further research}
 
-\pending{For example: operators that combine two deviations in one walk; learning across
-applications at a scale the literature suggests (tens of applications); specification-free
-oracles that tell saved from unsaved state; LLMs used offline to propose operators or
-assertions rather than on the decision path.}
+\begin{itemize}
+  \item \textbf{Action space.} Detect actionable elements robustly, for example with the
+        custom-clickables scan made default or a learned discriminator as in WebRLED, and
+        re-run the external comparison.
+  \item \textbf{Two deviations in one walk.} Operators that combine two deviations in one
+        walk, for the faults no single deviation reaches.
+  \item \textbf{Learning across applications.} At the scale the literature suggests (tens of
+        applications), with page semantics in the state.
+  \item \textbf{Specification-free oracles} that distinguish saved from unsaved state.
+  \item \textbf{LLMs off the decision path.} Use them offline, to propose test operators or
+        assertions for an application.
+\end{itemize}

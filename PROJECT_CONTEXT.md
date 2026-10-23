@@ -209,8 +209,8 @@ coverage (call-count mode, attached before navigation). An interim look (12 matc
 orbit, helpline, stackroom and wayfarer, 2026-10-22 12:16) showed every arm at 12/12, with
 v1 AC-DQN highest on coverage. This is tuning data, not a result.
 
-**Next**: analyse faults, unique failures and coverage on matched runs; choose the
-configuration; freeze it as a new version.
+**Done**: analysed (`runs/v3-tune/analysis.md`); the combined configuration was frozen as
+`hybrid_final` (tag `v3-freeze`).
 
 ### 0.8 External comparison (WebExplor / WebRLED) — PRE-REGISTERED 2026-10-23, tag `v3-freeze`
 
@@ -312,6 +312,31 @@ changed).**
 **Claims.** If `hybrid_final`'s average coverage or failures reach the published WebExplor or
 WebRLED averages, we say so, with the measurement differences above. If they do not, we say
 that too. Either way, the result belongs to `v3-freeze`.
+
+**RESULT (2026-10-23, `reports/external_comparison.json`, `scripts/analyze_external.py`).**
+All 54 counted runs completed. The GitHub replication also completed all 27 runs: Phoenix
+and Retroboard matched AWS exactly; Petclinic (20 branches) varied as much as between seeds.
+
+| Average over 6 apps | Branch coverage | Console failures (post-hoc) | Failures (pre-registered) |
+|---|---|---|---|
+| `hybrid_final` | 44.3% | 1.8 | 21.9 |
+| `hybrid_curiosity` | 44.7% | 2.2 | 31.8 |
+| `random` | 40.3% | 1.4 | 19.2 |
+| WebExplor (published) | 55.5% | 3.1 | — |
+| WebRLED (published) | 64.2% | 4.1 | — |
+
+- **The frozen tester does not reach the published numbers.** It is comparable on Pagekit
+  and Splittypie and below on Dimeshift, Phoenix, Retroboard and Petclinic.
+- **Between our arms** the differences are small, with intervals including zero; curiosity
+  triggers more failures than random.
+- **The pre-registered failure count is not comparable with the papers.** It includes failed
+  requests and third-party hosts (Gravatar, a geo-IP service, external links) and counts per
+  page. The post-hoc count keeps distinct console messages, ids normalised, other hosts
+  dropped.
+- **Diagnosis (exploratory, after the result):** on Phoenix and Retroboard no run of any
+  arm, random included, passed the same coverage. On Phoenix, a single 20-minute run with
+  custom clickables reached 69.7% (vs 48.7%; WebExplor 71.8%), so the action space limits
+  it. Retroboard was unchanged (53.2%), cause unknown.
 
 ### 0.9 Known limitations of the tester
 

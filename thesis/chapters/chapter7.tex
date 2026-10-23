@@ -290,13 +290,158 @@ every run of every arm. Two differences from the published protocol remain and a
 reported: three repetitions instead of five, and automatic instead of manual deduplication
 of failures.
 
+To finish in time, the runs were split across two machines, decided and recorded before any
+result existed. Dimeshift, Pagekit and Splittypie ran on the development laptop; Phoenix,
+Retroboard and Petclinic ran on four AWS spot instances (2 vCPU, 8 GB). Every run of a given
+application used the same machine type, so arms are compared on equal hardware within each
+application. The AWS applications also ran on GitHub Actions as a replication. Which runs
+count was fixed in advance by completion, never by result. After launch, Phoenix's sign-in
+was found to complete about a second after the macro ended, so episodes began on a stale
+page. The macro was fixed, and every earlier Phoenix run was discarded unread.
+
 \subsection{Results}
 
-\pending{Coverage and failures per application against the published numbers; verified
-findings.}
+All 54 counted runs completed, 27 on the laptop and 27 on AWS. The GitHub Actions
+replication also completed all 27 of its runs. Phoenix runs made before the sign-in fix were
+discarded on every platform without being read, as recorded in the pre-registration.
+Table~\ref{tab:ext-cov} gives branch coverage per application.
+
+\begin{table}[H]
+\centering
+\small
+\caption{External comparison: client-side branch coverage (\%), mean [min, max] over three
+one-hour runs, beside the published means (five runs) of WebExplor and
+WebRLED~\cite{gu2025webrled}.}
+\label{tab:ext-cov}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lllllr r@{}}
+\toprule
+App & Branches & \code{hybrid\_final} & \code{hybrid\_curiosity} & \code{random} & WebExplor & WebRLED \\
+\midrule
+Dimeshift & 1{,}080 & 49.2 [47.5, 52.4] & 47.8 [46.9, 48.7] & 45.0 [44.4, 45.8] & 54.2 & 55.4 \\
+Pagekit & 555 & 32.4 [32.1, 32.8] & 33.9 [30.8, 39.0] & 34.2 [32.1, 35.5] & 25.8 & 39.8 \\
+Splittypie & 130 & 35.7 [32.6, 40.8] & 42.9 [38.4, 49.1] & 37.5 [32.7, 42.4] & 36.2 & 44.6 \\
+Phoenix & 76 & 48.7 [48.7, 48.7] & 48.7 [48.7, 48.7] & 46.9 [43.4, 48.7] & 71.8 & 82.9 \\
+Retroboard & 171 & 53.2 [53.2, 53.2] & 53.2 [53.2, 53.2] & 53.2 [53.2, 53.2] & 60.2 & 77.4 \\
+Petclinic & 20 & 46.7 [20.0, 75.0] & 41.7 [20.0, 85.0] & 25.0 [15.0, 40.0] & 85.0 & 85.0 \\
+\midrule
+Average & & 44.3 & 44.7 & 40.3 & 55.5 & 64.2 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Failures.} The pre-registered failure count averaged 21.9 per run for
+\code{hybrid\_final}, 31.8 for \code{hybrid\_curiosity} and 19.2 for random. These numbers
+cannot be compared with the papers' 3.1 and 4.1. The pre-registered count includes failed
+requests as well as console errors. It counts a message once per page. And it includes
+requests the applications make to other websites: Pagekit's Gravatar images, Splittypie's
+geo-location service, and external links. The papers counted console errors and merged by
+hand those that "differ only in parameters". A post-hoc count closer to theirs keeps console
+errors only, drops messages naming another host, and replaces ids, numbers, quoted values
+and codes with placeholders before counting distinct messages.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Post-hoc: distinct console error messages per run (mean [min, max]), the measure
+closest to the papers' manually deduplicated failures.}
+\label{tab:ext-fail}
+\begin{tabular}{@{}lllllr@{}}
+\toprule
+App & \code{hybrid\_final} & \code{hybrid\_curiosity} & \code{random} & WebExplor & WebRLED \\
+\midrule
+Dimeshift & 3.0 [1, 4] & 2.7 [2, 3] & 1.3 [1, 2] & 3.0 & 5.4 \\
+Pagekit & 2.0 [1, 3] & 4.0 [1, 7] & 2.7 [2, 3] & 6.6 & 7.4 \\
+Splittypie & 1.0 [1, 1] & 1.0 [1, 1] & 1.0 [1, 1] & 4.0 & 5.0 \\
+Phoenix & 3.0 [3, 3] & 3.0 [3, 3] & 3.0 [3, 3] & 0.0 & 2.0 \\
+Retroboard & 0.0 [0, 0] & 0.0 [0, 0] & 0.0 [0, 0] & 1.0 & 1.0 \\
+Petclinic & 2.0 [2, 2] & 2.7 [2, 4] & 0.7 [0, 1] & 3.8 & 3.8 \\
+\midrule
+Average & 1.8 & 2.2 & 1.4 & 3.1 & 4.1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Between our arms.} Both hybrid arms reached more code than random on average (44.3\%
+and 44.7\% against 40.3\%). The per-application difference is small and its interval
+includes zero, for \code{hybrid\_final} (median $+0.9$ points, $[-1.8, +12.9]$) and for
+\code{hybrid\_curiosity} ($+2.3$, $[-0.2, +11.1]$). The curiosity arm triggered more distinct
+failures than random on every application where they differed (post-hoc count: median
+$+0.7$, three applications higher, none lower), consistent with its development-round
+behaviour. With six applications these comparisons are descriptive.
+
+\paragraph{Replication.} On GitHub's runners (4 vCPU, 16 GB), Phoenix and Retroboard gave
+exactly the same coverage as on AWS for every arm, and the same post-hoc failure counts.
+Petclinic, which has only 20 branches, varied as much between platforms as between seeds:
+for \code{hybrid\_final}, 35.0\% against 46.7\%.
+
+\paragraph{Against the published numbers.} The frozen tester does not reach the published
+averages. It is comparable on Pagekit and Splittypie, below WebExplor and WebRLED on
+Dimeshift, Phoenix, Retroboard and Petclinic, and below both on average (44.3\% against
+55.5\% and 64.2\%; 1.8 failures against 3.1 and 4.1).
+
+\paragraph{Why: the action space (exploratory).} On Phoenix and Retroboard, no run of any arm, random included, went beyond the same
+coverage: 48.7\% and 53.2\%. Both hybrid arms reached exactly that in every run. When three
+different exploration strategies, one of them random, stop at the same branch, the limit is what they
+can act on, not how they choose. Phoenix is a React application whose controls are mostly
+clickable \code{div} elements. The frozen tester offers only standard HTML controls, because
+the custom-clickables option (Section~\ref{sec:v3-options}) was not adopted in tuning. A
+single exploratory 20-minute run of the hybrid with custom clickables reached 69.7\% on
+Phoenix, against 48.7\% in every one-hour run without them and 71.8\% for WebExplor. This is
+one run, after the result, and reported as exploratory only. On Retroboard the same option
+changed nothing (53.2\%), so its ceiling has another cause that this work did not identify.
+WebRLED learns which elements are actionable with a trained discriminator~\cite{gu2025webrled};
+on these applications, that part of its design matters more than the choice of policy.
 
 \section{Discussion}
 \label{sec:discussion}
 
-\pending{Discussion across all evaluations: what the structure contributes, what learning
-contributes, how the tester compares with the literature, and the limits of the evidence.}
+\paragraph{What the structure contributes.} Across every evaluation, the parts of the hybrid
+tester that are not learned did the measurable work. Remembering states and returning to
+them exactly, abstracting pages, and applying test-design operators let it verify deep
+faults that random exploration did not reach: nine faults no random run found on the
+held-out applications, and the most distinct faults of any configuration in the final tuning
+round (22 of 41). The verified-fault oracle produced no false positive in any clean-build
+control.
+
+\paragraph{What learning contributes.}
+\begin{itemize}
+  \item \textbf{Deep RL (v1).} Pretraining did not transfer, and the network did not learn
+        which action helps in which state.
+  \item \textbf{Bandit layer.} Thompson sampling over operators was never better than trying
+        untried options systematically, and in the final round it was slower.
+  \item \textbf{Curiosity Q-learning.} It reliably triggered more distinct browser errors, on
+        the development applications and on the external benchmark, but verified fewer
+        seeded faults.
+\end{itemize}
+This agrees with the observation from Humanoid that a learned model may not be the main
+reason for a tester's gains~\cite{li2019humanoid}. It also agrees with the web-testing study
+that found coverage only weakly related to failure revelation~\cite{liu2026webgui}: the arm
+that causes the most errors is not the one that verifies the most faults.
+
+\paragraph{How the tester compares with the literature.} On WebExplor's own applications and
+measures, the frozen tester did not reach WebExplor's or WebRLED's published coverage or
+failure counts. The exploratory Phoenix run suggests the main reason is the action space,
+not the exploration policy: which elements a tester can act on bounds every policy built on
+it. The comparison also has limits. It used three repetitions instead of five, different
+machines, automatic instead of manual failure deduplication, and published numbers we could
+not re-run.
+
+\paragraph{Two measures, two pictures.} The project's own evaluations measure verified
+seeded faults; the literature measures coverage and console errors. The hybrid was designed
+and tuned for the first, and is strongest there. On the second it is close to random on
+coverage and fewer failures. A tester for real use needs both: deep, verified functional
+faults, and broad reach over the interface.
+
+\paragraph{Limits of the evidence.}
+\begin{itemize}
+  \item \textbf{Scale.} Every evaluation used six to eight applications, which leaves wide
+        intervals; all four held-out comparisons were inconclusive.
+  \item \textbf{Same developer.} The development and validation applications were built
+        within the project. The external applications were not, and there the tester did
+        worse.
+  \item \textbf{Seeded faults.} Seeded faults stand in for real ones only
+        partially~\cite{just2014mutants}.
+  \item \textbf{Post-hoc analyses.} The failure measure comparable with the papers and the
+        clickables run were defined after the results and are reported as such.
+\end{itemize}
