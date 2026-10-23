@@ -36,8 +36,8 @@ jobs:
     steps:
       - id: plan
         env:
-          APPS: ${{ inputs.apps || 'dimeshift pagekit splittypie phoenix retroboard petclinic' }}
-          ARMS: ${{ inputs.arms || 'hybrid_final_clickables hybrid_curiosity_clickables random_clickables' }}
+          APPS: ${{ inputs.apps || 'dimeshift pagekit splittypie' }}
+          ARMS: ${{ inputs.arms || 'hybrid_final hybrid_curiosity random' }}
           SEEDS: ${{ inputs.seeds || '0 1 2' }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
