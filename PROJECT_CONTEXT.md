@@ -338,6 +338,22 @@ and Retroboard matched AWS exactly; Petclinic (20 branches) varied as much as be
   custom clickables reached 69.7% (vs 48.7%; WebExplor 71.8%), so the action space limits
   it. Retroboard was unchanged (53.2%), cause unknown.
 
+**POST-HOC FOLLOW-UP: the action space (planned 2026-10-23, tag `v4-clickables`,
+before any run).**
+- **Status.** Owner-approved. It is a new version, defined after the external result, and is
+  reported as a post-hoc diagnosis, never in place of the pre-registered result above.
+- **Arms.** `hybrid_final_clickables`, `hybrid_curiosity_clickables` and `random_clickables`:
+  the three external arms with ARIA, onclick and styled clickables added to the action space.
+  Nothing else changes.
+- **Apps and protocol.** The same six apps, 1 h runs, seeds 0–2, measures and analysis as
+  §0.8.
+- **Hardware.** All runs on GitHub Actions (4 vCPU, 16 GB). For a same-hardware baseline,
+  the three original arms also run there on Dimeshift, Pagekit and Splittypie; the Phoenix,
+  Retroboard and Petclinic baselines are the existing GitHub replication.
+- **Question.** How much of the gap to WebExplor and WebRLED does the action space explain?
+  If all three arms gain alike, the limit was what the testers could act on, not their
+  policy.
+
 ### 0.9 Known limitations of the tester
 
 - The page is treated as settled once the DOM is quiet. In-flight requests are not awaited.

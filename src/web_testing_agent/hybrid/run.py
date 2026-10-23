@@ -90,6 +90,14 @@ ARMS: dict[str, dict] = {
     "hybrid_final": {**HYBRID, "planner": "count", "browse": True, "failure_bonus": 2.0},
     # The external comparison's RL arm: round v3's curiosity configuration, unchanged.
     "hybrid_curiosity": {**HYBRID, "planner": "count", "explore": "curiosity"},
+    # POST-HOC follow-up to the external comparison (2026-10-23, tag v4-clickables): the same
+    # three arms with ARIA/onclick/styled clickables in the action space, to measure how much
+    # of the gap to WebExplor/WebRLED the action space explains.
+    "hybrid_final_clickables": {**HYBRID, "planner": "count", "browse": True,
+                                "failure_bonus": 2.0, "custom_clickables": True},
+    "hybrid_curiosity_clickables": {**HYBRID, "planner": "count", "explore": "curiosity",
+                                    "custom_clickables": True},
+    "random_clickables": {"kind": "random", "custom_clickables": True},
     "dev_pairwise_bandit": {
         **HYBRID,
         "planner": "bandit",
