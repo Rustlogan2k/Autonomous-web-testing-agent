@@ -385,13 +385,70 @@ coverage: 48.7\% and 53.2\%. Both hybrid arms reached exactly that in every run.
 different exploration strategies, one of them random, stop at the same branch, the limit is what they
 can act on, not how they choose. Phoenix is a React application whose controls are mostly
 clickable \code{div} elements. The frozen tester offers only standard HTML controls, because
-the custom-clickables option (Section~\ref{sec:v3-options}) was not adopted in tuning. A
-single exploratory 20-minute run of the hybrid with custom clickables reached 69.7\% on
-Phoenix, against 48.7\% in every one-hour run without them and 71.8\% for WebExplor. This is
-one run, after the result, and reported as exploratory only. On Retroboard the same option
-changed nothing (53.2\%), so its ceiling has another cause that this work did not identify.
+the custom-clickables option (Section~\ref{sec:v3-options}) was not adopted in tuning. The post-hoc follow-up in Section~\ref{sec:followup} tests this directly.
 WebRLED learns which elements are actionable with a trained discriminator~\cite{gu2025webrled};
 on these applications, that part of its design matters more than the choice of policy.
+
+\section{Post-hoc follow-up: the action space}
+\label{sec:followup}
+
+The external result suggested that the tester's action space, not its policy, limited
+coverage. To measure this, all three external arms were run again with custom clickables in
+the action space. That is the only change; tag \code{v4-clickables} marks it. Every run of
+this follow-up, with and without clickables, ran on GitHub's runners. For Dimeshift, Pagekit
+and Splittypie the arms without clickables were run there anew; for the other three, the
+replication runs serve. This version was defined after the external result. It is a
+diagnosis and does not replace the pre-registered result.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Post-hoc follow-up: branch coverage (\%, mean of three one-hour runs) without and
+with custom clickables, all on the same hardware.}
+\label{tab:followup}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lllllr@{}}
+\toprule
+App & \code{hybrid\_final} & \code{hybrid\_curiosity} & \code{random} & WebExplor & WebRLED \\
+\midrule
+Dimeshift & 47.5 $\rightarrow$ 49.3 & 48.0 $\rightarrow$ 48.6 & 45.4 $\rightarrow$ 45.2 & 54.2 & 55.4 \\
+Pagekit & 33.2 $\rightarrow$ 33.3 & 35.1 $\rightarrow$ 34.5 & 34.2 $\rightarrow$ 37.1 & 25.8 & 39.8 \\
+Splittypie & 33.1 $\rightarrow$ 34.9 & 45.6 $\rightarrow$ 43.2 & 37.5 $\rightarrow$ 37.7 & 36.2 & 44.6 \\
+Phoenix & 48.7 $\rightarrow$ \textbf{82.0} & 48.7 $\rightarrow$ \textbf{83.3} & 46.9 $\rightarrow$ \textbf{74.6} & 71.8 & 82.9 \\
+Retroboard & 53.2 $\rightarrow$ 53.2 & 53.2 $\rightarrow$ 53.2 & 53.2 $\rightarrow$ 53.2 & 60.2 & 77.4 \\
+Petclinic & 35.0 $\rightarrow$ 20.0 & 85.0 $\rightarrow$ 61.7 & 28.3 $\rightarrow$ 26.7 & 85.0 & 85.0 \\
+\midrule
+Average, 6 apps & 41.8 $\rightarrow$ 45.5 & 52.6 $\rightarrow$ 54.1 & 40.9 $\rightarrow$ 45.7 & 55.5 & 64.2 \\
+Average, without Petclinic & 43.1 $\rightarrow$ 50.6 & 46.1 $\rightarrow$ 52.6 & 43.5 $\rightarrow$ 49.5 & 49.6 & 60.0 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Reading.}
+\begin{itemize}
+  \item \textbf{Phoenix.} With clickables, every arm rose by 28 to 35 points. The hybrid arms
+        reached 82--83\%, level with WebRLED's 82.9\% and above WebExplor's 71.8\%. Random
+        reached 74.6\%. The Phoenix gap was the action space.
+  \item \textbf{Retroboard.} The ceiling (53.2\% for every arm and run) did not move. Its
+        cause is not the clickable elements and was not identified.
+  \item \textbf{Dimeshift, Pagekit and Splittypie.} Small changes of a few points in either
+        direction. Clickables were not what limited them.
+  \item \textbf{Petclinic.} With only 20 branches, one branch is 5 points. Results varied
+        between platforms and seeds as much as between conditions; the three-run means
+        cannot be read as an effect of clickables.
+  \item \textbf{Failures.} Distinct console failures did not change (about two per run for
+        every arm).
+\end{itemize}
+
+\paragraph{Against the published numbers.} Over all six applications, the arms with
+clickables averaged 45.5--54.1\%, still below WebExplor's 55.5\% and WebRLED's 64.2\%.
+Petclinic, where WebExplor and WebRLED both report 85\%, weighs heavily on that average.
+Without Petclinic, a post-hoc view, the arms with clickables averaged 49.5--52.6\%. That
+matches or exceeds WebExplor (49.6\%) and remains below WebRLED (60.0\%).
+
+\paragraph{What it shows about policy.} The gains were similar for the frozen tester, the
+curiosity arm and random. What the testers could act on mattered more than how they chose
+among the actions they had.
 
 \section{Discussion}
 \label{sec:discussion}
@@ -421,9 +478,11 @@ that causes the most errors is not the one that verifies the most faults.
 
 \paragraph{How the tester compares with the literature.} On WebExplor's own applications and
 measures, the frozen tester did not reach WebExplor's or WebRLED's published coverage or
-failure counts. The exploratory Phoenix run suggests the main reason is the action space,
-not the exploration policy: which elements a tester can act on bounds every policy built on
-it. The comparison also has limits. It used three repetitions instead of five, different
+failure counts. The post-hoc follow-up located a large part of the gap in the action space,
+not the exploration policy. With custom clickables, Phoenix coverage rose to WebRLED's
+level for every arm, and over the five applications other than Petclinic the arms matched or
+exceeded WebExplor's average, though not WebRLED's. Which elements a tester can act on bounds
+every policy built on it. The comparison also has limits. It used three repetitions instead of five, different
 machines, automatic instead of manual failure deduplication, and published numbers we could
 not re-run.
 
@@ -442,6 +501,7 @@ faults, and broad reach over the interface.
         worse.
   \item \textbf{Seeded faults.} Seeded faults stand in for real ones only
         partially~\cite{just2014mutants}.
-  \item \textbf{Post-hoc analyses.} The failure measure comparable with the papers and the
-        clickables run were defined after the results and are reported as such.
+  \item \textbf{Post-hoc analyses.} The failure measure comparable with the papers, the
+        clickables follow-up and the view without Petclinic were defined after the results
+        and are reported as such.
 \end{itemize}

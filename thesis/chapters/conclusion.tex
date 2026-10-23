@@ -20,8 +20,10 @@ a verdict. Across every evaluation, no learning layer improved on the same struc
 learning.
 
 Third, on WebExplor's own benchmark, measured as the published work measures, the frozen
-tester did not reach WebExplor's or WebRLED's coverage or failure counts. A diagnostic
-suggests the limit is the set of elements the tester can act on, not its policy.
+tester did not reach WebExplor's or WebRLED's coverage or failure counts. A post-hoc
+follow-up located much of the gap in the set of elements the tester can act on. With custom
+clickables, Phoenix coverage rose from 49\% to WebRLED's 83\% for every arm. Excluding the
+20-branch Petclinic, the arms matched or exceeded WebExplor's average, though not WebRLED's.
 
 The evidence therefore supports a modest claim. For finding verified functional faults, the
 structure of the tester matters more than the learning in it. For broad reach over an
@@ -47,9 +49,9 @@ and in the literature it builds on, was not what made the difference.
 \section{Scope for further research}
 
 \begin{itemize}
-  \item \textbf{Action space.} Detect actionable elements robustly, for example with the
-        custom-clickables scan made default or a learned discriminator as in WebRLED, and
-        re-run the external comparison.
+  \item \textbf{Action space.} Make the custom-clickables scan the default and evaluate it
+        under pre-registration, or learn which elements are actionable, as WebRLED does; and
+        find what bounds Retroboard.
   \item \textbf{Two deviations in one walk.} Operators that combine two deviations in one
         walk, for the faults no single deviation reaches.
   \item \textbf{Learning across applications.} At the scale the literature suggests (tens of

@@ -354,6 +354,29 @@ before any run).**
   If all three arms gain alike, the limit was what the testers could act on, not their
   policy.
 
+**Follow-up result (2026-10-23 19:12, 81 runs on GitHub Actions, all ok;
+`reports/external_comparison.json` → `followup_clickables`).** Branch coverage without →
+with clickables, mean of 3 runs:
+
+| App | hybrid_final | hybrid_curiosity | random |
+|---|---|---|---|
+| Phoenix | 48.7 → **82.0** | 48.7 → **83.3** | 46.9 → **74.6** |
+| Retroboard | 53.2 → 53.2 | 53.2 → 53.2 | 53.2 → 53.2 |
+| Dimeshift, Pagekit, Splittypie | ±2 points | ±2 points | ±3 points |
+| Petclinic (20 branches) | noisy | noisy | noisy |
+
+- **Phoenix:** the hybrid arms reach WebRLED's 82.9%.
+- **Retroboard:** unchanged; cause unknown.
+- **Other apps:** only small changes.
+- **Petclinic:** too noisy to read.
+- **Averages with clickables:**
+  - All six apps: 45.5 / 54.1 / 45.7%, against WebExplor 55.5% and WebRLED 64.2%.
+  - Without Petclinic (post-hoc): 50.6 / 52.6 / 49.5%, against WebExplor 49.6% and
+    WebRLED 60.0%.
+- **Failures:** unchanged, about two per run.
+- **Reading:** the action space, not the policy, explained the Phoenix gap. All arms gained
+  alike.
+
 ### 0.9 Known limitations of the tester
 
 - The page is treated as settled once the DOM is quiet. In-flight requests are not awaited.

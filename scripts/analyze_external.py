@@ -29,8 +29,10 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 APPS = ("dimeshift", "pagekit", "splittypie", "phoenix", "retroboard", "petclinic")
 ARMS = ("hybrid_final", "hybrid_curiosity", "random")
-#: Commits before the Phoenix sign-in fix; Phoenix runs made with them are discarded.
-PHOENIX_FIXED = "96d30ef"
+#: Commits the Phoenix runs were launched from before its sign-in fix (96d30ef): AWS
+#: `ext-eval-aws1` (cce3c20) and `aws2..4` (59c0c45), the first GitHub workflow (c2e6f3b).
+#: Phoenix runs made with them are discarded.
+PHOENIX_BEFORE_FIX = frozenset({"cce3c20", "59c0c45", "c2e6f3b"})
 #: WebRLED, arXiv 2504.19237, Table 3: (branch coverage %, failures), 1-hour runs, 5 repetitions.
 PUBLISHED = {
     "WebExplor": {"dimeshift": (54.22, 3.0), "pagekit": (25.79, 6.6), "splittypie": (36.16, 4.0),
@@ -75,7 +77,7 @@ def load(paths: list[Path]) -> list[dict]:
             continue
         job = record["job"]
         commit = (record.get("provenance", {}).get("git", {}).get("commit") or "")[:7]
-        if job["app"] == "phoenix" and commit != PHOENIX_FIXED:
+        if job["app"] == "phoenix" and commit in PHOENIX_BEFORE_FIX:
             continue
         cov = (record.get("istanbul") or {}).get("branch_coverage")
         runs.append({
@@ -193,6 +195,66 @@ def markdown(result: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+CLICKABLES = {"hybrid_final": "hybrid_final_clickables",
+              "hybrid_curiosity": "hybrid_curiosity_clickables", "random": "random_clickables"}
+
+
+def followup(root: Path) -> dict:
+    """POST-HOC follow-up (tag v4-clickables): each arm with and without custom clickables,
+    all on GitHub Actions. Without: `runs/ext-v4-gha-base` (Dimeshift, Pagekit, Splittypie)
+    and the replication `runs/ext-eval-gha` (Phoenix, Retroboard, Petclinic); with:
+    `runs/ext-v4-gha`."""
+    base = load(sorted((root / "runs/ext-v4-gha-base/results").glob("*.json")))
+    base += [r for r in load(sorted((root / "runs/ext-eval-gha/results").glob("*.json")))
+             if r["app"] in ("phoenix", "retroboard", "petclinic")]
+    with_clickables = load(sorted((root / "runs/ext-v4-gha/results").glob("*.json")))
+    reverse = {v: k for k, v in CLICKABLES.items()}
+    for r in with_clickables:
+        r["arm"] = reverse[r["arm"]]
+    without, with_ = summarise(base), summarise(with_clickables)
+    gains = {}
+    for arm in ARMS:
+        for measure in ("coverage_mean", "console_mean"):
+            per_app = {a: with_[f"{a}|{arm}"][measure] - without[f"{a}|{arm}"][measure] for a in APPS
+                       if f"{a}|{arm}" in with_ and f"{a}|{arm}" in without}
+            values = list(per_app.values())
+            rng = random.Random(0)
+            boots = sorted(statistics.median(rng.choice(values) for _ in values)
+                           for _ in range(10000))
+            gains[f"{arm}::{measure}"] = {"median": statistics.median(values),
+                                          "interval": [boots[249], boots[9749]],
+                                          "apps_higher": sum(v > 0 for v in values),
+                                          "apps_lower": sum(v < 0 for v in values),
+                                          "per_app": per_app}
+    return {"without": without, "with": with_, "averages_without": averages(without),
+            "averages_with": averages(with_), "gains": gains,
+            "runs": {"without": len(base), "with": len(with_clickables)}}
+
+
+def followup_markdown(f: dict) -> str:
+    lines = ["", "## POST-HOC follow-up: custom clickables (all runs on GitHub Actions)", "",
+             "Branch coverage % (mean over 3 runs): without -> with clickables.", "",
+             "| App | " + " | ".join(ARMS) + " | WebExplor | WebRLED |", "|---|" + "---|" * (len(ARMS) + 2)]
+    for app in APPS:
+        cells = [f"{f['without'][f'{app}|{arm}']['coverage_mean']:.1f} -> "
+                 f"{f['with'][f'{app}|{arm}']['coverage_mean']:.1f}" for arm in ARMS]
+        cells += [f"{PUBLISHED[k][app][0]:.1f}" for k in ("WebExplor", "WebRLED")]
+        lines.append(f"| {app} | " + " | ".join(cells) + " |")
+    lines += ["", "| | Coverage without | Coverage with | Console failures without | with |", "|---|---|---|---|---|"]
+    for arm in ARMS:
+        w, c = f["averages_without"][arm], f["averages_with"][arm]
+        lines.append(f"| {arm} | {w['coverage']:.2f} | {c['coverage']:.2f} | {w['console']:.2f} | {c['console']:.2f} |")
+    for tool in ("WebExplor", "WebRLED"):
+        v = f["averages_with"][tool]
+        lines.append(f"| {tool} (published) | | {v['coverage']:.2f} | | {v['console']:.2f} |")
+    lines += ["", "| Arm | Measure | Gain, median over apps | Interval | Apps up / down |", "|---|---|---|---|---|"]
+    for key, g in f["gains"].items():
+        arm, measure = key.split("::")
+        lines.append(f"| {arm} | {measure} | {g['median']:+.2f} | [{g['interval'][0]:+.2f}, "
+                     f"{g['interval'][1]:+.2f}] | {g['apps_higher']} / {g['apps_lower']} |")
+    return "\n".join(lines) + "\n"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--out", type=Path, required=True, help="output stem (.json and .md)")
@@ -210,9 +272,13 @@ def main() -> None:
     if replication:
         rtable = summarise(replication)
         result["replication"] = {"runs": len(replication), "table": rtable}
+    if (REPO / "runs/ext-v4-gha/results").is_dir():
+        result["followup_clickables"] = followup(REPO)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.with_suffix(".json").write_text(json.dumps(result, indent=2), encoding="utf-8")
     text = markdown(result)
+    if "followup_clickables" in result:
+        text += followup_markdown(result["followup_clickables"])
     args.out.with_suffix(".md").write_text(text, encoding="utf-8")
     print(text)
 
