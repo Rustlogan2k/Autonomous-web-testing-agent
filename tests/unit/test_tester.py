@@ -62,6 +62,17 @@ def test_a_trigger_that_does_not_reproduce_stays_a_candidate():
     assert finding.status == "not_reproduced" and not finding.verified
 
 
+def test_a_spent_verification_time_budget_leaves_candidates_unverified():
+    monitor = TriggerMonitor(FakeReplayer(), max_verification_seconds=0.0)
+    monitor.start_episode(_info("http://a/index.html", None))
+    pricing = _click("Pricing")
+    assert monitor.observe(_info("http://a/pricing.html", pricing,
+                                 BugSignals(broken_navigation=True)), pricing, [pricing], 1) == []
+    finding = next(iter(monitor.findings.values()))
+    assert not finding.verified and not finding.replays
+    assert monitor.replayer.calls == 0
+
+
 def test_identities_ignore_ports_and_request_ids():
     event = NetworkEvent(url="http://127.0.0.1:5123/api/item?id=77", method="GET",
                          request_headers={}, request_body=None, response_status=500,

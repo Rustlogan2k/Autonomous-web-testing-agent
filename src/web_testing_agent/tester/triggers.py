@@ -157,12 +157,17 @@ class TriggerMonitor:
 
     def __init__(self, replayer: TriggerReplayer, *, replays: int = 2,
                  max_minimization_trials: int = 20, verify: bool = True,
-                 max_verifications: int = 25) -> None:
+                 max_verifications: int = 25,
+                 max_verification_seconds: float | None = None) -> None:
         self.replayer = replayer
         self.replays = replays
         self.max_minimization_trials = max_minimization_trials
         self.verify = verify
         self.max_verifications = max_verifications
+        #: Wall-clock budget for verification over the whole run (None = unlimited). Each
+        #: replay launches a fresh browser (and signs in), so an interactive product run
+        #: caps it; candidates left once it is spent are reported as unverified candidates.
+        self.max_verification_seconds = max_verification_seconds
         self.findings: dict[tuple[str, str, str], TriggerFinding] = {}
         self.verification_seconds = 0.0
         self.verification_steps = 0
@@ -196,6 +201,10 @@ class TriggerMonitor:
                 continue
             if sum(1 for f in self.findings.values() if f.replays) >= self.max_verifications:
                 logger.warning("verification budget exhausted; {} left as a candidate", identity)
+                continue
+            if (self.max_verification_seconds is not None
+                    and self.verification_seconds >= self.max_verification_seconds):
+                logger.warning("verification time budget spent; {} left as a candidate", identity)
                 continue
             if self._confirm(finding):
                 verified.append(finding)

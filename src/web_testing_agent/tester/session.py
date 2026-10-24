@@ -60,7 +60,13 @@ class SessionSettings:
     llm_weight: float = 1.0
     max_reviews: int = 6
     settle_quiet_ms: int | None = None
-    max_minimization_trials: int = 20
+    max_minimization_trials: int = 10
+    #: Verification limits for an interactive run: at most this many distinct trigger
+    #: candidates are verified, within this much wall-clock time; the rest are reported as
+    #: unverified candidates. Every replay launches a browser and signs in, so without a cap
+    #: a run on a signed-in application spent hours verifying.
+    max_verifications: int = 10
+    max_verification_seconds: float = 600.0
     setup_actions: tuple[dict, ...] = ()
     #: Offer elements made clickable by ARIA roles, click handlers or styling, which plain
     #: HTML scanning misses. On by default in the product: on framework-built sites (React,
@@ -252,7 +258,9 @@ def run_session(base_url: str, settings: SessionSettings | None = None, *,
         emit("warning", {"message": note})
 
     replayer = TriggerReplayer(lambda: env_factory(base_url, 120))
-    triggers = TriggerMonitor(replayer, max_minimization_trials=settings.max_minimization_trials)
+    triggers = TriggerMonitor(replayer, max_minimization_trials=settings.max_minimization_trials,
+                              max_verifications=settings.max_verifications,
+                              max_verification_seconds=settings.max_verification_seconds)
     seeded = None
     if seeded_app is not None:
         def runner(url: str) -> PlaywrightTrajectoryRunner:
