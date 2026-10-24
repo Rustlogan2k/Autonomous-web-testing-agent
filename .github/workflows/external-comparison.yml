@@ -36,9 +36,9 @@ jobs:
     steps:
       - id: plan
         env:
-          APPS: ${{ inputs.apps || 'dimeshift pagekit splittypie' }}
-          ARMS: ${{ inputs.arms || 'hybrid_final hybrid_curiosity random' }}
-          SEEDS: ${{ inputs.seeds || '0 1 2' }}
+          APPS: ${{ inputs.apps || 'dimeshift pagekit splittypie phoenix retroboard petclinic' }}
+          ARMS: ${{ inputs.arms || 'hybrid_final_v5 hybrid_curiosity_v5' }}
+          SEEDS: ${{ inputs.seeds || '0 1 2 3 4' }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import itertools, json, os

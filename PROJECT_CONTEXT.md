@@ -387,6 +387,38 @@ with clickables, mean of 3 runs:
 - **Reading:** the action space, not the policy, explained the Phoenix gap. All arms gained
   alike.
 
+**ROUND 2 of the external comparison — PRE-REGISTERED 2026-10-24, tag `v5-freeze`,
+before any run.**
+- **Why a second round.** The first round was below the published numbers, and its
+  diagnosis pointed at clickable-element detection. Round 2 measures the improved tester
+  under a protocol closer to the papers'. It is informed by round 1, so it is not an
+  independent test, and it is reported beside round 1, never in its place.
+- **Tester version (v5).** `hybrid_final_v5` and `hybrid_curiosity_v5`: the round-1 arms
+  plus listener-based clickable detection (`RegistryOptions.listener_clickables`). The
+  detection marks elements that receive click-type listeners and reads React, Vue 3 and
+  jQuery handlers, AngularJS and Ember action attributes, and links without `href`. It
+  was developed and checked only on the project's own applications:
+  - a synthetic test page;
+  - `runs/v5-check` on orbit, helpline, stackroom and wayfarer. Against the heuristic
+    clickables, verified faults were 9 vs 8 and coverage was higher on all four. These
+    are sanity checks, not tuning.
+- **Owner's choice of arms:** the two hybrids only (no random); runs on GitHub Actions.
+- **Protocol.**
+  - The same six applications and DIG images, sign-in macros and third-party stubs as
+    round 1.
+  - 1 h per run.
+  - **Seeds 0–4: five repetitions, as in the papers.**
+  - Every run on the same hardware (GitHub-hosted runners, 4 vCPU, 16 GB).
+- **Measures and analysis.** As round 1:
+  - Istanbul branch coverage;
+  - the pre-registered failure count, and the post-hoc console-message count;
+  - per-application means and ranges;
+  - averages beside the published numbers, descriptively.
+
+  Also reported: the averages without Petclinic (20 branches) and the difference from
+  round 1's same-hardware runs.
+- **Infrastructure failures** are rerun unchanged.
+
 ### 0.9 Known limitations of the tester
 
 - The page is treated as settled once the DOM is quiet. In-flight requests are not awaited.
