@@ -1,9 +1,11 @@
 \label{chap.7}
 
-This chapter reports three evaluations of the hybrid tester. The pre-registered held-out
-evaluation on the validation suite (Section~\ref{sec:heldout}) is complete. The final tuning
-round on the rebuilt development suite (Section~\ref{sec:tuning}) and the external comparison
-with WebExplor and WebRLED (Section~\ref{sec:extresults}) follow it.
+This chapter reports the evaluations of the hybrid tester: the pre-registered held-out
+evaluation on the validation suite (Section~\ref{sec:heldout}), the final tuning round on the
+rebuilt development suite (Section~\ref{sec:tuning}), the external comparison with WebExplor
+and WebRLED (Section~\ref{sec:extresults}), its post-hoc follow-up
+(Section~\ref{sec:followup}) and its pre-registered second round
+(Section~\ref{sec:round2}).
 
 \section{Held-out evaluation (pre-registered)}
 \label{sec:heldout}
@@ -519,6 +521,76 @@ matches or exceeds WebExplor (49.6\%) and remains below WebRLED (60.0\%).
 curiosity arm and random. What the testers could act on mattered more than how they chose
 among the actions they had.
 
+\section{External comparison, round 2 (pre-registered)}
+\label{sec:round2}
+
+\paragraph{Design.} The first round was below the published numbers, and its diagnosis
+pointed at clickable-element detection. A second round measured an improved tester under a
+protocol closer to the papers'. It was pre-registered and the code tagged
+(\code{v5-freeze}) before any run. Because it is informed by round 1, it is not an
+independent test, and it is reported beside round 1, not in its place.
+\begin{itemize}[noitemsep]
+  \item \textbf{Tester (v5).} The two hybrid arms with \emph{listener-based} clickable
+        detection. A script injected before the page's own code records every element that
+        receives a click-type event listener. It also reads the handlers of React, Vue and
+        jQuery, AngularJS and Ember action attributes, and links without an address. It was
+        developed and checked only on the project's own applications.
+  \item \textbf{Arms.} \code{hybrid\_final\_v5} and \code{hybrid\_curiosity\_v5}, by the
+        project owner's choice; no random arm.
+  \item \textbf{Protocol.} The same six applications, images, sign-in macros and stubs as
+        round 1; one-hour runs; \textbf{five repetitions}, as in the papers; every run on
+        the same hardware (GitHub-hosted runners, 4 vCPU, 16 GB).
+\end{itemize}
+All 60 runs completed; none failed.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Round 2: branch coverage (\%, mean [min, max] over five one-hour runs) and
+distinct console failures per run, beside the published numbers.}
+\label{tab:round2}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lllrr@{}}
+\toprule
+App & \code{hybrid\_final\_v5} & \code{hybrid\_curiosity\_v5} & WebExplor & WebRLED \\
+\midrule
+Dimeshift & 48.6 [45.6, 55.0] / 3.0 & 48.9 [47.2, 50.9] / 3.6 & 54.2 / 3.0 & 55.4 / 5.4 \\
+Pagekit & 35.0 [33.3, 35.7] / 1.8 & \textbf{41.0} [34.7, 49.4] / 2.8 & 25.8 / 6.6 & 39.8 / 7.4 \\
+Splittypie & 37.7 [30.8, 44.6] / 1.0 & \textbf{47.0} [40.1, 52.6] / 1.2 & 36.2 / 4.0 & 44.6 / 5.0 \\
+Phoenix & 82.4 [76.3, 84.2] / 2.6 & \textbf{84.7} [82.9, 85.5] / 2.6 & 71.8 / 0.0 & 82.9 / 2.0 \\
+Retroboard & 54.0 [53.8, 54.4] / 1.0 & 54.0 [53.8, 54.4] / 1.0 & 60.2 / 1.0 & 77.4 / 1.0 \\
+Petclinic & 51.0 [20.0, 75.0] / 1.8 & 46.0 [20.0, 85.0] / 2.4 & 85.0 / 3.8 & 85.0 / 3.8 \\
+\midrule
+Average, 6 apps & 51.5 / 1.9 & 53.6 / 2.3 & 55.5 / 3.1 & 64.2 / 4.1 \\
+Average, without Petclinic & 51.5 & 55.1 & 49.6 & 60.0 \\
+Round 1 on the same hardware, 6 apps & 41.8 & 52.6 & & \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Reading.}
+\begin{itemize}
+  \item \textbf{Against the published numbers.} Over all six applications, both arms remain
+        below WebExplor (55.5\%) and WebRLED (64.2\%). The curiosity arm reached 53.6\%.
+        Without Petclinic, it reached 55.1\%: above WebExplor's 49.6\%, below WebRLED's
+        60.0\%. Per application, the curiosity arm was above both published testers on
+        Pagekit, Splittypie and Phoenix, and below both on Dimeshift, Retroboard and
+        Petclinic.
+  \item \textbf{Against round 1 on the same hardware.} \code{hybrid\_final} rose from 41.8\%
+        to 51.5\%, higher on all six applications (median $+3.2$ points). The curiosity arm
+        rose on five of six (median $+1.1$); its round-1 average is lifted by one Petclinic
+        run at 85\%. Against the heuristic clickables of the follow-up, both arms were
+        higher on five of six applications (median about $+1.2$ points).
+  \item \textbf{Failures.} Distinct console failures did not change: about two per run,
+        below the papers' 3.1 and 4.1.
+  \item \textbf{Retroboard} stayed at 54\% in every run. Its limit is not the clickable
+        elements and was not identified.
+\end{itemize}
+
+The curiosity arm was ahead of \code{hybrid\_final} again on coverage, as in every
+coverage measurement in this thesis. All comparisons here are descriptive: our runs and the
+papers' ran on different machines, and the failure counts were deduplicated differently.
+
 \section{Discussion}
 \label{sec:discussion}
 
@@ -543,6 +615,7 @@ Held-out H1, H3 & Is the hybrid, with or without the bandit, faster than random?
 Held-out H2 & Does the bandit make the hybrid faster? & inconclusive \\
 Held-out H4 & Is the hybrid faster than v1's best DQN? & inconclusive \\
 External, round 1 & Coverage and failures against WebExplor and WebRLED (descriptive) & below both \\
+External, round 2 & The same, with listener-based clickables and five runs (descriptive; without Petclinic, coverage above WebExplor) & below both \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -552,21 +625,22 @@ External, round 1 & Coverage and failures against WebExplor and WebRLED (descrip
 \small
 \caption{The main arms as an ablation of structure and learning. Held-out: distinct faults
 of 24 and restricted mean $T$. Tuning: distinct faults of 41. External: mean branch
-coverage over the six applications, in round 1 and with custom clickables.}
+coverage over the six applications, in round 1, with heuristic custom clickables (post-hoc)
+and in round 2 (listener-based clickables, v5).}
 \label{tab:ablation}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{@{}llllrrrr@{}}
+\begin{tabular}{@{}llllrrrrr@{}}
 \toprule
-Arm & Structure & Learning & Held-out faults & RMST & Tuning faults & External & With clickables \\
+Arm & Structure & Learning & Held-out faults & RMST & Tuning faults & Round 1 & Clickables & Round 2 \\
 \midrule
-\code{random} & -- & -- & 13 & 978 & 19 & 40.3 & 45.7 \\
-\code{v1\_dqn\_pretrained} & -- & deep Q-network & 17 & \textbf{595} & 19 & -- & -- \\
-\code{hybrid\_nolearn} & yes & -- & 18 & 737 & 19 & -- & -- \\
-\code{hybrid\_bandit} & yes & Thompson bandit & \textbf{19} & 769 & 16 & -- & -- \\
-\code{hybrid\_curiosity} & yes & curiosity Q-learning & -- & -- & 16 & \textbf{44.7} & \textbf{54.1} \\
-\code{hybrid\_final} & yes, tuned & -- & -- & -- & \textbf{22}$^{*}$ & 44.3 & 45.5 \\
+\code{random} & -- & -- & 13 & 978 & 19 & 40.3 & 45.7 & -- \\
+\code{v1\_dqn\_pretrained} & -- & deep Q-network & 17 & \textbf{595} & 19 & -- & -- & -- \\
+\code{hybrid\_nolearn} & yes & -- & 18 & 737 & 19 & -- & -- & -- \\
+\code{hybrid\_bandit} & yes & Thompson bandit & \textbf{19} & 769 & 16 & -- & -- & -- \\
+\code{hybrid\_curiosity} & yes & curiosity Q-learning & -- & -- & 16 & \textbf{44.7} & \textbf{54.1} & \textbf{53.6} \\
+\code{hybrid\_final} & yes, tuned & -- & -- & -- & \textbf{22}$^{*}$ & 44.3 & 45.5 & 51.5 \\
 \bottomrule
-\multicolumn{8}{@{}l}{\footnotesize $^{*}$ from the 24-run check of the combined configuration before freezing (Section~\ref{sec:tuning}).}
+\multicolumn{9}{@{}l}{\footnotesize $^{*}$ from the 24-run check of the combined configuration before freezing (Section~\ref{sec:tuning}).}
 \end{tabular}}
 \end{table}
 
@@ -604,7 +678,10 @@ measures, the frozen tester did not reach WebExplor's or WebRLED's published cov
 failure counts. The post-hoc follow-up located a large part of the gap in the action space,
 not the exploration policy. With custom clickables, Phoenix coverage rose to WebRLED's
 level for every arm, and over the five applications other than Petclinic the arms matched or
-exceeded WebExplor's average, though not WebRLED's. Which elements a tester can act on bounds
+exceeded WebExplor's average, though not WebRLED's. The pre-registered second round, with
+listener-based detection and five repetitions, gave the same picture: the curiosity arm
+averaged 53.6\% over six applications, just below WebExplor, and 55.1\% without Petclinic,
+between WebExplor and WebRLED. It still triggered fewer console failures than either. Which elements a tester can act on bounds
 every policy built on it. The comparison also has limits. It used three repetitions instead of five, different
 machines, automatic instead of manual failure deduplication, and published numbers we could
 not re-run.
@@ -631,7 +708,7 @@ Distinct verified faults, final tuning round & \code{hybrid\_final} (22 of 41) &
 Distinct verified faults, held-out evaluation & \code{hybrid\_bandit} (19 of 24) & bandit only \\
 Restricted mean time to first fault, held-out & \code{v1\_dqn\_pretrained} (595) & yes, deep Q-learning \\
 Client-side coverage, final tuning round & \code{v1\_dqn\_pretrained} (0.91) & yes, deep Q-learning \\
-Branch coverage, WebExplor's applications & \code{hybrid\_curiosity} (44.7\%) & yes, Q-learning \\
+Branch coverage, WebExplor's applications & \code{hybrid\_curiosity} (44.7\%; 53.6\% in round 2) & yes, Q-learning \\
 Distinct failures triggered (all evaluations) & \code{hybrid\_curiosity} & yes, Q-learning \\
 \bottomrule
 \end{tabularx}
@@ -645,7 +722,8 @@ verified clearly more faults than the structure alone: at best one more on the h
 applications (19 against 18), and fewer in tuning. The like-for-like RL comparison with
 WebExplor and WebRLED, both RL testers, is therefore \code{hybrid\_curiosity}. It reached
 44.7\% branch coverage; with custom clickables it reached 54.1\% over all six applications,
-level with WebExplor (55.5\%) and below WebRLED (64.2\%).
+and 53.6\% in the pre-registered second round: close to WebExplor (55.5\%) and below WebRLED
+(64.2\%).
 
 \paragraph{Limits of the evidence.}
 \begin{itemize}

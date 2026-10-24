@@ -157,7 +157,7 @@ random. Development-only arms (`dev_*`) and the post-hoc `*_clickables` arms are
 
 | # | Question | Result | Status |
 |---|---|---|---|
-| 1 | Does pretraining an RL tester on other apps help on a new app? (v1, 6 apps, 210 runs) | No: pretrained − scratch median Δ 0 [−749, +290], p = 0.53 | pre-registered, frozen |
+| 1 | Does pretraining an RL tester on other apps help on a new app? (v1, 6 apps, 210 runs) | No measurable benefit: pretrained − scratch median Δ 0 [−749, +290], p = 0.53 (too wide to rule a benefit in or out) | pre-registered, frozen |
 | 2 | Does the v1 network learn which action helps in which state? (228 jobs) | Not supported: within-label AUROC 0.51 (rule ≥ 0.70) | pre-registered, frozen |
 | 3 | Does the LLM progress reward point at faults? | Only on the apps it was tuned on (AUROC 1.00 vs 0.38–0.73) | post-hoc |
 | 4 | Can a local LLM label pages and controls reliably? | No: gates failed (0.68/0.78; 0.61/0.75 on fresh pages) | gated in advance |
@@ -167,6 +167,7 @@ random. Development-only arms (`dev_*`) and the post-hoc `*_clickables` arms are
 | 8 | Tuning round v3 on the rebuilt full-stack suite (192 + 24 runs) | `browse_list` + failure feedback best (22/41 distinct faults); bandit slower than no learner; frozen as `hybrid_final` | development |
 | 9 | **External:** WebExplor's 6 apps, measured as published (1 h runs, Istanbul branch coverage, console failures) | **Below the published numbers:** 44.3% coverage vs WebExplor 55.5% / WebRLED 64.2%; 1.8 vs 3.1 / 4.1 failures. Comparable on Pagekit and Splittypie | pre-registered (tag `v3-freeze`) |
 | 10 | Is the gap the action space? (all arms + custom clickables, 81 runs) | Phoenix 49% → 82–83% for every arm (WebRLED 82.9%); excluding Petclinic, ~50–53% vs WebExplor 49.6% / WebRLED 60.0%; Retroboard unchanged | post-hoc (tag `v4-clickables`) |
+| 11 | **External, round 2:** listener-based clickables, 5 runs per app (as the papers), same hardware (60 runs) | `hybrid_curiosity_v5` 53.6% (55.1% without Petclinic), `hybrid_final_v5` 51.5%, vs WebExplor 55.5% (49.6%) / WebRLED 64.2% (60.0%). Above both papers on Pagekit, Splittypie and Phoenix; below on Dimeshift, Retroboard and Petclinic. Console failures 1.9–2.3 vs 3.1 / 4.1. `hybrid_final` +9.7 points over round 1 on the same hardware, up on all six apps | pre-registered (tag `v5-freeze`), informed by round 1 |
 
 Held-out per arm:
 
@@ -177,16 +178,18 @@ Held-out per arm:
 | `hybrid_bandit` | 34/40 | 769 | **19** | 0/8 |
 | `random` | 32/40 | 978 | 13 | 0/8 |
 
-External comparison per application (branch coverage %, mean of 3 one-hour runs):
+External comparison per application (branch coverage %). Round 1: mean of 3 one-hour runs.
+Round 2 (v5, listener-based clickables): mean of 5.
 
-| App | `hybrid_final` | `hybrid_curiosity` | `random` | WebExplor | WebRLED |
-|---|---|---|---|---|---|
-| Dimeshift | 49.2 | 47.8 | 45.0 | 54.2 | 55.4 |
-| Pagekit | 32.4 | 33.9 | 34.2 | 25.8 | 39.8 |
-| Splittypie | 35.7 | 42.9 | 37.5 | 36.2 | 44.6 |
-| Phoenix | 48.7 (82.0 with clickables) | 48.7 (83.3) | 46.9 (74.6) | 71.8 | 82.9 |
-| Retroboard | 53.2 | 53.2 | 53.2 | 60.2 | 77.4 |
-| Petclinic (20 branches, noisy) | 46.7 | 41.7 | 25.0 | 85.0 | 85.0 |
+| App | `hybrid_final` | `hybrid_curiosity` | `random` | `hybrid_final_v5` | `hybrid_curiosity_v5` | WebExplor | WebRLED |
+|---|---|---|---|---|---|---|---|
+| Dimeshift | 49.2 | 47.8 | 45.0 | 48.6 | 48.9 | 54.2 | 55.4 |
+| Pagekit | 32.4 | 33.9 | 34.2 | 35.0 | **41.0** | 25.8 | 39.8 |
+| Splittypie | 35.7 | 42.9 | 37.5 | 37.7 | **47.0** | 36.2 | 44.6 |
+| Phoenix | 48.7 (82.0 with clickables) | 48.7 (83.3) | 46.9 (74.6) | 82.4 | **84.7** | 71.8 | 82.9 |
+| Retroboard | 53.2 | 53.2 | 53.2 | 54.0 | 54.0 | 60.2 | 77.4 |
+| Petclinic (20 branches, noisy) | 46.7 | 41.7 | 25.0 | 51.0 | 46.0 | 85.0 | 85.0 |
+| **Average** | 44.3 | 44.7 | 40.3 | 51.5 | 53.6 | 55.5 | 64.2 |
 
 WebExplor and WebRLED are both RL testers: tabular curiosity Q-learning, and deep Q-learning
 with a learned actionable-element discriminator. The like-for-like RL comparison is

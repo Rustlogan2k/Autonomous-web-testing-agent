@@ -255,6 +255,64 @@ def followup_markdown(f: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+V5 = {"hybrid_final_v5": "hybrid_final", "hybrid_curiosity_v5": "hybrid_curiosity"}
+NO_PETCLINIC = tuple(a for a in APPS if a != "petclinic")
+
+
+def round2(root: Path) -> dict:
+    """Round 2 (tag v5-freeze, pre-registered): the two hybrids with listener-based clickables,
+    seeds 0-4, all on GitHub Actions (`runs/ext-v5-gha`). Reported beside the published
+    numbers, without Petclinic, and against round 1's same-hardware runs (the follow-up's
+    runs without clickables) and the heuristic-clickables runs (`runs/ext-v4-gha`)."""
+    runs = load(sorted((root / "runs/ext-v5-gha/results").glob("*.json")))
+    for r in runs:
+        r["arm"] = V5[r["arm"]]
+    table = summarise(runs)
+    base = followup(root)
+    vs = {}
+    for label, other in (("round1_same_hardware", base["without"]), ("heuristic_clickables", base["with"])):
+        for arm in V5.values():
+            per_app = {a: table[f"{a}|{arm}"]["coverage_mean"] - other[f"{a}|{arm}"]["coverage_mean"]
+                       for a in APPS if f"{a}|{arm}" in table and f"{a}|{arm}" in other}
+            vs[f"{arm}::{label}"] = {"median": statistics.median(per_app.values()),
+                                     "apps_higher": sum(v > 0 for v in per_app.values()),
+                                     "apps_lower": sum(v < 0 for v in per_app.values()),
+                                     "per_app": per_app}
+    return {"runs": len(runs), "table": table, "averages": averages(table),
+            "averages_without_petclinic": averages(table, NO_PETCLINIC),
+            "round1_same_hardware": {"averages": base["averages_without"],
+                                     "averages_without_petclinic": averages(base["without"], NO_PETCLINIC)},
+            "coverage_vs": vs}
+
+
+def round2_markdown(r: dict) -> str:
+    arms = tuple(V5.values())
+    t = r["table"]
+    lines = ["", "## ROUND 2 (pre-registered, tag v5-freeze): listener-based clickables, 5 runs, GitHub Actions", "",
+             "Branch coverage % mean [min, max] / post-hoc console failures, over 5 one-hour runs.", "",
+             "| App | " + " | ".join(arms) + " | WebExplor | WebRLED |", "|---|" + "---|" * (len(arms) + 2)]
+    for app in APPS:
+        cells = [f"{t[f'{app}|{a}']['coverage_mean']:.1f} [{t[f'{app}|{a}']['coverage_min']:.1f}, "
+                 f"{t[f'{app}|{a}']['coverage_max']:.1f}] / {t[f'{app}|{a}']['console_mean']:.1f}"
+                 if f"{app}|{a}" in t else "-" for a in arms]
+        cells += [f"{PUBLISHED[k][app][0]:.1f} / {PUBLISHED[k][app][1]:.1f}" for k in ("WebExplor", "WebRLED")]
+        lines.append(f"| {app} | " + " | ".join(cells) + " |")
+    lines += ["", "| | Coverage (6 apps) | without Petclinic | Failures (pre-reg.) | Console failures |", "|---|---|---|---|---|"]
+    for k, v in r["averages"].items():
+        if k == "random":
+            continue
+        w = r["averages_without_petclinic"][k]
+        lines.append(f"| {k} | {v['coverage']:.2f} | {w['coverage']:.2f} | {v['failures']:.2f} | {v['console']:.2f} |")
+    for arm in arms:
+        a, w = r["round1_same_hardware"]["averages"][arm], r["round1_same_hardware"]["averages_without_petclinic"][arm]
+        lines.append(f"| {arm}, round 1 same hardware | {a['coverage']:.2f} | {w['coverage']:.2f} | {a['failures']:.2f} | {a['console']:.2f} |")
+    lines += ["", "| Arm | Against | Coverage gain, median over apps | Apps up / down |", "|---|---|---|---|"]
+    for key, d in r["coverage_vs"].items():
+        arm, label = key.split("::")
+        lines.append(f"| {arm} | {label} | {d['median']:+.2f} | {d['apps_higher']} / {d['apps_lower']} |")
+    return "\n".join(lines) + "\n"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--out", type=Path, required=True, help="output stem (.json and .md)")
@@ -274,11 +332,15 @@ def main() -> None:
         result["replication"] = {"runs": len(replication), "table": rtable}
     if (REPO / "runs/ext-v4-gha/results").is_dir():
         result["followup_clickables"] = followup(REPO)
+    if (REPO / "runs/ext-v5-gha/results").is_dir():
+        result["round2"] = round2(REPO)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.with_suffix(".json").write_text(json.dumps(result, indent=2), encoding="utf-8")
     text = markdown(result)
     if "followup_clickables" in result:
         text += followup_markdown(result["followup_clickables"])
+    if "round2" in result:
+        text += round2_markdown(result["round2"])
     args.out.with_suffix(".md").write_text(text, encoding="utf-8")
     print(text)
 

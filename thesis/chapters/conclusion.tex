@@ -17,7 +17,9 @@ four research questions have these answers.
         layer on top of the structure was shown to improve it.
   \item[RQ4] The frozen tester did not reach WebExplor's or WebRLED's published coverage or
         failure counts. A post-hoc follow-up found the set of actionable elements to be an
-        important limit.
+        important limit. With better clickable detection, a pre-registered second round came
+        close to WebExplor's coverage and exceeded it without Petclinic, but stayed below
+        WebRLED and below both on failures.
 \end{description}
 
 The evidence is kept in three grades below. \emph{Established} means decided by a
@@ -36,7 +38,9 @@ that the evidence does not support, including some that a reader might assume.
   \item The local LLM failed both of its pre-set gates, as a reward and as a labeller.
   \item On WebExplor's six applications, measured as the published work measures, the frozen
         tester averaged 44.3\% branch coverage and 1.8 console failures, against 55.5\% and
-        3.1 for WebExplor and 64.2\% and 4.1 for WebRLED.
+        3.1 for WebExplor and 64.2\% and 4.1 for WebRLED. In the pre-registered second
+        round (five runs, listener-based clickables) the curiosity arm averaged 53.6\% and
+        2.3.
 \end{itemize}
 
 \subsection*{Suggested}
@@ -49,7 +53,9 @@ that the evidence does not support, including some that a reader might assume.
         faults by at most one on held-out applications and was slower in tuning. Curiosity
         Q-learning triggered more browser errors but verified fewer seeded faults.
   \item \textbf{The action space bounds coverage.} With custom clickables, Phoenix coverage
-        rose from 49\% to 75--83\% for every arm, random included.
+        rose from 49\% to 75--83\% for every arm, random included. With listener-based
+        detection, \code{hybrid\_final} rose from 41.8\% to 51.5\% on the same hardware,
+        higher on all six applications.
 \end{itemize}
 
 \subsection*{Not established}

@@ -198,10 +198,25 @@ def _external() -> dict | None:
                 arm: ((followup["without"].get(f"{app}|{arm}") or {}).get("coverage_mean"),
                       (followup["with"].get(f"{app}|{arm}") or {}).get("coverage_mean"))
                 for arm in EXTERNAL_ARMS}})
+    round2 = data.get("round2")
+    round2_rows = []
+    if round2:
+        for app in EXTERNAL_APPS:
+            round2_rows.append({"app": app,
+                                "cells": {arm: round2["table"].get(f"{app}|{arm}") for arm in ROUND2_ARMS},
+                                "webexplor": published["WebExplor"].get(app),
+                                "webrled": published["WebRLED"].get(app)})
     return {"arms": EXTERNAL_ARMS, "rows": rows, "averages": primary.get("averages", {}),
             "follow_rows": follow_rows,
             "follow_averages": (followup or {}).get("averages_with", {}),
+            "round2_arms": ROUND2_ARMS, "round2_rows": round2_rows,
+            "round2_averages": (round2 or {}).get("averages", {}),
+            "round2_without_petclinic": (round2 or {}).get("averages_without_petclinic", {}),
             "runs": primary.get("runs")}
+
+
+#: Round 2 (tag v5-freeze) stores its arms under their round-1 names; shown with the v5 suffix.
+ROUND2_ARMS = ("hybrid_final", "hybrid_curiosity")
 
 
 #: WebRLED (arXiv 2504.19237), Table 3: (branch coverage %, failures) per application.

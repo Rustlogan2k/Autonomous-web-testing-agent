@@ -149,6 +149,58 @@
       with and without numbers come from the same hardware.
     </p>
     {% endif %}
+    {% if data.external.round2_rows %}
+    <h3 class="section-sub">Round 2, pre-registered: listener-based clickables, five runs (tag v5-freeze)</h3>
+    <div class="table-wrap">
+      <table class="eval">
+        <thead>
+          <tr>
+            <th>Application</th>
+            {% for arm in data.external.round2_arms %}<th class="right">{{ arm }}_v5</th>{% endfor %}
+            <th class="right">WebExplor</th><th class="right">WebRLED</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data.external.round2_rows %}
+          <tr>
+            <td class="mono">{{ row.app }}</td>
+            {% for arm in data.external.round2_arms %}
+              {% set c = row.cells[arm] %}
+              <td class="right">{% if c %}{{ num(c.coverage_mean, 1) }}% <span class="faint">· {{ num(c.console_mean, 1) }}</span>{% else %}<span class="faint">—</span>{% endif %}</td>
+            {% endfor %}
+            <td class="right">{% if row.webexplor %}{{ row.webexplor[0] }}% <span class="faint">· {{ row.webexplor[1] }}</span>{% endif %}</td>
+            <td class="right">{% if row.webrled %}{{ row.webrled[0] }}% <span class="faint">· {{ row.webrled[1] }}</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+          <tr class="baseline">
+            <td><strong>Average</strong></td>
+            {% for arm in data.external.round2_arms %}
+              {% set a = data.external.round2_averages[arm] %}
+              <td class="right"><strong>{{ num(a.coverage, 1) }}%</strong> <span class="faint">· {{ num(a.console, 1) }}</span></td>
+            {% endfor %}
+            {% for tool in ('WebExplor', 'WebRLED') %}
+              {% set a = data.external.round2_averages[tool] %}
+              <td class="right"><strong>{{ num(a.coverage, 1) }}%</strong> <span class="faint">· {{ num(a.failures, 1) }}</span></td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td>Without Petclinic</td>
+            {% for arm in data.external.round2_arms %}
+              <td class="right">{{ num(data.external.round2_without_petclinic[arm].coverage, 1) }}%</td>
+            {% endfor %}
+            {% for tool in ('WebExplor', 'WebRLED') %}
+              <td class="right">{{ num(data.external.round2_without_petclinic[tool].coverage, 1) }}%</td>
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted" style="padding: 12px 16px 14px; margin: 0">
+      The two hybrid arms with clickables detected from the click listeners a page registers,
+      five one-hour runs per application on the same hardware, as in the papers. Informed by
+      round 1, so not an independent test; reported beside it, not in its place.
+    </p>
+    {% endif %}
     {% else %}
       {{ ui.empty_state('◇', 'No external comparison yet', 'Run scripts/analyze_external.py to produce reports/external_comparison.json.') }}
     {% endif %}

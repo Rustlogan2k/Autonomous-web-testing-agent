@@ -9,16 +9,19 @@ Last updated: 2026-10-24.
 
 ---
 
-## 0. Read this first — where the project stands (2026-10-24)
+## 0. Read this first — where the project stands (2026-10-25)
 
 > **All evaluations are complete.**
-> - **External comparison (§0.8):** the frozen tester (`hybrid_final`, tag `v3-freeze`) was
->   below WebExplor's and WebRLED's published numbers on their own applications. A post-hoc
->   follow-up (tag `v4-clickables`) traced much of the gap to the action space.
+> - **External comparison (§0.8).**
+>   - Round 1: the frozen tester (`hybrid_final`, tag `v3-freeze`) was below WebExplor's
+>     and WebRLED's published numbers on their own applications.
+>   - Post-hoc follow-up (tag `v4-clickables`): traced much of the gap to the action space.
+>   - Pre-registered round 2 (tag `v5-freeze`; listener-based clickables, 5 runs): the
+>     curiosity arm reached 53.6% (55.1% without Petclinic), against WebExplor 55.5%
+>     (49.6%) and WebRLED 64.2% (60.0%). It still triggers fewer console failures.
 > - **Best arm by measure:** the structure without a learner verifies the most seeded
 >   faults; the RL arms lead on coverage and errors triggered.
-> - **Thesis:** `thesis/` (64 pages) has every section written except the authors' names,
->   acknowledgements and publications.
+> - **Thesis:** `thesis/` (71 pages) is complete and revised after two external reviews.
 > - **Remaining:** the presentation and demo.
 
 > **Documents removed on 2026-10-22.** At the owner's request the repository now keeps only
@@ -418,6 +421,30 @@ before any run.**
   Also reported: the averages without Petclinic (20 branches) and the difference from
   round 1's same-hardware runs.
 - **Infrastructure failures** are rerun unchanged.
+
+**ROUND 2 RESULT (2026-10-25; GitHub run 40111652477, `runs/ext-v5-gha`, all 60 runs ok,
+none rerun; `scripts/analyze_external.py` → `reports/external_comparison.{json,md}`).**
+
+| Branch coverage % (5 runs) | `hybrid_final_v5` | `hybrid_curiosity_v5` | WebExplor | WebRLED |
+|---|---|---|---|---|
+| Dimeshift | 48.6 | 48.9 | 54.2 | 55.4 |
+| Pagekit | 35.0 | 41.0 | 25.8 | 39.8 |
+| Splittypie | 37.7 | 47.0 | 36.2 | 44.6 |
+| Phoenix | 82.4 | 84.7 | 71.8 | 82.9 |
+| Retroboard | 54.0 | 54.0 | 60.2 | 77.4 |
+| Petclinic | 51.0 | 46.0 | 85.0 | 85.0 |
+| Average, 6 apps | 51.5 | 53.6 | 55.5 | 64.2 |
+| Average without Petclinic | 51.5 | 55.1 | 49.6 | 60.0 |
+| Console failures (post-hoc) | 1.9 | 2.3 | 3.1 | 4.1 |
+
+- **Against the papers:** below both on the six-app average. Without Petclinic the
+  curiosity arm is above WebExplor and below WebRLED. Per app it is above both on Pagekit,
+  Splittypie and Phoenix, and below both on Dimeshift, Retroboard and Petclinic.
+- **Against round 1 on the same hardware** (the follow-up's runs without clickables):
+  `hybrid_final` 41.8 → 51.5, up on 6/6 apps (median +3.2); curiosity 52.6 → 53.6, up on 5/6.
+  Against the heuristic clickables (`ext-v4-gha`), both arms are up on 5/6 (median ≈ +1.2).
+- **Unchanged:** console failures (about 2 per run); Retroboard ≈ 54% in every run.
+- Descriptive only. Round 2 is informed by round 1, so it is not an independent test.
 
 ### 0.9 Known limitations of the tester
 
