@@ -55,6 +55,11 @@ class RegistryOptions:
       pointer cursor they set themselves. Single-page applications attach clicks to plain
       `div`s and `li`s; a learned detector of such controls is one of WebRLED's ablated
       gains [gu2025webrled], and this is its rule-based counterpart.
+    * `listener_clickables` -- with `custom_clickables`, a control is also anything the
+      page's own code made clickable: an element that received a click-type listener
+      (recorded by an init script that runs before the page's scripts), a React, Vue 3 or
+      jQuery click handler, an AngularJS or Ember action attribute, or a link without an
+      `href`. Listeners delegated to a page-sized container are ignored.
     * `avoid_labels` -- controls not to offer, matched against an element's visible text,
       id and name (case, spaces, hyphens and underscores ignored). A crawler's "don't
       click" list: with a sign-in macro, pressing *Sign out* only ends the session the
@@ -66,6 +71,9 @@ class RegistryOptions:
     disambiguate_shared_names: bool = False
     custom_clickables: bool = False
     avoid_labels: tuple[str, ...] = ()
+    #: With `custom_clickables`: also detect controls by the handlers actually attached to
+    #: them (see `CLICK_LISTENER_INIT_JS` and `_CUSTOM_SCAN_JS`), not only by markup cues.
+    listener_clickables: bool = False
 
 
 #: The registry as it was for every pre-benchmark measurement.
@@ -139,9 +147,54 @@ els => els.map((el, i) => {
 #: Most custom clickables taken from one page, in document order.
 MAX_CUSTOM_CLICKABLES = 30
 
+#: Runs in every page before the page's own scripts (`BrowserSession.init_scripts`) and
+#: marks each element that receives a click-type listener, however it is attached.
+CLICK_LISTENER_INIT_JS = """
+(() => {
+  const TYPES = new Set(['click', 'dblclick', 'mousedown', 'mouseup', 'pointerdown',
+                         'pointerup', 'touchstart', 'touchend']);
+  const add = EventTarget.prototype.addEventListener;
+  EventTarget.prototype.addEventListener = function (type, listener, options) {
+    try { if (TYPES.has(type) && this instanceof Element) this.__wtaClick = true; } catch (e) {}
+    return add.call(this, type, listener, options);
+  };
+  const desc = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'onclick');
+  if (desc && desc.set) {
+    Object.defineProperty(HTMLElement.prototype, 'onclick', {
+      configurable: true, enumerable: desc.enumerable, get: desc.get,
+      set(value) { try { if (value) this.__wtaClick = true; } catch (e) {} desc.set.call(this, value); },
+    });
+  }
+})();
+"""
+
 _CUSTOM_SCAN_JS = """
-(limit) => {
+([limit, listeners]) => {
     const NATIVE = 'a[href], button, input, select, textarea, option, label, summary';
+    const HANDLERS = ['onClick', 'onMouseDown', 'onMouseUp', 'onPointerDown', 'onTouchStart',
+                      'onDoubleClick'];
+    const ATTRS = ['ng-click', 'data-ng-click', 'ui-sref', 'data-ember-action', 'v-on:click'];
+    const area = window.innerWidth * window.innerHeight;
+    const framework = el => {
+        for (const key of Object.keys(el)) {
+            let props = null;
+            if (key.startsWith('__reactProps$') || key.startsWith('__reactEventHandlers$')) {
+                props = el[key];
+            } else if (key.startsWith('__reactInternalInstance$') || key.startsWith('__reactFiber$')) {
+                const inst = el[key];
+                props = (inst && inst._currentElement && inst._currentElement.props)
+                    || (inst && inst.memoizedProps) || null;
+            }
+            if (props && HANDLERS.some(h => typeof props[h] === 'function')) return true;
+        }
+        if (el._vei && HANDLERS.some(h => el._vei[h])) return true;
+        const jq = window.jQuery || window.$;
+        if (jq && typeof jq._data === 'function') {
+            const events = jq._data(el, 'events');
+            if (events && (events.click || events.mousedown || events.touchstart)) return true;
+        }
+        return ATTRS.some(a => el.hasAttribute(a));
+    };
     const ROLES = new Set(['button', 'link', 'tab', 'menuitem', 'menuitemradio',
         'menuitemcheckbox', 'option', 'checkbox', 'radio', 'switch', 'treeitem']);
     const cssPath = el => {
@@ -168,9 +221,12 @@ _CUSTOM_SCAN_JS = """
         const parent = el.parentElement;
         const ownPointer = style.cursor === 'pointer' && !(parent
             && window.getComputedStyle(parent).cursor === 'pointer');
-        if (!(ROLES.has(role) || el.hasAttribute('onclick') || (tab !== null && tab !== '-1')
-              || ownPointer)) continue;
         const rect = el.getBoundingClientRect();
+        const handled = listeners && (
+            (el.__wtaClick && rect.width * rect.height < 0.5 * area)
+            || framework(el) || (el.tagName === 'A' && !el.hasAttribute('href')));
+        if (!(ROLES.has(role) || el.hasAttribute('onclick') || (tab !== null && tab !== '-1')
+              || ownPointer || handled)) continue;
         const visible = rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden'
             && style.display !== 'none';
         if (!visible) continue;
@@ -190,10 +246,12 @@ _CUSTOM_SCAN_JS = """
 """
 
 
-def scan_custom_clickables(page: "Page", limit: int = MAX_CUSTOM_CLICKABLES) -> list[dict]:
-    """Clickable controls outside the native scan (see `RegistryOptions.custom_clickables`)."""
+def scan_custom_clickables(page: "Page", limit: int = MAX_CUSTOM_CLICKABLES,
+                           listeners: bool = False) -> list[dict]:
+    """Clickable controls outside the native scan (see `RegistryOptions.custom_clickables`
+    and `listener_clickables`)."""
     try:
-        return page.evaluate(_CUSTOM_SCAN_JS, limit)
+        return page.evaluate(_CUSTOM_SCAN_JS, [limit, listeners])
     except Exception:  # noqa: BLE001 - navigation mid-scan, detached DOM, etc.
         logger.warning("Failed to scan custom clickables; offering none")
         return []

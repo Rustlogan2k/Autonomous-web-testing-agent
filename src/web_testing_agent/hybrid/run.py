@@ -98,6 +98,12 @@ ARMS: dict[str, dict] = {
     "hybrid_curiosity_clickables": {**HYBRID, "planner": "count", "explore": "curiosity",
                                     "custom_clickables": True},
     "random_clickables": {"kind": "random", "custom_clickables": True},
+    # Version 5 (2026-10-24): clickables detected by the handlers actually attached
+    # (`RegistryOptions.listener_clickables`), developed on the project's own apps only.
+    "hybrid_final_v5": {**HYBRID, "planner": "count", "browse": True, "failure_bonus": 2.0,
+                        "custom_clickables": True, "listener_clickables": True},
+    "hybrid_curiosity_v5": {**HYBRID, "planner": "count", "explore": "curiosity",
+                            "custom_clickables": True, "listener_clickables": True},
     "dev_pairwise_bandit": {
         **HYBRID,
         "planner": "bandit",
@@ -150,7 +156,8 @@ def _settings(config: HybridConfig, spec: dict | None = None):
 
     registry = EXTENDED_OPTIONS
     if (spec or {}).get("custom_clickables"):
-        registry = replace(EXTENDED_OPTIONS, custom_clickables=True)
+        registry = replace(EXTENDED_OPTIONS, custom_clickables=True,
+                           listener_clickables=bool((spec or {}).get("listener_clickables")))
     return EnvSettings(
         max_steps=config.episode_steps,
         settle_quiet_ms=config.settle_quiet_ms,

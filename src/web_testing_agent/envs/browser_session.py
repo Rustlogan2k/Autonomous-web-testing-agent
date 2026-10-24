@@ -147,6 +147,8 @@ class BrowserSession:
         #: observer (e.g. a code-coverage profiler) sees the page's first script load.
         #: None by default: the episode is then exactly as it always was.
         self.on_new_page: Callable[[Page], None] | None = None
+        #: Scripts run in every document before its own scripts (empty by default).
+        self.init_scripts: list[str] = []
 
     @property
     def quiet_ms(self) -> int:
@@ -165,6 +167,8 @@ class BrowserSession:
             self.context.close()
         self.context = self._browser.new_context(viewport=dict(CANONICAL_VIEWPORT))
         self.context.set_default_navigation_timeout(NAVIGATION_TIMEOUT_MS)
+        for script in self.init_scripts:
+            self.context.add_init_script(script)
         self.page = self.context.new_page()
         if self.on_new_page is not None:
             self.on_new_page(self.page)

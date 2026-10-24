@@ -13,6 +13,7 @@ from .action_registry import (
     LEGACY_OPTIONS,
     RegistryOptions,
     build_action_specs,
+    CLICK_LISTENER_INIT_JS,
     scan_custom_clickables,
     scan_page_elements,
 )
@@ -70,6 +71,8 @@ class WebFunctionalEnv(WebTestingEnv):
         #: control that updates part of the page in place, changes the page without
         #: changing the URL; the URL rule calls every one of them broken.
         self.navigation_needs_change = navigation_needs_change
+        if self.registry_options.custom_clickables and self.registry_options.listener_clickables:
+            self._browser.init_scripts.append(CLICK_LISTENER_INIT_JS)
 
     def _start_reward_model_episode(self) -> None:
         self.reward_model.start_episode()
@@ -79,7 +82,8 @@ class WebFunctionalEnv(WebTestingEnv):
         assert page is not None
         elements = scan_page_elements(page)
         if self.registry_options.custom_clickables:
-            elements = elements + scan_custom_clickables(page)
+            elements = elements + scan_custom_clickables(
+                page, listeners=self.registry_options.listener_clickables)
         # The page's own URL decides whether a link is a self-link, and a self-link
         # cannot be a broken navigation. Read here rather than cached, because the scan
         # describes whatever document is loaded *now*.
