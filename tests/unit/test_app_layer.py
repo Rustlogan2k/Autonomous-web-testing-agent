@@ -290,10 +290,11 @@ def test_an_unavailable_agent_falls_back_rather_than_raising():
     assert agent_registry.resolve("no-such-agent").key == agent_registry.DEFAULT_AGENT
 
 
-def test_the_product_offers_exactly_the_rl_agents_and_random():
+def test_the_product_offers_the_frozen_tester_the_rl_agents_and_random():
     keys = [a.key for a in agent_registry.available_agents()]
-    assert keys == ["v1_dqn_pretrained", "hybrid_bandit", "hybrid_curiosity", "random"]
-    assert agent_registry.DEFAULT_AGENT == "hybrid_bandit"
+    assert keys == ["hybrid_final", "v1_dqn_pretrained", "hybrid_bandit", "hybrid_curiosity",
+                    "random"]
+    assert agent_registry.DEFAULT_AGENT == "hybrid_final"
     assert all(a.method for a in agent_registry.available_agents())
     assert set(agent_registry.SESSION_AGENTS) == set(keys)
 

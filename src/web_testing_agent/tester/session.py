@@ -26,11 +26,12 @@ import base64
 import json
 import time
 from collections.abc import Callable
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 
 from ..benchmark.hunt import run_hunt
 from ..benchmark.suite import EnvSettings, make_env
+from ..envs.action_registry import EXTENDED_OPTIONS
 from ..utils.logging import get_logger
 from .triggers import CompositeMonitor, TriggerMonitor, TriggerReplayer
 
@@ -61,6 +62,11 @@ class SessionSettings:
     settle_quiet_ms: int | None = None
     max_minimization_trials: int = 20
     setup_actions: tuple[dict, ...] = ()
+    #: Offer elements made clickable by ARIA roles, click handlers or styling, which plain
+    #: HTML scanning misses. On by default in the product: on framework-built sites (React,
+    #: Vue) the external comparison found these are most of the controls. Research runs set
+    #: the registry themselves (`hybrid.run`) and are unaffected.
+    custom_clickables: bool = True
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -103,7 +109,9 @@ FROZEN_HYBRID_AGENTS = ("hybrid_nolearn", "hybrid_bandit")
 #: keep their names; `hybrid_curiosity` is tuning round v3's curiosity arm (count-based
 #: Q-learning over page transitions chooses where to explore).
 HYBRID_AGENTS = {**{key: key for key in FROZEN_HYBRID_AGENTS},
-                 "hybrid_curiosity": "dev_v3_curiosity"}
+                 "hybrid_curiosity": "dev_v3_curiosity",
+                 # The tester frozen for the external comparison (tag v3-freeze).
+                 "hybrid_final": "hybrid_final"}
 
 
 def _hybrid_agent(settings: SessionSettings, app_name: str):
@@ -226,7 +234,9 @@ def run_session(base_url: str, settings: SessionSettings | None = None, *,
                            settings=settings.to_dict(),
                            started_at=time.strftime("%Y-%m-%dT%H:%M:%S%z"))
     env_settings = EnvSettings(max_steps=settings.episode_steps,
-                               settle_quiet_ms=settings.settle_quiet_ms)
+                               settle_quiet_ms=settings.settle_quiet_ms,
+                               registry=replace(EXTENDED_OPTIONS,
+                                                custom_clickables=settings.custom_clickables))
     setup = [dict(step) for step in settings.setup_actions]
 
     def env_factory(url: str, steps: int | None = None):  # noqa: ANN202

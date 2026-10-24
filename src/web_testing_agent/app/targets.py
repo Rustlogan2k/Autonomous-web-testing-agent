@@ -76,7 +76,34 @@ def demo_targets() -> list[DemoTarget]:
     The benchmark applications come first: each is served in both builds, so a demo run
     on one of them also exercises the seeded-fault oracle and its clean-build control.
     """
-    return [*_benchmark_demos(), _harbor_demo(), *_fixture_demos()]
+    return [*_suite_demos(), *_benchmark_demos(), _harbor_demo(), *_fixture_demos()]
+
+
+#: Full-stack applications of the development suite offered as demos: three architectures and
+#: both databases, each behind a sign-in and with seeded functional and crash-type faults.
+SUITE_DEMOS = ("orbit", "helpline", "stackroom")
+
+
+def _suite_demos() -> list[DemoTarget]:
+    import json
+
+    demos = []
+    for app_id in SUITE_DEMOS:
+        root = REPO_ROOT / "e2e_suite" / "apps" / app_id
+        try:
+            data = json.loads((root / "app.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        database = "PostgreSQL" if "postgres" in data.get("stack", "") else "MongoDB"
+        demos.append(DemoTarget(
+            key=f"suite:{app_id}", name=f"{data.get('name', app_id)} (full-stack)",
+            path=root, entry="app.json",
+            summary=f"{data.get('domain', '').capitalize()}: a {database} application behind a "
+                    f"sign-in, with {len(data.get('faults', []))} seeded faults.",
+            expectation="Signs in at every episode; seeded faults are verified against "
+                        "the per-fault control builds. Needs Docker for the database.",
+            needs_docker=True, session=("suite", app_id)))
+    return demos
 
 
 def _benchmark_demos() -> list[DemoTarget]:

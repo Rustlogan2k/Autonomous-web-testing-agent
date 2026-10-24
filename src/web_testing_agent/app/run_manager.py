@@ -27,6 +27,7 @@ container.
 
 from __future__ import annotations
 
+import dataclasses
 import threading
 import time
 import traceback
@@ -247,7 +248,7 @@ class RunManager:
         settings = SessionSettings(
             budget=run.settings.budget, seed=run.settings.seed, agent=session_agent,
             llm_reward=run.settings.llm, llm_review=run.settings.llm,
-            settle_quiet_ms=80 if kind in ("site", "benchmark") else None)
+            settle_quiet_ms=80 if kind in ("site", "benchmark", "suite") else None)
         run.progress.steps_total = settings.budget
         run.progress.episodes_total = max(1, settings.budget // settings.episode_steps)
         run.started_at = time.time()
@@ -260,6 +261,10 @@ class RunManager:
             run.components["environment"] = ComponentState.ACTIVE.value
             persist(RunStatus.BUILDING if kind == "repo" else RunStatus.STARTING)
             with provide(kind, value) as target:
+                if target.setup_actions:
+                    settings = dataclasses.replace(settings, setup_actions=tuple(target.setup_actions))
+                    emit("info", f"Signing in at the start of every episode "
+                                 f"({len(target.setup_actions)} steps)")
                 run.base_url = target.url
                 run.preview_url = target.url
                 run.components["environment"] = ComponentState.DONE.value

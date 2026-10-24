@@ -1,7 +1,8 @@
 """Which exploration policies the product offers.
 
-The product offers the project's reinforcement-learning agents and the random baseline they
-are measured against, so a user can watch each learner on an application of their own. Each
+The product offers the frozen hybrid tester (recommended: it verifies the most faults), the
+project's reinforcement-learning agents, and the random baseline they are measured against,
+so a user can compare each on an application of their own. Each
 is built by `tester.session.build_agent` from the experiments' own configuration and
 checkpoints; the UI renders whatever `available_agents()` returns.
 
@@ -24,19 +25,19 @@ from .models import AgentChoice
 
 logger = get_logger(__name__)
 
+AGENT_HYBRID_FINAL = "hybrid_final"
 AGENT_HYBRID_BANDIT = "hybrid_bandit"
 AGENT_HYBRID_CURIOSITY = "hybrid_curiosity"
 AGENT_V1_DQN = "v1_dqn_pretrained"
 AGENT_RANDOM = "random"
 
-#: The RL agents and the random baseline. The default is the hybrid tester with the bandit
-#: learner: it needs no checkpoint, so it is always available, and it found the most
-#: distinct faults in the held-out evaluation.
-DEFAULT_AGENT = AGENT_HYBRID_BANDIT
+#: The default is the frozen hybrid tester (tag v3-freeze): it needs no checkpoint, so it is
+#: always available, and it verified the most distinct faults in the final tuning round.
+DEFAULT_AGENT = AGENT_HYBRID_FINAL
 
 #: Every offered agent runs through the test-session path (`tester.run_session`); the key is
 #: also the session's name for it.
-SESSION_AGENTS = {key: key for key in (AGENT_V1_DQN, AGENT_HYBRID_BANDIT,
+SESSION_AGENTS = {key: key for key in (AGENT_HYBRID_FINAL, AGENT_V1_DQN, AGENT_HYBRID_BANDIT,
                                        AGENT_HYBRID_CURIOSITY, AGENT_RANDOM)}
 
 
@@ -59,11 +60,22 @@ def _v1_checkpoint_ok() -> tuple[bool, str]:
 
 
 def available_agents() -> list[AgentChoice]:
-    """The RL agents and the random baseline, resolved against this machine."""
+    """The frozen tester, the RL agents and the random baseline, resolved against this machine."""
     torch_ok = _torch_available()
     checkpoint_ok, why = _v1_checkpoint_ok()
     v1_ok = torch_ok and checkpoint_ok
     return [
+        AgentChoice(
+            key=AGENT_HYBRID_FINAL,
+            name="Hybrid tester (recommended)",
+            method="Structured exploration",
+            summary="Pages abstracted by function, an archive of reached states it returns to "
+                    "exactly, and test operators from standard test design (complete the step, "
+                    "invalid input, edit after review, back/reload and resume, double submit, "
+                    "browse a list), with extra attention to pages that already showed errors. "
+                    "No learner. It verified the most distinct faults in the final tuning round "
+                    "(22 of 41).",
+        ),
         AgentChoice(
             key=AGENT_V1_DQN,
             name="AC-DQN, pretrained",
@@ -94,9 +106,9 @@ def available_agents() -> list[AgentChoice]:
             method="Count-based Q-learning",
             summary="The hybrid tester choosing where to explore with tabular Q-learning "
                     "over page transitions, rewarded by curiosity (rarely seen transitions "
-                    "and states new to the episode), after WebExplor and WebRLED. A tuning "
-                    "round agent: not part of the held-out evaluation.",
-            research_stage=True,
+                    "and states new to the episode), after WebExplor and WebRLED. On "
+                    "WebExplor's own applications it reached the most code of our agents "
+                    "and triggered the most failures.",
         ),
         AgentChoice(
             key=AGENT_RANDOM,

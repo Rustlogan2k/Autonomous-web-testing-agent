@@ -38,6 +38,8 @@ class Target:
     #: `{fault_id: url of the faulty build without that fault}` -- the per-fault controls.
     control_urls: dict = field(default_factory=dict)
     details: dict = field(default_factory=dict)
+    #: A sign-in macro run at the start of every episode, for applications behind a login.
+    setup_actions: list = field(default_factory=list)
 
 
 def _site_root(path: Path) -> Path:
@@ -82,6 +84,25 @@ def provide(kind: str, value: str) -> Iterator[Target]:
                                        for f in app.manifest.faults})
         return
 
+    if kind == "suite":
+        # A full-stack application of the development suite: its database server, sign-in,
+        # every build (faulty, clean, one control per fault) and its seeded-fault manifest,
+        # served by the suite's own harness exactly as the evaluations served it.
+        from e2e_suite.harness.variants import control_key as suite_control_key
+
+        from ..hybrid.suite import load_suite_app, serve_suite_app
+
+        app = load_suite_app(value)
+        manifest = app.oracle_app()
+        with serve_suite_app(app, controls=True) as urls:
+            yield Target("suite", urls["buggy"], app.data.get("name", app.app_id),
+                         clean_url=urls["clean"], seeded_app=manifest,
+                         control_urls={f.fault_id: urls[suite_control_key(f.fault_id)]
+                                       for f in manifest.faults},
+                         details={"app_id": app.app_id},
+                         setup_actions=list(app.login_steps))
+        return
+
     if kind == "site":
         with tempfile.TemporaryDirectory(prefix="wta-site-") as workspace:
             path = Path(value)
@@ -107,4 +128,4 @@ def provide(kind: str, value: str) -> Iterator[Target]:
                          details={"image": getattr(deployment, "image_tag", "")})
         return
 
-    raise ValueError(f"unknown target kind {kind!r}; expected url, site, repo or benchmark")
+    raise ValueError(f"unknown target kind {kind!r}; expected url, site, repo, benchmark or suite")

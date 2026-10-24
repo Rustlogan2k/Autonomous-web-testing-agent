@@ -1,0 +1,181 @@
+{
+  "budget": 2000,
+  "baseline": "hybrid_nolearn",
+  "apps": [
+    "bagstreet",
+    "clinicflow",
+    "helpline",
+    "ledgerly",
+    "orbit",
+    "stackroom",
+    "tidewater",
+    "wayfarer"
+  ],
+  "seeded_faults": 41,
+  "crash_faults": 8,
+  "arms": [
+    {
+      "arm": "dev_v3_failfeedback",
+      "runs": 24,
+      "found": 21,
+      "rmst": 450.3,
+      "distinct_faults": 19,
+      "distinct_crash_faults": 3,
+      "unique_failures_per_run": 3.79,
+      "js_coverage": 0.893,
+      "vs_baseline": {
+        "median": 0.0,
+        "interval": [
+          -379.3333333333333,
+          0.0
+        ],
+        "apps_faster": 3,
+        "apps_slower": 1
+      }
+    },
+    {
+      "arm": "dev_v3_combined",
+      "runs": 24,
+      "found": 22,
+      "rmst": 464.8,
+      "distinct_faults": 22,
+      "distinct_crash_faults": 4,
+      "unique_failures_per_run": 3.12,
+      "js_coverage": 0.888,
+      "vs_baseline": {
+        "median": -51.83333333333333,
+        "interval": [
+          -145.0,
+          0.0
+        ],
+        "apps_faster": 6,
+        "apps_slower": 1
+      }
+    },
+    {
+      "arm": "random",
+      "runs": 24,
+      "found": 23,
+      "rmst": 498,
+      "distinct_faults": 19,
+      "distinct_crash_faults": 1,
+      "unique_failures_per_run": 5.38,
+      "js_coverage": 0.861,
+      "vs_baseline": {
+        "median": -18.333333333333332,
+        "interval": [
+          -285.1666666666667,
+          186.33333333333334
+        ],
+        "apps_faster": 5,
+        "apps_slower": 3
+      }
+    },
+    {
+      "arm": "dev_v3_browse",
+      "runs": 24,
+      "found": 20,
+      "rmst": 544.5,
+      "distinct_faults": 19,
+      "distinct_crash_faults": 3,
+      "unique_failures_per_run": 3.12,
+      "js_coverage": 0.885,
+      "vs_baseline": {
+        "median": -20.166666666666668,
+        "interval": [
+          -78.66666666666667,
+          0.0
+        ],
+        "apps_faster": 6,
+        "apps_slower": 1
+      }
+    },
+    {
+      "arm": "hybrid_nolearn",
+      "runs": 24,
+      "found": 21,
+      "rmst": 560.2,
+      "distinct_faults": 19,
+      "distinct_crash_faults": 4,
+      "unique_failures_per_run": 2.88,
+      "js_coverage": 0.896
+    },
+    {
+      "arm": "v1_dqn_pretrained",
+      "runs": 24,
+      "found": 20,
+      "rmst": 564.5,
+      "distinct_faults": 19,
+      "distinct_crash_faults": 2,
+      "unique_failures_per_run": 4.75,
+      "js_coverage": 0.909,
+      "vs_baseline": {
+        "median": -44.666666666666664,
+        "interval": [
+          -181.66666666666666,
+          264.6666666666667
+        ],
+        "apps_faster": 5,
+        "apps_slower": 3
+      }
+    },
+    {
+      "arm": "dev_v3_clickables",
+      "runs": 24,
+      "found": 19,
+      "rmst": 638,
+      "distinct_faults": 17,
+      "distinct_crash_faults": 3,
+      "unique_failures_per_run": 2.5,
+      "js_coverage": 0.891,
+      "vs_baseline": {
+        "median": 0.0,
+        "interval": [
+          0.0,
+          285.6666666666667
+        ],
+        "apps_faster": 0,
+        "apps_slower": 3
+      }
+    },
+    {
+      "arm": "dev_v3_curiosity",
+      "runs": 24,
+      "found": 20,
+      "rmst": 650.3,
+      "distinct_faults": 16,
+      "distinct_crash_faults": 2,
+      "unique_failures_per_run": 5.67,
+      "js_coverage": 0.894,
+      "vs_baseline": {
+        "median": 42.83333333333333,
+        "interval": [
+          -248.33333333333334,
+          549.3333333333334
+        ],
+        "apps_faster": 4,
+        "apps_slower": 4
+      }
+    },
+    {
+      "arm": "hybrid_bandit",
+      "runs": 24,
+      "found": 19,
+      "rmst": 692.3,
+      "distinct_faults": 16,
+      "distinct_crash_faults": 3,
+      "unique_failures_per_run": 2.83,
+      "js_coverage": 0.896,
+      "vs_baseline": {
+        "median": 140.33333333333331,
+        "interval": [
+          111.66666666666667,
+          415.6666666666667
+        ],
+        "apps_faster": 1,
+        "apps_slower": 7
+      }
+    }
+  ],
+  "frozen": "hybrid_final = dev_v3_combined (tag v3-freeze)"
+}

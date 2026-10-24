@@ -2,7 +2,7 @@
 {% import "_macros.html" as ui %}
 
 {% block heading %}Evaluation{% endblock %}
-{% block subheading %}Every experiment and development round, read live from the result files{% endblock %}
+{% block subheading %}Every evaluation, experiment and development round, read live from the result files{% endblock %}
 
 {% macro num(value, digits=0) -%}
   {%- if value is none -%}<span class="faint">—</span>
@@ -17,7 +17,11 @@
 
 {% block content %}
 <nav class="tabs" aria-label="Sections">
-  <a href="#compare">Arms compared</a>
+  <a href="#results">Results at a glance</a>
+  <a href="#external">External: WebExplor / WebRLED</a>
+  <a href="#heldout">Held-out evaluation</a>
+  <a href="#tuning">Tuning round v3</a>
+  <a href="#compare">Development arms</a>
   <a href="#rounds">Development rounds</a>
   <a href="#v1">v1 transfer experiment</a>
   <a href="#diagnostic">Contextual diagnostic</a>
@@ -25,19 +29,234 @@
 </nav>
 
 <div class="alert info">
-  <strong>How to read this page.</strong> A run is 2,000 browser interactions on one
-  application. It <em>finds</em> a fault when a seeded fault is verified (replayed twice,
-  absent on its control build). Times are interactions to the first verified fault; a run
-  that finds nothing counts as 2,000. The hybrid rounds are <strong>development</strong>
-  data used for tuning, not evidence of generalisation: that comes from the held-out
-  evaluation, which has not run yet.
+  <strong>How to read this page.</strong> A run is one tester exploring one application:
+  2,000 browser interactions on the project's own applications, one hour on the external
+  benchmark. It <em>finds</em> a fault when a seeded fault is verified: replayed twice and
+  absent on its control build. Times are interactions to the first verified fault; a run that
+  finds nothing counts as the full budget. Pre-registered evaluations are evidence;
+  development and tuning rounds are not.
 </div>
 
+{# -- 0. results at a glance ------------------------------------------------------------- #}
+<section class="card" id="results">
+  <div class="card-head">
+    <div>
+      <h2>Results at a glance</h2>
+      <div class="small muted mt-4">Which tester is best depends on what is measured.</div>
+    </div>
+  </div>
+  <div class="card-body tight">
+    <div class="table-wrap">
+      <table class="eval">
+        <thead><tr><th>Measure</th><th>Best tester</th><th>Reinforcement learning?</th></tr></thead>
+        <tbody>
+          <tr><td>Distinct verified faults, tuning round v3</td><td class="mono">hybrid_final (22 of 41)</td><td>no</td></tr>
+          <tr><td>Distinct verified faults, held-out evaluation</td><td class="mono">hybrid_bandit (19 of 24)</td><td>bandit only</td></tr>
+          <tr><td>Fastest to a first fault, held-out evaluation</td><td class="mono">v1_dqn_pretrained</td><td>yes, deep Q-learning</td></tr>
+          <tr><td>Client-side coverage, tuning round v3</td><td class="mono">v1_dqn_pretrained (0.91)</td><td>yes, deep Q-learning</td></tr>
+          <tr><td>Branch coverage on WebExplor's applications</td><td class="mono">hybrid_curiosity (44.7%)</td><td>yes, Q-learning</td></tr>
+          <tr><td>Distinct failures triggered</td><td class="mono">hybrid_curiosity</td><td>yes, Q-learning</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted" style="padding: 12px 16px 14px; margin: 0">
+      The structure without a learner verifies the most seeded faults. Learning to explore
+      leads on coverage and on errors triggered. No learning layer verified more faults than
+      the same structure without it. Zero false positives in every clean-build control.
+    </p>
+  </div>
+</section>
+
+{# -- 1. external comparison ------------------------------------------------------------ #}
+<section class="card mt-24" id="external">
+  <div class="card-head">
+    <div>
+      <h2>External comparison: WebExplor and WebRLED</h2>
+      <div class="small muted mt-4">
+        Pre-registered (tag <span class="mono">v3-freeze</span>). WebExplor's six
+        applications, one-hour runs, three repetitions. Client-side branch coverage (Istanbul) and
+        distinct console failures, beside the published numbers (WebRLED, arXiv 2504.19237).
+        Source: <span class="mono">reports/external_comparison.json</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-body tight">
+    {% if data.external %}
+    <div class="table-wrap">
+      <table class="eval">
+        <thead>
+          <tr>
+            <th>Application</th>
+            {% for arm, about in data.external.arms.items() %}<th class="right" title="{{ about }}">{{ arm }}</th>{% endfor %}
+            <th class="right">WebExplor</th><th class="right">WebRLED</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data.external.rows %}
+          <tr>
+            <td class="mono">{{ row.app }}</td>
+            {% for arm in data.external.arms %}
+              {% set c = row.cells[arm] %}
+              <td class="right">{% if c %}{{ num(c.coverage_mean, 1) }}% <span class="faint">· {{ num(c.console_mean, 1) }}</span>{% else %}<span class="faint">—</span>{% endif %}</td>
+            {% endfor %}
+            <td class="right">{% if row.webexplor %}{{ row.webexplor[0] }}% <span class="faint">· {{ row.webexplor[1] }}</span>{% endif %}</td>
+            <td class="right">{% if row.webrled %}{{ row.webrled[0] }}% <span class="faint">· {{ row.webrled[1] }}</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+          <tr class="baseline">
+            <td><strong>Average</strong></td>
+            {% for arm in data.external.arms %}
+              {% set a = data.external.averages[arm] %}
+              <td class="right"><strong>{{ num(a.coverage, 1) }}%</strong> <span class="faint">· {{ num(a.console, 1) }}</span></td>
+            {% endfor %}
+            {% for tool in ('WebExplor', 'WebRLED') %}
+              {% set a = data.external.averages[tool] %}
+              <td class="right"><strong>{{ num(a.coverage, 1) }}%</strong> <span class="faint">· {{ num(a.failures, 1) }}</span></td>
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted" style="padding: 12px 16px 0; margin: 0">
+      Each cell is branch coverage · distinct console failures per run. WebExplor and WebRLED
+      are both RL testers; the like-for-like RL comparison is <span class="mono">hybrid_curiosity</span>.
+      The failure count is a post-hoc count close to the papers' manual deduplication.
+    </p>
+    {% if data.external.follow_rows %}
+    <h3 class="section-sub">Post-hoc follow-up: custom clickables (tag v4-clickables)</h3>
+    <div class="table-wrap">
+      <table class="eval">
+        <thead>
+          <tr><th>Application</th>{% for arm in data.external.arms %}<th class="right">{{ arm }}: without → with</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for row in data.external.follow_rows %}
+          <tr>
+            <td class="mono">{{ row.app }}</td>
+            {% for arm in data.external.arms %}
+              {% set w, c = row.cells[arm] %}
+              <td class="right">{{ num(w, 1) }}% → <strong>{{ num(c, 1) }}%</strong></td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted" style="padding: 12px 16px 14px; margin: 0">
+      The same arms with clickable elements that plain HTML scanning misses (ARIA roles,
+      click handlers, pointer styling). On Phoenix every arm rose to WebRLED's level; the
+      gap there was the action space, not the policy. All runs on GitHub Actions, so the
+      with and without numbers come from the same hardware.
+    </p>
+    {% endif %}
+    {% else %}
+      {{ ui.empty_state('◇', 'No external comparison yet', 'Run scripts/analyze_external.py to produce reports/external_comparison.json.') }}
+    {% endif %}
+  </div>
+</section>
+
+{# -- 2. held-out ---------------------------------------------------------------------- #}
+<section class="card mt-24" id="heldout">
+  <div class="card-head">
+    <div>
+      <h2>Held-out evaluation</h2>
+      <div class="small muted mt-4">
+        Pre-registered (tag <span class="mono">v2-eval-freeze</span>). Eight applications never
+        used for development, five seeds each, 2,000 interactions per run, plus clean-build controls.
+        Source: <span class="mono">reports/v2_evaluation.json</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-body tight">
+    {% if data.heldout %}
+    <div class="table-wrap">
+      <table class="eval">
+        <thead><tr><th>Arm</th><th class="right">Runs</th><th class="right">Found a fault</th><th class="right">Mean time</th><th class="right">Distinct faults (of 24)</th><th class="right">Clean-build false positives</th></tr></thead>
+        <tbody>
+          {% for a in data.heldout.arms %}
+          <tr>
+            <td>{{ arm_cell(a.arm, a.about) }}</td>
+            <td class="right">{{ a.runs }}</td>
+            <td class="right">{{ num(a.discovery_rate * 100) }}%</td>
+            <td class="right">{{ num(a.rmst) }}</td>
+            <td class="right">{{ a.distinct }}</td>
+            <td class="right">{{ a.false_positives }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <h3 class="section-sub">Pre-registered hypotheses</h3>
+    <div class="table-wrap">
+      <table class="eval">
+        <thead><tr><th></th><th>Comparison</th><th class="right">Median Δ</th><th>95% interval</th><th class="right">Apps favouring</th><th class="right">Log-rank p</th><th>Verdict</th></tr></thead>
+        <tbody>
+          {% for h in data.heldout.hypotheses %}
+          <tr>
+            <td class="mono">{{ h.label }}</td><td class="mono">{{ h.comparison }}</td>
+            <td class="right">{{ num(h.median) }}</td>
+            <td class="mono">{% if h.ci %}[{{ num(h.ci[0]) }}, {{ num(h.ci[1]) }}]{% endif %}</td>
+            <td class="right">{{ h.favouring }}</td>
+            <td class="right">{{ num(h.p, 3) }}</td>
+            <td><span class="badge neutral">{{ h.verdict }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      {{ ui.empty_state('◇', 'No held-out result', 'reports/v2_evaluation.json is missing.') }}
+    {% endif %}
+  </div>
+</section>
+
+{# -- 3. tuning ----------------------------------------------------------------------- #}
+<section class="card mt-24" id="tuning">
+  <div class="card-head">
+    <div>
+      <h2>Tuning round v3: the rebuilt full-stack apps</h2>
+      <div class="small muted mt-4">
+        Development data. Eight applications on PostgreSQL or MongoDB with sign-in,
+        {% if data.tuning %}{{ data.tuning.seeded_faults }} seeded faults ({{ data.tuning.crash_faults }} crash-type){% endif %};
+        3 seeds each. <span class="mono">dev_v3_combined</span> was frozen as
+        <span class="mono">hybrid_final</span>. Source: <span class="mono">reports/tuning_v3.json</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-body tight">
+    {% if data.tuning %}
+    <div class="table-wrap">
+      <table class="eval">
+        <thead><tr><th>Arm</th><th class="right">Runs</th><th class="right">Found a fault</th><th class="right">Mean time</th><th class="right">Distinct faults</th><th class="right">Crash faults</th><th class="right">Failures / run</th><th class="right">JS coverage</th><th class="right">vs hybrid_nolearn</th></tr></thead>
+        <tbody>
+          {% for a in data.tuning.arms %}
+          <tr class="{{ 'baseline' if a.arm == data.tuning.baseline }}">
+            <td class="mono">{{ a.arm }}</td>
+            <td class="right">{{ a.runs }}</td>
+            <td class="right">{{ a.found }}</td>
+            <td class="right">{{ num(a.rmst) }}</td>
+            <td class="right">{{ a.distinct_faults }} / {{ data.tuning.seeded_faults }}</td>
+            <td class="right">{{ a.distinct_crash_faults }} / {{ data.tuning.crash_faults }}</td>
+            <td class="right">{{ num(a.unique_failures_per_run, 2) }}</td>
+            <td class="right">{{ num(a.js_coverage, 3) }}</td>
+            <td class="right">{% if a.vs_baseline %}{{ '%+.0f' | format(a.vs_baseline.median) }} <span class="faint">({{ a.vs_baseline.apps_faster }}↓ {{ a.vs_baseline.apps_slower }}↑)</span>{% else %}<span class="badge neutral">baseline</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      {{ ui.empty_state('◇', 'No tuning summary', 'Run scripts/summarize_tuning.py to produce reports/tuning_v3.json.') }}
+    {% endif %}
+  </div>
+</section>
+
+<div class="mt-24"></div>
 {# -- 1. comparison --------------------------------------------------------------------- #}
 <section class="card" id="compare">
   <div class="card-head">
     <div>
-      <h2>Arms compared on the same runs</h2>
+      <h2>Development arms compared on the same runs</h2>
       <div class="small muted mt-4">
         Suite rounds 2–5, 14 development apps. Each arm against <span class="mono">{{ data.comparison.baseline }}</span>
         on the (application, seed) pairs both have finished.

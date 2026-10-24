@@ -120,7 +120,8 @@ def _signature() -> tuple:
     for path in sorted(RUNS.glob("v2-*/results")) if RUNS.is_dir() else []:
         files = list(path.glob("*.json"))
         out.append((path.parent.name, len(files), max((f.stat().st_mtime for f in files), default=0)))
-    for name in ("transfer_final.json", "contextual_diagnostic.json"):
+    for name in ("transfer_final.json", "contextual_diagnostic.json", "v2_evaluation.json",
+                 "tuning_v3.json", "external_comparison.json"):
         path = REPORTS / name
         out.append((name, path.stat().st_mtime if path.is_file() else 0))
     return tuple(out)
@@ -136,9 +137,80 @@ def load() -> dict:
             "labeller": _labeller(),
             "rounds": _rounds(),
             "comparison": _comparison(),
+            "heldout": _heldout(),
+            "tuning": _read(REPORTS / "tuning_v3.json"),
+            "external": _external(),
         }
         _cache["signature"] = signature
     return _cache["data"]
+
+
+# -- the final evaluations ---------------------------------------------------------------------
+
+#: Arm names on the external benchmark and how the page describes them.
+EXTERNAL_ARMS = {
+    "hybrid_final": "Frozen hybrid tester (no learner)",
+    "hybrid_curiosity": "Hybrid + curiosity Q-learning (RL)",
+    "random": "Random baseline",
+}
+EXTERNAL_APPS = ("dimeshift", "pagekit", "splittypie", "phoenix", "retroboard", "petclinic")
+
+
+def _heldout() -> dict | None:
+    """The pre-registered held-out evaluation (`reports/v2_evaluation.json`)."""
+    data = _read(REPORTS / "v2_evaluation.json")
+    if data is None:
+        return None
+    arms = [{"arm": arm, "about": ARMS.get(arm, ""), "runs": s.get("runs"),
+             "discovery_rate": s.get("discovery_rate"), "rmst": s.get("restricted_mean_time"),
+             "distinct": s.get("distinct_faults_verified"),
+             "false_positives": (data.get("clean_build_controls", {}).get(arm) or {}).get("verified_seeded")}
+            for arm, s in data.get("per_arm", {}).items()]
+    arms.sort(key=lambda a: a["rmst"] or BUDGET)
+    tests = [data.get("primary") or {}, *data.get("secondary", [])]
+    hypotheses = [{"label": f"H{i + 1}", "comparison": f"{t.get('treatment')} − {t.get('control')}",
+                   "median": t.get("median_difference"), "ci": t.get("ci"),
+                   "favouring": t.get("apps_favouring_treatment"),
+                   "p": (t.get("logrank") or {}).get("p_value"), "verdict": t.get("verdict")}
+                  for i, t in enumerate(tests) if t]
+    return {"arms": arms, "hypotheses": hypotheses, "apps": data.get("apps", [])}
+
+
+def _external() -> dict | None:
+    """The external comparison and its post-hoc follow-up (`reports/external_comparison.json`)."""
+    data = _read(REPORTS / "external_comparison.json")
+    if data is None:
+        return None
+    primary = data.get("primary", {})
+    table = primary.get("table", {})
+    published = _PUBLISHED
+    rows = []
+    for app in EXTERNAL_APPS:
+        cells = {arm: table.get(f"{app}|{arm}") for arm in EXTERNAL_ARMS}
+        rows.append({"app": app, "cells": cells,
+                     "webexplor": published["WebExplor"].get(app),
+                     "webrled": published["WebRLED"].get(app)})
+    followup = data.get("followup_clickables")
+    follow_rows = []
+    if followup:
+        for app in EXTERNAL_APPS:
+            follow_rows.append({"app": app, "cells": {
+                arm: ((followup["without"].get(f"{app}|{arm}") or {}).get("coverage_mean"),
+                      (followup["with"].get(f"{app}|{arm}") or {}).get("coverage_mean"))
+                for arm in EXTERNAL_ARMS}})
+    return {"arms": EXTERNAL_ARMS, "rows": rows, "averages": primary.get("averages", {}),
+            "follow_rows": follow_rows,
+            "follow_averages": (followup or {}).get("averages_with", {}),
+            "runs": primary.get("runs")}
+
+
+#: WebRLED (arXiv 2504.19237), Table 3: (branch coverage %, failures) per application.
+_PUBLISHED = {
+    "WebExplor": {"dimeshift": (54.22, 3.0), "pagekit": (25.79, 6.6), "splittypie": (36.16, 4.0),
+                  "phoenix": (71.84, 0.0), "retroboard": (60.23, 1.0), "petclinic": (85.00, 3.8)},
+    "WebRLED": {"dimeshift": (55.37, 5.4), "pagekit": (39.76, 7.4), "splittypie": (44.61, 5.0),
+                "phoenix": (82.89, 2.0), "retroboard": (77.43, 1.0), "petclinic": (85.00, 3.8)},
+}
 
 
 # -- frozen experiments ----------------------------------------------------------------------
