@@ -36,6 +36,79 @@ that lacks that one fault, and survives delta-debugging minimisation~\cite{zelle
 The main measure is the number of browser interactions until the first verified fault, with
 runs that find nothing treated as right-censored at the budget.
 
+\section{What a functional bug is}
+\label{sec:functional-bug}
+
+\paragraph{Fault and failure.} This thesis follows the standard distinction. A \emph{fault}
+is a defect in the code. A \emph{failure} is what a user can observe when the faulty code
+runs: the application's behaviour departs from what it should do~\cite{barr2015oracle}.
+Testers observe failures; the faults behind them are what developers fix. The test
+applications here contain known, seeded faults, and the tester's job is to make each one
+produce an observable failure and prove it.
+
+\begin{Definition}[Functional bug]
+A \emph{functional bug} in a web application is a fault whose failure is an observable
+deviation of the application's behaviour from its functional requirements. It must be:
+\begin{enumerate}[noitemsep]
+  \item \textbf{triggered} by a finite sequence of user interactions (clicks, typed values,
+        selections, navigation) from a defined starting state;
+  \item \textbf{observable} through what the user can see or what the application keeps:
+        page content, the page reached, data shown later, data that persists, or an
+        error the browser reports;
+  \item \textbf{wrong} against a stated requirement: what the application's own contract
+        says it must compute, accept, refuse, store or show.
+\end{enumerate}
+\end{Definition}
+
+In the terms of ISO/IEC 25010~\cite{iso25010}, a functional bug is a failure of
+\emph{functional correctness}: the product does not provide the correct results. It is not a
+failure of the non-functional characteristics, so the following are \emph{not} functional
+bugs here:
+\begin{itemize}[noitemsep]
+  \item security vulnerabilities (out of scope, Section~\ref{sec:scope});
+  \item performance;
+  \item visual layout;
+  \item usability;
+  \item accessibility.
+\end{itemize}
+A page that renders slowly or looks wrong but computes, stores and shows the right things
+has no functional bug.
+
+\paragraph{A taxonomy.} Every seeded fault in this thesis belongs to one of six classes
+(Table~\ref{tab:bug-classes}). Each class corresponds to the assertions the oracle uses to
+decide that a failure occurred (Section~\ref{sec:oracle}), so the definition is operational:
+for every class, the thesis can state exactly what observation shows the bug.
+
+\begin{table}[H]
+\centering
+\small
+\caption{The classes of functional bug used in this thesis, with an example from the test
+applications and the oracle check that observes the failure.}
+\label{tab:bug-classes}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}p{2.1cm} X X p{4.3cm}@{}}
+\toprule
+Class & Definition & Example & Oracle check \\
+\midrule
+Calculation error & A number the application shows differs from the correct computation over the user's inputs. & A basket total ignores a changed quantity. & \code{numeric\_equals}, region arithmetic \\
+Constraint bypass & An input the application must reject is accepted, or a state guarded by a precondition is reached without it. & An order is placed with an empty delivery address. & \code{reached\_with\_invalid\_input}, \code{region\_empty} \\
+State corruption & Data shown later differs from what the user entered or what the application should have derived. & Express delivery chosen; the confirmation says standard. & \code{echoes\_input}, \code{text\_equals} \\
+Persistence failure & Data the user saved is lost, reverted or not stored. & An edited record reverts after a reload. & \code{echoes\_input} across pages, region stable across reload \\
+Broken transition & An action leads to the wrong page or state, or to none. & ``Next'' returns to the first step of a wizard. & \code{url\_matches}, \code{text\_contains} \\
+Crash-type & An interaction makes the application's own code throw an uncaught error or a request to the application fail. & Ticking a checklist item throws a script error. & \code{console\_or\_request\_error} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Why the definition matters for the evaluation.} The first five classes are
+\emph{silent}: the page renders, nothing errors, and the result is simply wrong. An implicit
+oracle, one that counts console errors as published RL web testers
+do~\cite{zheng2021webexplor, gu2025webrled}, cannot see them. Only the last class is visible
+to such an oracle. This is why the thesis measures \emph{verified} functional bugs against a
+specification of each seeded fault. It is also why the external comparison, which uses the
+literature's measures of coverage and console failures, sees only part of what a functional
+tester is for.
+
 \section{Objectives}
 
 \begin{enumerate}
@@ -84,6 +157,7 @@ runs that find nothing treated as right-censored at the budget.
 \end{enumerate}
 
 \section{Scope}
+\label{sec:scope}
 
 The project began with two agents: one for security testing and one for functional testing.
 The security agent was dropped early so that one agent could be built and evaluated end to

@@ -24,6 +24,32 @@ Final-year B.Tech project. Security testing is out of scope.
 
 ---
 
+## What counts as a functional bug
+
+A **functional bug** is a defect whose failure is an observable deviation of the
+application's behaviour from its functional requirements. It must be all three of:
+- **triggered** by a finite sequence of user interactions from a defined starting state;
+- **observable** in what the user sees or what the application keeps: page content, the
+  page reached, data shown later or persisted, or an error the browser reports;
+- **wrong** against what the application's own contract says it must compute, accept,
+  refuse, store or show.
+
+This is a failure of *functional correctness* in ISO/IEC 25010 terms. Security,
+performance, layout, usability and accessibility problems are out of scope.
+
+| Class | What goes wrong | Example |
+|---|---|---|
+| Calculation error | a number shown differs from the correct computation over the inputs | basket total ignores a changed quantity |
+| Constraint bypass | input that must be refused is accepted, or a guarded state is reached without its precondition | order placed with an empty address |
+| State corruption | data shown later differs from what was entered or should be derived | express delivery chosen, confirmation says standard |
+| Persistence failure | saved data is lost, reverted or not stored | an edited record reverts after reload |
+| Broken transition | an action leads to the wrong page or state, or none | "Next" returns to step 1 |
+| Crash-type | an interaction makes the app's own code throw, or a request to it fail | ticking a checklist item throws a script error |
+
+The first five are *silent*: nothing errors, and the result is simply wrong. That is why
+this project verifies bugs against a specification of each seeded fault. Console errors,
+which published RL web testers count, catch only the last class.
+
 ## How it works
 
 ```
