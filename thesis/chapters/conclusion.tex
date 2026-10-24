@@ -6,13 +6,15 @@ Katalyze set out to find out how much exploration structure, lightweight online 
 and reliable fault verification each contribute to autonomous functional web testing. The
 four research questions have these answers.
 \begin{description}[noitemsep]
-  \item[RQ1] No. The deep RL tester did not learn which action helps in which state, and
-        pretraining on other applications did not transfer.
+  \item[RQ1] The deep RL tester did not reach the pre-registered bar for learning which
+        action helps in which state. The transfer experiment found no statistically
+        established benefit from pretraining. Given the uncertainty in the estimate, the
+        results do not establish whether pretraining helps or has no effect.
   \item[RQ2] No. A small local LLM failed as a progress reward and as a page labeller; neither
         generalised beyond the data it was tuned on.
   \item[RQ3] Structure, yes, descriptively: a structured tester verified more distinct faults
-        than random, mostly faults that need a deliberate sequence of steps. A learning layer
-        on top of the structure did not improve it.
+        than random, mostly faults that need a deliberate sequence of steps. No learning
+        layer on top of the structure was shown to improve it.
   \item[RQ4] The frozen tester did not reach WebExplor's or WebRLED's published coverage or
         failure counts. A post-hoc follow-up found the set of actionable elements to be an
         important limit.
@@ -28,8 +30,9 @@ that the evidence does not support, including some that a reader might assume.
   \item The verified-fault oracle reported no false positive in any clean-build control
         run, and its per-fault controls rejected 18 candidates that replay alone would have
         misattributed.
-  \item The v1 deep Q-network did not learn state-dependent action values (within-label
-        AUROC 0.51, against a bar of 0.70).
+  \item The v1 deep Q-network did not reach the pre-registered bar for state-dependent
+        action values (within-label AUROC 0.51, interval $[0.44, 0.59]$, against a bar of
+        0.70).
   \item The local LLM failed both of its pre-set gates, as a reward and as a labeller.
   \item On WebExplor's six applications, measured as the published work measures, the frozen
         tester averaged 44.3\% branch coverage and 1.8 console failures, against 55.5\% and
@@ -42,7 +45,7 @@ that the evidence does not support, including some that a reader might assume.
         applications, the hybrid arms verified 18 and 19 of 24 faults against 13 for random.
         Of the 10 faults of moderate declared depth, \code{hybrid\_nolearn} verified 9 and
         random 5.
-  \item \textbf{No learning layer improved on the structure.} The bandit changed distinct
+  \item \textbf{No learning layer measurably improved on the structure.} The bandit changed distinct
         faults by at most one on held-out applications and was slower in tuning. Curiosity
         Q-learning triggered more browser errors but verified fewer seeded faults.
   \item \textbf{The action space bounds coverage.} With custom clickables, Phoenix coverage
@@ -53,7 +56,8 @@ that the evidence does not support, including some that a reader might assume.
 \begin{itemize}[noitemsep]
   \item That any arm finds a first fault faster than another: every pre-registered
         comparison of speed was inconclusive.
-  \item That pretraining transfers, or that it does not: the interval was wide on both sides.
+  \item That pretraining helps on a new application, or that it has no effect: the interval
+        ($[-749, +290]$ interactions) allows a large benefit and a large cost.
   \item That Katalyze finds unknown bugs in arbitrary applications. Every quantitative
         evaluation used seeded faults with known assertions (Section~\ref{sec:oracle-limits}).
   \item That the false-positive rate is zero. None was observed; with 32 held-out controls
@@ -61,8 +65,10 @@ that the evidence does not support, including some that a reader might assume.
   \item That the product's sandbox resists malicious code. It was not tested against it.
 \end{itemize}
 
-In short, for verifying functional faults, how a tester is structured and what it can act on
-mattered more than the learning in it. Verification is what made the results trustworthy.
+In short, the evidence suggests that for verifying functional faults, how a tester is
+structured and what it can act on matter more than the learning methods tested here. It does
+not show that reinforcement learning cannot help; it shows that, in these experiments, it
+was not what made the difference. Verification is what made the results trustworthy.
 
 \section{Limitations}
 

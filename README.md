@@ -316,7 +316,9 @@ docker run --rm -p 8000:8000 -e OLLAMA_HOST=http://host.docker.internal:11434 we
 
 ## Claim limits
 
-- **No transfer claim for v1**, and no state–action contextual learning (Experiments 1–2).
+- **No transfer claim for v1:** no measurable benefit from pretraining, but the interval is
+  too wide to say it has no effect either. State–action contextual learning was not
+  supported (Experiments 1–2).
 - **Learner:** on functional faults, no learning component has been shown to beat the
   hybrid tester's structure (abstraction, archive with exact returns, test operators).
 - **Held-out:** every pre-registered comparison is inconclusive. The descriptive advantages

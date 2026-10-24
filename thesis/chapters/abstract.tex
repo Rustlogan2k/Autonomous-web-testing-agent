@@ -11,9 +11,10 @@ and the empirical findings, several of them negative.
 
 The first generation is an action-conditioned dueling double deep Q-network with a reward
 from a local language model. In two pre-registered experiments, pretraining on five
-applications did not speed up fault discovery on a sixth (median difference 0 interactions,
-95\% interval $[-749, +290]$). The network did not learn which action helps in which state
-(within-label AUROC 0.51). The language model failed as a reward and as a page labeller.
+applications gave no measurable speed-up on a sixth (median difference 0 interactions, 95\%
+interval $[-749, +290]$, too wide to rule a benefit in or out). The network did not reach
+the pre-registered bar for learning which action helps in which state (within-label AUROC
+0.51). The language model failed as a reward and as a page labeller.
 
 The second generation is a hybrid tester with explicit page abstraction, an archive of
 reached states with exact return (Go-Explore), test-design operators, and an optional
@@ -22,7 +23,7 @@ used eight held-out applications in a pre-registered study of 160 runs and 32 cl
 controls. The hybrid arms verified 18 and 19 of 24 faults, against 13 for random
 exploration, with no false positive. The gap was largest on faults of moderate declared
 depth. All four comparisons of time to first fault were inconclusive, and no learning layer
-improved on the structure alone.
+measurably improved on the structure alone.
 
 On WebExplor's six subject applications, measured as the published work measures, the
 frozen tester averaged 44.3\% branch coverage, against 55.5\% for WebExplor and 64.2\% for

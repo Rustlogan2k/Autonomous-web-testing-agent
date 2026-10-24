@@ -586,8 +586,8 @@ control.
 
 \paragraph{What learning contributes.}
 \begin{itemize}
-  \item \textbf{Deep RL (v1).} Pretraining did not transfer, and the network did not learn
-        which action helps in which state.
+  \item \textbf{Deep RL (v1).} Pretraining gave no measurable benefit, and the network did
+        not reach the pre-registered bar for learning which action helps in which state.
   \item \textbf{Bandit layer.} Thompson sampling over operators was never better than trying
         untried options systematically, and in the final round it was slower.
   \item \textbf{Curiosity Q-learning.} It reliably triggered more distinct browser errors, on
@@ -641,7 +641,8 @@ The pattern is consistent. Arms that learn to explore, curiosity Q-learning and 
 Q-network, do best on the literature's measures: breadth of coverage and errors triggered.
 The structure without a learner does best on verified seeded faults, which require
 deliberate test actions rather than novelty. No learning layer added on top of the structure
-verified more faults than the structure alone. The like-for-like RL comparison with
+verified clearly more faults than the structure alone: at best one more on the held-out
+applications (19 against 18), and fewer in tuning. The like-for-like RL comparison with
 WebExplor and WebRLED, both RL testers, is therefore \code{hybrid\_curiosity}. It reached
 44.7\% branch coverage; with custom clickables it reached 54.1\% over all six applications,
 level with WebExplor (55.5\%) and below WebRLED (64.2\%).

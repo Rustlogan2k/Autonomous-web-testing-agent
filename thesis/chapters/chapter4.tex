@@ -163,7 +163,9 @@ Adaptation on $-$ off & $-84$ & $[-430, 0]$ & 0.534 \\
 
 \paragraph{Results.} Pretraining gave no measurable benefit. The primary comparison has a
 median difference of 0 interactions, with an interval reaching far on both sides; on the four
-pristine folds it was $-310$ ($p = 0.66$). The LLM reward made no detectable difference.
+pristine folds it was $-310$ ($p = 0.66$). This is an absence of evidence for transfer, not
+evidence that transfer does not occur: the interval is compatible with a large benefit and
+with a large cost. The LLM reward made no detectable difference.
 Learned arms found a fault in more runs than search or random (0.33--0.42 against
 0.06--0.17), but their fold-level intervals reach zero and the effect rests largely on one
 development fold. Faults 9--16 contextual steps deep, on two applications, were never found
@@ -288,7 +290,7 @@ Learning improved discovery over non-learning arms & learned arms found a fault 
 \toprule
 Finding & Consequence for v2 \\
 \midrule
-Pretraining did not transfer; learning inside the application helped & keep learning, but online, inside each application \\
+No measurable transfer from pretraining; learning inside the application may have helped (suggested only) & keep learning, but online, inside each application \\
 No state--action contextual learning & make the state explicit: page kind, task stage, form status \\
 The LLM reward is misaligned with faults; the labeller failed its gates & remove the LLM from the reward and from the decision path; label pages from markup \\
 Deep faults were never reached & explore by remembering states and returning to them (Go-Explore) \\
