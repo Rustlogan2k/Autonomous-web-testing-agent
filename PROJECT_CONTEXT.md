@@ -3909,6 +3909,35 @@ evaluation's arms.
 - **Thesis.** Every section written: the results, a "best arm per measure" table, the
   discussion and the conclusion.
 
+### 2026-10-24 — product readiness: demo rehearsal and fixes
+
+Owner asked whether the project is presentable as a product. Changes in the product layer
+only; research runners and frozen configurations are unchanged:
+- **Agents:** `hybrid_final` is the recommended default; the RL agents and random stay.
+- **Product sessions:**
+  - custom clickables on;
+  - no sign-out when a sign-in macro is set (registry `avoid_labels`);
+  - a navigation control counts as broken only if the page text also did not change
+    (env `navigation_needs_change`);
+  - verification capped at 10 candidates, 10 minimisation trials and 10 minutes.
+- **Full-stack demos:** Orbit, Helpline and Stackroom, with their database and sign-in,
+  verifying primary, extension and crash-type faults (`provide("suite", ...)`).
+- **Evaluation page:** results at a glance, the external comparison with the clickables
+  follow-up, held-out and tuning (`reports/tuning_v3.json` via
+  `scripts/summarize_tuning.py`).
+- **Rehearsal** through the API. Every demo finished in 4–7 minutes:
+  - Harbor & Pine: 4 verified findings;
+  - TodoMVC, a live site: 3;
+  - Fernbrook, 1,000 interactions: 1 seeded;
+  - Stackroom: 2;
+  - Orbit: ORB-3;
+  - Helpline: HELP-2, HELP-3 and HELP-4.
+
+  Earlier rehearsal rounds exposed three defects, now fixed: hours spent verifying; the
+  tester signing itself out; ten false "navigation does nothing" findings on
+  post-redirect-get forms.
+- **README:** a product guide with screenshots (`docs/images/`).
+
 ---
 
 ## 6. Scoping decisions
@@ -3977,7 +4006,9 @@ Earlier register: this file at commit `cf84e90` (2026-10-23).
 2. **Presentation** (by ≈ 2026-10-27): v1's two negative results, v2's structure and
    held-out result, tuning, the external comparison and the clickables diagnosis, and the
    best-arm-per-measure table.
-3. **Demo:** a suite app through the UI, a live URL, and a report download.
+3. **Demo:** rehearsed 2026-10-24. Use Helpline or Stackroom (full-stack), Harbor & Pine,
+   and a live URL (`https://demo.playwright.dev/todomvc/`), at a 400–600 budget; about 5
+   minutes each. Docker Desktop must be running for the full-stack demos.
 4. Optional, if time allows: make custom clickables the default and pre-register a re-run of
    the external comparison as a new version.
 
