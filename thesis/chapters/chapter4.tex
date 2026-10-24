@@ -39,12 +39,12 @@ control on every page. The agent instead scores each (state, action) pair with o
 network, $Q(s, \phi(a))$, following the relevance network of He et al.~\cite{he2016drrn}.
 The state is encoded by a 64-unit layer and each action by a 96-unit layer; a 128-unit scorer
 combines them into an advantage, and a separate state-value head makes the network
-dueling~\cite{wang2016dueling}. Because one scorer is shared by every action, the network is
+dueling. Because one scorer is shared by every action, the network is
 permutation-equivariant over the action set and accepts any number of actions.
 
 Training uses Double DQN targets~\cite{vanhasselt2016double}, 3-step
-returns~\cite{hessel2018rainbow} with $\gamma = 0.95$, and prioritised
-replay~\cite{schaul2016prioritized} ($\alpha = 0.6$, $\beta_0 = 0.4$, a buffer of 30{,}000
+returns with $\gamma = 0.95$, and prioritised
+replay ($\alpha = 0.6$, $\beta_0 = 0.4$, a buffer of 30{,}000
 transitions, batches of 64, learning rate $3\times10^{-4}$, target update every 200 steps).
 
 \paragraph{Search-guided exploration.} With uniform $\epsilon$-greedy exploration,
@@ -67,7 +67,7 @@ contextual bandit. It tests whether multi-step credit assignment adds anything.
 
 The reward has an environment part and an optional LLM part:
 \begin{equation}
-  r_t = r^{\mathrm{env}}_t + \lambda\, r^{\mathrm{LLM}}_t .
+  r_t = r^{\mathrm{env}}_t + \lambda\, r^{\mathrm{LLM}}_t.
 \end{equation}
 
 \paragraph{Environment terms.} A small step cost; a novelty bonus that decays with the
@@ -79,7 +79,7 @@ failed request, broken navigation). The total is clipped to $[-6, 6]$.
 \paragraph{The LLM progress term.} A local LLM (\code{qwen2.5:7b-instruct}, temperature 0)
 reads a text rendering of each newly reached page and rates how far it is through a task, as
 a potential $\Phi(s) \in [0,1]$. Judgments are cached by page content, so each distinct page
-is judged once. The first design was potential-based shaping~\cite{ng1999policy},
+is judged once. The first design was potential-based shaping,
 $\lambda(\gamma\Phi(s') - \Phi(s))$. It preserves the optimal policy, and that is why it
 failed: once novelty is exhausted, nothing in the optimal policy reaches outcome pages, and
 an agent pretrained on one application never reached its confirmation page in 1{,}500
@@ -174,7 +174,7 @@ were the network's own greedy choice. The null result is not the exploration gui
 the network: the learned $Q$ drives behaviour, yet pretrained and scratch DQN find faults in
 the same share of runs (9 of 27 each). What helped was learned inside the application under
 test. This matches the literature's prediction for five training applications per
-fold~\cite{cobbe2019quantifying, zhao2024dinodroid}.
+fold~\cite{zhao2024dinodroid}.
 
 \section{Experiment 2: context or memorisation?}
 \label{sec:exp2}
@@ -230,7 +230,7 @@ prompt was tuned, it separated them perfectly (AUROC 1.00). On the four pristine
 applications it did not (0.73, 0.52, 0.47, 0.38). The score rewards the "happy path", while
 many faults need deviations (invalid input, an edit after review), and most of what it paid
 duplicated the novelty bonus. This agrees with the warning that small LLM judges make noisy
-reward models~\cite{lin2024noisy}.
+reward models.
 
 \paragraph{Can the LLM label pages reliably?} For v2, an LLM labeller was to classify page
 kinds and control roles once per page. It had to pass gates fixed in advance: page-kind

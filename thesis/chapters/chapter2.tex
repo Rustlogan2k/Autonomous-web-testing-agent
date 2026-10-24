@@ -12,7 +12,7 @@ abstract or full text; paragraphs headed \emph{For this work} are our reasoning.
 \label{sec:bg-webtesting}
 
 An automated web tester drives a browser through an application and decides, at each page,
-what to do next. Crawljax~\cite{mesbah2012crawljax} established the model-based approach for
+what to do next. Crawljax established the model-based approach for
 JavaScript-heavy applications: it infers a state-flow graph of user-interface states by
 firing events and comparing the resulting DOM. Model-based and search-based testers explore
 systematically, while random ("monkey") testers are cheap and, in GUI testing, a notoriously
@@ -22,16 +22,15 @@ Exploring is only half of testing. The other half is deciding whether what happe
 wrong: the oracle problem. Barr et al.~\cite{barr2015oracle} classify oracles as specified
 (a specification says what is correct), derived (from artefacts such as earlier versions),
 implicit (generic failures such as crashes and exceptions) and absent (left to a human). RL
-web testers use implicit oracles, namely errors in the browser console~\cite{zheng2021webexplor,
-gu2025webrled}. These are cheap and general, but blind to wrong content that renders without
+web testers use implicit oracles, namely errors in the browser console~\cite{zheng2021webexplor, gu2025webrled}. These are cheap and general, but blind to wrong content that renders without
 error.
 
 A \emph{seeded-fault oracle} is a specified oracle for a known set of faults. It provides
 ground truth, which evaluation methodology in fuzzing prefers: Klees
 et al.~\cite{klees2018evaluating} recommend measuring against known bugs, not heuristic
-proxies, and Magma~\cite{hazimeh2020magma} inserts real bugs into real software with
+proxies, and Magma inserts real bugs into real software with
 instrumentation so that bug-centric metrics do not depend on the tool. The cost is validity.
-Just et al.~\cite{just2014mutants} studied 357 real faults in five Java programs and found
+Just et al. studied 357 real faults in five Java programs and found
 mutant detection significantly correlated with real-fault detection, but 17\% of real
 faults were not coupled to any mutant. Seeded faults are a supported but incomplete proxy.
 
@@ -47,18 +46,18 @@ curiosity-driven RL to generate action sequences, with tabular Q-learning and a 
 reward computed from a visit-count table over transitions, and builds an automaton online
 that sends the agent back to under-explored states. Training and testing are intertwined:
 the policy is learned on the application under test. Its failures are console errors, and
-the authors note that this oracle may miss UI bugs. WebQT~\cite{chang2023webqt} changes the
+the authors note that this oracle may miss UI bugs. WebQT changes the
 reward to encourage interaction like a human tester's and treats pages with the same
 function as one state, reporting higher code coverage on seven open-source applications.
-QExplore~\cite{sherin2023qexplore} combines tabular Q-learning with a guided search and text
+QExplore combines tabular Q-learning with a guided search and text
 input generation.
 
 WebRLED~\cite{gu2025webrled} combines a deep Q-network with a grid-based action-value
 scheme, a learned action discriminator, and a curiosity reward that considers novelty both
-within an episode and over the global history. Liu et al.~\cite{liu2024crawler} train a DQN
-or PPO agent to guide a crawler towards higher branch coverage. MARG~\cite{fan2024marg} runs
+within an episode and over the global history. Liu et al. train a DQN
+or PPO agent to guide a crawler towards higher branch coverage. MARG runs
 several Q-learning agents that share Q-table data; its successor
-WebCQ~\cite{fan2026webcq} moves to deep multi-agent RL and builds a vector for each
+WebCQ moves to deep multi-agent RL and builds a vector for each
 candidate action, concatenated with the state vector, because "the available UI events vary
 across states". WebCQ is the closest architectural neighbour of this thesis's first tester.
 
@@ -67,8 +66,8 @@ web testers under six state abstractions. No single strategy excels on every dim
 RL-based approaches most often achieve the highest coverage; compact state abstractions suit
 RL; and code coverage is only weakly correlated with the ability to reveal failures.
 
-\paragraph{Mobile.} Q-testing~\cite{pan2020qtesting} uses a curiosity reward from a neural
-state-comparison module. ARES~\cite{romdhana2022ares} reports that deep RL achieves higher
+\paragraph{Mobile.} Q-testing uses a curiosity reward from a neural
+state-comparison module. ARES reports that deep RL achieves higher
 coverage and fault revelation than baselines including Q-testing.
 DinoDroid~\cite{zhao2024dinodroid} is the clearest precedent for learning across
 applications: a deep Q-network learns a behaviour model from a set of existing apps and is
@@ -79,7 +78,7 @@ not the main reason" for the improvement.
 
 \paragraph{For this work.} The RL agent design is not new in itself. Count-based curiosity
 is the default reward in this line of work, per-action scoring over a variable action set is
-published~\cite{fan2026webcq}, and pretraining on some applications to test others has been
+published, and pretraining on some applications to test others has been
 done on Android~\cite{zhao2024dinodroid}. What differs here is the oracle (verified seeded
 faults instead of console errors), the outcome measure (time to the first verified fault
 instead of coverage), and the question asked of the learner (does it transfer, and does it
@@ -88,92 +87,92 @@ use context).
 \section{Language models in testing and as reward}
 \label{sec:bg-llm}
 
-\paragraph{LLMs as testers.} GPTDroid~\cite{liu2024gptdroid} frames mobile GUI testing as a
-question-answering loop with an LLM. DroidAgent~\cite{yoon2024droidagent} sets its own task
+\paragraph{LLMs as testers.} GPTDroid frames mobile GUI testing as a
+question-answering loop with an LLM. DroidAgent sets its own task
 goals and pursues them, reporting 61\% activity coverage against 51\% for earlier
-techniques on 15 apps. AXNav~\cite{taeb2024axnav} executes natural-language accessibility
-tests, and VETL~\cite{wang2024vetl} uses a vision-language model for text inputs and element
+techniques on 15 apps. AXNav executes natural-language accessibility
+tests, and VETL uses a vision-language model for text inputs and element
 selection on the web, with exploration guided by a multi-armed bandit. The 2026 study
 tempers this line: its LLM-based web tester completed three to four times fewer actions in
 the same time budget, because every decision invokes the model, and it repeated failed or
 invalid actions~\cite{liu2026webgui}. Web-navigation benchmarks show how hard it is to act
-reliably on unseen sites: in WebArena~\cite{zhou2024webarena} the best GPT-4 agent reached
-14.41\% task success against 78.24\% for humans, and on Mind2Web~\cite{deng2023mind2web}
+reliably on unseen sites: in WebArena the best GPT-4 agent reached
+14.41\% task success against 78.24\% for humans, and on Mind2Web
 step success fell from 52.0\% on unseen tasks to 38.9\% on unseen websites.
 
-\paragraph{LLMs as reward.} Kwon et al.~\cite{kwon2023reward} prompt an LLM as a proxy
-reward function. ELLM~\cite{du2023ellm} rewards an agent for achieving goals an LLM suggests,
+\paragraph{LLMs as reward.} Kwon et al. prompt an LLM as a proxy
+reward function. ELLM rewards an agent for achieving goals an LLM suggests,
 motivated by the observation that novelty bonuses help little where most novelty is
-irrelevant. Motif~\cite{klissarov2024motif} distils LLM preferences into an intrinsic
-reward; Eureka~\cite{ma2024eureka} and Text2Reward~\cite{xie2024text2reward} have the LLM
+irrelevant. Motif distils LLM preferences into an intrinsic
+reward; Eureka and Text2Reward have the LLM
 write reward code. Vision-language models have served as success
-detectors~\cite{du2023success} and zero-shot reward models~\cite{rocamonde2024vlmrm}, whose
-failures trace to the model's capability limits. Klissarov et al.~\cite{klissarov2025modeling}
+detectors and zero-shot reward models, whose
+failures trace to the model's capability limits. Klissarov et al.
 find that LLMs are better used to build reward models than to act directly.
 
-\paragraph{Shaping.} Ng, Harada and Russell~\cite{ng1999policy} prove that adding a reward
+\paragraph{Shaping.} Ng, Harada and Russell prove that adding a reward
 equal to the discounted difference of a potential function over successive states,
 $\gamma\Phi(s') - \Phi(s)$, leaves the optimal policy unchanged.
-Wiewiora~\cite{wiewiora2003potential} shows the equivalence to initialising Q-values from the
-potential, and Devlin and Kudenko~\cite{devlin2012dynamic} extend the guarantee to
+Wiewiora shows the equivalence to initialising Q-values from the
+potential, and Devlin and Kudenko extend the guarantee to
 potentials that change during learning. LLM-derived potentials already exist: Lin
-et al.~\cite{lin2024noisy} use score differences from an LLM-trained state scorer as a
+et al. use score differences from an LLM-trained state scorer as a
 potential, and report that with weaker models a direct reward outperformed the potential
-form. M\"uller and Kudenko~\cite{muller2026vlmpbrs} learn the potential from preferences given
+form. M\"uller and Kudenko learn the potential from preferences given
 by small vision-language models.
 
 \paragraph{For this work.} Policy invariance concerns the optimal policy. It says nothing
 about behaviour within a finite budget, which is what a tester is measured on. The evidence
 for LLM rewards comes from games, robotics and synthetic web tasks; none of the retrieved
 works evaluates an LLM-derived reward for testing. A small, local judge is on the weak side
-of the capability evidence~\cite{lin2024noisy, rocamonde2024vlmrm}.
+of the capability evidence.
 
 \section{Deep reinforcement learning and exploration}
 \label{sec:bg-drl}
 
-\paragraph{Value-based deep RL.} Q-learning~\cite{watkins1992q} learns the value
+\paragraph{Value-based deep RL.} Q-learning learns the value
 $Q(s,a)$ of taking action $a$ in state $s$ and acting well afterwards, by bootstrapping
-from the next state's value~\cite{sutton2018rl}. DQN~\cite{mnih2013atari, mnih2015human}
+from the next state's value. DQN~\cite{mnih2015human}
 approximates $Q$ with a neural network. Double DQN~\cite{vanhasselt2016double} reduces
 DQN's overestimation by decoupling action selection from evaluation. Dueling
-networks~\cite{wang2016dueling} separate state value from action advantage and give better
+networks separate state value from action advantage and give better
 estimates when many actions have similar values, which fits pages with many near-equivalent
-links. Prioritised replay~\cite{schaul2016prioritized} replays informative transitions more
-often, and Rainbow~\cite{hessel2018rainbow} combines six such extensions, including
+links. Prioritised replay replays informative transitions more
+often, and Rainbow combines six such extensions, including
 multi-step targets. These components were validated mainly on Atari, and Henderson
-et al.~\cite{henderson2018matters} show how variance makes deep RL improvements hard to
+et al. show how variance makes deep RL improvements hard to
 judge.
 
 \paragraph{Variable action sets.} A web page offers a different set of actions on every
-page. Dulac-Arnold et al.~\cite{dulacarnold2015large} embed actions in a continuous space so
+page. Dulac-Arnold et al. embed actions in a continuous space so
 that a policy can generalise over them. The deep reinforcement relevance
 network~\cite{he2016drrn} embeds state and text action separately and combines them to
 approximate $Q$; this is the direct ancestor of the action-conditioned network
-$Q(s,\phi(a))$ used here. Jain et al.~\cite{jain2020generalization} treat generalisation to
+$Q(s,\phi(a))$ used here. Jain et al. treat generalisation to
 unseen actions as its own problem, needing dedicated training objectives. Sentence
-embeddings~\cite{reimers2019sbert} from compact distilled encoders~\cite{wang2020minilm}
+embeddings from compact distilled encoders
 supply action-label features.
 
 \paragraph{Exploration.} Count-based exploration rewards rarely visited states:
-pseudo-counts~\cite{bellemare2016unifying} generalise counting to large state spaces, and
-hashing-based counts~\cite{tang2017exploration} work with simple hash functions, provided
+pseudo-counts generalise counting to large state spaces, and
+hashing-based counts work with simple hash functions, provided
 the hash has the right granularity. That is the same sensitivity to state abstraction that
 the web-testing study measured~\cite{liu2026webgui}. Random network
-distillation~\cite{burda2019rnd} derives a novelty bonus from prediction error.
+distillation derives a novelty bonus from prediction error.
 Go-Explore~\cite{ecoffet2021first} attributes poor exploration to two failures: forgetting
 how to reach promising states, and not returning to a state before exploring from it. It
 remedies both by keeping an archive of visited states and returning to them first.
 
 \paragraph{Bandits.} A multi-armed bandit chooses repeatedly among options with unknown
-payoff. Thompson sampling~\cite{thompson1933likelihood, russo2018tutorial} keeps a posterior
+payoff. Thompson sampling~\cite{russo2018tutorial} keeps a posterior
 over each option's payoff, samples from it, and picks the best sample, which balances trying
 uncertain options against exploiting good ones. With a Beta posterior over a success
 probability, it needs only two counts per option, so it can learn within the few dozen
 decisions of a single test run.
 
-\paragraph{Generalisation.} Cobbe et al.~\cite{cobbe2019quantifying} find that agents
-overfit to surprisingly large training sets, and Procgen~\cite{cobbe2020procgen} shows that
-diverse training distributions are essential. The survey by Kirk et al.~\cite{kirk2023survey}
+\paragraph{Generalisation.} Cobbe et al. find that agents
+overfit to surprisingly large training sets, and Procgen shows that
+diverse training distributions are essential. The survey by Kirk et al.
 treats the number of training contexts as a core property of an evaluation protocol and
 suggests fast online adaptation as a direction. With five training applications per fold,
 the literature predicts weak transfer.
@@ -181,21 +180,21 @@ the literature predicts weak transfer.
 \section{Evaluating testing tools}
 \label{sec:bg-eval}
 
-Arcuri and Briand~\cite{arcuri2011practical} found that software-engineering studies of
+Arcuri and Briand found that software-engineering studies of
 randomised algorithms often did not account properly for randomness, and argue for enough
 runs and rigorous statistical tests. Klees et al.~\cite{klees2018evaluating} examined 32
 fuzzing papers and found problems in every evaluation, recommending multiple trials,
 statistical tests, ground truth and a diverse benchmark; a follow-up over 150 papers found
-the guidelines still widely ignored~\cite{schloegel2024sok}. In deep RL, Agarwal
-et al.~\cite{agarwal2021precipice} recommend stratified-bootstrap interval estimates over
+the guidelines still widely ignored. In deep RL, Agarwal
+et al. recommend stratified-bootstrap interval estimates over
 point estimates.
 
 When a tool may not find a bug within the time allowed, time to bug is a right-censored
 outcome. Survival analysis handles this: the Kaplan--Meier
-estimator~\cite{kaplan1958nonparametric} estimates the probability of not yet having found
-the bug at each time, and the restricted mean survival time (RMST)~\cite{royston2013rmst}
+estimator estimates the probability of not yet having found
+the bug at each time, and the restricted mean survival time (RMST)
 averages the time to event up to a horizon. Magma applies Kaplan--Meier to time to
-bug~\cite{hazimeh2020magma}, and Herrera et al.~\cite{herrera2021seed} report RMST with
+bug, and Herrera et al. report RMST with
 confidence intervals and compare with the log-rank test. None of the GUI-testing papers
 reviewed uses censoring-aware analysis: WebExplor averages 15 thirty-minute runs and applies
 a Mann--Whitney U test~\cite{zheng2021webexplor}.
@@ -207,13 +206,12 @@ Within the literature reviewed:
 
 \begin{enumerate}
   \item \textbf{Ground-truth evaluation of RL web testers.} Web RL testers are scored on
-        coverage and console errors~\cite{zheng2021webexplor, chang2023webqt,
-        gu2025webrled, fan2026webcq}. No retrieved work evaluates a web-testing policy, or
+        coverage and console errors~\cite{zheng2021webexplor, gu2025webrled}. No retrieved work evaluates a web-testing policy, or
         its transfer to held-out applications, against a deterministic oracle for seeded
         faults.
   \item \textbf{An LLM-derived reward in testing.} LLM rewards and potentials exist for games
-        and control~\cite{lin2024noisy, muller2026vlmpbrs}, and LLMs in GUI testing act as
-        the policy~\cite{liu2024gptdroid, yoon2024droidagent, wang2024vetl}. Using an LLM
+        and control, and LLMs in GUI testing act as
+        the policy. Using an LLM
         only to shape a cheap learned policy is untested.
   \item \textbf{Censoring-aware, fault-centric evaluation in GUI testing.} Time to the first
         verified fault with right-censoring imports fuzzing's method into a field that

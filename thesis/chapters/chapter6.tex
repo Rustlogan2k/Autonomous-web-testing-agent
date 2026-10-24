@@ -158,7 +158,7 @@ first verified fault. Every browser action counts, including replays and returns
 finds nothing is right-censored at $T = B$.
 
 \paragraph{Per arm.} The \emph{discovery rate} is the share of runs that verified at least
-one fault. The \emph{restricted mean} of $T$ (RMST~\cite{royston2013rmst}) averages $T$
+one fault. The \emph{restricted mean} of $T$ (RMST) averages $T$
 over runs with censored runs at $B$. \emph{Distinct faults} counts how many of the seeded
 faults an arm verified in at least one run. Clean-build control runs give the false-positive
 count. For the tuning round two descriptive metrics were added. \emph{Unique failures} counts
@@ -170,8 +170,8 @@ precise coverage through the Chrome DevTools Protocol, attached before the first
 \emph{application} is the unit of inference. For two arms, the per-application difference
 in restricted mean $T$ is computed on matched (application, seed) pairs; the median across
 applications summarises it, with a 95\% bootstrap interval resampling
-applications~\cite{agarwal2021precipice}. The stratified log-rank test is
-secondary~\cite{herrera2021seed}. The pre-registered decision rule:
+applications. The stratified log-rank test is
+secondary. The pre-registered decision rule:
 \begin{itemize}[noitemsep]
   \item \emph{supported} if the median difference is negative (faster) and its interval
         excludes zero;
@@ -193,7 +193,7 @@ infrastructure failure, follow rules written in advance and are reported.
         by the same project as the tester. Independent planning of the validation suite and
         the external benchmark reduce, but do not remove, this threat.
   \item \textbf{Seeded faults.} Seeded faults are an incomplete proxy for real
-        faults~\cite{just2014mutants}, and the oracle sees only what was seeded.
+        faults, and the oracle sees only what was seeded.
   \item \textbf{Scale.} Eight applications per evaluation leave wide intervals at the
         application level. Small effects cannot be told apart from noise.
   \item \textbf{Fault difficulty.} If the held-out faults are shallow, every arm finds them

@@ -1,6 +1,5 @@
 %AMRITA UNIVERSITY PH.D latex template...Created by Chungath, CYS-CBE%
-% Adapted for the B.Tech thesis "Reinforcement Learning for Automated Functional Testing of
-% Web Applications". Build: pdflatex mythesis; bibtex mythesis; pdflatex mythesis (x2).
+% Adapted for the B.Tech thesis "Katalyze: An Autonomous Testing Agent for Functional Bugs in Web Applications". Build: pdflatex mythesis; bibtex mythesis; pdflatex mythesis (x2).
 
 \documentclass[a4paper, 12pt]{report}
 %\renewcommand{\bibname}{References}
@@ -52,7 +51,7 @@
 	\thispagestyle{empty}
 	\begin{large}
 		\begin{center}
-			{\Large\bfseries{REINFORCEMENT LEARNING FOR AUTOMATED FUNCTIONAL TESTING OF WEB APPLICATIONS: FROM DEEP Q-LEARNING TO A STRUCTURED HYBRID TESTER}}\\
+			{\Large\bfseries{KATALYZE: AN AUTONOMOUS TESTING AGENT FOR FUNCTIONAL BUGS IN WEB APPLICATIONS}}\\
 			\vspace{1.3cm}
 			A Thesis \\
 			\vspace{.1cm}
@@ -66,10 +65,10 @@
 			\vspace{1cm}
 			by\\ \vspace{0.2cm}
 			\vspace{.1cm}
-			{\Large\bfseries{WRITE YOUR NAME (ROLL NUMBER)}} \\
-            {\Large\bfseries{WRITE YOUR NAME (ROLL NUMBER)}} \\
-            {\Large\bfseries{WRITE YOUR NAME (ROLL NUMBER)}} \\
-            {\Large\bfseries{WRITE YOUR NAME (ROLL NUMBER)}} \\
+            {\Large\bfseries{ARUNODAY A K (CB.SC.U4AIE23106)}} \\
+            {\Large\bfseries{ACHUTHARAJ R (CB.SC.U4AIE23108)}} \\
+            {\Large\bfseries{LOKESH D (CB.SC.U4AIE23123)}} \\
+            {\Large\bfseries{ABHAY ROHIT M (CB.SC.U4AIE23173)}} \\
             \vspace{3cm}
 
 			\includegraphics[scale=0.8]{univA.png}\\
@@ -95,17 +94,18 @@
 		{\Large \textbf{BONAFIDE CERTIFICATE}}
 	\end{center}
 	\vspace*{.8cm}
-	\noindent This is to certify that the thesis entitled \enquote{\textbf{Reinforcement Learning for Automated Functional Testing of Web Applications: From Deep Q-Learning to a Structured Hybrid Tester}} submitted by \textbf{Name of the Student., Roll. No:............}, \textbf{Name of the Student., Roll. No:............}, \textbf{Name of the Student., Roll. No:............} and \textbf{Name of the Student., Roll. No:............} for the award of the \textbf{Degree of Bachelor of Technology} under the \textbf{Faculty of Engineering} is a bonafide record of the work carried out by him/her under my guidance and supervision at \enquote{Department of Artificial Intelligence}, Amrita Vishwa Vidyapeetham, Coimbatore Campus.\\
+	\noindent This is to certify that the thesis entitled \enquote{\textbf{Katalyze: An Autonomous Testing Agent for Functional Bugs in Web Applications}} submitted by \textbf{Arunoday A K, Roll. No: CB.SC.U4AIE23106}, \textbf{Achutharaj R, Roll. No: CB.SC.U4AIE23108}, \textbf{Lokesh D, Roll. No: CB.SC.U4AIE23123} and \textbf{Abhay Rohit M, Roll. No: CB.SC.U4AIE23173} for the award of the \textbf{Degree of Bachelor of Technology} under the \textbf{Faculty of Engineering} is a bonafide record of the work carried out by them under my guidance and supervision at \enquote{Department of Artificial Intelligence}, Amrita Vishwa Vidyapeetham, Coimbatore Campus.\\
     \vfill
     Submitted for the examination held on .........
     \vfill
     \textbf{INTERNAL EXAMINER}    \hspace{5cm}      \textbf{EXTERNAL EXAMINER}
     \vfill
 \begin{center}
-		\textbf{Name of the Thesis Advisor}\\
+		\textbf{Dr. Palmani}\\
 	Thesis Advisor,\\
-	Thesis advisor's designation,\\
-	Department of Artificial Intelligence,\\
+	Assistant Professor (Sr. Gd.),\\
+	Center for Computational Engineering and Networking,\\
+	School of Artificial Intelligence,\\
 	Amrita Vishwa Vidyapeetham,\\
 	Coimbatore Campus,\\
 	India.
@@ -126,7 +126,7 @@
 		\vspace*{.3cm}
 	\end{center}
 
-	\noindent We,\textbf{ Name of the Student.},  \textbf{Reg. No:......}, \textbf{ Name of the Student.},  \textbf{Reg. No:......}, \textbf{ Name of the Student.},  \textbf{Reg. No:......} and \textbf{ Name of the Student.},  \textbf{Reg. No:......} hereby declare that this thesis entitled \enquote{\textbf{Reinforcement Learning for Automated Functional Testing of Web Applications: From Deep Q-Learning to a Structured Hybrid Tester}} is the record of the original work done by us under the guidance of \textbf{Name of Thesis Advisor}, his/her designation, Department of Artificial Intelligence, Amrita Vishwa Vidyapeetham, Coimbatore Campus. To the best of our knowledge, this work has not formed the basis for the award of any degree/diploma/associateship/fellowship or a similar award to any candidate in any University.\\\\
+	\noindent We,\textbf{ Arunoday A K},  \textbf{Reg. No: CB.SC.U4AIE23106}, \textbf{ Achutharaj R},  \textbf{Reg. No: CB.SC.U4AIE23108}, \textbf{ Lokesh D},  \textbf{Reg. No: CB.SC.U4AIE23123} and \textbf{ Abhay Rohit M},  \textbf{Reg. No: CB.SC.U4AIE23173} hereby declare that this thesis entitled \enquote{\textbf{Katalyze: An Autonomous Testing Agent for Functional Bugs in Web Applications}} is the record of the original work done by us under the guidance of \textbf{Dr. Palmani}, Assistant Professor (Sr. Gd.), Center for Computational Engineering and Networking, School of Artificial Intelligence, Amrita Vishwa Vidyapeetham, Coimbatore Campus. To the best of our knowledge, this work has not formed the basis for the award of any degree/diploma/associateship/fellowship or a similar award to any candidate in any University.\\\\
 
 	\vspace*{1cm}
 	\noindent{\bf Place:\hfill Signature of the Students} \\
@@ -152,10 +152,21 @@
 
 	\chapter*{Acknowledgements}
 	\addcontentsline{toc}{chapter}{Acknowledgements}
-	\pending{Acknowledgements, written by the authors.}\\
+	We thank our thesis advisor, Dr. Palmani, for the guidance given throughout this
+project, for questioning our results whenever they looked too good, and for pushing us to state
+our limitations openly. We thank Dr. K.P. Soman, Professor and Dean, and the faculty of the
+Department of Artificial Intelligence for the facilities and the review process that shaped
+this work. We are grateful to the researchers who made their web-testing subject applications
+public: the authors of WebExplor and WebRLED, and Matteo Biagiola and colleagues, whose
+replication material packages those applications with their instrumentation. Without open
+benchmarks, an honest comparison with published work would not be possible. Finally, we thank
+our families and friends for their support.\\
 	\vspace{1cm}
 	\begin{flushright}
-		(your name in CAPS)
+		ARUNODAY A K \\
+		ACHUTHARAJ R \\
+		LOKESH D \\
+		ABHAY ROHIT M
 	\end{flushright}
 	\listoffigures
 	\addcontentsline{toc}{chapter}{List of figures}
@@ -229,8 +240,5 @@ $N(s, a, s')$ ~~~~&--&~~~~ Visit count of a page transition\\
 \addcontentsline{toc}{chapter}{References}
 \bibliography{references}
 
-\chapter*{List of Publications \\ \large(Based on the Research Work)}
-\addcontentsline{toc}{chapter}{List of Publications Based on the Research Work}
-\pending{List any papers published or communicated from this work, or remove this page.}
 
 \end{document}

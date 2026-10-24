@@ -3,8 +3,8 @@ ignores a changed quantity, a validation rule that holds on one path and not on 
 value that is lost on reload. Automated exploratory testers can reach such states, but they
 face two problems. They must decide where to go in a large, stateful interface where the
 decisive actions are many steps deep, and they must prove what they find, or their reports
-are noise. This thesis builds and evaluates an automated functional tester for web
-applications that uses reinforcement learning (RL). It confirms a fault only when the fault
+are noise. This thesis builds and evaluates \emph{Katalyze}, an automated functional
+tester for web applications that uses reinforcement learning (RL). It confirms a fault only when the fault
 reproduces twice in fresh browser sessions, is absent from a control build without that
 fault, and survives delta-debugging minimisation.
 

@@ -16,7 +16,7 @@ browser through the application and searches for misbehaviour. The simplest expl
 at random. More capable explorers learn where to go, and reinforcement learning (RL) is a
 natural fit: the tester is an agent, the application is its environment, and reaching new or
 suspicious behaviour can be rewarded. Several RL web testers have been published, including
-WebExplor~\cite{zheng2021webexplor}, WebQT~\cite{chang2023webqt} and
+WebExplor~\cite{zheng2021webexplor}, WebQT and
 WebRLED~\cite{gu2025webrled}.
 
 Two problems limit these testers. The first is \emph{where to go}. The decisive actions are
@@ -131,6 +131,9 @@ tester is for.
 \end{enumerate}
 
 \section{Contributions}
+
+The tester built in this thesis, product and research system together, is called
+\emph{Katalyze}. Its contributions are:
 
 \begin{enumerate}
   \item \textbf{A verified-fault oracle for web testing.} Each seeded fault has its own

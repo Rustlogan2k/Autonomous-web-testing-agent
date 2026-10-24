@@ -58,8 +58,8 @@ And role cues match word prefixes, so "Saving" and "Save" share a role.
 
 Experiment 2 showed that the network does not learn these distinctions by itself, and the
 literature finds that the choice of state abstraction drives results in both web
-testing~\cite{chang2023webqt, liu2026webgui} and count-based
-exploration~\cite{tang2017exploration}. The granularity was tuned on development
+testing~\cite{liu2026webgui} and count-based
+exploration. The granularity was tuned on development
 applications only: exact field combinations gave 150--225 cells on one application, so form
 state was reduced to empty, partial and full, which gave about 20.
 
@@ -91,7 +91,7 @@ was found on a development application and fixed; failed returns fell from 6 of 
 \label{sec:operators}
 
 From a cell the tester applies a \emph{test operator}, a short procedure from standard test
-design~\cite{myers2011art, beizer1990software}:
+design:
 
 \begin{itemize}[noitemsep]
   \item \code{complete\_step}: fill the form validly and submit (the path deeper);
@@ -137,7 +137,7 @@ Each key has a $\mathrm{Beta}(\alpha, \beta)$ posterior over the probability tha
 operator produces an interesting outcome. A specific key's prior is the more general keys'
 evidence, discounted by 0.3, so a new combination starts from what similar ones did. At each
 decision the tester samples from every candidate's posterior and takes the best
-sample~\cite{thompson1933likelihood, russo2018tutorial}. The reward is the tester's own
+sample~\cite{russo2018tutorial}. The reward is the tester's own
 observation, never the seeded-fault oracle: an alert shown, new cells reached, or an
 invariant candidate. A bandit was chosen over a deep network for three reasons:
 Experiment 1 found no gain from bootstrapped multi-step learning; a 2{,}000-interaction run
