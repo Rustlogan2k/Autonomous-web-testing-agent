@@ -53,6 +53,62 @@ The v1 learner it grew out of is still runnable as an arm. It is an action-condi
 dueling Double DQN, Q(s, φ(a)), with prioritised 3-step replay, a residual adaptation head,
 search-guided ε-exploration and an optional LLM progress reward (`qwen2.5:7b-instruct`).
 
+## The product
+
+A web application that tests other web applications. Point it at an application and pick an
+agent. It explores in a real browser, verifies what it finds, and writes a report with a
+minimal reproduction and evidence for every verified finding.
+
+![Dashboard](docs/images/dashboard.png)
+
+**1. Choose what to test** (*New Test*):
+- **A one-click demo.** The full-stack apps (Orbit, Helpline, Stackroom) start their own
+  database and sign in automatically. The benchmark and static demo sites need nothing.
+- **A live URL.** The tester stays on that site's origin.
+- **An upload.** A static site, or a repository with a Dockerfile. It is built and run in a
+  locked-down container: no capabilities, read-only root, internal network only.
+
+**2. Choose an agent:**
+- **Hybrid tester (recommended)**: verifies the most bugs.
+- **The RL agents**: hybrid + curiosity Q-learning, hybrid + Thompson-sampling bandit, and
+  the pretrained deep Q-network.
+- **Random**, for comparison.
+
+Then set the interaction budget. Whether to use the local language model is optional.
+
+![New test](docs/images/new-test.png)
+
+**3. Watch it run.** A live event stream shows every action, the pipeline stages and
+findings as they are verified.
+
+![Live run](docs/images/run.png)
+
+**4. Read or download the report** (HTML, Markdown or JSON). It has three parts:
+- **Verified findings:** each reproduced twice in fresh browser sessions and minimised to the
+  shortest reproducing steps, with a screenshot.
+- **Unverified candidates.**
+- **The language model's observations**, marked unverified.
+
+For applications that ship a fault specification, seeded faults are also checked against
+per-fault control builds, so a finding is attributed to the fault that causes it.
+
+![Report](docs/images/report.png)
+
+**5. Research results** (*Evaluation*): every evaluation and experiment, read live from the
+result files. It opens with the best tester per measure, then the comparison with WebExplor
+and WebRLED, the held-out evaluation and the tuning rounds.
+
+![Evaluation](docs/images/evaluation.png)
+
+**What a typical run takes:**
+- **Time:** a 400–600 interaction run takes about 5 minutes on a laptop.
+- **Verification limits:** at most 10 candidates, within 10 minutes. The rest are reported
+  as unverified candidates.
+- **Applications behind a sign-in:** the tester signs in at the start of every episode and
+  does not press sign-out.
+- **Framework-built pages:** elements made clickable by JavaScript (ARIA roles, click
+  handlers) are included, so React and Vue pages are explored.
+
 ## Agents (arms)
 
 | Agent | Learning | Where it stands |
