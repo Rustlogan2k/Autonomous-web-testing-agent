@@ -45,6 +45,7 @@ class WebFunctionalEnv(WebTestingEnv):
         capture_screenshots: bool = True,
         reveal_min_retained: float = 0.0,
         reveal_run_decay: bool = False,
+        navigation_needs_change: bool = False,
     ) -> None:
         super().__init__(
             base_url=base_url,
@@ -63,6 +64,12 @@ class WebFunctionalEnv(WebTestingEnv):
         self.registry_options = registry_options or LEGACY_OPTIONS
         self.reward_model = reward_model or NullRewardModel()
         self.reward_weights = reward_weights or FunctionalRewardWeights()
+        #: Report a navigation control as broken only when the page's text did not change
+        #: either. Off by default (the frozen research environment compares URLs only). A
+        #: form that posts and redirects back to its own URL (post-redirect-get), or a
+        #: control that updates part of the page in place, changes the page without
+        #: changing the URL; the URL rule calls every one of them broken.
+        self.navigation_needs_change = navigation_needs_change
 
     def _start_reward_model_episode(self) -> None:
         self.reward_model.start_episode()
@@ -113,6 +120,9 @@ class WebFunctionalEnv(WebTestingEnv):
         was_navigation_action = (
             spec.action_type == ActionType.CLICK and spec.params.get("navigational", False)
         )
+        if (was_navigation_action and self.navigation_needs_change
+                and _page_text(context.pre_obs.html) != _page_text(context.post_obs.html)):
+            was_navigation_action = False
         exec_success = bool(context.exec_info.get("success", False))
         bug_signals = detect_bug_signals(
             after=context.post_obs,
@@ -215,3 +225,14 @@ _ACTION_HANDLERS = {
     ActionType.BROWSER_FORWARD: _do_forward,
     ActionType.REFRESH: _do_refresh,
 }
+
+
+def _page_text(html: str) -> str:
+    """A page's visible text with markup, scripts, digits and spacing removed, so clocks,
+    counters and ids do not count as the page changing."""
+    import re
+
+    text = re.sub(r"(?is)<(script|style)\b.*?</\1>", " ", html or "")
+    text = re.sub(r"(?s)<[^>]+>", " ", text)
+    text = re.sub(r"\d+", "", text)
+    return " ".join(text.split())

@@ -223,10 +223,64 @@ def build_agent(settings: SessionSettings, app_name: str, degradations: list[str
     return agent, description
 
 
+def _with_extension_oracle(suite_app, primary, env_factory, base_url: str, clean_url: str,  # noqa: ANN001, ANN202
+                           control_urls: dict, settings: SessionSettings):
+    """The primary seeded-fault monitor plus the suite's extension oracle (including
+    crash-type faults), driven as one, exactly as the evaluations ran them
+    (`hybrid.suite.SuiteMonitor`). Confirmed extension findings are kept so the report can
+    show their reproductions."""
+    from urllib.parse import urlsplit
+
+    from e2e_suite.harness.ext_oracle import EventTrajectoryRunner
+
+    from ..hybrid.suite import ExtensionMonitor, SuiteMonitor
+
+    def origin(url: str) -> str:
+        parts = urlsplit(url)
+        return f"{parts.scheme}://{parts.netloc}"
+
+    def events_runner(url: str) -> EventTrajectoryRunner:
+        return EventTrajectoryRunner(lambda: env_factory(url, 120), max_steps=120,
+                                     origin=origin(url))
+
+    extension = ExtensionMonitor(
+        suite_app, faulty=events_runner(base_url), clean=events_runner(clean_url),
+        controls={f["fault_id"]: events_runner(control_urls.get(f["fault_id"], clean_url))
+                  for f in suite_app.faults_by_oracle("extension")},
+        max_trials=settings.max_minimization_trials, origin=origin(base_url))
+
+    class ProductSuiteMonitor(SuiteMonitor):
+        def __init__(self) -> None:
+            super().__init__(primary, extension)
+            self.confirmed: dict[str, object] = {}
+
+        def observe(self, info, executed, available, budget_used):  # noqa: ANN001, ANN202
+            found = super().observe(info, executed, available, budget_used)
+            for finding in found:
+                if getattr(finding, "minimization", None) is not None and hasattr(finding, "replays"):
+                    self.confirmed.setdefault(finding.fault_id, finding)
+            return found
+
+        def summary(self) -> dict:
+            data = super().summary()
+            for fault in data["faults"]:
+                ext = self.confirmed.get(fault["fault_id"])
+                if fault.get("oracle") == "extension" and ext is not None:
+                    fault["finding"] = {
+                        "confirmed": True, "minimized_trace": list(ext.minimized_trace),
+                        "minimization": dict(ext.minimization), "replays": list(ext.replays),
+                        "control": {"checked": True,
+                                    "against": "faulty build without this fault's patch"},
+                    }
+            return data
+
+    return ProductSuiteMonitor()
+
+
 def run_session(base_url: str, settings: SessionSettings | None = None, *,
                 app_name: str = "", out_dir: Path | None = None,
                 seeded_app=None, clean_url: str | None = None,  # noqa: ANN001
-                control_urls: dict | None = None,
+                control_urls: dict | None = None, suite_app=None,  # noqa: ANN001
                 on_event: Callable[[str, dict], None] | None = None,
                 should_stop: Callable[[], bool] | None = None) -> SessionResult:
     """Test the application at `base_url`. Writes evidence under `out_dir` when given.
@@ -254,6 +308,7 @@ def run_session(base_url: str, settings: SessionSettings | None = None, *,
 
     def env_factory(url: str, steps: int | None = None):  # noqa: ANN202
         return make_env(url, env_settings, setup_actions=setup or None,
+                        navigation_needs_change=True,
                         **({"max_steps": steps} if steps else {}))
 
     out_dir = Path(out_dir) if out_dir is not None else None
@@ -278,6 +333,9 @@ def run_session(base_url: str, settings: SessionSettings | None = None, *,
             control_runner=runner(clean_url) if clean_url else None,
             control_runners={fid: runner(url) for fid, url in (control_urls or {}).items()},
             max_minimization_trials=settings.max_minimization_trials))
+    if suite_app is not None and suite_app.faults_by_oracle("extension"):
+        seeded = _with_extension_oracle(suite_app, seeded, env_factory, base_url,
+                                        clean_url or base_url, control_urls or {}, settings)
     monitor = CompositeMonitor(triggers=triggers, seeded=seeded)
 
     outcomes: dict[str, dict] = {}

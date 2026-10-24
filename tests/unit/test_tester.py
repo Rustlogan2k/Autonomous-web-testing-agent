@@ -105,3 +105,13 @@ def test_signals_with_one_root_cause_are_reported_once_under_the_most_specific_t
     assert "### 1. Page failed to load" in markdown
     assert "This run was degraded" in markdown and "Ollama is not reachable" in markdown
     assert "<h1>Test report: Demo</h1>" in render_html(result, Path("."))
+
+
+def test_page_text_ignores_markup_scripts_and_numbers_but_not_words():
+    from web_testing_agent.envs.functional_env import _page_text
+
+    before = "<main><h1>Ticket #109</h1><script>t=1</script><p>Status: open</p></main>"
+    clock = "<main><h1>Ticket #110</h1><p>Status:  open</p></main>"
+    resolved = "<main><h1>Ticket #109</h1><p>Status: resolved</p></main>"
+    assert _page_text(before) == _page_text(clock)
+    assert _page_text(before) != _page_text(resolved)

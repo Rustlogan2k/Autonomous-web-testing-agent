@@ -40,6 +40,9 @@ class Target:
     details: dict = field(default_factory=dict)
     #: A sign-in macro run at the start of every episode, for applications behind a login.
     setup_actions: list = field(default_factory=list)
+    #: A development-suite application, whose extension-oracle faults (including crash-type
+    #: faults) are verified beside the primary ones.
+    suite_app: object | None = None
 
 
 def _site_root(path: Path) -> Path:
@@ -97,10 +100,10 @@ def provide(kind: str, value: str) -> Iterator[Target]:
         with serve_suite_app(app, controls=True) as urls:
             yield Target("suite", urls["buggy"], app.data.get("name", app.app_id),
                          clean_url=urls["clean"], seeded_app=manifest,
-                         control_urls={f.fault_id: urls[suite_control_key(f.fault_id)]
-                                       for f in manifest.faults},
+                         control_urls={p.fault_id: urls[suite_control_key(p.fault_id)]
+                                       for p in app.patches},
                          details={"app_id": app.app_id},
-                         setup_actions=list(app.login_steps))
+                         setup_actions=list(app.login_steps), suite_app=app)
         return
 
     if kind == "site":
