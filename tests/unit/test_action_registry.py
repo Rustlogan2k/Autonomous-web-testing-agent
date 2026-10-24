@@ -255,6 +255,21 @@ def test_valid_typical_is_prioritized_over_boundary_variants_under_tight_budget(
     assert valid_count == 30
 
 
+def test_avoided_controls_are_not_offered():
+    from web_testing_agent.envs.action_registry import RegistryOptions
+
+    elements = [_el(tag="button", index=0, text="Sign out"),
+                _el(tag="a", index=1, href="/logout", id="nav-log-out", text="Me"),
+                _el(tag="button", index=2, text="Save")]
+    avoid = RegistryOptions(avoid_labels=("sign out", "log out"))
+    clicks = [s.element_id for s in build_action_specs(elements, options=avoid)
+              if s.action_type is ActionType.CLICK]
+    assert clicks == ["Save"]
+    every = [s.element_id for s in build_action_specs(elements)
+             if s.action_type is ActionType.CLICK]
+    assert "Sign out" in every
+
+
 def test_custom_clickables_become_clicks_on_their_structural_selector():
     custom = _el(tag="div", text="Card 7", custom=True, cssPath='[id="board"] > div:nth-of-type(2)')
     with_id = _el(tag="li", id="tab-2", text="Archived", custom=True, cssPath="unused")

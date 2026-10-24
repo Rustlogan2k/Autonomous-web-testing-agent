@@ -103,6 +103,12 @@ def verified_findings(result: SessionResult) -> list[dict]:
     return items
 
 
+def _agent_label(result) -> str:  # noqa: ANN001
+    """The agent's name and, when known, how it was configured."""
+    name, mode = result.agent.get("agent"), result.agent.get("mode")
+    return f"{name} ({mode})" if name and mode else str(name or mode or "unknown")
+
+
 def render_markdown(result: SessionResult) -> str:
     hunt = result.hunt
     verified = verified_findings(result)
@@ -113,7 +119,7 @@ def render_markdown(result: SessionResult) -> str:
         "",
         f"- Target: {result.target}",
         f"- Started: {result.started_at}; wall clock {result.wall_clock_s:.0f} s",
-        f"- Agent: {result.agent.get('mode', result.agent.get('agent'))}"
+        f"- Agent: {_agent_label(result)}"
         + (f" (weights: `{Path(result.agent['checkpoint']).name}`)" if result.agent.get("checkpoint") else ""),
         f"- Interactions: {hunt.get('steps', 0)} in {hunt.get('episodes', 0)} episodes; "
         f"{hunt.get('unique_states', 0)} distinct page states reached",
@@ -186,7 +192,7 @@ def render_html(result: SessionResult, out_dir: Path) -> str:
     body.append(f"<h1>Test report: {esc(result.app_name)}</h1>")
     body.append(f"<p class=meta>{esc(result.target)} · {esc(result.started_at)} · "
                 f"{hunt.get('steps', 0)} interactions · {hunt.get('unique_states', 0)} states · "
-                f"agent: {esc(str(result.agent.get('mode', result.agent.get('agent'))))}</p>")
+                f"agent: {esc(_agent_label(result))}</p>")
     body.append("<div class=tiles>"
                 f"<div><b>{len(verified)}</b>verified findings</div>"
                 f"<div><b>{len(candidates)}</b>unverified candidates</div>"

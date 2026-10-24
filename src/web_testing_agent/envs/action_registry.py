@@ -55,12 +55,17 @@ class RegistryOptions:
       pointer cursor they set themselves. Single-page applications attach clicks to plain
       `div`s and `li`s; a learned detector of such controls is one of WebRLED's ablated
       gains [gu2025webrled], and this is its rule-based counterpart.
+    * `avoid_labels` -- controls not to offer, matched against an element's visible text,
+      id and name (case, spaces, hyphens and underscores ignored). A crawler's "don't
+      click" list: with a sign-in macro, pressing *Sign out* only ends the session the
+      macro opened, and the rest of the episode is spent on the login page.
     """
 
     max_select_options: int = 1
     capture_field_labels: bool = False
     disambiguate_shared_names: bool = False
     custom_clickables: bool = False
+    avoid_labels: tuple[str, ...] = ()
 
 
 #: The registry as it was for every pre-benchmark measurement.
@@ -345,6 +350,18 @@ def _select_choices(options: list[str], limit: int) -> list[str]:
     return chosen
 
 
+def _squash(text: str) -> str:
+    return "".join(ch for ch in text.lower() if ch.isalnum())
+
+
+def _avoided(el: dict, avoid: tuple[str, ...]) -> bool:
+    """Whether `el` is one of the controls `RegistryOptions.avoid_labels` excludes."""
+    if not avoid:
+        return False
+    names = {_squash(str(el.get(key) or "")) for key in ("text", "id", "name")} - {""}
+    return any(_squash(word) in name for word in avoid for name in names)
+
+
 def build_action_specs(elements: list[dict], page_url: str = "",
                        options: RegistryOptions = LEGACY_OPTIONS) -> list[ActionSpec]:
     """Turn raw scanned elements into a prioritized, budget-truncated list of ActionSpecs.
@@ -390,7 +407,8 @@ def build_action_specs(elements: list[dict], page_url: str = "",
     secondary_types: list[ActionSpec] = []
 
     # Stable partition: on-screen elements keep their DOM order, then off-screen ones do.
-    candidates = [el for el in elements if not el.get("disabled") and el.get("visible")]
+    candidates = [el for el in elements if not el.get("disabled") and el.get("visible")
+                  and not _avoided(el, registry_options.avoid_labels)]
     ordered_elements = [el for el in candidates if el.get("inViewport")] + [
         el for el in candidates if not el.get("inViewport")
     ]

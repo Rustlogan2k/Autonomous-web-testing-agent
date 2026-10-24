@@ -42,6 +42,10 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_CHECKPOINT = REPO_ROOT / "models" / "tester" / "tester_all_apps.pt"
 
 
+#: Controls a signed-in session does not press (see `RegistryOptions.avoid_labels`).
+SIGN_OUT_LABELS = ("sign out", "signout", "log out", "logout", "log off")
+
+
 class SessionStopped(Exception):
     """Raised inside the loop when the caller asks the session to stop."""
 
@@ -138,6 +142,7 @@ def _hybrid_agent(settings: SessionSettings, app_name: str):
         failure_bonus=float(spec.get("failure_bonus", 0.0)),
     )
     mode = ("held-out evaluation configuration" if arm in FROZEN_HYBRID_AGENTS
+            else "frozen tester (tag v3-freeze)" if arm == "hybrid_final"
             else f"tuning-round configuration ({arm})")
     return policy, {"agent": settings.agent, "mode": mode}
 
@@ -239,10 +244,12 @@ def run_session(base_url: str, settings: SessionSettings | None = None, *,
     result = SessionResult(target=base_url, app_name=app_name or base_url,
                            settings=settings.to_dict(),
                            started_at=time.strftime("%Y-%m-%dT%H:%M:%S%z"))
-    env_settings = EnvSettings(max_steps=settings.episode_steps,
-                               settle_quiet_ms=settings.settle_quiet_ms,
-                               registry=replace(EXTENDED_OPTIONS,
-                                                custom_clickables=settings.custom_clickables))
+    env_settings = EnvSettings(
+        max_steps=settings.episode_steps, settle_quiet_ms=settings.settle_quiet_ms,
+        registry=replace(EXTENDED_OPTIONS, custom_clickables=settings.custom_clickables,
+                         # Behind a sign-in macro, signing out only ends the session the
+                         # macro opened; the episode would be spent on the login page.
+                         avoid_labels=SIGN_OUT_LABELS if settings.setup_actions else ()))
     setup = [dict(step) for step in settings.setup_actions]
 
     def env_factory(url: str, steps: int | None = None):  # noqa: ANN202
