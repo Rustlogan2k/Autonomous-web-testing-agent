@@ -492,6 +492,37 @@ and tuned for the first, and is strongest there. On the second it is close to ra
 coverage and fewer failures. A tester for real use needs both: deep, verified functional
 faults, and broad reach over the interface.
 
+\paragraph{Which arm is best depends on the measure.} Table~\ref{tab:best} gathers, for each
+measure, the arm that did best and whether it learns.
+
+\begin{table}[H]
+\centering
+\small
+\caption{The best arm per measure, across all evaluations.}
+\label{tab:best}
+\begin{tabularx}{\textwidth}{@{}X l l@{}}
+\toprule
+Measure & Best arm & Reinforcement learning? \\
+\midrule
+Distinct verified faults, final tuning round & \code{hybrid\_final} (22 of 41) & no \\
+Distinct verified faults, held-out evaluation & \code{hybrid\_bandit} (19 of 24) & bandit only \\
+Restricted mean time to first fault, held-out & \code{v1\_dqn\_pretrained} (595) & yes, deep Q-learning \\
+Client-side coverage, final tuning round & \code{v1\_dqn\_pretrained} (0.91) & yes, deep Q-learning \\
+Branch coverage, WebExplor's applications & \code{hybrid\_curiosity} (44.7\%) & yes, Q-learning \\
+Distinct failures triggered (all evaluations) & \code{hybrid\_curiosity} & yes, Q-learning \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The pattern is consistent. Arms that learn to explore, curiosity Q-learning and the deep
+Q-network, do best on the literature's measures: breadth of coverage and errors triggered.
+The structure without a learner does best on verified seeded faults, which require
+deliberate test actions rather than novelty. No learning layer added on top of the structure
+verified more faults than the structure alone. The like-for-like RL comparison with
+WebExplor and WebRLED, both RL testers, is therefore \code{hybrid\_curiosity}. It reached
+44.7\% branch coverage; with custom clickables it reached 54.1\% over all six applications,
+level with WebExplor (55.5\%) and below WebRLED (64.2\%).
+
 \paragraph{Limits of the evidence.}
 \begin{itemize}
   \item \textbf{Scale.} Every evaluation used six to eight applications, which leaves wide
@@ -504,4 +535,7 @@ faults, and broad reach over the interface.
   \item \textbf{Post-hoc analyses.} The failure measure comparable with the papers, the
         clickables follow-up and the view without Petclinic were defined after the results
         and are reported as such.
+  \item \textbf{Phoenix cold start.} On a freshly started container, Phoenix's first sign-in
+        redirect can complete after the macro's wait, so a run's first episode may begin on
+        the sign-in page. This affects at most one episode per run, equally for every arm.
 \end{itemize}

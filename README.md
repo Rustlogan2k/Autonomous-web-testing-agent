@@ -10,11 +10,16 @@ the command line or a web UI.
 
 Final-year B.Tech project. Security testing is out of scope.
 
-> **Status (2026-10-22).** v1 (deep RL, two pre-registered experiments) and the v2 hybrid
-> tester's held-out evaluation are complete and frozen. The 8 development applications have
-> been rebuilt as full-stack apps, with PostgreSQL or MongoDB, sign-in and crash-type faults.
-> **Tuning round v3** on them is running. Next: freeze the tuned tester, then compare it with
-> the published WebExplor / WebRLED results on their subject applications.
+> **Status (2026-10-24): all evaluations complete.**
+> - **Finished work:** v1 (deep RL, two pre-registered experiments), the v2 hybrid tester's
+>   held-out evaluation, tuning round v3 on the rebuilt full-stack apps (frozen as
+>   `hybrid_final`, tag `v3-freeze`), and the pre-registered comparison with WebExplor and
+>   WebRLED on their own applications.
+> - **External result:** below their published numbers.
+> - **Diagnosis:** a post-hoc follow-up (tag `v4-clickables`) traced much of that gap to the
+>   tester's action space.
+> - **Thesis:** in `thesis/` (Amrita template, 64 pages).
+>
 > `PROJECT_CONTEXT.md` §0 is the authoritative project state.
 
 ---
@@ -52,13 +57,18 @@ search-guided ε-exploration and an optional LLM progress reward (`qwen2.5:7b-in
 
 | Agent | Learning | Where it stands |
 |---|---|---|
-| `v1_dqn_pretrained` | AC-DQN pretrained on the 6 benchmark apps, adapting online | held-out: 34/40 runs, lowest mean time to first fault |
-| `hybrid_bandit` | hybrid tester + Thompson-sampling operator bandit | held-out: 34/40 runs, most distinct faults (19/24) |
-| `hybrid_curiosity` (`dev_v3_curiosity`) | hybrid tester + count-based curiosity Q-learning | tuning round v3 |
-| `hybrid_nolearn` | hybrid tester, untried operators in turn, no learner | held-out primary arm: 30/40 runs, 18/24 faults |
-| `random` | uniform over valid actions | the baseline: 32/40 runs, 13/24 faults |
+| `hybrid_final` | none: hybrid + `browse_list` + failure feedback (frozen, `v3-freeze`) | most distinct verified faults in tuning (22/41); external: 44.3% branch coverage |
+| `hybrid_curiosity` | hybrid + count-based curiosity Q-learning (RL) | best of ours on WebExplor's apps: 44.7% coverage (54.1% with clickables), most failures triggered |
+| `v1_dqn_pretrained` | AC-DQN pretrained on the 6 benchmark apps, adapting online (deep RL) | held-out: 34/40 runs, lowest mean time to first fault; highest coverage in tuning |
+| `hybrid_bandit` | hybrid + Thompson-sampling operator bandit | held-out: 34/40 runs, most distinct faults (19/24); slower than no learner in tuning |
+| `hybrid_nolearn` | hybrid, untried operators in turn, no learner | held-out primary arm: 30/40 runs, 18/24 faults |
+| `random` | uniform over valid actions | the baseline |
 
-The web UI offers the RL agents and random. Development-only arms (`dev_*`) are defined in
+**Which arm is best depends on the measure.** The structure without a learner verifies the
+most seeded faults. The RL arms do best on the literature's measures: coverage (v1 AC-DQN in
+tuning, curiosity on WebExplor's apps) and errors triggered (curiosity). No learning layer
+verified more faults than the same structure without it. The web UI offers the RL agents and
+random. Development-only arms (`dev_*`) and the post-hoc `*_clickables` arms are defined in
 `src/web_testing_agent/hybrid/run.py`.
 
 ## Results so far
@@ -72,6 +82,9 @@ The web UI offers the RL agents and random. Development-only arms (`dev_*`) are 
 | 5 | Does a learner help on top of the hybrid tester? (development, 5 rounds, 7 variants) | Not distinguishable from no learner | development |
 | 6 | Does curiosity-driven RL (WebExplor/WebRLED components) find functional faults? | At random level (17/42 vs 18/42) | development |
 | 7 | **Held-out** (8 unseen apps, 160 runs + 32 clean controls): hybrid vs random, vs v1 AC-DQN, bandit vs none | **All four comparisons inconclusive.** Hybrid arms verified the most distinct faults (19, 18 of 24 vs random 13), including 9 no random run found; 0 false positives | pre-registered (tag `v2-eval-freeze`), frozen |
+| 8 | Tuning round v3 on the rebuilt full-stack suite (192 + 24 runs) | `browse_list` + failure feedback best (22/41 distinct faults); bandit slower than no learner; frozen as `hybrid_final` | development |
+| 9 | **External:** WebExplor's 6 apps, measured as published (1 h runs, Istanbul branch coverage, console failures) | **Below the published numbers:** 44.3% coverage vs WebExplor 55.5% / WebRLED 64.2%; 1.8 vs 3.1 / 4.1 failures. Comparable on Pagekit and Splittypie | pre-registered (tag `v3-freeze`) |
+| 10 | Is the gap the action space? (all arms + custom clickables, 81 runs) | Phoenix 49% → 82–83% for every arm (WebRLED 82.9%); excluding Petclinic, ~50–53% vs WebExplor 49.6% / WebRLED 60.0%; Retroboard unchanged | post-hoc (tag `v4-clickables`) |
 
 Held-out per arm:
 
@@ -82,11 +95,24 @@ Held-out per arm:
 | `hybrid_bandit` | 34/40 | 769 | **19** | 0/8 |
 | `random` | 32/40 | 978 | 13 | 0/8 |
 
-The held-out evaluation exposed one blind spot, list paging (skylark's "Load more"). It led
-to the `browse_list` operator now being tuned.
+External comparison per application (branch coverage %, mean of 3 one-hour runs):
+
+| App | `hybrid_final` | `hybrid_curiosity` | `random` | WebExplor | WebRLED |
+|---|---|---|---|---|---|
+| Dimeshift | 49.2 | 47.8 | 45.0 | 54.2 | 55.4 |
+| Pagekit | 32.4 | 33.9 | 34.2 | 25.8 | 39.8 |
+| Splittypie | 35.7 | 42.9 | 37.5 | 36.2 | 44.6 |
+| Phoenix | 48.7 (82.0 with clickables) | 48.7 (83.3) | 46.9 (74.6) | 71.8 | 82.9 |
+| Retroboard | 53.2 | 53.2 | 53.2 | 60.2 | 77.4 |
+| Petclinic (20 branches, noisy) | 46.7 | 41.7 | 25.0 | 85.0 | 85.0 |
+
+WebExplor and WebRLED are both RL testers: tabular curiosity Q-learning, and deep Q-learning
+with a learned actionable-element discriminator. The like-for-like RL comparison is
+`hybrid_curiosity`. Failure counts use a post-hoc count close to the papers' manual one.
+The pre-registered count also includes third-party requests and is not comparable.
 
 The result files are `reports/transfer_final.json`, `reports/contextual_diagnostic.json`,
-`reports/v2_evaluation.json` and `runs/*/results/`. The web UI's **Evaluation** page shows
+`reports/v2_evaluation.json`, `reports/external_comparison.json` and `runs/*/results/`. The web UI's **Evaluation** page shows
 every arm and round live from these files.
 
 ## Test applications
@@ -94,9 +120,9 @@ every arm and round live from these files.
 | Set | Apps | Role |
 |---|---|---|
 | Benchmark (`tests/fixtures/benchmark/`) | 6 small apps, 12 seeded faults | v1 experiments; development for v2 |
-| Development suite (`e2e_suite/apps/`) | tidewater, clinicflow, stackroom, ledgerly (PostgreSQL); bagstreet, helpline, orbit, wayfarer (MongoDB) | tuning. Full stack with sign-in (clinicflow, helpline, wayfarer, ledgerly and bagstreet enlarged to ≥ 12 views and ≥ 3 CRUD entities); 41 seeded faults, 8 of them crash-type (orbit, helpline, stackroom, wayfarer) |
+| Development suite (`e2e_suite/apps/`) | tidewater, clinicflow, stackroom, ledgerly (PostgreSQL); bagstreet, helpline, orbit, wayfarer (MongoDB) | tuning. Full stack with sign-in (clinicflow, helpline, wayfarer, ledgerly and bagstreet enlarged to ≥ 12 views and ≥ 3 CRUD entities); 41 seeded faults, 8 of them crash-type (orbit, helpline, stackroom, wayfarer; all admitted incl. Docker) |
 | Validation suite (`validation_suite/apps/`) | dutyday, fosterly, larder, markbook, quizcraft, sideline, skylark, tally | held-out evaluation (frozen as evaluated); 24 faults |
-| External (planned) | the WebExplor / WebRLED subject apps | final comparison with published numbers. Nobody looks at them before the tuned tester is frozen |
+| External | Dimeshift, Pagekit, Splittypie, Phoenix, Retroboard, Petclinic (DIG Docker images, Istanbul-instrumented; `configs/external_apps.json`) | the comparison with WebExplor / WebRLED's published numbers |
 
 Every suite app has a clean build, a build with all faults, and one control build per fault.
 Each must pass mechanical admission (witness, control, replay, minimisation, benign traces,
@@ -158,6 +184,19 @@ Options: `--budget N`, `--agent`, `--no-llm`, `--login-steps FILE`, `--seed N`, 
 Each result records verified faults, unique failures (error signatures) and V8 JavaScript
 coverage.
 
+### External comparison (WebExplor / WebRLED apps)
+
+```bash
+# Laptop: fresh container per run, one instance per app, 1 h wall clock each (resumable)
+./venv/Scripts/python.exe -m web_testing_agent.hybrid.external --out-dir runs/ext-eval \
+    --apps-file configs/external_apps.json --apps dimeshift pagekit splittypie \
+    --arms hybrid_final hybrid_curiosity random --seeds 0 1 2 --workers 3
+# AWS spot (restricted operator, self-terminating):
+#   cloud/aws/launch_external.sh <run_name> "phoenix:hybrid_final,random:0,1"
+# GitHub Actions: push to branch ext-gha runs .github/workflows/external-comparison.yml
+./venv/Scripts/python.exe scripts/analyze_external.py --out reports/external_comparison
+```
+
 ### Suite admission (no agent)
 
 ```bash
@@ -201,10 +240,15 @@ docker run --rm -p 8000:8000 -e OLLAMA_HOST=http://host.docker.internal:11434 we
 - **Held-out:** every pre-registered comparison is inconclusive. The descriptive advantages
   above are not significance claims.
 - **Generalisation:** the suite apps and seeded faults were built by the same developer as
-  the tester (disclosed). The external WebExplor/WebRLED comparison is what addresses this.
+  the tester (disclosed). On WebExplor's independent apps the tester was below the published
+  RL testers.
+- **External comparison:** 3 repetitions (papers: 5), different machines, automatic failure
+  deduplication. The clickables follow-up and the Petclinic-excluded view are post-hoc.
 - **LLM:** the progress reward and the page labeller did not generalise beyond their tuning
   data, so the LLM is not on the decision path.
 - Tuning-round results (v3) are development data, never evidence.
+- **RL:** the RL arms lead on coverage and errors triggered, not on verified functional
+  faults; no claim that learning improves fault verification.
 
 ## Repository map
 
@@ -214,10 +258,12 @@ src/web_testing_agent/   envs, rl (v1 AC-DQN), reward, oracle, benchmark, experi
 e2e_suite/               development suite: apps, harness (builds, admission, DB control), vendored drivers
 validation_suite/        held-out validation apps and their admission reports
 tests/                   unit tests and fixtures (benchmark apps, ctxbench variants, demo sites)
-scripts/                 command-line entry points and v1 analyses
+scripts/                 command-line entry points and analyses (v1, external comparison)
 reports/                 result files (JSON) of every experiment and evaluation
 docs/references/         bibliography (references.bib)
-cloud/aws/               launcher and IAM policies
+cloud/aws/               launchers (experiment, external comparison) and IAM policies
+configs/                 external applications (Docker commands, sign-in macros)
+thesis/                  the thesis (LaTeX, Amrita template) and its PDF
 PROJECT_CONTEXT.md       authoritative project state and full decision history
 ```
 

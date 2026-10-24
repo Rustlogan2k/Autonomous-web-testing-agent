@@ -5,11 +5,21 @@ describe the system, §5 is the dated history of how every decision was reached 
 full, including negative results and retractions), §6–§7 record scoping and design
 decisions, §8 the current risks, §9 the ordered next steps, §10 the environment.
 
-Last updated: 2026-10-22.
+Last updated: 2026-10-24.
 
 ---
 
-## 0. Read this first — where the project stands (2026-10-22)
+## 0. Read this first — where the project stands (2026-10-24)
+
+> **All evaluations are complete.**
+> - **External comparison (§0.8):** the frozen tester (`hybrid_final`, tag `v3-freeze`) was
+>   below WebExplor's and WebRLED's published numbers on their own applications. A post-hoc
+>   follow-up (tag `v4-clickables`) traced much of the gap to the action space.
+> - **Best arm by measure:** the structure without a learner verifies the most seeded
+>   faults; the RL arms lead on coverage and errors triggered.
+> - **Thesis:** `thesis/` (64 pages) has every section written except the authors' names,
+>   acknowledgements and publications.
+> - **Remaining:** the presentation and demo.
 
 > **Documents removed on 2026-10-22.** At the owner's request the repository now keeps only
 > two Markdown documents, this file and `README.md` (plus third-party licence files under
@@ -31,9 +41,9 @@ An **RL-based automated functional tester for web applications**, with two gener
 - **v2, the hybrid tester**: page abstraction into cells, a Go-Explore archive with exact
   replay, test operators from standard test design, and a light online decision layer
   (Thompson-sampling bandit, or count-based curiosity Q-learning). Its pre-registered
-  held-out evaluation is complete and frozen (§0.6). It is now being **re-tuned** on
-  rebuilt full-stack development apps (§0.7) before an external comparison with WebExplor and
-  WebRLED (§0.8).
+  held-out evaluation is complete and frozen (§0.6). It was **re-tuned** on rebuilt
+  full-stack development apps (§0.7), frozen as `hybrid_final`, and compared with WebExplor
+  and WebRLED on their own applications (§0.8).
 
 Both use the same **deterministic seeded-fault oracle**: replay ×2, a per-fault control
 build and ddmin minimisation, now extended with crash-type faults
@@ -168,7 +178,7 @@ The state-aware arms found the faults on held-out variants in 19–20 of 24 runs
 - The specification-free invariants produced 3 clean-build candidates on quizcraft. All were
   false alarms (an unsaved working copy is lost on reload by design).
 
-### 0.7 Now: tuning round v3 on the rebuilt development apps
+### 0.7 Tuning round v3 on the rebuilt development apps — done, frozen as `hybrid_final`
 
 **Development suite v2** (merged `d8eefd7`). All 8 apps have their own database, a sign-in
 page and a richer data model. clinicflow, helpline, wayfarer, ledgerly and bagstreet were
@@ -212,7 +222,7 @@ v1 AC-DQN highest on coverage. This is tuning data, not a result.
 **Done**: analysed (`runs/v3-tune/analysis.md`); the combined configuration was frozen as
 `hybrid_final` (tag `v3-freeze`).
 
-### 0.8 External comparison (WebExplor / WebRLED) — PRE-REGISTERED 2026-10-23, tag `v3-freeze`
+### 0.8 External comparison (WebExplor / WebRLED) — PRE-REGISTERED 2026-10-23 (tag `v3-freeze`), DONE
 
 Frozen before anyone (human or agent) has looked at, installed or run any subject
 application. Everything below is fixed; deviations are reported as deviations.
@@ -389,7 +399,9 @@ with clickables, mean of 3 runs:
 ### 0.10 Where to look
 
 - **Results (JSON)**: `reports/transfer_final.json`, `reports/contextual_diagnostic.json`,
-  `reports/v2_evaluation.json`, `reports/benchmark_validation.json`. Run files are in
+  `reports/v2_evaluation.json`, `reports/benchmark_validation.json`,
+  `reports/external_comparison.json` (with `followup_clickables`; produced by
+  `scripts/analyze_external.py`). Tuning: `runs/v3-tune/analysis.md`. Run files are in
   `runs/<round>/results/`. The web UI's Evaluation page (`app/evaluation.py`) renders every
   round from them.
 - **Archived documents**: tag `docs-archive-2026-10-22`. It holds `experimentation-results.md`
@@ -399,8 +411,16 @@ with clickables, mean of 3 runs:
   experiment, including the `dqn_nollm` checkpoints `v1_dqn_pretrained` loads) and
   `runs/ctx-main/checkpoints` (diagnostic). Older diagnostics and ablation checkpoints were
   deleted on 2026-10-22.
-- **Worktrees**: `../rlwt-suite-v2` (branch `suite-v2`), `../rlwt-tune` (`tune-v3`) and
-  `../rlwt-ui` (`ui-v3`, the web UI redesign `80b1d60`, to merge after tuning round v3).
+- **External runs:** `runs/ext-eval` (laptop), `runs/ext-eval-aws1b`, `aws2`, `aws3`, `aws4b`
+  (AWS primary), `runs/ext-eval-gha` (GitHub replication), `runs/ext-v4-gha` and
+  `runs/ext-v4-gha-base` (clickables follow-up). Subject apps: `configs/external_apps.json`.
+  Launchers: `cloud/aws/launch_external.sh`, `.github/workflows/external-comparison.yml`
+  (branch `ext-gha`).
+- **Thesis:** `thesis/mythesis.tex` and `thesis/chapters/`. Build with MiKTeX: `pdflatex`,
+  `bibtex`, then `pdflatex` twice. Git Bash needs a PATH without the `python.exe` file
+  entry.
+- **Worktrees**: `../rlwt-suite-v2` (branch `suite-v2`), `../rlwt-tune` (`tune-v3`),
+  `../rlwt-ui` (`ui-v3`, merged) and `../rlwt-ext` (`ext-bench`, merged).
 
 ---
 
@@ -3867,6 +3887,28 @@ evaluation's arms.
   - Stray logs, caches and an unused `.venv` were removed. The LLM cache
     (`data/llm_cache/`), generated report Markdown and Gradle caches are now git-ignored.
 
+### 2026-10-23 → 10-24 — freeze, external comparison, clickables follow-up, thesis
+
+- **Freeze.** Tuning round v3 was analysed. A 24-run check of `browse_list` + failure
+  feedback together (22/24 runs, 22/41 distinct faults) led to `hybrid_final`, frozen with
+  the external comparison's pre-registration (tag `v3-freeze`).
+- **External comparison.**
+  - Subject apps: the six WebExplor applications from the DIG Docker images, with
+    Istanbul-instrumented client code.
+  - Runner: `hybrid/external.py` (1 h wall clock, fresh container per run).
+  - Machines: the laptop (Dimeshift, Pagekit, Splittypie) and AWS spot (Phoenix, Retroboard,
+    Petclinic), with a GitHub Actions replication. Which runs count was fixed by completion,
+    in advance.
+  - Defects found and fixed before results: the Pagekit sign-in selector; Phoenix's sign-in
+    redirect (earlier Phoenix runs discarded unread); third-party requests stubbed.
+  - Result: below the published numbers (44.3% vs 55.5% / 64.2% branch coverage).
+- **Clickables follow-up (post-hoc, owner-approved, tag `v4-clickables`).** 81 runs on
+  GitHub. Phoenix rose from 49% to 82–83% for every arm. Retroboard did not move.
+- **Admissions.** The crash faults of helpline (44/44), stackroom (40/40) and wayfarer
+  (41/41) were admitted.
+- **Thesis.** Every section written: the results, a "best arm per measure" table, the
+  discussion and the conclusion.
+
 ---
 
 ## 6. Scoping decisions
@@ -3915,37 +3957,29 @@ Two decisions that shape what the project can claim:
 
 ---
 
-## 8. Current risks (rewritten 2026-10-22)
+## 8. Current risks (rewritten 2026-10-24)
 
-Earlier registers: commits `afa5045` (August) and `811094a` (2026-10-04), and this file at
-tag `docs-archive-2026-10-22` (2026-10-06).
+Earlier register: this file at commit `cf84e90` (2026-10-23).
 
 | # | Risk | Severity | Addressed by |
 |---|---|---|---|
-| 1 | Over-claiming: presenting the learner as the source of the hybrid's results, or the held-out descriptives as wins | major | claim limits G–I; a claims table (shown / not shown) in the final report |
-| 2 | Tuning on the development apps overfits them, so the external benchmark disappoints | major | tune only general mechanisms (operators, metrics), freeze before anyone sees the subject apps, report whatever comes out |
-| 3 | External comparison is not like for like: the published numbers are branch coverage and manually deduplicated failures over 1-hour runs | major | pre-register the metric mapping (JS coverage vs branch coverage, failure signatures vs manual dedup) and state the differences |
-| 4 | Time: deadline ≈ 2026-10-27 with tuning, freeze, benchmark set-up, runs, report and demo left | major | order in §9; the external benchmark can shrink to fewer apps or seeds if needed, as long as it is stated |
-| 5 | Crash faults for helpline, stackroom and wayfarer are not yet admitted, but tuning already uses them | moderate | admit them before the freeze; if one fails admission, drop it from the tuning analysis |
-| 6 | Unattended local runs are suspended by Windows (lid, screen, battery) | operational | lid action "do nothing" on AC, screen timeout 0, keep-awake process, resumable runners |
+| 1 | Over-claiming RL: presenting the learner as the source of results, or the post-hoc clickables numbers as the external result | major | claim limits G–I; thesis Table "best arm per measure"; the pre-registered external result stays the headline |
+| 2 | Comparison with published numbers is not like for like (3 vs 5 repetitions, machines, automatic vs manual dedup) | major | stated in the thesis and README beside every number |
+| 3 | Deadline ≈ 2026-10-27: presentation and demo not yet prepared | major | §9 |
+| 4 | Petclinic (20 branches) dominates averages | moderate | reported with and without it, the latter labelled post-hoc |
 
 ---
 
-## 9. Next steps, in order (rewritten 2026-10-22)
+## 9. Next steps, in order (rewritten 2026-10-24)
 
-1. **Finish tuning round v3** (`runs/v3-tune`). Analyse verified faults, unique failures and
-   JS coverage on matched runs, and pick the configuration.
-2. **Admit the pending crash faults** (helpline rerun, stackroom, wayfarer) and commit their
-   admission reports.
-3. **Merge `ui-v3`** (the web UI redesign) once no jobs are starting.
-4. **Freeze the re-tuned tester** as a new version, with a tag and a pre-registration of the
-   external comparison.
-5. **External benchmark**: set up the WebExplor/WebRLED subject apps with coverage and
-   failure counting, run 1-hour runs, and compare with the published numbers (§0.8).
-6. **Final report, presentation and demo** (by ≈ 2026-10-27). Include v1's two negative
-   results, the v2 structure and its held-out result, the tuning round, the external
-   comparison and the claims table. For the demo: a suite app through the UI, a live URL,
-   and a report download.
+1. **Authors' items in the thesis:** names, roll numbers, advisor, acknowledgements,
+   publications page.
+2. **Presentation** (by ≈ 2026-10-27): v1's two negative results, v2's structure and
+   held-out result, tuning, the external comparison and the clickables diagnosis, and the
+   best-arm-per-measure table.
+3. **Demo:** a suite app through the UI, a live URL, and a report download.
+4. Optional, if time allows: make custom clickables the default and pre-register a re-run of
+   the external comparison as a new version.
 
 ---
 
