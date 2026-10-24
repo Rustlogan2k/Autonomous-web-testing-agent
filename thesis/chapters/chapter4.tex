@@ -258,6 +258,27 @@ data it was revised from, the labeller would have been adopted.
 \section{What v1 taught}
 \label{sec:v1-lessons}
 
+Four claims about the deep Q-network are easily conflated. Table~\ref{tab:v1-claims} keeps
+them apart.
+
+\begin{table}[H]
+\centering
+\small
+\caption{What the v1 experiments establish about the DQN.}
+\label{tab:v1-claims}
+\begin{tabularx}{\textwidth}{@{}X X l@{}}
+\toprule
+Claim & Evidence & Status \\
+\midrule
+The DQN was implemented and trained & pretraining on five applications per fold; 291 jobs in Experiment~1 with no failures & established \\
+Its learned values chose the actions & about 84\% of each learned arm's actions were the network's greedy choice & established \\
+It learned which action helps in which state & within-label AUROC 0.51, against a pre-registered bar of 0.70; 7\% of $Q$ variance from label $\times$ state & not supported \\
+Pretraining transferred to a new application & median difference 0 interactions, $[-749, +290]$ & not established \\
+Learning improved discovery over non-learning arms & learned arms found a fault in more runs (0.33--0.42 against 0.06--0.17), but the intervals reach zero and the effect rests on one fold; held-out H4 inconclusive & suggested only \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 \begin{table}[H]
 \centering
 \small

@@ -133,7 +133,32 @@ Verification has three steps:
 Only candidates that pass all three are \emph{verified findings}. The rule makes false
 positives measurable: a run on the \emph{clean} build has no seeded faults, so any verified
 finding there would be a false positive. Every evaluation in this thesis includes such
-clean-build control runs, and none produced a verified finding.
+clean-build control runs, and none produced a verified finding. Zero observed false
+positives is not a zero false-positive rate. The held-out evaluation, for example, had 32
+clean-build controls; with none positive, a one-sided 95\% upper bound on the per-run rate
+is about $3/32 \approx 9\%$ (the rule of three).
+
+\subsection{What the oracle solves, and what it does not}
+\label{sec:oracle-limits}
+
+The \emph{oracle problem} is deciding whether observed behaviour is
+correct~\cite{barr2015oracle}. For the seeded faults, Katalyze does not solve it. Each
+seeded fault comes with an assertion written by whoever seeded it, and verification
+establishes that a failure of that assertion is reproducible and caused by that fault. The
+oracle makes reported findings \emph{credible}. It does not let the tester tell right from
+wrong in an application it has no specification for. Three consequences follow.
+\begin{enumerate}[noitemsep]
+  \item The evaluations measure how well a tester drives an application into a state where
+        a known assertion fails. They do not measure whether it would recognise a bug that
+        nobody wrote an assertion for.
+  \item On applications without seeded faults, which is what the product mostly sees
+        (Section~\ref{sec:product}), findings can come only from generic triggers and the
+        specification-free invariants below. Generic triggers are script errors, failed
+        requests, error pages and navigation that does nothing. Both kinds are weaker than
+        a seeded assertion, and the invariants raised false alarms (Section~\ref{sec:heldout}).
+  \item A per-fault control build exists only because the fault was seeded. For a real
+        bug there is no control, and verification reduces to replay and minimisation.
+\end{enumerate}
 
 \subsection{Crash-type faults}
 \label{sec:crash}
@@ -158,12 +183,14 @@ never counted as verified seeded faults.
 \section{The product layer}
 \label{sec:product}
 
-\paragraph{Intake and sandbox.} An uploaded repository must contain a Dockerfile. Its build
+\paragraph{Intake and restricted execution sandbox.} An uploaded repository must contain a Dockerfile. Its build
 definition is parsed and passed through a security policy gate before anything runs. The
 gate refuses privileged containers, host mounts, host networking and Compose features that
 would merge in a second, unvalidated file. The container then runs with all capabilities
 dropped, a read-only root filesystem, no new privileges, CPU, memory and process limits,
-and an internal-only network.
+and an internal-only network. This is a \emph{restricted} execution sandbox: it narrows what
+uploaded code can do, but it has not been tested against deliberately malicious code. The
+product is meant for code its user would be willing to run locally.
 
 \paragraph{Test sessions and reports.} A test session runs the chosen agent within an
 interaction budget, verifies candidates as above, and writes a report with three parts:
@@ -180,3 +207,47 @@ budget; watches a live event stream of the run; and opens or downloads the repor
 research page shows every evaluation and development round, read live from the result
 files. The interface binds to the local machine by default, because it builds and runs
 uploaded code.
+
+\paragraph{End-to-end acceptance.} Table~\ref{tab:acceptance} lists one end-to-end run of
+the final product for each kind of target. Each run was started through the web
+interface's own API, ran \code{hybrid\_final}, and produced HTML, Markdown and JSON reports.
+For the bundled applications the seeded faults are known, so their findings can be checked.
+For the other targets no ground truth exists, and the findings are reproduced and
+minimised observations, not confirmed bugs.
+
+\begin{table}[H]
+\centering
+\small
+\caption{End-to-end acceptance runs of the final product (24 October 2026). ``Findings'' are
+the verified findings in the report. For targets without seeded faults they come from
+generic triggers.}
+\label{tab:acceptance}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}p{2.5cm} r r >{\raggedright\arraybackslash}X@{}}
+\toprule
+Target kind & Example & Budget & Time & Findings \\
+\midrule
+Bundled app, full stack in Docker & Helpline & 600 & 7 min & 4: seeded HELP-2, HELP-3 and HELP-4, and one reproduced ``Move down'' control that does nothing \\
+Bundled app, full stack in Docker & Stackroom & 600 & 5 min & 2: seeded STK-3, and one reproduced script error \\
+Bundled app, full stack in Docker & Orbit & 600 & 5 min & 1: seeded ORB-3 \\
+Bundled benchmark app & Fernbrook Outfitters & 1{,}000 & 4 min & 1: seeded SHOP-01 \\
+Static site, bundled demo & Harbor \& Pine & 300 & 5 min & 4 (curiosity arm): missing pages, a broken form, a script error \\
+Static site, zip upload & Harbor \& Pine & 200 & 3 min & 4: the same kinds \\
+Dockerfile repository & Northwind static site & 200 & 3 min & 2: a missing page and a script error \\
+Public URL & TodoMVC (demo.\-playwright.dev) & 200 & 3 min & 0 (before the fix below: 3 false reports on links to other sites) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The acceptance runs found three product defects, all now fixed. The first was fixed before
+every run in the table. The TodoMVC run is the only one made after the other two; no other
+run in the table reported a finding on a link to another site.
+\begin{itemize}[noitemsep]
+  \item A form that submits and returns to the same address with updated content (Helpline's
+        post-redirect-get forms) was reported as navigation that does nothing. Such a report
+        now requires the page text to stay the same as well as the address.
+  \item Links to other websites, which the tester refuses to follow, were reported the same
+        way. They are now excluded.
+  \item One slow page load at the start of an episode ended the whole session on a public
+        site. The opening load is now retried up to three times.
+\end{itemize}

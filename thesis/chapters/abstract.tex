@@ -1,41 +1,35 @@
-Web applications fail in ways that are easy to describe and hard to find: a total that
-ignores a changed quantity, a validation rule that holds on one path and not on another, a
-value that is lost on reload. Automated exploratory testers can reach such states, but they
-face two problems. They must decide where to go in a large, stateful interface where the
-decisive actions are many steps deep, and they must prove what they find, or their reports
-are noise. This thesis builds and evaluates \emph{Katalyze}, an automated functional
-tester for web applications that uses reinforcement learning (RL). It confirms a fault only when the fault
-reproduces twice in fresh browser sessions, is absent from a control build without that
-fault, and survives delta-debugging minimisation.
+Functional bugs in web applications are rarely crashes. A total ignores a changed quantity,
+a validation rule holds on one path and not another, a value is lost on reload. An automated
+tester must reach such states through many interactions and then show that what it found is
+real. This thesis presents \emph{Katalyze}, an autonomous exploratory tester for web
+applications with a verified-fault evaluation pipeline. It asks how much exploration
+structure, lightweight online learning and reliable fault verification each contribute.
+A fault counts only if it reproduces twice in fresh browser sessions, is absent from a
+control build without that fault, and survives delta-debugging minimisation. No new learning
+algorithm is claimed. The contributions are the integrated system, the evaluation method,
+and the empirical findings, several of them negative.
 
-The work has two generations. The first (v1) is an action-conditioned dueling double deep
-Q-network that scores every available browser action, with prioritised multi-step replay, a
-residual head for online adaptation, and a reward shaped by a local large language model
-(LLM) that judges task progress. Two pre-registered experiments tested it. Pretraining on
-five applications did not speed up fault discovery on a sixth (median difference 0
-interactions, 95\% interval $[-749, +290]$). A diagnostic over twelve generated application
-variants found that the network does not learn which action helps in which state
-(within-label AUROC 0.51). Post-hoc checks showed that the LLM's progress score and its page
-labels did not generalise beyond the data they were tuned on.
+The first generation is an action-conditioned dueling double deep Q-network with a reward
+from a local language model. In two pre-registered experiments, pretraining on five
+applications did not speed up fault discovery on a sixth (median difference 0 interactions,
+95\% interval $[-749, +290]$). The network did not learn which action helps in which state
+(within-label AUROC 0.51). The language model failed as a reward and as a page labeller.
 
-These findings shaped the second generation (v2), a hybrid tester. It abstracts pages
-explicitly, keeps an archive of reached states that it returns to by exact replay
-(Go-Explore), and applies test operators from standard test design. A light online learner
-(a Thompson-sampling bandit, or count-based curiosity Q-learning) decides which operator to
-try. On eight held-out applications, in a pre-registered evaluation of 160 runs with 32
-clean-build controls, the hybrid arms verified the most distinct faults (19 and 18 of 24,
-against 13 for random exploration) with zero false positives. All four pre-registered
-comparisons of time to first fault were inconclusive.
-After re-tuning on rebuilt full-stack development applications, the frozen tester was
-compared with WebExplor and WebRLED on their six subject applications, measured as they were
-measured: one-hour runs, Istanbul branch coverage and console failures. It did not reach
-their published numbers. It averaged 44.3\% branch coverage against 55.5\% and 64.2\%, and
-1.8 distinct console failures against 3.1 and 4.1. A post-hoc follow-up traced much of the
-gap to the tester's action space rather than its policy. With clickable elements that plain
-HTML scanning misses, coverage on Phoenix rose from 49\% to 83\% for every arm, level with
-WebRLED. The evidence supports
-a modest conclusion: the structure of a tester, more than the learning in it, determines
-which functional faults it verifies.
+The second generation is a hybrid tester with explicit page abstraction, an archive of
+reached states with exact return (Go-Explore), test-design operators, and an optional
+learner (a Thompson-sampling bandit or count-based curiosity Q-learning). The evaluation
+used eight held-out applications in a pre-registered study of 160 runs and 32 clean-build
+controls. The hybrid arms verified 18 and 19 of 24 faults, against 13 for random
+exploration, with no false positive. The gap was largest on faults of moderate declared
+depth. All four comparisons of time to first fault were inconclusive, and no learning layer
+improved on the structure alone.
+
+On WebExplor's six subject applications, measured as the published work measures, the
+frozen tester averaged 44.3\% branch coverage, against 55.5\% for WebExplor and 64.2\% for
+WebRLED. A post-hoc follow-up found the set of actionable elements to be an important limit:
+with custom clickables, Phoenix coverage rose from 49\% to 82--83\%. The evidence suggests
+that, for verifying functional faults, a tester's structure and action space matter more
+than the learning in it.
 
 \vspace{0.5cm}
 \noindent\textbf{Keywords:} automated web testing, reinforcement learning, deep Q-network,

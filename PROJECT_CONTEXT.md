@@ -427,6 +427,9 @@ before any run.**
   quizcraft false alarms).
 - The hybrid's operators are form-centred. `browse_list` (paging, sort and filter) is being
   tuned, not frozen.
+- Action-space recall (how many actionable elements the registry detects) has not been
+  measured against an independent reference.
+- The sandbox is restricted, not adversarially tested.
 
 ### 0.10 Where to look
 
@@ -3969,6 +3972,38 @@ only; research runners and frozen configurations are unchanged:
   tester signing itself out; ten false "navigation does nothing" findings on
   post-redirect-get forms.
 - **README:** a product guide with screenshots (`docs/images/`).
+
+### 2026-10-24 (evening) — review response: thesis revisions, two post-hoc analyses, product fixes
+
+Acting on an external critical review of the thesis draft.
+
+- **Thesis.** Research questions reframed (structure vs online learning vs verification).
+  Contributions scoped: no new algorithm; system integration, evaluation method, empirical
+  findings. Added an autonomy-dimensions table, an "oracle solves / does not solve"
+  section, a four-claim table for the v1 DQN, a pre-registered-verdicts table, and a
+  structure-by-learning ablation table. The conclusion is now graded as Established,
+  Suggested and Not established. Also added a reproducibility appendix and a product
+  acceptance matrix, and rewrote the abstract.
+- **Post-hoc: held-out discovery by declared difficulty** (`scripts/analyze_difficulty.py`,
+  `reports/heldout_difficulty.json`). Difficulty is each fault's manifest `shortest_path`,
+  written before any agent ran. Distinct faults found, random / v1 / nolearn / bandit:
+  - shallow (≤4 steps, 8 faults): 6 / 7 / 6 / 8;
+  - moderate (5–6 steps, 10 faults): 5 / 7 / 9 / 7;
+  - deep (≥7 steps, 6 faults): 2 / 3 / 3 / 4.
+- **Post-hoc: candidate verification** (held-out).
+  - random, nolearn and bandit: every candidate verified (40, 46, 49).
+  - v1: 47 of 65. All 18 rejections are TALLY-3, where the violation also fired on that
+    fault's control build. Replay alone would have misattributed them.
+  - No candidate failed replay.
+  - Verification cost: 76–100 browser interactions and 84–126 s per candidate, outside the
+    budget.
+- **Product fixes found by acceptance runs.**
+  - Links to other sites were reported as "navigation does nothing" (TodoMVC's footer).
+    They are now excluded (`functional_env._compute_reward`).
+  - One slow page load at an episode reset ended a whole session. The opening load is now
+    retried up to 3 times (`browser_session.START_ATTEMPTS`).
+  - A page-load timeout on a URL containing "playwright" was reported as a broken browser
+    install. The message now names the slow site.
 
 ---
 

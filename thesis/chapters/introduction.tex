@@ -27,14 +27,39 @@ as failures~\cite{zheng2021webexplor, gu2025webrled}. That is an implicit
 oracle~\cite{barr2015oracle}: it cannot see a page that renders the wrong content without an
 error, and it cannot say whether a reported error is reproducible or matters.
 
-\section{Problem statement}
+\section{Problem statement and research questions}
 
-This thesis asks whether reinforcement learning can make an automated functional tester for
-web applications find \emph{verified} faults sooner, and under what design. A fault is
-verified when it reproduces twice in fresh browser sessions, is absent from a control build
-that lacks that one fault, and survives delta-debugging minimisation~\cite{zeller2002simplifying}.
-The main measure is the number of browser interactions until the first verified fault, with
-runs that find nothing treated as right-censored at the budget.
+The project began by asking whether deep reinforcement learning can learn to find
+functional bugs in web applications. The first generation of the tester answered part of
+that question negatively (Chapter~\ref{chap.4}), and the question that the thesis as a whole
+answers became broader:
+
+\begin{quote}
+\emph{How much do exploration structure, lightweight online learning and reliable fault
+verification each contribute to autonomous functional web testing?}
+\end{quote}
+
+This breaks down into four research questions:
+\begin{description}[noitemsep]
+  \item[RQ1] Does a deep RL tester learn state-dependent behaviour, and does pretraining on
+        other applications transfer to a new one?
+  \item[RQ2] Is a small local LLM a useful source of reward or page labels for testing?
+  \item[RQ3] Does a structured exploratory tester verify more functional faults than random
+        exploration, and does adding online learning to it improve it further?
+  \item[RQ4] How does the tester compare with published RL web testers on their own
+        applications and measures, and what limits it there?
+\end{description}
+
+A fault is \emph{verified} when it reproduces twice in fresh browser sessions, is absent
+from a control build that lacks that one fault, and survives delta-debugging
+minimisation~\cite{zeller2002simplifying}. The measures are kept separate throughout:
+\begin{itemize}[noitemsep]
+  \item the number of distinct faults verified, for breadth;
+  \item the share of runs that verify at least one fault, for reliability;
+  \item the interactions until the first verified fault, for speed, with runs that find
+        nothing right-censored at the budget;
+  \item false positives on clean builds, for credibility.
+\end{itemize}
 
 \section{What a functional bug is}
 \label{sec:functional-bug}
@@ -133,7 +158,17 @@ tester is for.
 \section{Contributions}
 
 The tester built in this thesis, product and research system together, is called
-\emph{Katalyze}. Its contributions are:
+\emph{Katalyze}. It is best described as \emph{an autonomous exploratory testing system with
+a verified-fault evaluation pipeline}. The thesis does not claim a new RL algorithm: the
+deep Q-network, Thompson sampling, the Go-Explore archive and the test operators all build on
+existing ideas~\cite{mnih2015human, russo2018tutorial, ecoffet2021first}. The contributions
+fall into three kinds:
+\begin{itemize}[noitemsep]
+  \item a system that integrates these components;
+  \item an evaluation methodology for RL-based functional web testing;
+  \item empirical findings, several of them negative.
+\end{itemize}
+They are:
 
 \begin{enumerate}
   \item \textbf{A verified-fault oracle for web testing.} Each seeded fault has its own
@@ -156,9 +191,32 @@ The tester built in this thesis, product and research system together, is called
         admitted by mechanical checks. The eight development applications run on PostgreSQL
         or MongoDB, with sign-in and crash-type faults.
   \item \textbf{An external comparison with WebExplor and WebRLED} on their own
-        applications and measures. It is a negative result, with a diagnosis: the
-        set of actionable elements, not the policy, limited coverage.
+        applications and measures. It is a negative result. A post-hoc diagnosis
+        identifies action-space completeness, meaning which elements the tester can act on,
+        as an important limit on coverage.
 \end{enumerate}
+
+\paragraph{The scope of "autonomous".} Autonomy has several dimensions, and the thesis
+demonstrates some of them and not others (Table~\ref{tab:autonomy}).
+
+\begin{table}[H]
+\centering
+\small
+\caption{What "autonomous" means for Katalyze, and what the thesis demonstrates.}
+\label{tab:autonomy}
+\begin{tabularx}{\textwidth}{@{}l X X@{}}
+\toprule
+Dimension & Meaning & Demonstrated \\
+\midrule
+Exploration & chooses its own browser actions & yes, within the registered action space \\
+Test generation & builds interaction sequences, including deviations & yes, through exploration and test operators \\
+Fault detection & notices potentially wrong behaviour & partly: seeded assertions, generic triggers, specification-free invariants \\
+Fault verification & establishes that a failure is genuine and caused by a fault & yes, for seeded faults (replay, per-fault controls, minimisation) \\
+Specification inference & works out what the application \emph{should} do & not demonstrated \\
+General bug discovery & reliably finds unknown bugs in arbitrary applications & not established by the evaluation \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section{Scope}
 \label{sec:scope}

@@ -147,6 +147,75 @@ quizcraft keeps its working copy in page memory until the user saves, so losing 
 edits on reload is intended. They are false alarms: the reload invariant cannot tell saved
 state from unsaved state.
 
+\subsection{Discovery by fault difficulty (post-hoc)}
+\label{sec:difficulty}
+
+The statement that the hybrid arms reached deeper faults rests on how often random found
+each fault, so it partly defines difficulty by the arms' own results. A criterion that does
+not depend on any agent is each fault's declared shortest trigger path. It was written into
+the application's manifest when the fault was designed, before any agent ran. Faults are
+\emph{shallow} with at most 4 interactions, \emph{moderate} with 5--6, and \emph{deep} with
+7 or more. Table~\ref{tab:difficulty} applies it to the frozen held-out results. The
+analysis was defined after the results (\code{scripts/analyze\_difficulty.py}).
+
+\begin{table}[H]
+\centering
+\small
+\caption{Held-out evaluation by declared fault difficulty (post-hoc): distinct faults
+verified, and in brackets runs that verified them out of all (fault, seed) pairs.}
+\label{tab:difficulty}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lrllll@{}}
+\toprule
+Group & Faults & \code{random} & \code{v1\_dqn\_pretrained} & \code{hybrid\_nolearn} & \code{hybrid\_bandit} \\
+\midrule
+Shallow ($\le 4$) & 8 & 6 (26/40) & 7 (24/40) & 6 (22/40) & \textbf{8} (28/40) \\
+Moderate (5--6) & 10 & 5 (12/50) & 7 (15/50) & \textbf{9} (20/50) & 7 (16/50) \\
+Deep ($\ge 7$) & 6 & 2 (2/30) & 3 (8/30) & 3 (4/30) & \textbf{4} (5/30) \\
+\midrule
+Observed on the same visit & 18 & 9 (30/90) & 12 (37/90) & 13 (35/90) & \textbf{14} (40/90) \\
+Needs a reload or a revisit & 6 & 4 (10/30) & 5 (10/30) & 5 (11/30) & 5 (9/30) \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+On shallow faults every arm found most of them. The gap opens at moderate depth, where
+\code{hybrid\_nolearn} verified 9 of 10 faults and random 5. On deep faults no arm found
+more than 4 of 6, and random found 2. Faults that need a reload or a revisit were found
+about equally by every arm. With 6 to 10 faults per group, this is descriptive. It agrees
+with the claim that structure helps most where a fault needs a deliberate sequence of steps.
+
+\subsection{Candidate verification}
+\label{sec:verification-stats}
+
+Table~\ref{tab:verification} shows what the oracle did with the candidates each arm
+submitted. Verification runs in separate browser sessions and is not charged to the
+exploration budget $B$, so its cost is reported here separately.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Held-out evaluation: candidate verification per arm (40 runs each), with the mean
+browser interactions and seconds spent verifying each candidate.}
+\label{tab:verification}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Arm & Candidates & Verified & Rejected & Steps each & Seconds each \\
+\midrule
+\code{random} & 40 & 40 & 0 & 76 & 88 \\
+\code{v1\_dqn\_pretrained} & 65 & 47 & 18 & 79 & 84 \\
+\code{hybrid\_nolearn} & 46 & 46 & 0 & 99 & 116 \\
+\code{hybrid\_bandit} & 49 & 49 & 0 & 100 & 126 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No candidate failed to reproduce on replay. All 18 rejections concern one fault, TALLY-3,
+in runs of \code{v1\_dqn\_pretrained}. The trajectories violated TALLY-3's assertion on the
+control build without TALLY-3 as well, so the failure was not caused by that fault. A
+simpler oracle, replay only, would have reported these 18 candidates as TALLY-3. The
+per-fault control is what stopped them.
+
 \section{Tuning round v3 on the rebuilt development suite}
 \label{sec:tuning}
 
@@ -452,6 +521,60 @@ among the actions they had.
 
 \section{Discussion}
 \label{sec:discussion}
+
+\paragraph{All results in one place.} Table~\ref{tab:prereg-summary} lists every
+pre-registered question and its verdict. Table~\ref{tab:ablation} arranges the main arms as
+an ablation of structure and learning, so that the contribution of each can be read
+directly.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Every pre-registered question and its verdict.}
+\label{tab:prereg-summary}
+\begin{tabularx}{\textwidth}{@{}l X l@{}}
+\toprule
+Evaluation & Question & Verdict \\
+\midrule
+Experiment 1 & Does pretraining on five applications speed up discovery on a sixth? & inconclusive (median 0) \\
+Experiment 2 & Does the DQN rank actions by state (H-ctx)? & not supported \\
+Experiment 2 & Does it memorise actions, words or layouts? & inconclusive \\
+Held-out H1, H3 & Is the hybrid, with or without the bandit, faster than random? & inconclusive \\
+Held-out H2 & Does the bandit make the hybrid faster? & inconclusive \\
+Held-out H4 & Is the hybrid faster than v1's best DQN? & inconclusive \\
+External, round 1 & Coverage and failures against WebExplor and WebRLED (descriptive) & below both \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{The main arms as an ablation of structure and learning. Held-out: distinct faults
+of 24 and restricted mean $T$. Tuning: distinct faults of 41. External: mean branch
+coverage over the six applications, in round 1 and with custom clickables.}
+\label{tab:ablation}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}llllrrrr@{}}
+\toprule
+Arm & Structure & Learning & Held-out faults & RMST & Tuning faults & External & With clickables \\
+\midrule
+\code{random} & -- & -- & 13 & 978 & 19 & 40.3 & 45.7 \\
+\code{v1\_dqn\_pretrained} & -- & deep Q-network & 17 & \textbf{595} & 19 & -- & -- \\
+\code{hybrid\_nolearn} & yes & -- & 18 & 737 & 19 & -- & -- \\
+\code{hybrid\_bandit} & yes & Thompson bandit & \textbf{19} & 769 & 16 & -- & -- \\
+\code{hybrid\_curiosity} & yes & curiosity Q-learning & -- & -- & 16 & \textbf{44.7} & \textbf{54.1} \\
+\code{hybrid\_final} & yes, tuned & -- & -- & -- & \textbf{22}$^{*}$ & 44.3 & 45.5 \\
+\bottomrule
+\multicolumn{8}{@{}l}{\footnotesize $^{*}$ from the 24-run check of the combined configuration before freezing (Section~\ref{sec:tuning}).}
+\end{tabular}}
+\end{table}
+
+Reading across: adding structure to random raised the distinct faults verified on the
+held-out applications from 13 to 18. Adding a learner to the structure changed it by at most
+one fault in either direction, and in tuning it lowered it. The deep Q-network without the
+structure was fastest to a first fault on the held-out applications, but no comparison of
+speed reached a verdict.
 
 \paragraph{What the structure contributes.} Across every evaluation, the parts of the hybrid
 tester that are not learned did the measurable work. Remembering states and returning to

@@ -90,3 +90,37 @@ MARK-3 & 1 & 4 & 1 & 1 & TALLY-3 & 0 & 0 & 0 & 0 \\
 \multicolumn{10}{@{}l}{\footnotesize R = \code{random}, V1 = \code{v1\_dqn\_pretrained}, HN = \code{hybrid\_nolearn}, HB = \code{hybrid\_bandit}.}
 \end{tabular}
 \end{table}
+
+\section{Reproducibility checklist}
+\label{app:repro}
+
+Every result in this thesis can be traced to a tagged version of the code, a
+pre-registration written before the run, one result file per job, and the analysis code
+that turned them into the tables (Table~\ref{tab:repro}). Paths are relative to the project
+repository.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Where each part of each result can be found.}
+\label{tab:repro}
+\footnotesize
+\renewcommand{\code}[1]{\texttt{#1}}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+Item & Location \\
+\midrule
+Frozen code & tags \code{v2-eval-freeze} (held-out), \code{v3-freeze} (tuned tester and external comparison), \code{v4-clickables} (follow-up), \code{v5-freeze} (external round 2) \\
+Pre-registrations & Experiments 1 and 2 and the held-out evaluation: \code{docs/methodology/} at tag \code{docs-archive-2026-10-22}; external comparison: \code{PROJECT\_CONTEXT.md}, section 0.8 \\
+Run records & one JSON file per job under \code{runs/<evaluation>/results/}, e.g. \code{runs/v2-eval}, \code{runs/v3-tune}, \code{runs/ext-eval*}, \code{runs/ext-v4-gha} \\
+Analysis code & \code{scripts/analyze\_transfer.py} (Experiment 1), \code{ctxbench/analyze.py} (Experiment 2), \code{hybrid/analyze.py} (held-out), \code{scripts/summarize\_tuning.py}, \code{scripts/analyze\_external.py}, \code{scripts/analyze\_difficulty.py} \\
+Derived results & \code{reports/*.json}; the web interface's research page reads them live \\
+Applications & manifests with every fault's patches, assertion and declared shortest path: \code{validation\_suite/apps/*/app.json}, \code{e2e\_suite/apps/}; external: DIG Docker images \code{dockercontainervm/<app>} with \code{configs/external\_apps.json} \\
+Seeds and budgets & stated with each evaluation; seeds 0--4 (held-out), 0--2 (Experiment 1, tuning, external round 1) \\
+Environment & Python 3.11, Playwright with Chromium, dependencies pinned in \code{requirements.txt} and \code{requirements-ci.txt} \\
+Cloud runs & \code{cloud/aws/launch\_external.sh} (AWS spot instances) and \code{.github/workflows/external-comparison.yml} (GitHub Actions) \\
+Tests & 1{,}291 unit tests (5 skipped without optional dependencies), \code{pytest tests/unit} \\
+Deviations & recorded with each evaluation: the rerun held-out job, the discarded Phoenix runs \\
+\bottomrule
+\end{tabularx}
+\end{table}

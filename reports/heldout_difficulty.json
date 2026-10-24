@@ -1,0 +1,304 @@
+{
+  "source": "runs/v2-eval (held-out, frozen v2-eval-freeze); difficulty from manifests",
+  "faults": {
+    "DUTY-1": {
+      "steps": 4,
+      "difficulty": "shallow (<=4)",
+      "needs_revisit": false,
+      "class": "constraint_bypass"
+    },
+    "DUTY-2": {
+      "steps": 5,
+      "difficulty": "moderate (5-6)",
+      "needs_revisit": false,
+      "class": "calculation_error"
+    },
+    "DUTY-3": {
+      "steps": 6,
+      "difficulty": "moderate (5-6)",
+      "needs_revisit": false,
+      "class": "broken_transition"
+    },
+    "FOST-1": {
+      "steps": 4,
+      "difficulty": "shallow (<=4)",
+      "needs_revisit": true,
+      "class": "persistence_failure"
+    },
+    "FOST-2": {
+      "steps": 7,
+      "difficulty": "deep (>=7)",
+      "needs_revisit": false,
+      "class": "state_corruption"
+    },
+    "FOST-3": {
+      "steps": 5,
+      "difficulty": "moderate (5-6)",
+      "needs_revisit": false,
+      "class": "constraint_bypass"
+    },
+    "LARD-1": {
+      "steps": 6,
+      "difficulty": "moderate (5-6)",
+      "needs_revisit": false,
+      "class": "calculation_error"
+    },
+    "LARD-2": {
+      "steps": 4,
+      "difficulty": "shallow (<=4)",
+      "needs_revisit": false,
+      "class": "broken_transition"
+    },
+    "LARD-3": {
+      "steps": 6,
+      "difficulty": "moderate (5-6)",
+      "needs_revisit": true,
+      "class": "persistence_failure"
+    },
+    "MARK-1": {
+      "steps": 4,
+      "difficulty": "shallow (<=4)",
+      "needs_revisit": false,
+      "class": "calculation_error"
+    },
+    "MARK-2": {
+      "steps": 5,
+      "difficulty": "moderate (5-6)",
+      "needs_revisit": true,
+      "class": "constraint_bypass"
+    },
+    "MARK-3": {
+      "steps": 7,
+      "difficulty": "deep (>=7)",
+      "needs_revisit": true,
+      "class": "state_corruption"
+    },
+    "QUIZ-1": {
+      "steps": 4,
+      "difficulty": "shallow (<=4)",
+      "needs_revisit": false,
+      "class": "state_corruption"
+    },
+    "QUIZ-2": {
+      "steps": 4,
+      "difficulty": "shallow (<=4)",
+      "needs_revisit": false,
+      "class": "broken_transition"
+    },
+    "QUIZ-3": {
+      "steps": 5,
+      "difficulty": "moderate (5-6)",
+      "needs_revisit": true,
+      "class": "persistence_failure"
+    },
+    "SIDE-1": {
+      "steps": 13,
+      "difficulty": "deep (>=7)",
+      "needs_revisit": false,
+      "class": "calculation_error"
+    },
+    "SIDE-2": {
+      "steps": 8,
+      "difficulty": "deep (>=7)",
+      "needs_revisit": false,
+      "class": "constraint_bypass"
+    },
+    "SIDE-3": {
+      "steps": 5,
+      "difficulty": "moderate (5-6)",
+      "needs_revisit": false,
+      "class": "broken_transition"
+    },
+    "SKY-1": {
+      "steps": 7,
+      "difficulty": "deep (>=7)",
+      "needs_revisit": false,
+      "class": "state_corruption"
+    },
+    "SKY-2": {
+      "steps": 4,
+      "difficulty": "shallow (<=4)",
+      "needs_revisit": true,
+      "class": "persistence_failure"
+    },
+    "SKY-3": {
+      "steps": 5,
+      "difficulty": "moderate (5-6)",
+      "needs_revisit": false,
+      "class": "calculation_error"
+    },
+    "TALLY-1": {
+      "steps": 4,
+      "difficulty": "shallow (<=4)",
+      "needs_revisit": false,
+      "class": "constraint_bypass"
+    },
+    "TALLY-2": {
+      "steps": 6,
+      "difficulty": "moderate (5-6)",
+      "needs_revisit": false,
+      "class": "calculation_error"
+    },
+    "TALLY-3": {
+      "steps": 12,
+      "difficulty": "deep (>=7)",
+      "needs_revisit": false,
+      "class": "state_corruption"
+    }
+  },
+  "by_group": {
+    "difficulty:deep (>=7)": {
+      "faults": 6,
+      "arms": {
+        "random": {
+          "distinct_found": 2,
+          "runs_verifying": 2,
+          "of_runs": 30
+        },
+        "v1_dqn_pretrained": {
+          "distinct_found": 3,
+          "runs_verifying": 8,
+          "of_runs": 30
+        },
+        "hybrid_nolearn": {
+          "distinct_found": 3,
+          "runs_verifying": 4,
+          "of_runs": 30
+        },
+        "hybrid_bandit": {
+          "distinct_found": 4,
+          "runs_verifying": 5,
+          "of_runs": 30
+        }
+      }
+    },
+    "difficulty:moderate (5-6)": {
+      "faults": 10,
+      "arms": {
+        "random": {
+          "distinct_found": 5,
+          "runs_verifying": 12,
+          "of_runs": 50
+        },
+        "v1_dqn_pretrained": {
+          "distinct_found": 7,
+          "runs_verifying": 15,
+          "of_runs": 50
+        },
+        "hybrid_nolearn": {
+          "distinct_found": 9,
+          "runs_verifying": 20,
+          "of_runs": 50
+        },
+        "hybrid_bandit": {
+          "distinct_found": 7,
+          "runs_verifying": 16,
+          "of_runs": 50
+        }
+      }
+    },
+    "difficulty:shallow (<=4)": {
+      "faults": 8,
+      "arms": {
+        "random": {
+          "distinct_found": 6,
+          "runs_verifying": 26,
+          "of_runs": 40
+        },
+        "v1_dqn_pretrained": {
+          "distinct_found": 7,
+          "runs_verifying": 24,
+          "of_runs": 40
+        },
+        "hybrid_nolearn": {
+          "distinct_found": 6,
+          "runs_verifying": 22,
+          "of_runs": 40
+        },
+        "hybrid_bandit": {
+          "distinct_found": 8,
+          "runs_verifying": 28,
+          "of_runs": 40
+        }
+      }
+    },
+    "revisit:needs reload or revisit": {
+      "faults": 6,
+      "arms": {
+        "random": {
+          "distinct_found": 4,
+          "runs_verifying": 10,
+          "of_runs": 30
+        },
+        "v1_dqn_pretrained": {
+          "distinct_found": 5,
+          "runs_verifying": 10,
+          "of_runs": 30
+        },
+        "hybrid_nolearn": {
+          "distinct_found": 5,
+          "runs_verifying": 11,
+          "of_runs": 30
+        },
+        "hybrid_bandit": {
+          "distinct_found": 5,
+          "runs_verifying": 9,
+          "of_runs": 30
+        }
+      }
+    },
+    "revisit:same visit": {
+      "faults": 18,
+      "arms": {
+        "random": {
+          "distinct_found": 9,
+          "runs_verifying": 30,
+          "of_runs": 90
+        },
+        "v1_dqn_pretrained": {
+          "distinct_found": 12,
+          "runs_verifying": 37,
+          "of_runs": 90
+        },
+        "hybrid_nolearn": {
+          "distinct_found": 13,
+          "runs_verifying": 35,
+          "of_runs": 90
+        },
+        "hybrid_bandit": {
+          "distinct_found": 14,
+          "runs_verifying": 40,
+          "of_runs": 90
+        }
+      }
+    }
+  },
+  "verification": {
+    "random": {
+      "candidates": 40,
+      "verified": 40,
+      "rejected": 0,
+      "rejection_reasons": {}
+    },
+    "v1_dqn_pretrained": {
+      "candidates": 65,
+      "verified": 47,
+      "rejected": 18,
+      "rejection_reasons": {
+        "fires_without_its_own_patch": 18
+      }
+    },
+    "hybrid_nolearn": {
+      "candidates": 46,
+      "verified": 46,
+      "rejected": 0,
+      "rejection_reasons": {}
+    },
+    "hybrid_bandit": {
+      "candidates": 49,
+      "verified": 49,
+      "rejected": 0,
+      "rejection_reasons": {}
+    }
+  }
+}

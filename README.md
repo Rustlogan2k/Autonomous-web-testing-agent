@@ -331,6 +331,15 @@ docker run --rm -p 8000:8000 -e OLLAMA_HOST=http://host.docker.internal:11434 we
 - Tuning-round results (v3) are development data, never evidence.
 - **RL:** the RL arms lead on coverage and errors triggered, not on verified functional
   faults; no claim that learning improves fault verification.
+- **Oracle:** verification makes findings credible; it does not solve the oracle problem.
+  Quantitative results use seeded faults with hand-written assertions. On other sites,
+  findings come from generic triggers (script errors, failed requests, error pages, dead
+  navigation) and are reproduced observations, not confirmed bugs.
+- **False positives:** none observed in any clean-build control. That bounds the per-run
+  rate (0 of 32 held-out controls: below about 9% at 95%), it does not make it zero.
+- **Sandbox:** uploaded repositories run in a restricted container (no capabilities,
+  read-only root, internal network, resource limits). It has not been tested against
+  malicious code.
 
 ## Repository map
 

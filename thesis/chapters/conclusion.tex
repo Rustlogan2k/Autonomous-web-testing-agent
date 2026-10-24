@@ -2,56 +2,97 @@
 
 \section{Conclusion}
 
-This thesis asked whether reinforcement learning can make an automated functional tester for
-web applications find verified faults sooner, and under what design. The answer has three
-parts.
+Katalyze set out to find out how much exploration structure, lightweight online learning
+and reliable fault verification each contribute to autonomous functional web testing. The
+four research questions have these answers.
+\begin{description}[noitemsep]
+  \item[RQ1] No. The deep RL tester did not learn which action helps in which state, and
+        pretraining on other applications did not transfer.
+  \item[RQ2] No. A small local LLM failed as a progress reward and as a page labeller; neither
+        generalised beyond the data it was tuned on.
+  \item[RQ3] Structure, yes, descriptively: a structured tester verified more distinct faults
+        than random, mostly faults that need a deliberate sequence of steps. A learning layer
+        on top of the structure did not improve it.
+  \item[RQ4] The frozen tester did not reach WebExplor's or WebRLED's published coverage or
+        failure counts. A post-hoc follow-up found the set of actionable elements to be an
+        important limit.
+\end{description}
 
-First, a deep RL tester (v1) learned useful behaviour inside an application, but not in a
-way that transferred or used context. Pretraining on five applications did not speed up
-discovery on a sixth, and the network ranked actions without regard to whether they helped
-in the current state. A small local LLM did not help, either as a progress reward or as a
-page labeller; neither generalised beyond the data it was tuned on.
+The evidence is kept in three grades below. \emph{Established} means decided by a
+pre-registered test or measured directly. \emph{Suggested} means consistent across
+evaluations but not confirmed by a pre-registered test. \emph{Not established} lists claims
+that the evidence does not support, including some that a reader might assume.
 
-Second, a hybrid tester built around structure rather than learning (page abstraction, an
-archive with exact return, test-design operators) verified deep faults that random
-exploration missed, with no false positives in any control run. On held-out applications its
-arms verified the most distinct faults, though no pre-registered comparison of speed reached
-a verdict. Across every evaluation, no learning layer improved on the same structure without
-learning.
+\subsection*{Established}
+\begin{itemize}[noitemsep]
+  \item The verified-fault oracle reported no false positive in any clean-build control
+        run, and its per-fault controls rejected 18 candidates that replay alone would have
+        misattributed.
+  \item The v1 deep Q-network did not learn state-dependent action values (within-label
+        AUROC 0.51, against a bar of 0.70).
+  \item The local LLM failed both of its pre-set gates, as a reward and as a labeller.
+  \item On WebExplor's six applications, measured as the published work measures, the frozen
+        tester averaged 44.3\% branch coverage and 1.8 console failures, against 55.5\% and
+        3.1 for WebExplor and 64.2\% and 4.1 for WebRLED.
+\end{itemize}
 
-Third, on WebExplor's own benchmark, measured as the published work measures, the frozen
-tester did not reach WebExplor's or WebRLED's coverage or failure counts. A post-hoc
-follow-up located much of the gap in the set of elements the tester can act on. With custom
-clickables, Phoenix coverage rose from 49\% to WebRLED's 83\% for every arm. Excluding the
-20-branch Petclinic, the arms matched or exceeded WebExplor's average, though not WebRLED's.
+\subsection*{Suggested}
+\begin{itemize}[noitemsep]
+  \item \textbf{Structure verifies more faults than random exploration.} On the held-out
+        applications, the hybrid arms verified 18 and 19 of 24 faults against 13 for random.
+        Of the 10 faults of moderate declared depth, \code{hybrid\_nolearn} verified 9 and
+        random 5.
+  \item \textbf{No learning layer improved on the structure.} The bandit changed distinct
+        faults by at most one on held-out applications and was slower in tuning. Curiosity
+        Q-learning triggered more browser errors but verified fewer seeded faults.
+  \item \textbf{The action space bounds coverage.} With custom clickables, Phoenix coverage
+        rose from 49\% to 75--83\% for every arm, random included.
+\end{itemize}
 
-The evidence therefore supports a modest claim. For finding verified functional faults, the
-structure of the tester matters more than the learning in it. For broad reach over an
-interface, what a tester can perceive and act on bounds any policy. Learning, as used here
-and in the literature it builds on, was not what made the difference.
+\subsection*{Not established}
+\begin{itemize}[noitemsep]
+  \item That any arm finds a first fault faster than another: every pre-registered
+        comparison of speed was inconclusive.
+  \item That pretraining transfers, or that it does not: the interval was wide on both sides.
+  \item That Katalyze finds unknown bugs in arbitrary applications. Every quantitative
+        evaluation used seeded faults with known assertions (Section~\ref{sec:oracle-limits}).
+  \item That the false-positive rate is zero. None was observed; with 32 held-out controls
+        the per-run rate is bounded only below about 9\%.
+  \item That the product's sandbox resists malicious code. It was not tested against it.
+\end{itemize}
+
+In short, for verifying functional faults, how a tester is structured and what it can act on
+mattered more than the learning in it. Verification is what made the results trustworthy.
 
 \section{Limitations}
 
 \begin{itemize}
-  \item Each evaluation used six to eight applications, so most comparisons are inconclusive
-        and the claims are descriptive.
-  \item The development and validation applications and their seeded faults were built
-        within the project.
-  \item Seeded faults are an incomplete proxy for real faults, and the oracle verifies only
-        what was seeded; the specification-free invariants raised false alarms on unsaved
+  \item \textbf{The oracle problem.} The oracle verifies only seeded faults whose assertions
+        were written by hand. On other applications, findings come from generic triggers and
+        specification-free invariants, which are weaker and raised false alarms on unsaved
         state.
-  \item The external comparison used three repetitions instead of five, different machines,
+  \item \textbf{Scale.} Each evaluation used six to eight applications, so most comparisons
+        are inconclusive and the claims are descriptive.
+  \item \textbf{Same developer.} The development and validation applications and their seeded
+        faults were built within the project. The external applications were not, and there
+        the tester did worse.
+  \item \textbf{Action space.} How many of an application's actionable elements the tester
+        detects (its recall) was not measured independently. The follow-up shows it matters,
+        not how complete it is.
+  \item \textbf{External comparison.} Three repetitions instead of five, different machines,
         and automatic failure deduplication, against published numbers that could not be
-        re-run.
-  \item Repository intake requires a Dockerfile.
+        re-run. WebExplor's code is not public.
+  \item \textbf{Product.} Repository intake requires a Dockerfile, and the sandbox is a
+        restricted environment, not one hardened against hostile code.
 \end{itemize}
 
 \section{Scope for further research}
 
 \begin{itemize}
-  \item \textbf{Action space.} Make the custom-clickables scan the default and evaluate it
-        under pre-registration, or learn which elements are actionable, as WebRLED does; and
-        find what bounds Retroboard.
+  \item \textbf{Action space.} Measure detection recall against an independent reference,
+        such as event listeners recorded in the browser. Evaluate listener-based detection
+        under pre-registration, or learn which elements are actionable as WebRLED does.
+        Find what bounds Retroboard.
   \item \textbf{Two deviations in one walk.} Operators that combine two deviations in one
         walk, for the faults no single deviation reaches.
   \item \textbf{Learning across applications.} At the scale the literature suggests (tens of
