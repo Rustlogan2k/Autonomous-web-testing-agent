@@ -616,6 +616,11 @@ def _explain(exc: BaseException) -> tuple[str, str]:
                                 or "daemon" in lowered or "not found" in lowered):
         return ("Could not reach the Docker daemon. Start Docker Desktop (or dockerd) and "
                 "try again.", detail)
+    # Before the browser branch: a page-load timeout's call log names the URL, and a URL
+    # such as demo.playwright.dev would otherwise read as a broken browser install.
+    if "timeout" in lowered and ("goto" in lowered or "navigat" in lowered):
+        return ("The site did not finish loading in time, even after retrying. Check that "
+                "the URL is reachable from this machine and try again.", detail)
     if "playwright" in lowered or "browser" in lowered or "chromium" in lowered:
         return ("The browser could not be started or lost its connection. Run "
                 "`python -m playwright install chromium` and try again.", detail)

@@ -16,6 +16,7 @@ from typing import Callable
 from urllib.parse import urlparse
 
 from playwright.sync_api import Browser, BrowserContext, Page, Playwright, sync_playwright
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 from ..utils.logging import get_logger
 from .types import CANONICAL_VIEWPORT
@@ -24,6 +25,8 @@ logger = get_logger(__name__)
 
 DEFAULT_VIEWPORT = dict(CANONICAL_VIEWPORT)
 NAVIGATION_TIMEOUT_MS = 15_000
+#: Attempts at an episode's opening page load before the episode fails.
+START_ATTEMPTS = 3
 
 # How long the DOM must stay unmutated before we call the page settled, and the hard
 # ceiling on waiting for that. `networkidle` is deliberately NOT used: it requires 500ms
@@ -173,7 +176,17 @@ class BrowserSession:
         if self.on_new_page is not None:
             self.on_new_page(self.page)
         logger.info("Navigating to {}", base_url)
-        self.page.goto(base_url, wait_until="domcontentloaded")
+        # A public site can stall one load; without a retry a single slow response at an
+        # episode boundary ended a whole session (measured on demo.playwright.dev).
+        for attempt in range(1, START_ATTEMPTS + 1):
+            try:
+                self.page.goto(base_url, wait_until="domcontentloaded")
+                break
+            except PlaywrightTimeoutError:
+                if attempt == START_ATTEMPTS:
+                    raise
+                logger.warning("Loading {} timed out (attempt {} of {}); retrying",
+                               base_url, attempt, START_ATTEMPTS)
         self.wait_settled()
         return self.page
 

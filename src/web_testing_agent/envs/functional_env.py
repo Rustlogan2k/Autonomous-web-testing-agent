@@ -127,6 +127,12 @@ class WebFunctionalEnv(WebTestingEnv):
         if (was_navigation_action and self.navigation_needs_change
                 and _page_text(context.pre_obs.html) != _page_text(context.post_obs.html)):
             was_navigation_action = False
+        # A link out of the application did navigate: the harness refused and undid it
+        # (or closed the off-site tab), so the unchanged URL is ours, not the link's.
+        # Measured on demo.playwright.dev's TodoMVC: its three footer links to other
+        # sites were each reported, reproduced and minimised as "navigation does nothing".
+        if context.exec_info.get("left_application") or context.exec_info.get("opened_offsite_tab"):
+            was_navigation_action = False
         exec_success = bool(context.exec_info.get("success", False))
         bug_signals = detect_bug_signals(
             after=context.post_obs,

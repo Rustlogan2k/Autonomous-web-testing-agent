@@ -115,3 +115,46 @@ def test_page_text_ignores_markup_scripts_and_numbers_but_not_words():
     resolved = "<main><h1>Ticket #109</h1><p>Status: resolved</p></main>"
     assert _page_text(before) == _page_text(clock)
     assert _page_text(before) != _page_text(resolved)
+
+
+class _Stop(Exception):
+    pass
+
+
+def _navigation_flag(monkeypatch, exec_info: dict, post_html: str = "<p>same</p>") -> bool:
+    """What `_compute_reward` tells the bug detector about a navigational link click."""
+    from types import SimpleNamespace
+
+    from web_testing_agent.envs import functional_env
+
+    seen = {}
+
+    def capture(**kwargs):
+        seen.update(kwargs)
+        raise _Stop
+
+    monkeypatch.setattr(functional_env, "detect_bug_signals", capture)
+    env = functional_env.WebFunctionalEnv.__new__(functional_env.WebFunctionalEnv)
+    env.navigation_needs_change = True
+    page = SimpleNamespace(url="http://app.test/", html="<p>same</p>")
+    context = SimpleNamespace(
+        spec=_click("Docs"), pre_obs=page, post_obs=SimpleNamespace(url=page.url, html=post_html),
+        exec_info=exec_info, load_duration_s=0.1, settled=True, previously_settled=True,
+        error_baseline=None, opened_new_page=False,
+    )
+    try:
+        env._compute_reward(context)
+    except _Stop:
+        pass
+    return seen["was_navigation_action"]
+
+
+def test_a_link_that_changes_nothing_is_still_a_navigation_check(monkeypatch):
+    assert _navigation_flag(monkeypatch, {"success": True}) is True
+
+
+def test_links_out_of_the_application_are_not_broken_navigation(monkeypatch):
+    left = {"success": False, "left_application": "https://github.com/x"}
+    tab = {"success": True, "opened_offsite_tab": "https://github.com/x"}
+    assert _navigation_flag(monkeypatch, left) is False
+    assert _navigation_flag(monkeypatch, tab) is False

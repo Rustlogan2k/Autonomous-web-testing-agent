@@ -769,3 +769,15 @@ def test_a_failed_progress_snapshot_does_not_abort_a_working_run(registry, tmp_p
     _wait(manager, run.run_id, timeout=60)
 
     assert registry.get(run.run_id).status is RunStatus.COMPLETED
+
+
+def test_a_page_load_timeout_is_not_blamed_on_the_browser():
+    from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+
+    from web_testing_agent.app.run_manager import _explain
+
+    exc = PlaywrightTimeoutError('Page.goto: Timeout 15000ms exceeded.\nCall log:\n'
+                                 '  - navigating to "https://demo.playwright.dev/todomvc/"')
+    message, _ = _explain(exc)
+    assert "did not finish loading" in message
+    assert "playwright install" not in message
