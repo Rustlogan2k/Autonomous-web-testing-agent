@@ -27,10 +27,9 @@ as the benchmark (Section~\ref{sec:exp2}).
 \section{The development suite}
 \label{sec:devsuite}
 
-Eight applications were built to be genuinely different from each other and from the
-benchmark: different domains, architectures and stacks (Table~\ref{tab:devsuite}). They were
-first built as zero-dependency applications. Then, at the project owner's request, they were
-rebuilt as full-stack applications. Each now has its own database (PostgreSQL or MongoDB), a
+Eight applications were built to differ from each other and from the benchmark in domain,
+architecture and stack (Table~\ref{tab:devsuite}). They started as zero-dependency
+applications and were later rebuilt as full-stack ones. Each now has its own database (PostgreSQL or MongoDB), a
 sign-in page and a richer data model. The five rebuilt last were also enlarged to at least 12
 views, 3 entities with full create, read, update and delete, 5 interaction patterns, and 2
 new faults that are not about forms.
@@ -65,9 +64,9 @@ drivers are vendored and pinned, so a build needs no network.
 
 \paragraph{Crash-type faults.} Four applications also carry two crash-type faults each
 (Section~\ref{sec:crash}), so that the tuned tester is exercised on the kind of failure the
-external benchmark counts. By the project owner's decision only a subset of applications has
-them. Orbit's were admitted (40 of 40 checks, including Docker); helpline, stackroom and wayfarer were
-admitted with all checks passing (44, 40 and 41 checks, including Docker).
+external benchmark counts. The other four have none. All four were admitted with every
+check passing, the Docker build included: 40 checks for orbit, 44 for helpline, 40 for
+stackroom and 41 for wayfarer.
 
 \section{The validation suite}
 \label{sec:valsuite}

@@ -1,11 +1,11 @@
 \label{chap.5}
 
-The second-generation tester (v2) follows from the conclusions of Chapter~\ref{chap.4}. It
-makes the page state explicit instead of hoping a network learns it; it remembers reached
-states and returns to them exactly, so depth does not depend on luck; it deviates from the
-happy path deliberately, with operators from standard test design; and it keeps learning
-light and online, inside the application under test. Figure~\ref{fig:hybrid} shows the
-loop. Sections~\ref{sec:abstraction}--\ref{sec:decision} describe its parts,
+The second-generation tester (v2) is built from the conclusions of Chapter~\ref{chap.4}.
+Instead of hoping a network learns the page state, it computes that state explicitly. It
+remembers the states it has reached and returns to them by exact replay, so getting deep
+into a workflow does not depend on luck. It leaves the happy path on purpose, using
+operators from standard test design. Learning is kept light and online, inside the
+application under test. Figure~\ref{fig:hybrid} shows the loop. Sections~\ref{sec:abstraction}--\ref{sec:decision} describe its parts,
 Section~\ref{sec:v3-options} the options added for the final tuning round, and
 Section~\ref{sec:devrounds} the development rounds that shaped it.
 
@@ -112,9 +112,9 @@ design:
 Each operator then \emph{follows through}: it continues the task to submission, for up to
 four submissions, because a deviation usually shows its effect only on a later page. When a
 page offers several submit actions (for example, "Update bag" and "Go to checkout"),
-operators take them in turn on repeat visits. Operators are chosen by technique, not from
-any application's faults. They are how the tester leaves the happy path, which the LLM
-progress reward could not do.
+operators take them in turn on repeat visits. The operators come from test-design
+techniques; none was derived from any application's faults. They give the tester a way off
+the happy path, which the LLM progress reward never managed.
 
 \section{The decision layer}
 \label{sec:decision}
@@ -253,6 +253,6 @@ option space is small: about 28 cells times 8 operators can mostly be covered in
 decisions, so trying untried options systematically already does most of the work. And
 operators with many targets crowd out the rest: invalid input took 30\% of all decisions
 because pages have many fields. This agrees with the Humanoid authors' observation that
-their learned model was not the main reason for their gains~\cite{li2019humanoid}: on
-functional faults, the structure (abstraction, archive with exact return, operators) does
-the work.
+their learned model was not the main reason for their gains~\cite{li2019humanoid}. On
+functional faults, most of the work is done by the structure: the abstraction, the archive
+with exact return and the operators.

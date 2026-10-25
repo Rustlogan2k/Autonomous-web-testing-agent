@@ -208,12 +208,36 @@ research page shows every evaluation and development round, read live from the r
 files. The interface binds to the local machine by default, because it builds and runs
 uploaded code.
 
+Figures~\ref{fig:ui-new}--\ref{fig:ui-report} show the interface during the
+acceptance run on Helpline described below.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{ui_new_test.png}
+\caption{The web interface: starting a test. A bundled demo application, a live URL, or an uploaded static site or repository.}
+\label{fig:ui-new}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{ui_run.png}
+\caption{A finished run (Helpline, 600 interactions): status, progress, the pipeline stages and the live event stream of the tester's actions.}
+\label{fig:ui-run}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{ui_report.png}
+\caption{The report of the same run. Each verified finding has its minimised reproduction (here 2 steps, minimised from 15) and the page captured when it was observed.}
+\label{fig:ui-report}
+\end{figure}
+
 \paragraph{End-to-end acceptance.} Table~\ref{tab:acceptance} lists one end-to-end run of
 the final product for each kind of target. Each run was started through the web
 interface's own API, ran \code{hybrid\_final}, and produced HTML, Markdown and JSON reports.
 For the bundled applications the seeded faults are known, so their findings can be checked.
-For the other targets no ground truth exists, and the findings are reproduced and
-minimised observations, not confirmed bugs.
+The other targets have no ground truth. Their findings are observations that reproduced
+and were minimised; nobody has confirmed them as bugs.
 
 \begin{table}[H]
 \centering
@@ -239,9 +263,9 @@ Public URL & TodoMVC (demo.\-playwright.dev) & 200 & 3 min & 0 (before the fix b
 \end{tabularx}
 \end{table}
 
-The acceptance runs found three product defects, all now fixed. The first was fixed before
-every run in the table. The TodoMVC run is the only one made after the other two; no other
-run in the table reported a finding on a link to another site.
+The acceptance runs exposed three product defects, all since fixed. The first was fixed
+before any run in the table. The other two were fixed only before the TodoMVC run, which was
+made last; no earlier run in the table reported a finding on a link to another site.
 \begin{itemize}[noitemsep]
   \item A form that submits and returns to the same address with updated content (Helpline's
         post-redirect-get forms) was reported as navigation that does nothing. Such a report

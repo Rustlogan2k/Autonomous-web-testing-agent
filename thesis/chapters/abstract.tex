@@ -1,13 +1,13 @@
-Functional bugs in web applications are rarely crashes. A total ignores a changed quantity,
-a validation rule holds on one path and not another, a value is lost on reload. An automated
-tester must reach such states through many interactions and then show that what it found is
-real. This thesis presents \emph{Katalyze}, an autonomous exploratory tester for web
+Functional bugs in web applications are rarely crashes. More often a total ignores a changed
+quantity, a validation rule holds on one path and not another, or a value is lost on reload.
+To find one, an automated tester has to reach the state through many interactions and then
+show that what it found is real. This thesis presents \emph{Katalyze}, an autonomous exploratory tester for web
 applications with a verified-fault evaluation pipeline. It asks how much exploration
 structure, lightweight online learning and reliable fault verification each contribute.
 A fault counts only if it reproduces twice in fresh browser sessions, is absent from a
-control build without that fault, and survives delta-debugging minimisation. No new learning
-algorithm is claimed. The contributions are the integrated system, the evaluation method,
-and the empirical findings, several of them negative.
+control build without that fault, and survives delta-debugging minimisation. We claim no
+new learning algorithm; the contributions are the integrated system, the evaluation method
+and the empirical findings, several of which are negative.
 
 The first generation is an action-conditioned dueling double deep Q-network with a reward
 from a local language model. In two pre-registered experiments, pretraining on five
@@ -30,9 +30,9 @@ frozen tester averaged 44.3\% branch coverage, against 55.5\% for WebExplor and 
 WebRLED. A post-hoc follow-up found the set of actionable elements to be an important limit.
 In a pre-registered second round with listener-based clickable detection and five
 repetitions, the curiosity arm averaged 53.6\% (55.1\% without the 20-branch Petclinic,
-against 49.6\% and 60.0\%), still with fewer console failures. The evidence suggests
-that, for verifying functional faults, a tester's structure and action space matter more
-than the learning in it.
+against 49.6\% and 60.0\%), though it still triggered fewer console failures. For verifying
+functional faults, the evidence suggests that a tester's structure and action space matter
+more than the learning inside it.
 
 \vspace{0.5cm}
 \noindent\textbf{Keywords:} automated web testing, reinforcement learning, deep Q-network,

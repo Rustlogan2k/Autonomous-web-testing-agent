@@ -12,8 +12,8 @@ and WebRLED (Section~\ref{sec:extresults}), its post-hoc follow-up
 
 \subsection{Design}
 
-The pre-registration was frozen on the project owner's approval, and the commit was tagged,
-before any agent ran on any validation application.
+The pre-registration was frozen and its commit tagged before any agent ran on any
+validation application.
 
 \begin{itemize}
   \item \textbf{Applications}: the eight validation applications (Table~\ref{tab:valsuite}),
@@ -104,7 +104,15 @@ tally & 5/5 $\cdot$ \textbf{229} & 5/5 $\cdot$ 276 & 5/5 $\cdot$ 376 & 5/5 $\cdo
 \end{tabular}
 \end{table}
 
-All four pre-registered comparisons are inconclusive (Table~\ref{tab:heldout-h}). As the
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{heldout_km.pdf}
+\caption{Held-out evaluation: share of runs that have not yet verified a fault, against interactions (Kaplan--Meier estimate, runs that found nothing censored at 2{,}000). Lower is better.}
+\label{fig:heldout-km}
+\end{figure}
+
+Figure~\ref{fig:heldout-km} shows the same runs over time. All four pre-registered
+comparisons are inconclusive (Table~\ref{tab:heldout-h}). As the
 pre-registration anticipated, eight applications give the median rule wide intervals, and no
 comparison was supported or refuted. The per-fault counts are in
 Appendix~\ref{app:faults}.
@@ -130,7 +138,7 @@ Appendix~\ref{app:faults}.
         of its eight applications. It was reported, not fixed, because the code was frozen;
         it motivated the \code{browse\_list} operator (Section~\ref{sec:v3-options}).
   \item \textbf{v1's pretrained AC-DQN did better here than on its own benchmark}: discovery
-        0.85 and the lowest mean time, notably on dutyday and markbook. Whether that
+        0.85 and the lowest mean time, especially on dutyday and markbook. Whether that
         reflects the method or the applications' shallower faults cannot be separated with
         eight applications (H4 inconclusive).
   \item \textbf{The learner (H2).} \code{hybrid\_bandit} found a fault in more runs than
@@ -186,6 +194,14 @@ On shallow faults every arm found most of them. The gap opens at moderate depth,
 more than 4 of 6, and random found 2. Faults that need a reload or a revisit were found
 about equally by every arm. With 6 to 10 faults per group, this is descriptive. It agrees
 with the claim that structure helps most where a fault needs a deliberate sequence of steps.
+Figure~\ref{fig:difficulty} shows the distinct-fault counts of Table~\ref{tab:difficulty}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{heldout_difficulty.pdf}
+\caption{Held-out evaluation: distinct faults verified by declared difficulty (post-hoc; dashed line: faults in the group).}
+\label{fig:difficulty}
+\end{figure}
 
 \subsection{Candidate verification}
 \label{sec:verification-stats}
@@ -215,8 +231,8 @@ Arm & Candidates & Verified & Rejected & Steps each & Seconds each \\
 No candidate failed to reproduce on replay. All 18 rejections concern one fault, TALLY-3,
 in runs of \code{v1\_dqn\_pretrained}. The trajectories violated TALLY-3's assertion on the
 control build without TALLY-3 as well, so the failure was not caused by that fault. A
-simpler oracle, replay only, would have reported these 18 candidates as TALLY-3. The
-per-fault control is what stopped them.
+replay-only oracle would have reported all 18 as TALLY-3; the per-fault control caught
+them.
 
 \section{Tuning round v3 on the rebuilt development suite}
 \label{sec:tuning}
@@ -294,22 +310,15 @@ Arm & Median & 95\% interval & Apps faster / slower \\
 \end{tabular}
 \end{table}
 
-\paragraph{Reading.}
-\begin{itemize}
-  \item \textbf{\code{browse\_list} helps consistently but modestly.} It was faster on six of
-        seven applications and slower on one, and lost no fault.
-  \item \textbf{Failure feedback gave the best restricted mean time} (450).
-  \item \textbf{Custom clickables did not help.} They were never faster, and verified fewer
-        distinct faults.
-  \item \textbf{The bandit was slower than no learner} on seven of eight applications. Its
-        interval excludes zero.
-  \item \textbf{Curiosity Q-learning triggered the most unique browser errors} (5.67 per
-        run) but verified fewer seeded faults.
-  \item \textbf{Random exploration was strong on these applications.} It found a fault in 23
-        of 24 runs and triggered many errors, but verified only one crash-type fault.
-  \item \textbf{The rebuilt applications are hard.} 15 of the 41 faults were verified by no
-        arm.
-\end{itemize}
+\paragraph{Reading.} The \code{browse\_list} operator helped consistently but modestly: it
+was faster on six of seven applications, slower on one, and lost no fault. Failure feedback
+gave the best restricted mean time (450). Custom clickables did not help; they were never
+faster and verified fewer distinct faults. The bandit was slower than no learner on seven of
+eight applications, and its interval excludes zero. Curiosity Q-learning triggered the most
+unique browser errors (5.67 per run) but verified fewer seeded faults. Random exploration
+was strong here, finding a fault in 23 of 24 runs and triggering many errors, yet it
+verified only one crash-type fault. The rebuilt applications are also hard: no arm verified
+15 of the 41 faults.
 
 \subsection{Configuration chosen}
 
@@ -451,14 +460,16 @@ averages. It is comparable on Pagekit and Splittypie, below WebExplor and WebRLE
 Dimeshift, Phoenix, Retroboard and Petclinic, and below both on average (44.3\% against
 55.5\% and 64.2\%; 1.8 failures against 3.1 and 4.1).
 
-\paragraph{Why: the action space (exploratory).} On Phoenix and Retroboard, no run of any arm, random included, went beyond the same
-coverage: 48.7\% and 53.2\%. Both hybrid arms reached exactly that in every run. When three
-different exploration strategies, one of them random, stop at the same branch, the limit is what they
-can act on, not how they choose. Phoenix is a React application whose controls are mostly
-clickable \code{div} elements. The frozen tester offers only standard HTML controls, because
-the custom-clickables option (Section~\ref{sec:v3-options}) was not adopted in tuning. The post-hoc follow-up in Section~\ref{sec:followup} tests this directly.
-WebRLED learns which elements are actionable with a trained discriminator~\cite{gu2025webrled};
-on these applications, that part of its design matters more than the choice of policy.
+\paragraph{Why the gap: the action space (exploratory).} On Phoenix and Retroboard, no run
+of any arm, random included, went beyond the same coverage: 48.7\% and 53.2\%. Both hybrid
+arms reached exactly that in every run. If three different exploration strategies, one of
+them random, all stop at the same branch, the limit is more likely to be what they can act
+on than how they choose. Phoenix is a React application whose controls are mostly
+clickable \code{div} elements. The frozen tester offers only standard HTML controls,
+because the custom-clickables option (Section~\ref{sec:v3-options}) was not adopted in
+tuning. The post-hoc follow-up in Section~\ref{sec:followup} tests this directly. WebRLED
+learns which elements are actionable with a trained discriminator~\cite{gu2025webrled}, and
+on these applications that part of its design may matter more than its choice of policy.
 
 \section{Post-hoc follow-up: the action space}
 \label{sec:followup}
@@ -499,7 +510,7 @@ Average, without Petclinic & 43.1 $\rightarrow$ 50.6 & 46.1 $\rightarrow$ 52.6 &
 \begin{itemize}
   \item \textbf{Phoenix.} With clickables, every arm rose by 28 to 35 points. The hybrid arms
         reached 82--83\%, level with WebRLED's 82.9\% and above WebExplor's 71.8\%. Random
-        reached 74.6\%. The Phoenix gap was the action space.
+        reached 74.6\%. On Phoenix, then, the gap was the action space.
   \item \textbf{Retroboard.} The ceiling (53.2\% for every arm and run) did not move. Its
         cause is not the clickable elements and was not identified.
   \item \textbf{Dimeshift, Pagekit and Splittypie.} Small changes of a few points in either
@@ -518,8 +529,8 @@ Without Petclinic, a post-hoc view, the arms with clickables averaged 49.5--52.6
 matches or exceeds WebExplor (49.6\%) and remains below WebRLED (60.0\%).
 
 \paragraph{What it shows about policy.} The gains were similar for the frozen tester, the
-curiosity arm and random. What the testers could act on mattered more than how they chose
-among the actions they had.
+curiosity arm and random. Next to the set of actions available, the choice of policy made
+little difference.
 
 \section{External comparison, round 2 (pre-registered)}
 \label{sec:round2}
@@ -535,8 +546,8 @@ independent test, and it is reported beside round 1, not in its place.
         receives a click-type event listener. It also reads the handlers of React, Vue and
         jQuery, AngularJS and Ember action attributes, and links without an address. It was
         developed and checked only on the project's own applications.
-  \item \textbf{Arms.} \code{hybrid\_final\_v5} and \code{hybrid\_curiosity\_v5}, by the
-        project owner's choice; no random arm.
+  \item \textbf{Arms.} \code{hybrid\_final\_v5} and \code{hybrid\_curiosity\_v5}. We chose
+        not to include a random arm in this round.
   \item \textbf{Protocol.} The same six applications, images, sign-in macros and stubs as
         round 1; one-hour runs; \textbf{five repetitions}, as in the papers; every run on
         the same hardware (GitHub-hosted runners, 4 vCPU, 16 GB).
@@ -567,6 +578,13 @@ Round 1 on the same hardware, 6 apps & 41.8 & 52.6 & & \\
 \bottomrule
 \end{tabular}}
 \end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{external_coverage.pdf}
+\caption{External comparison: branch coverage per application. Grey rings: the frozen tester in round 1; blue and orange: the two arms in round 2; black: the published numbers.}
+\label{fig:ext-coverage}
+\end{figure}
 
 \paragraph{Reading.}
 \begin{itemize}
@@ -681,16 +699,17 @@ level for every arm, and over the five applications other than Petclinic the arm
 exceeded WebExplor's average, though not WebRLED's. The pre-registered second round, with
 listener-based detection and five repetitions, gave the same picture: the curiosity arm
 averaged 53.6\% over six applications, just below WebExplor, and 55.1\% without Petclinic,
-between WebExplor and WebRLED. It still triggered fewer console failures than either. Which elements a tester can act on bounds
-every policy built on it. The comparison also has limits. It used three repetitions instead of five, different
+between WebExplor and WebRLED. It still triggered fewer console failures than either.
+Whatever policy a tester uses, it can act only on the elements it detects. The comparison
+has its own limits: three repetitions instead of five in the first round, different
 machines, automatic instead of manual failure deduplication, and published numbers we could
 not re-run.
 
-\paragraph{Two measures, two pictures.} The project's own evaluations measure verified
-seeded faults; the literature measures coverage and console errors. The hybrid was designed
-and tuned for the first, and is strongest there. On the second it is close to random on
-coverage and fewer failures. A tester for real use needs both: deep, verified functional
-faults, and broad reach over the interface.
+\paragraph{Verified faults and coverage disagree.} The project's own evaluations measure
+verified seeded faults; the literature measures coverage and console errors. The hybrid was
+designed and tuned for the first, and is strongest there. On the second it is close to
+random on coverage and below the published testers on failures. A tester for real use needs
+both: deep, verified functional faults, and broad reach over the interface.
 
 \paragraph{Which arm is best depends on the measure.} Table~\ref{tab:best} gathers, for each
 measure, the arm that did best and whether it learns.
@@ -714,13 +733,13 @@ Distinct failures triggered (all evaluations) & \code{hybrid\_curiosity} & yes, 
 \end{tabularx}
 \end{table}
 
-The pattern is consistent. Arms that learn to explore, curiosity Q-learning and the deep
-Q-network, do best on the literature's measures: breadth of coverage and errors triggered.
+Arms that learn to explore, curiosity Q-learning and the deep Q-network, do best on the
+literature's measures: breadth of coverage and errors triggered.
 The structure without a learner does best on verified seeded faults, which require
 deliberate test actions rather than novelty. No learning layer added on top of the structure
 verified clearly more faults than the structure alone: at best one more on the held-out
-applications (19 against 18), and fewer in tuning. The like-for-like RL comparison with
-WebExplor and WebRLED, both RL testers, is therefore \code{hybrid\_curiosity}. It reached
+applications (19 against 18), and fewer in tuning. Since WebExplor and WebRLED are both RL
+testers, the like-for-like comparison is with \code{hybrid\_curiosity}. It reached
 44.7\% branch coverage; with custom clickables it reached 54.1\% over all six applications,
 and 53.6\% in the pre-registered second round: close to WebExplor (55.5\%) and below WebRLED
 (64.2\%).

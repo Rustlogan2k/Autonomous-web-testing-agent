@@ -172,9 +172,9 @@ development fold. Faults 9--16 contextual steps deep, on two applications, were 
 by any arm. The oracle produced no verified finding on any clean build.
 
 A post-hoc description of the hunts showed that about 84\% of each learned arm's actions
-were the network's own greedy choice. The null result is not the exploration guide masking
-the network: the learned $Q$ drives behaviour, yet pretrained and scratch DQN find faults in
-the same share of runs (9 of 27 each). What helped was learned inside the application under
+were the network's own greedy choice, so the exploration guide was not masking the network.
+The learned $Q$ drove behaviour, and pretrained and scratch DQN still found faults in the
+same share of runs (9 of 27 each). Whatever helped was learned inside the application under
 test. This matches the literature's prediction for five training applications per
 fold~\cite{zhao2024dinodroid}.
 
@@ -260,8 +260,8 @@ data it was revised from, the labeller would have been adopted.
 \section{What v1 taught}
 \label{sec:v1-lessons}
 
-Four claims about the deep Q-network are easily conflated. Table~\ref{tab:v1-claims} keeps
-them apart.
+Five claims about the deep Q-network are easy to conflate, and Table~\ref{tab:v1-claims}
+keeps them apart.
 
 \begin{table}[H]
 \centering

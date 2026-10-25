@@ -2,8 +2,8 @@
 
 \section{Motivation}
 
-Web applications carry much of everyday business: shops, banking, booking, support desks,
-internal tools. Their functional faults are rarely crashes. More often a page shows the
+Shops, banks, booking systems and support desks all run on web applications now, and so do
+many internal tools. Their functional faults are rarely crashes. More often a page shows the
 wrong total after a quantity changes, accepts an input on one path that it rejects on
 another, or loses a value when the page is reloaded. Such faults sit behind sequences of
 interactions: a user must sign in, fill a form, reach a review step, go back and change
@@ -21,7 +21,8 @@ WebRLED~\cite{gu2025webrled}.
 
 Two problems limit these testers. The first is \emph{where to go}. The decisive actions are
 often many steps into a workflow, the set of available actions changes on every page, and a
-reward based on novelty pays for reaching new pages, not for testing them. The second is
+novelty reward pays the agent for reaching a new page whether or not it tests anything
+there. The second is
 \emph{what counts as a fault}. Published RL web testers report errors in the browser console
 as failures~\cite{zheng2021webexplor, gu2025webrled}. That is an implicit
 oracle~\cite{barr2015oracle}: it cannot see a page that renders the wrong content without an
@@ -130,10 +131,10 @@ Crash-type & An interaction makes the application's own code throw an uncaught e
 \emph{silent}: the page renders, nothing errors, and the result is simply wrong. An implicit
 oracle, one that counts console errors as published RL web testers
 do~\cite{zheng2021webexplor, gu2025webrled}, cannot see them. Only the last class is visible
-to such an oracle. This is why the thesis measures \emph{verified} functional bugs against a
-specification of each seeded fault. It is also why the external comparison, which uses the
-literature's measures of coverage and console failures, sees only part of what a functional
-tester is for.
+to such an oracle. For that reason the thesis measures \emph{verified} functional bugs
+against a specification of each seeded fault. The same reason limits the external
+comparison: it uses the literature's measures, coverage and console failures, and so sees
+only part of what a functional tester is for.
 
 \section{Objectives}
 
@@ -158,17 +159,12 @@ tester is for.
 \section{Contributions}
 
 The tester built in this thesis, product and research system together, is called
-\emph{Katalyze}. It is best described as \emph{an autonomous exploratory testing system with
-a verified-fault evaluation pipeline}. The thesis does not claim a new RL algorithm: the
-deep Q-network, Thompson sampling, the Go-Explore archive and the test operators all build on
-existing ideas~\cite{mnih2015human, russo2018tutorial, ecoffet2021first}. The contributions
-fall into three kinds:
-\begin{itemize}[noitemsep]
-  \item a system that integrates these components;
-  \item an evaluation methodology for RL-based functional web testing;
-  \item empirical findings, several of them negative.
-\end{itemize}
-They are:
+\emph{Katalyze}. It is \emph{an autonomous exploratory testing system with a verified-fault
+evaluation pipeline}. We do not claim a new RL algorithm. The deep Q-network, Thompson
+sampling, the Go-Explore archive and the test operators all build on existing
+ideas~\cite{mnih2015human, russo2018tutorial, ecoffet2021first}. What the thesis adds is a
+system that integrates them, an evaluation methodology for RL-based functional web testing,
+and a set of empirical findings, several of them negative. In detail:
 
 \begin{enumerate}
   \item \textbf{A verified-fault oracle for web testing.} Each seeded fault has its own

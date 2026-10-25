@@ -71,10 +71,12 @@ that the evidence does not support, including some that a reader might assume.
   \item That the product's sandbox resists malicious code. It was not tested against it.
 \end{itemize}
 
-In short, the evidence suggests that for verifying functional faults, how a tester is
-structured and what it can act on matter more than the learning methods tested here. It does
-not show that reinforcement learning cannot help; it shows that, in these experiments, it
-was not what made the difference. Verification is what made the results trustworthy.
+Taken together, the evidence suggests that for verifying functional faults, how a tester is
+structured and what it can act on matter more than the learning methods tested here. That
+is a narrower claim than "reinforcement learning does not help". With these learners, in
+these experiments, learning was not what made the difference. The per-fault verification is
+what lets the counts be trusted: without it, 18 misattributed candidates would have been
+reported as TALLY-3.
 
 \section{Limitations}
 
@@ -91,9 +93,10 @@ was not what made the difference. Verification is what made the results trustwor
   \item \textbf{Action space.} How many of an application's actionable elements the tester
         detects (its recall) was not measured independently. The follow-up shows it matters,
         not how complete it is.
-  \item \textbf{External comparison.} Three repetitions instead of five, different machines,
-        and automatic failure deduplication, against published numbers that could not be
-        re-run. WebExplor's code is not public.
+  \item \textbf{External comparison.} The first round used three repetitions instead of
+        five. Both rounds ran on different machines from the papers and deduplicated
+        failures automatically, against published numbers that could not be re-run.
+        WebExplor's code is not public.
   \item \textbf{Product.} Repository intake requires a Dockerfile, and the sandbox is a
         restricted environment, not one hardened against hostile code.
 \end{itemize}
