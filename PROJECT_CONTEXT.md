@@ -577,7 +577,8 @@ without effect) go unseen. This adds an oracle the application does not have to 
    - `echo`: an entered value appears unchanged on a later page.
    - `sorted`: after a sort option is chosen, the list is in that order.
    - `counter`: an action changes a counter by a fixed delta.
-   - `consistency`: a value shown on one page equals one shown later on another.
+   - `consistency`: two values on one page agree, or a value on one page equals one shown
+     later on another (on a list page, the row of the item opened).
    - `blocked`: a required field left empty does not get through.
 
    Malformed rules are dropped with a reason.
@@ -643,9 +644,48 @@ seeded bugs; 400 interactions, warm-up 120; `runs/spec-demo/saucedemo-problem/`)
 - **Generic triggers in the same run:** product images fail to load (inventory and detail
   pages), and a direct reload of `/inventory.html` returns 404.
 
+**Seeded-app evaluation (2026-10-27, POST-HOC; `scripts/eval_silent_finder.py`).**
+- **Design.** Three validation apps (dutyday, larder, markbook; 9 seeded faults), 800
+  interactions each, Katalyze tuned explorer, finder on, seeded assertions hidden. Each app
+  runs on its faulty build and on its clean build. A verified finding counts as rediscovering
+  fault X when its minimal reproduction violates the rule on the faulty build and not on the
+  build without X's patch.
+- **First run (`runs/spec-eval/`, stopped before markbook finished).** 0 of 6 faults
+  rediscovered; 6 verified rule findings, all false (every one also occurred on the clean
+  build). Three causes:
+  1. a consistency rule with both values on one page compared the value against an
+     *earlier* page (recipe 1's breadcrumb against recipe 4's reference);
+  2. on a list page it took the first row, not the row of the item opened;
+  3. the 12 verifications went, in arrival order, to rules broken on nearly every check
+     (one on 673 of 673).
+- **Fixes:** same-page comparison; row pairing via the clicked element (no comparison when
+  the row is unknown); verification queued until a rule has 8 checks, rarest violation first;
+  rules broken on ≥ 90 % of checks set aside as `contradicted`, listed but not verified; a
+  `finish()` pass at the end of the run. Unit-tested.
+- **Rerun (`runs/spec-eval-v2/`, all 6 jobs) — tuned on these same apps, so not a held-out
+  result:**
+
+  | App | Found by LLM rules | Verified rule findings (matching a fault) | Clean build: verified rule findings |
+  |---|---|---|---|
+  | dutyday | – | 0 (0) | 0 |
+  | larder | **LARD-2** | 2 (2) | 0 |
+  | markbook | – | 1 (0) | 0 |
+
+  **1 of 9 seeded faults rediscovered**, with no oracle. LARD-2 is a history-state bug: a
+  rule the LLM wrote unprompted (breadcrumb number = detail reference) broke after three
+  recipes and Back; the violation disappears on the build without LARD-2. 1 false rule
+  finding on a faulty build (markbook R10, a rule error the judge passed; the identical
+  violation was rejected on the clean build). 0 rule findings on any clean build. The
+  generic triggers rediscovered no fault and reported double-submit error pages on clean
+  builds (dutyday "Assign" ×6, markbook "Give feedback" ×1).
+- **What limits recall:** most rules that would catch a seeded fault were never written or
+  never exercised (dutyday: 33 rules, 20 exercised; markbook: 21, 8 exercised). The faults
+  here are conditional (month boundaries, a rounding edge, an edit after a note): the
+  explorer does not steer to the rule's trigger conditions.
+
 **Limits, stated plainly.**
-- **One run, one site:** this is a demonstration. Nothing yet measures recall (seeded faults
-  rediscovered) or the false-positive rate.
+- **Small evidence:** one live site and three seeded apps, tuned on the latter. Recall is
+  1 of 9 on those three.
 - **Rules are only as good as the warm-up's pages:** this run saw 3 page templates.
 - **Rules only help if the explorer exercises them.** A natural next step is to steer the
   explorer towards the actions the rules mention (the sort control, Add to cart).

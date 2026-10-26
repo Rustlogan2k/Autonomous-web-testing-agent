@@ -95,5 +95,33 @@ def test_rules_written_late_still_check_the_earlier_episodes(monkeypatch):
     spec.observe(bad, None, None, 1)
     spec.start_episode(info("/"))
     _walk(spec, ["/"] * 6, start=2)
-    assert seen == ["/cart"]
+    assert seen == []                    # one check is not enough evidence to spend a verification on
+    spec.finish()
+    assert seen == ["/cart"]             # ... but nothing pending is lost at the end of the run
     assert monitor  # module imported for monkeypatching clarity
+
+
+def _cart(total: int, badge: int) -> dict:
+    return {"page": {"url": "https://shop.test/cart",
+                     "html": f"<p>{TEXT}</p><b id='total'>{total}</b><i id='badge'>{badge}</i>"}}
+
+
+def test_rarely_broken_rules_are_verified_first_and_rules_broken_everywhere_are_not(monkeypatch):
+    rules = {"rules": [
+        {"id": "WRONG", "kind": "arithmetic", "description": "badge is 9", "page": "/cart",
+         "operands": {"b": {"selector": "#badge"}}, "expression": "b == 9"},
+        {"id": "RARE", "kind": "arithmetic", "description": "total is 5", "page": "/cart",
+         "operands": {"t": {"selector": "#total"}}, "expression": "t == 5"}]}
+    monkeypatch.setattr(llm, "propose_rules", lambda *a, **k: rules)
+    order = []
+    monkeypatch.setattr(SpecMonitor, "_confirm", lambda self, rule, finding: order.append(rule.id) or False)
+    spec = SpecMonitor(replayer=None, app_name="shop", warmup=300, min_warmup=3, stall=3,  # type: ignore[arg-type]
+                       min_applications=8)
+    spec.start_episode(info("/"))
+    for step in range(1, 13):                     # the total is wrong once; the badge rule fails every time
+        spec.observe(_cart(7 if step == 6 else 5, 1), None, None, step)
+    spec.finish()
+    assert order == ["RARE"]
+    summary = spec.summary()
+    assert summary["contradicted"] == 1
+    assert {r["id"]: (r["applied"], r["violated"]) for r in summary["rules"]}["WRONG"][1] >= 8

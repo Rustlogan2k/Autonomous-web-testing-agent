@@ -80,6 +80,37 @@ def test_consistency_and_bad_rules_are_dropped():
     assert rules == [] and len(dropped) == 3
 
 
+def test_consistency_on_one_page_compares_that_page_not_an_earlier_one():
+    rule = _one({"id": "K", "kind": "consistency", "a": {"page": "^/recipes/r\\d$", "selector": "#crumb"},
+                 "b": {"page": "^/recipes/r\\d$", "selector": "#ref"}, "compare": "text"})
+    runs = [rec("https://x/recipes/r1", "<b id='crumb'>1</b><b id='ref'>1</b>"),
+            rec("https://x/recipes/r4", "<b id='crumb'>4</b><b id='ref'>4</b>")]
+    assert violations(rule, runs) == []          # recipe 1 is never compared with recipe 4
+    runs.append(rec("https://x/recipes/r2", "<b id='crumb'>4</b><b id='ref'>2</b>"))
+    assert [(i, o.details["a"], o.details["b"]) for i, o in violations(rule, runs)] == [(2, "4", "2")]
+
+
+def test_consistency_from_a_list_takes_the_row_that_was_opened():
+    rule = _one({"id": "H", "kind": "consistency", "a": {"page": "^/volunteers$", "selector": "span.hours"},
+                 "b": {"page": "^/volunteers/[^/]+$", "selector": "#week-hours"}, "compare": "number"})
+    overview = ("<ul><li><a id='vol-ann'>Ann</a> <span class='hours'>4 h</span></li>"
+                "<li><a id='vol-chidi'>Chidi</a> <span class='hours'>6.5 h</span></li></ul>")
+    opened = lambda who, hours: [rec("https://x/volunteers", overview),  # noqa: E731
+                                 rec(f"https://x/volunteers/{who}", f"<b id='week-hours'>{hours} of 12</b>",
+                                     action={"type": "CLICK", "id": f"vol-{who}"})]
+    assert violations(rule, opened("chidi", 6.5)) == []      # Chidi's row, not the first row (Ann's 4 h)
+    assert [o.details["earlier"] for _, o in violations(rule, opened("chidi", 3))] == ["6.5 h"]
+    # No way to tell which row was opened: the rule does not apply rather than guess.
+    unknown = [rec("https://x/volunteers", overview), rec("https://x/volunteers/chidi", "<b id='week-hours'>3</b>")]
+    assert violations(rule, unknown) == []
+
+
+def test_parse_rules_drops_malformed_rules():
+    rules, dropped = parse_rules([{"kind": "arithmetic", "expression": "__import__('os')", "operands": {"a": "#a"}},
+                                  {"kind": "teleport"}, {"kind": "echo"}])
+    assert rules == [] and len(dropped) == 3
+
+
 def test_snapshot_offers_real_selectors():
     snap = snapshot("https://x/cart/42", BAG + "<input id='qty' name='q'><select data-test='sort'><option value='az'>A to Z</option></select>")
     selectors = {e["selector"] for e in snap["elements"]}

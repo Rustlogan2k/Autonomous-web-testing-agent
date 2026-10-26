@@ -411,6 +411,9 @@ def run_session(base_url: str, settings: SessionSettings | None = None, *,
         log = getattr(policy, "_reward_log", None)
         if log is not None:
             log.close()
+    if spec is not None and not (should_stop is not None and should_stop()):
+        emit("stage", {"message": "Silent-bug finder: verifying the remaining candidates, rarest violation first"})
+        spec.finish()
     if hasattr(policy, "summary"):
         result.agent["summary"] = policy.summary()
 

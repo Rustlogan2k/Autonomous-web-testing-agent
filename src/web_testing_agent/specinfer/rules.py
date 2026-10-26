@@ -12,7 +12,8 @@ Six kinds, each a behaviour that needs no knowledge of the application's code:
 * `echo`        a value the user entered appears unchanged on a later page
 * `sorted`      after choosing a sort option, the list is in that order
 * `counter`     an action changes a counter by a fixed amount (add to cart: badge + 1)
-* `consistency` a value shown on one page equals a value shown later on another
+* `consistency` two values on one page agree, or a value shown on one page equals a value
+                shown later on another (on a list page, the row of the item that was opened)
 * `blocked`     submitting a form with a required field empty does not get through
 
 Expressions are parsed, never `eval`ed: only numbers, operand names, arithmetic,
@@ -26,7 +27,9 @@ import operator
 import re
 from dataclasses import asdict, dataclass, field
 
-from .pages import number_in, path_of, select_all, template_of, text_of, visible_text
+from bs4 import Tag
+
+from .pages import number_in, path_of, select_all, soup_of, template_of, text_of, visible_text
 
 KINDS = ("arithmetic", "echo", "sorted", "counter", "consistency", "blocked")
 
@@ -238,6 +241,32 @@ def _counter(spec: dict, records: list[dict], i: int) -> Outcome | None:
     return Outcome(holds, {"action": _label(step), "before": old, "after": new, "expected_delta": spec.get("delta", 1)})
 
 
+def _same(spec: dict, x: str, y: str) -> bool | None:
+    if spec.get("compare", "number") == "number":
+        p, q = number_in(x), number_in(y)
+        return None if p is None or q is None else abs(p - q) <= float(spec.get("tolerance", 0.01))
+    return _norm(x) == _norm(y)
+
+
+def _single(values: list[str]) -> str | None:
+    """The one value a list of matches shows, or None when they disagree (ambiguous)."""
+    return values[0] if values and all(_norm(v) == _norm(values[0]) for v in values) else None
+
+
+def _row_of(html: str, elements: list[Tag], clicked: dict | None) -> Tag | None:
+    """Of several matches on a list page, the one in the same row as the element clicked to leave it."""
+    target = clicked and clicked.get("id") and soup_of(html).find(id=clicked["id"])
+    if not target:
+        return None
+    for ancestor in [target, *target.parents]:
+        inside = [e for e in elements if e is ancestor or ancestor in e.parents]
+        if len(inside) == 1:
+            return inside[0]
+        if len(inside) > 1:
+            return None
+    return None
+
+
 def _consistency(spec: dict, records: list[dict], i: int) -> Outcome | None:
     a, b = spec.get("a") or {}, spec.get("b") or {}
     rec = records[i]
@@ -246,22 +275,37 @@ def _consistency(spec: dict, records: list[dict], i: int) -> Outcome | None:
     current = [text_of(e) for e in select_all(rec["html"], b.get("selector", ""))]
     if not current:
         return None
+    # Both values on this page: compare them here (row by row when both sides list several).
+    here = select_all(rec["html"], a.get("selector", "")) if _page_matches(a.get("page"), rec["url"]) else []
+    if here:
+        mine = [text_of(e) for e in here]
+        pairs = list(zip(mine, current)) if len(mine) == len(current) else \
+            [(x, y) for x, y in [(_single(mine), _single(current))] if x is not None and y is not None]
+        for x, y in pairs:
+            holds = _same(spec, x, y)
+            if holds is False:
+                return Outcome(False, {"a": x[:120], "b": y[:120], "page": path_of(rec["url"])})
+        return Outcome(True, {"page": path_of(rec["url"])}) if pairs else None
+    now = _single(current)
+    if now is None:
+        return None
     for j in range(i - 1, -1, -1):
         prev = records[j]
         if path_of(prev["url"]) == path_of(rec["url"]) or not _page_matches(a.get("page"), prev["url"]):
             continue
-        earlier = [text_of(e) for e in select_all(prev["html"], a.get("selector", ""))]
-        if not earlier:
+        found = select_all(prev["html"], a.get("selector", ""))
+        if not found:
             continue
-        if spec.get("compare", "number") == "number":
-            x, y = number_in(earlier[0]), number_in(current[0])
-            if x is None or y is None:
-                return None
-            holds = abs(x - y) <= float(spec.get("tolerance", 0.01))
-        else:
-            holds = _norm(earlier[0]) == _norm(current[0])
-        return Outcome(holds, {"earlier": earlier[0][:120], "earlier_page": path_of(prev["url"]),
-                               "now": current[0][:120], "page": path_of(rec["url"])})
+        # A list page shows one value per row: take the row of the item that was opened.
+        row = found[0] if len(found) == 1 else _row_of(prev["html"], found, records[j + 1].get("action"))
+        earlier = text_of(row) if row is not None else _single([text_of(e) for e in found])
+        if earlier is None:
+            return None
+        holds = _same(spec, earlier, now)
+        if holds is None:
+            return None
+        return Outcome(holds, {"earlier": earlier[:120], "earlier_page": path_of(prev["url"]),
+                               "now": now[:120], "page": path_of(rec["url"])})
     return None
 
 

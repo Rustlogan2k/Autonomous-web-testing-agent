@@ -201,7 +201,7 @@ def render_markdown(result: SessionResult) -> str:
             lines.append(f"- Intended behaviour read from: {', '.join(spec['intent_files'])}")
         for finding in others:
             judgement = finding.get("judgement") or {}
-            reason = judgement.get("explanation", "")
+            reason = judgement.get("explanation") or judgement.get("note", "")
             if finding["status"] == "needs_review":
                 lines.append(f"- **Needs your review:** {judgement.get('title') or finding['description']} "
                              f"on `{finding['page']}`. The judge called it intended but could not quote evidence. "
@@ -283,7 +283,7 @@ def render_html(result: SessionResult, out_dir: Path) -> str:
             body.append("<li>No rules were written.</li>")
         for finding in others:
             judgement = finding.get("judgement") or {}
-            reason = judgement.get("explanation", "")
+            reason = judgement.get("explanation") or judgement.get("note", "")
             if finding["status"] == "needs_review":
                 body.append(f"<li><b>Needs your review:</b> {esc(judgement.get('title') or finding['description'])} "
                             f"on <code>{esc(finding['page'])}</code>: judged intended without quotable evidence</li>")

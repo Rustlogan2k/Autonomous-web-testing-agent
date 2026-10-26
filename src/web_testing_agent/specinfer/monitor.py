@@ -4,6 +4,10 @@
                             discovery levels off (or at the warm-up cap)
     new pages later     ->  rules for just those pages (a bounded number of refreshes)
     every later step    ->  each rule checked; a violation is a candidate
+    candidates          ->  verified rarest-violation first, once the rule has been checked
+                            often enough to tell; a rule the application breaks nearly
+                            everywhere is set aside as contradicted (a wrong rule, or a bug
+                            present on every page: listed for a person, not verified)
     candidate           ->  replay twice in fresh sessions (the rule must be violated again)
                         ->  delta-debugging minimisation, every trial a real replay
                         ->  LLM adjudication of the minimal reproduction
@@ -40,6 +44,7 @@ class SpecFinding:
     first_seen_at: int
     details: dict = field(default_factory=dict)
     status: str = "candidate"   # candidate | verified | not_reproduced | rejected | needs_review | unjudged
+    #                             | contradicted
     replays: list[bool] = field(default_factory=list)
     original_trace: list[dict] = field(default_factory=list)
     minimized_trace: list[dict] = field(default_factory=list)
@@ -114,7 +119,8 @@ class SpecMonitor:
                  model: str = llm.DEFAULT_MODEL, replays: int = 2, max_minimization_trials: int = 15,
                  max_verifications: int = 12, max_verification_seconds: float | None = 1500.0,
                  judge: bool = True, on_event: Callable[[str, dict], None] | None = None,
-                 intent: str = "", intent_files: list[str] | None = None) -> None:
+                 intent: str = "", intent_files: list[str] | None = None,
+                 min_applications: int = 8, contradiction_rate: float = 0.9) -> None:
         self.replayer = replayer
         #: Progress for a live run log (`kind`, `{"message": ...}`); silent when None.
         self.emit = on_event or (lambda kind, data: None)
@@ -139,6 +145,13 @@ class SpecMonitor:
         self.max_verifications = max_verifications
         self.max_verification_seconds = max_verification_seconds
         self.judge = judge
+        #: Verification is costly and capped, so it is spent where a bug is likeliest. A rule
+        #: is checked at least `min_applications` times before its candidates are verified
+        #: (whatever is still pending is considered at the end of the run); one violated on
+        #: `contradiction_rate` of its checks or more is contradicted, not verified.
+        self.min_applications = min_applications
+        self.contradiction_rate = contradiction_rate
+        self._pending: list[tuple[Rule, SpecFinding]] = []
         self.rules: list[Rule] | None = None
         self.dropped: list[str] = []
         self.rule_stats: dict[str, dict] = {}
@@ -184,12 +197,14 @@ class SpecMonitor:
         for rule in self.rules or []:
             outcome = evaluate(rule, self._episode, i)
             if outcome is not None:
-                stats = self.rule_stats.setdefault(rule.id, {"applied": 0, "violated": 0})
-                stats["applied"] += 1
+                self._count(rule, outcome)
                 if not outcome.holds:
-                    stats["violated"] += 1
-                    confirmed += self._candidate(rule, self._episode, i, outcome, budget_used)
-        return confirmed
+                    self._candidate(rule, self._episode, i, outcome, budget_used)
+        return confirmed + self._verify_pending()
+
+    def finish(self) -> list[SpecFinding]:
+        """End of the run: verify what is still pending, best first, within the budget."""
+        return self._verify_pending(final=True)
 
     # -- inference ------------------------------------------------------------------------------
 
@@ -237,28 +252,71 @@ class SpecMonitor:
 
     def _recheck(self, rules: list[Rule], budget_used: int) -> list[SpecFinding]:
         """New rules checked against the episodes already seen, so earlier bugs count."""
-        confirmed: list[SpecFinding] = []
         for episode in self._episodes + [self._episode[:-1]]:
             for rule in rules:
-                for i, outcome in violations(rule, episode)[:1]:
-                    confirmed += self._candidate(rule, episode, i, outcome, budget_used)
-        return confirmed
+                for i in range(len(episode)):
+                    outcome = evaluate(rule, episode, i)
+                    if outcome is not None:
+                        self._count(rule, outcome)
+                        if not outcome.holds:
+                            self._candidate(rule, episode, i, outcome, budget_used)
+        return self._verify_pending()
+
+    def _count(self, rule: Rule, outcome) -> None:  # noqa: ANN001
+        stats = self.rule_stats.setdefault(rule.id, {"applied": 0, "violated": 0})
+        stats["applied"] += 1
+        stats["violated"] += not outcome.holds
 
     # -- verification ---------------------------------------------------------------------------
 
-    def _candidate(self, rule: Rule, episode: list[dict], i: int, outcome, budget_used: int) -> list[SpecFinding]:  # noqa: ANN001
+    def _candidate(self, rule: Rule, episode: list[dict], i: int, outcome, budget_used: int) -> None:  # noqa: ANN001
         identity = (rule.id, template_of(episode[i]["url"]))
         if identity in self.findings:
-            return []
+            return
         finding = SpecFinding(rule.id, rule.kind, rule.description, identity[1], budget_used,
                               details=outcome.details,
                               original_trace=[r["action"] for r in episode[: i + 1] if r.get("action")])
         self.findings[identity] = finding
-        if self._attempted >= self.max_verifications or (
-                self.max_verification_seconds is not None and self.verification_seconds >= self.max_verification_seconds):
-            return []
-        self._attempted += 1
-        return [finding] if self._confirm(rule, finding) else []
+        self._pending.append((rule, finding))
+
+    def _rate(self, rule: Rule) -> tuple[int, float]:
+        """(checks, share violated) for a rule so far."""
+        stats = self.rule_stats.get(rule.id, {"applied": 0, "violated": 0})
+        return stats["applied"], stats["violated"] / max(stats["applied"], 1)
+
+    def _out_of_budget(self) -> bool:
+        return self._attempted >= self.max_verifications or (
+            self.max_verification_seconds is not None and self.verification_seconds >= self.max_verification_seconds)
+
+    def _verify_pending(self, *, final: bool = False) -> list[SpecFinding]:
+        """Verify the most promising pending candidate (during the run) or all of them (at the end).
+
+        Rarely violated rules go first: a bug usually breaks a rule on some pages or after
+        some actions, while a rule broken almost everywhere is usually a wrong rule.
+        """
+        confirmed: list[SpecFinding] = []
+        while self._pending and not self._out_of_budget():
+            keep = []
+            for rule, finding in self._pending:
+                applied, rate = self._rate(rule)
+                if applied >= self.min_applications and rate >= self.contradiction_rate:
+                    finding.status = "contradicted"
+                    finding.judgement = {"note": f"rule violated on {rate:.0%} of {applied} checks: a wrong rule "
+                                                 "or a bug present everywhere; not verified"}
+                else:
+                    keep.append((rule, finding))
+            ready = [p for p in keep if final or self._rate(p[0])[0] >= self.min_applications]
+            if not ready:
+                self._pending = keep
+                break
+            rule, finding = min(ready, key=lambda p: (self._rate(p[0])[1], p[1].first_seen_at))
+            self._pending = [p for p in keep if p[1] is not finding]
+            self._attempted += 1
+            if self._confirm(rule, finding):
+                confirmed.append(finding)
+            if not final:
+                break
+        return confirmed
 
     def _reproduces(self, rule: Rule, actions: list[dict]) -> tuple[bool, list[dict]]:
         records = self.replayer.run(actions)
@@ -329,6 +387,7 @@ class SpecMonitor:
             "verified": sum(f.verified for f in findings),
             "rejected": sum(f.status == "rejected" for f in findings),
             "needs_review": sum(f.status == "needs_review" for f in findings),
+            "contradicted": sum(f.status == "contradicted" for f in findings),
             "intent_files": self.intent_files,
             "not_reproduced": sum(f.status == "not_reproduced" for f in findings),
             "verification_seconds": round(self.verification_seconds, 1),
