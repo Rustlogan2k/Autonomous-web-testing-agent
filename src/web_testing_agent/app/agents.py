@@ -31,8 +31,10 @@ AGENT_HYBRID_CURIOSITY = "hybrid_curiosity"
 AGENT_V1_DQN = "v1_dqn_pretrained"
 AGENT_RANDOM = "random"
 
-#: The default is the frozen hybrid tester (tag v3-freeze): it needs no checkpoint, so it is
-#: always available, and it verified the most distinct faults in the final tuning round.
+#: The default is Katalyze, tuned: the frozen hybrid tester (tag v3-freeze) with listener-based
+#: clickable detection (round 2 of the external comparison). It needs no checkpoint, so it is
+#: always available; it verified the most distinct faults in the final tuning round, and the
+#: listener clickables raised its benchmark coverage on all six applications.
 DEFAULT_AGENT = AGENT_HYBRID_FINAL
 
 #: Every offered agent runs through the test-session path (`tester.run_session`); the key is
@@ -67,18 +69,19 @@ def available_agents() -> list[AgentChoice]:
     return [
         AgentChoice(
             key=AGENT_HYBRID_FINAL,
-            name="Hybrid tester (recommended)",
-            method="Structured exploration",
+            name="Katalyze, tuned (recommended)",
+            method="Structured exploration, no learning",
             summary="Pages abstracted by function, an archive of reached states it returns to "
                     "exactly, and test operators from standard test design (complete the step, "
                     "invalid input, edit after review, back/reload and resume, double submit, "
                     "browse a list), with extra attention to pages that already showed errors. "
-                    "No learner. It verified the most distinct faults in the final tuning round "
-                    "(22 of 41).",
+                    "Clickable elements include those that register click handlers. It verified "
+                    "the most distinct faults in the final tuning round (22 of 41) and reached "
+                    "51.4% branch coverage on WebExplor's applications.",
         ),
         AgentChoice(
             key=AGENT_V1_DQN,
-            name="AC-DQN, pretrained",
+            name="Deep Q-network (research)",
             method="Deep Q-learning",
             summary="Action-conditioned dueling double DQN (prioritised replay, n-step "
                     "returns) pretrained on the benchmark applications, adapting online "
@@ -92,7 +95,7 @@ def available_agents() -> list[AgentChoice]:
         ),
         AgentChoice(
             key=AGENT_HYBRID_BANDIT,
-            name="Hybrid tester + bandit",
+            name="Bandit explorer",
             method="Thompson-sampling bandit",
             summary="Structured exploration (pages abstracted by function, an archive of "
                     "reached states it returns to exactly, test operators from standard test "
@@ -102,17 +105,18 @@ def available_agents() -> list[AgentChoice]:
         ),
         AgentChoice(
             key=AGENT_HYBRID_CURIOSITY,
-            name="Hybrid tester + curiosity",
-            method="Count-based Q-learning",
+            name="Curiosity RL explorer",
+            method="Curiosity Q-learning (RL)",
             summary="The hybrid tester choosing where to explore with tabular Q-learning "
                     "over page transitions, rewarded by curiosity (rarely seen transitions "
                     "and states new to the episode), after WebExplor and WebRLED. On "
                     "WebExplor's own applications it reached the most code of our agents "
-                    "and triggered the most failures.",
+                    "(53.6% branch coverage) and triggered the most failures; it verified "
+                    "fewer seeded faults than the recommended tester.",
         ),
         AgentChoice(
             key=AGENT_RANDOM,
-            name="Random (baseline)",
+            name="Random exploration (baseline)",
             method="No learning",
             summary="Uniform-random over the currently valid actions; the floor every "
                     "experiment is measured against. Held-out evaluation: a fault in 32 of 40 "

@@ -9,7 +9,7 @@ Last updated: 2026-10-24.
 
 ---
 
-## 0. Read this first — where the project stands (2026-10-25)
+## 0. Read this first — where the project stands (2026-10-26)
 
 > **All evaluations are complete.**
 > - **External comparison (§0.8).**
@@ -19,10 +19,17 @@ Last updated: 2026-10-24.
 >   - Pre-registered round 2 (tag `v5-freeze`; listener-based clickables, 5 runs): the
 >     curiosity arm reached 53.6% (55.1% without Petclinic), against WebExplor 55.5%
 >     (49.6%) and WebRLED 64.2% (60.0%). It still triggers fewer console failures.
+>   - Post-hoc bandit follow-up (tag `bandit-v5`, untuned): 50.0% over six apps (51.5%
+>     without Petclinic), level with the same tester without a learner (51.4%; 51.5%).
 > - **Best arm by measure:** the structure without a learner verifies the most seeded
 >   faults; the RL arms lead on coverage and errors triggered.
-> - **Thesis:** `thesis/` (71 pages) is complete and revised after two external reviews.
-> - **Remaining:** the presentation and demo.
+> - **Thesis:** `thesis/` (75 pages) is complete and revised after two external reviews; the
+>   authors have rewritten its prose in their own words.
+> - **Presentation:** `Katalyze_Final_Review.pptx` (29 slides, the team's template). Every
+>   plot in it comes from `scripts/presentation_plots.py` (`presentation/plots/`).
+> - **Product:** the web UI's default is Katalyze (tuned), i.e. `hybrid_final` with
+>   listener-based clickable detection; agents carry plain names in the UI.
+> - **Remaining:** the team-contributions slide (to be filled in by the team) and the demo.
 
 > **Documents removed on 2026-10-22.** At the owner's request the repository now keeps only
 > two Markdown documents, this file and `README.md` (plus third-party licence files under
@@ -505,7 +512,8 @@ either external round, and this is added after round 2's results were seen.
 
 - **Results (JSON)**: `reports/transfer_final.json`, `reports/contextual_diagnostic.json`,
   `reports/v2_evaluation.json`, `reports/benchmark_validation.json`,
-  `reports/external_comparison.json` (with `followup_clickables`; produced by
+  `reports/external_comparison.json` (with `followup_clickables`, `round2` and
+  `bandit_followup`; produced by
   `scripts/analyze_external.py`). Tuning: `runs/v3-tune/analysis.md`. Run files are in
   `runs/<round>/results/`. The web UI's Evaluation page (`app/evaluation.py`) renders every
   round from them.
@@ -518,9 +526,13 @@ either external round, and this is added after round 2's results were seen.
   deleted on 2026-10-22.
 - **External runs:** `runs/ext-eval` (laptop), `runs/ext-eval-aws1b`, `aws2`, `aws3`, `aws4b`
   (AWS primary), `runs/ext-eval-gha` (GitHub replication), `runs/ext-v4-gha` and
-  `runs/ext-v4-gha-base` (clickables follow-up). Subject apps: `configs/external_apps.json`.
+  `runs/ext-v4-gha-base` (clickables follow-up), `runs/ext-v5-gha` (round 2),
+  `runs/ext-bandit-gha` (bandit follow-up). Subject apps: `configs/external_apps.json`.
   Launchers: `cloud/aws/launch_external.sh`, `.github/workflows/external-comparison.yml`
   (branch `ext-gha`).
+- **Presentation:** `Katalyze_Final_Review.pptx`; plots from `scripts/presentation_plots.py`;
+  thesis figures from `scripts/thesis_figures.py` (`--screens` retakes the UI screenshots).
+- **Mentor update:** `Update.md` (not committed; the owner keeps two Markdown files in git).
 - **Thesis:** `thesis/mythesis.tex` and `thesis/chapters/`. Build with MiKTeX: `pdflatex`,
   `bibtex`, then `pdflatex` twice. Git Bash needs a PATH without the `python.exe` file
   entry.
@@ -4074,6 +4086,43 @@ Acting on an external critical review of the thesis draft.
     retried up to 3 times (`browser_session.START_ATTEMPTS`).
   - A page-load timeout on a URL containing "playwright" was reported as a broken browser
     install. The message now names the slow site.
+
+
+### 2026-10-25 → 10-26 — round 2 and bandit results, thesis rewrite, final-review deck, product default
+
+- **Round 2 of the external comparison** finished: 60/60 runs, results in §0.8.
+  `hybrid_final_v5`'s six-app average is 51.4 (51.446); it had been misrounded to 51.5 in
+  the thesis, README and this file, and was corrected everywhere.
+- **Bandit follow-up** (owner request).
+  - A tuning sweep was planned on the development suite (`suite-tuning.yml`, branch
+    `tune-gha`): back-off weight and forgetting (`BanditPlanner(backoff, decay)`).
+  - It was cancelled for time before any result was read, and the untuned
+    `hybrid_bandit_v5` ran on the six external apps.
+  - It was level with no learner (§0.8). The thesis has a new section 7.6.
+- **Thesis.**
+  - The authors rewrote the prose of every chapter in their own words; the rewrite was
+    checked against the results, and no claim changed.
+  - New figures: held-out survival curves, faults by depth, external coverage, and three UI
+    screenshots.
+  - Certainty fixes: "no measurable benefit from pretraining" in place of "did not
+    transfer"; "at best one more fault" for the learners.
+- **Presentation** (`Katalyze_Final_Review.pptx`).
+  - Rebuilt three times to the owner's specification. The final version follows the team's
+    template (cream, navy, rounded right band) in the owner's 14-part order.
+  - v1 is excluded. The approaches carry plain names: random exploration, structured
+    explorer, bandit explorer, curiosity RL explorer, Katalyze (tuned).
+  - One methodology slide per approach (what it is, why, how, the maths). Performance and
+    reasoning sit in two results-analysis slides.
+  - Plots come from `scripts/presentation_plots.py`. The team-contributions slide is left
+    for the team to fill in.
+- **Product.**
+  - Default agent: Katalyze (tuned) = `hybrid_final` with listener-based clickables
+    (`SessionSettings.listener_clickables = True`).
+  - UI names: "Katalyze, tuned (recommended)", "Bandit explorer", "Curiosity RL explorer",
+    "Deep Q-network (research)", "Random exploration (baseline)".
+- **Other.**
+  - `Update.md` was written for the final mentor meeting.
+  - Unit tests: 1,288 passed, 5 skipped.
 
 ---
 

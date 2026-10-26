@@ -137,20 +137,21 @@ and WebRLED, the held-out evaluation and the tuning rounds.
 
 ## Agents (arms)
 
-| Agent | Learning | Where it stands |
+| Agent (name in the web UI) | Learning | Where it stands |
 |---|---|---|
-| `hybrid_final` | none: hybrid + `browse_list` + failure feedback (frozen, `v3-freeze`) | most distinct verified faults in tuning (22/41); external: 44.3% branch coverage |
-| `hybrid_curiosity` | hybrid + count-based curiosity Q-learning (RL) | best of ours on WebExplor's apps: 44.7% coverage (54.1% with clickables), most failures triggered |
-| `v1_dqn_pretrained` | AC-DQN pretrained on the 6 benchmark apps, adapting online (deep RL) | held-out: 34/40 runs, lowest mean time to first fault; highest coverage in tuning |
-| `hybrid_bandit` | hybrid + Thompson-sampling operator bandit | held-out: 34/40 runs, most distinct faults (19/24); slower than no learner in tuning |
+| `hybrid_final`: **Katalyze, tuned (default)** | none: hybrid + `browse_list` + failure feedback (frozen, `v3-freeze`); the UI adds listener-based clickables (`hybrid_final_v5`) | most distinct verified faults in tuning (22/41); external: 44.3% branch coverage, 51.4% with listener clickables |
+| `hybrid_curiosity`: Curiosity RL explorer | hybrid + count-based curiosity Q-learning (RL) | best of ours on WebExplor's apps: 44.7% coverage, 53.6% in round 2; most failures triggered |
+| `v1_dqn_pretrained`: Deep Q-network (research) | AC-DQN pretrained on the 6 benchmark apps, adapting online (deep RL) | held-out: 34/40 runs, lowest mean time to first fault; highest coverage in tuning |
+| `hybrid_bandit`: Bandit explorer | hybrid + Thompson-sampling operator bandit | held-out: 34/40 runs, most distinct faults (19/24); slower than no learner in tuning |
 | `hybrid_nolearn` | hybrid, untried operators in turn, no learner | held-out primary arm: 30/40 runs, 18/24 faults |
-| `random` | uniform over valid actions | the baseline |
+| `random`: Random exploration | uniform over valid actions | the baseline |
 
 **Which arm is best depends on the measure.** The structure without a learner verifies the
 most seeded faults. The RL arms do best on the literature's measures: coverage (v1 AC-DQN in
 tuning, curiosity on WebExplor's apps) and errors triggered (curiosity). No learning layer
 verified more faults than the same structure without it. The web UI offers the RL agents and
-random. Development-only arms (`dev_*`) and the post-hoc `*_clickables` arms are defined in
+random, with Katalyze (tuned) as the default: it is built for verified functional bugs,
+and listener-based clickable detection is on for every agent in the product. Development-only arms (`dev_*`) and the post-hoc `*_clickables` arms are defined in
 `src/web_testing_agent/hybrid/run.py`.
 
 ## Results so far

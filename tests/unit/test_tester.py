@@ -158,3 +158,10 @@ def test_links_out_of_the_application_are_not_broken_navigation(monkeypatch):
     tab = {"success": True, "opened_offsite_tab": "https://github.com/x"}
     assert _navigation_flag(monkeypatch, left) is False
     assert _navigation_flag(monkeypatch, tab) is False
+
+
+def test_the_product_detects_listener_clickables_by_default():
+    from web_testing_agent.tester.session import SessionSettings
+
+    settings = SessionSettings()
+    assert settings.custom_clickables and settings.listener_clickables

@@ -77,6 +77,12 @@ class SessionSettings:
     #: Vue) the external comparison found these are most of the controls. Research runs set
     #: the registry themselves (`hybrid.run`) and are unaffected.
     custom_clickables: bool = True
+    #: Also offer elements that register click listeners (React, Vue and jQuery handlers,
+    #: Angular and Ember actions), recorded by a script injected before the page's own code.
+    #: On by default: it is the configuration of the external comparison's round 2, which
+    #: raised the frozen tester's branch coverage on all six applications. Needs
+    #: `custom_clickables`.
+    listener_clickables: bool = True
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -142,7 +148,7 @@ def _hybrid_agent(settings: SessionSettings, app_name: str):
         failure_bonus=float(spec.get("failure_bonus", 0.0)),
     )
     mode = ("held-out evaluation configuration" if arm in FROZEN_HYBRID_AGENTS
-            else "frozen tester (tag v3-freeze)" if arm == "hybrid_final"
+            else "Katalyze, tuned (tag v3-freeze) with listener-based clickables" if arm == "hybrid_final"
             else f"tuning-round configuration ({arm})")
     return policy, {"agent": settings.agent, "mode": mode}
 
@@ -301,6 +307,7 @@ def run_session(base_url: str, settings: SessionSettings | None = None, *,
     env_settings = EnvSettings(
         max_steps=settings.episode_steps, settle_quiet_ms=settings.settle_quiet_ms,
         registry=replace(EXTENDED_OPTIONS, custom_clickables=settings.custom_clickables,
+                         listener_clickables=settings.custom_clickables and settings.listener_clickables,
                          # Behind a sign-in macro, signing out only ends the session the
                          # macro opened; the episode would be spent on the login page.
                          avoid_labels=SIGN_OUT_LABELS if settings.setup_actions else ()))
