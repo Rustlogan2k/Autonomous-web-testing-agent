@@ -263,6 +263,26 @@ def test_bandit_learns_and_backs_off_to_general_keys():
     )
 
 
+def test_bandit_backoff_zero_shares_nothing_and_decay_forgets():
+    from web_testing_agent.hybrid.learner import BanditPlanner
+    from web_testing_agent.hybrid.policy import Decision
+
+    archive = Archive()
+    cell, _ = archive.visit("form|/x||", [], "form", 0)
+    isolated = BanditPlanner(archive, seed=1, backoff=0.0)
+    for _ in range(10):
+        isolated.feedback(cell, Decision("reload_and_resume", ""), None, 1.0)
+    # With no back-off, form-page evidence says nothing about a list page.
+    assert isolated.value("list", "reload_and_resume", "") == 0.5
+
+    forgetful = BanditPlanner(archive, seed=1, decay=0.5)
+    for _ in range(10):
+        forgetful.feedback(cell, Decision("reload_and_resume", ""), None, 1.0)
+    forgetful.feedback(cell, Decision("reload_and_resume", ""), None, 0.0)
+    successes, failures = forgetful.counts[("form", "reload_and_resume", "")]
+    assert successes < 2.0 and failures == 1.0  # ten early successes have mostly faded
+
+
 def test_invariant_content_ignores_entries_timings_and_alerts():
     from web_testing_agent.hybrid.invariants import content_text
 

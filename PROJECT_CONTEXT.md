@@ -446,6 +446,35 @@ none rerun; `scripts/analyze_external.py` → `reports/external_comparison.{json
 - **Unchanged:** console failures (about 2 per run); Retroboard ≈ 54% in every run.
 - Descriptive only. Round 2 is informed by round 1, so it is not an independent test.
 
+**BANDIT FOLLOW-UP — PLANNED 2026-10-26, before any run (owner request: "tune, then
+evaluate on the 6 apps like we did for other arms").** POST-HOC: the bandit was not in
+either external round, and this is added after round 2's results were seen.
+
+- **Why.** The bandit's back-off weight (0.3) and its lack of forgetting were never tuned,
+  and it never had the two options that won tuning v3. Its external result is unknown.
+- **Stage 1: tuning, on the development suite only** (8 apps × 3 seeds, B = 2,000,
+  GitHub Actions, workflow `suite-tuning.yml`, branch `tune-gha`). Every arm is
+  `hybrid_final_v5`'s base (browse_list, failure feedback, listener clickables) with the
+  bandit as the only difference:
+
+  | Arm | Back-off | Forgetting |
+  |---|---|---|
+  | `tune_bandit_b03` | 0.3 | none |
+  | `tune_bandit_b0` | 0 | none |
+  | `tune_bandit_b1` | 1.0 | none |
+  | `tune_bandit_b03_decay` | 0.3 | ×0.98 per update |
+
+  The reference is `hybrid_final_v5` on the same runs.
+- **Selection rule, fixed now.** Pick the bandit arm with the most distinct verified faults
+  (union over seeds and apps). Break ties on lower restricted mean T, then on more runs
+  that found a fault. The winner is frozen and tagged, whether or not it beats the
+  reference.
+- **Stage 2: external.** The winner plus listener clickables runs on the 6 external apps ×
+  seeds 0–4, 1 h each, with the same workflow and analysis as round 2. It is reported
+  beside round 2 as a post-hoc follow-up.
+- **Infrastructure failures** are rerun unchanged. Development results are tuning data,
+  never evidence.
+
 ### 0.9 Known limitations of the tester
 
 - The page is treated as settled once the DOM is quiet. In-flight requests are not awaited.

@@ -1,0 +1,78 @@
+# Hybrid-tester runs on the development suite (e2e_suite/apps) on GitHub-hosted runners: one
+# job per (app, arm, seed), in parallel. Each app starts its own PostgreSQL or MongoDB
+# container on the runner (e2e_suite/harness). Development data only: never the validation
+# suite or the external applications.
+#
+# A push to branch tune-gha runs the plan in the `plan` step's env below; the result JSON of
+# each job is uploaded as an artifact named tune-<app>-<arm>-<seed>.
+name: Suite tuning
+
+on:
+  push:
+    branches: [tune-gha]
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      budget: ${{ steps.plan.outputs.budget }}
+    steps:
+      - id: plan
+        env:
+          APPS: "tidewater clinicflow stackroom ledgerly bagstreet helpline orbit wayfarer"
+          ARMS: "hybrid_final_v5 tune_bandit_b03 tune_bandit_b0 tune_bandit_b1 tune_bandit_b03_decay"
+          SEEDS: "0 1 2"
+          BUDGET: "2000"
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_OUTPUT"
+          import itertools, json, os
+          runs = [{"app": a, "arm": r, "seed": s} for a, r, s in itertools.product(
+              os.environ["APPS"].split(), os.environ["ARMS"].split(), os.environ["SEEDS"].split())]
+          print("matrix=" + json.dumps({"include": runs}))
+          print("budget=" + os.environ["BUDGET"])
+          EOF
+
+  run:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: docker/requirements-runtime.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install
+        run: |
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu "torch==2.6.0+cpu" -r docker/requirements-runtime.txt
+          pip install --no-deps -e .
+          python -m playwright install --with-deps chromium
+      - name: Database servers
+        run: python -m e2e_suite.harness.dbctl up
+      - name: Run
+        env:
+          WTA_GIT_COMMIT: ${{ github.sha }}
+        run: |
+          python -m web_testing_agent.hybrid.run --out-dir runs/tune-gha \
+            --apps ${{ matrix.app }} --arms ${{ matrix.arm }} --seeds ${{ matrix.seed }} \
+            --workers 1 --budget ${{ needs.plan.outputs.budget }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tune-${{ matrix.app }}-${{ matrix.arm }}-${{ matrix.seed }}
+          path: |
+            runs/tune-gha/results/
+            runs/tune-gha/logs/
+          if-no-files-found: warn

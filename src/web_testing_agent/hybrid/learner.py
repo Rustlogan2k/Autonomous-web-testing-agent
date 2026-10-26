@@ -50,8 +50,14 @@ def target_type(operator: str, target: str, view: PageView | None) -> str:
 class BanditPlanner(Planner):
     """Cells by count-based weight times learned value; operators by Thompson sampling."""
 
-    def __init__(self, archive: Archive, seed: int = 0, prior: dict | None = None) -> None:
+    def __init__(self, archive: Archive, seed: int = 0, prior: dict | None = None,
+                 backoff: float = BACKOFF, decay: float = 1.0) -> None:
         super().__init__(archive, seed)
+        #: Weight of the general keys' evidence in a specific key's prior (0 = no sharing).
+        self.backoff = backoff
+        #: Factor applied to all evidence before each update (1.0 = never forget). Below 1,
+        #: an operator that paid off early stops being favoured once it stops paying.
+        self.decay = decay
         #: key -> [successes, failures] (fractional outcomes allowed)
         self.counts: dict[tuple, list[float]] = defaultdict(lambda: [0.0, 0.0])
         if prior:
@@ -71,7 +77,7 @@ class BanditPlanner(Planner):
         alpha, beta = 1.0, 1.0
         for key in general:
             s, f = self.counts.get(key, (0.0, 0.0))
-            alpha, beta = alpha + BACKOFF * s, beta + BACKOFF * f
+            alpha, beta = alpha + self.backoff * s, beta + self.backoff * f
         s, f = self.counts.get(specific, (0.0, 0.0))
         return alpha + s, beta + f
 
@@ -121,6 +127,10 @@ class BanditPlanner(Planner):
     def feedback(self, cell: Cell, decision: Decision, view: PageView, outcome: float) -> None:
         ttype = self._ttype(cell, decision.operator, decision.target)
         outcome = float(min(max(outcome, 0.0), 1.0))
+        if self.decay < 1.0:
+            for evidence in self.counts.values():
+                evidence[0] *= self.decay
+                evidence[1] *= self.decay
         for key in self._keys(cell.kind, decision.operator, ttype):
             self.counts[key][0] += outcome
             self.counts[key][1] += 1.0 - outcome

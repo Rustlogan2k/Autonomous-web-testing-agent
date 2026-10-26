@@ -104,6 +104,17 @@ ARMS: dict[str, dict] = {
                         "custom_clickables": True, "listener_clickables": True},
     "hybrid_curiosity_v5": {**HYBRID, "planner": "count", "explore": "curiosity",
                             "custom_clickables": True, "listener_clickables": True},
+    # Bandit tuning (2026-10-26, development apps only, GitHub Actions): the learner on the
+    # base of hybrid_final_v5, so the learner is the only difference. Back-off weight and
+    # forgetting were never swept before.
+    **{name: {**HYBRID, "planner": "bandit", "browse": True, "failure_bonus": 2.0,
+              "custom_clickables": True, "listener_clickables": True, **extra}
+       for name, extra in {
+           "tune_bandit_b03": {"backoff": 0.3},
+           "tune_bandit_b0": {"backoff": 0.0},
+           "tune_bandit_b1": {"backoff": 1.0},
+           "tune_bandit_b03_decay": {"backoff": 0.3, "decay": 0.98},
+       }.items()},
     "dev_pairwise_bandit": {
         **HYBRID,
         "planner": "bandit",
@@ -232,6 +243,11 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
 
         labeller = SemanticLabeller()
     planner = BanditPlanner if spec["planner"] == "bandit" else None
+    if planner is not None and ("backoff" in spec or "decay" in spec):
+        import functools
+
+        planner = functools.partial(BanditPlanner, backoff=float(spec.get("backoff", 0.3)),
+                                    decay=float(spec.get("decay", 1.0)))
     if spec.get("prior"):
         import functools
 
