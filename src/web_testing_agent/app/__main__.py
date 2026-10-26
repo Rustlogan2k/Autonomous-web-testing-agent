@@ -20,8 +20,8 @@ DEFAULT_PORT = 8000
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="python -m web_testing_agent.app",
-        description="Autonomous Web Testing Platform — the product layer over the "
-                    "research system.",
+        description="Katalyze — autonomous testing for functional bugs; the product layer "
+                    "over the research system.",
     )
     parser.add_argument(
         "--host", default=DEFAULT_HOST,
@@ -36,7 +36,7 @@ def main() -> None:
     import uvicorn
 
     url = f"http://{'localhost' if args.host in ('127.0.0.1', '0.0.0.0') else args.host}:{args.port}"
-    print(f"\n  Autonomous Web Testing Platform\n  Open {url}\n")
+    print(f"\n  Katalyze\n  Open {url}\n")
     if args.host == "0.0.0.0":  # noqa: S104 - warned about, not silently accepted
         print("  WARNING: bound to 0.0.0.0. This application executes uploaded "
               "repositories; do not expose it on an untrusted network.\n")

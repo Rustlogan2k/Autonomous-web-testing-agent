@@ -53,7 +53,7 @@ REPO_ROOT = PACKAGE_DIR.parents[2]
 #: Runtime state lives outside the source tree and is gitignored.
 VAR_DIR = REPO_ROOT / "var" / "app"
 
-PRODUCT_NAME = "Autonomous Web Testing Platform"
+PRODUCT_NAME = "Katalyze"
 
 
 def create_app(var_dir: Path | None = None) -> FastAPI:
