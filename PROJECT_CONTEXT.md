@@ -599,8 +599,8 @@ seeded bugs; 400 interactions, warm-up 120; `runs/spec-demo/saucedemo-problem/`)
   - the four sort orders are correct;
   - a product's detail page shows the clicked name;
   - (dropped) "Reset App State" clears the badge.
-- **Coverage of the rules.** Only 3 of the 8 were exercised: remove (2 applications, 2
-  violations), badge consistency (13, 0), and one more. The tester never chose a sort option
+- **Coverage of the rules.** Only 2 of the 8 were exercised: Remove (2 applications, 2
+  violations) and badge consistency (13 applications, 0 violations). The tester never chose a sort option
   after the rules existed, so the four sort rules, and the site's known sorting bug, went
   untested.
 - **Outcome:** 1 candidate, 1 verified, 0 rejected, 0 not reproduced.
