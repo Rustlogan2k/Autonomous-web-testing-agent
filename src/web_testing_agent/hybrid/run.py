@@ -104,6 +104,11 @@ ARMS: dict[str, dict] = {
                         "custom_clickables": True, "listener_clickables": True},
     "hybrid_curiosity_v5": {**HYBRID, "planner": "count", "explore": "curiosity",
                             "custom_clickables": True, "listener_clickables": True},
+    # Bandit follow-up on the external apps (2026-10-26, post-hoc): hybrid_final_v5's base with
+    # the Thompson-sampling bandit at its existing, untuned settings (back-off 0.3, no
+    # forgetting). The planned tuning sweep was cancelled for time before any result was read.
+    "hybrid_bandit_v5": {**HYBRID, "planner": "bandit", "browse": True, "failure_bonus": 2.0,
+                         "custom_clickables": True, "listener_clickables": True},
     # Bandit tuning (2026-10-26, development apps only, GitHub Actions): the learner on the
     # base of hybrid_final_v5, so the learner is the only difference. Back-off weight and
     # forgetting were never swept before.

@@ -474,6 +474,12 @@ either external round, and this is added after round 2's results were seen.
   beside round 2 as a post-hoc follow-up.
 - **Infrastructure failures** are rerun unchanged. Development results are tuning data,
   never evidence.
+- **AMENDMENT (2026-10-26, owner decision, before any tuning result was read).** The review
+  is tomorrow, so Stage 1 was cancelled. GitHub run 40307642262 was cancelled after a few
+  minutes; its partial results were not downloaded or read. Stage 2 runs
+  `hybrid_bandit_v5` instead: the bandit at its existing, untuned settings (back-off 0.3,
+  no forgetting) on hybrid_final_v5's base. It covers the 6 external apps × seeds 0–4,
+  1 h each, on GitHub Actions (branch `ext-gha`). It is reported as post-hoc and untuned.
 
 ### 0.9 Known limitations of the tester
 
