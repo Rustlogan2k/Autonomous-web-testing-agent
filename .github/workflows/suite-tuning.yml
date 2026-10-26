@@ -23,10 +23,10 @@ jobs:
     steps:
       - id: plan
         env:
-          APPS: "tidewater clinicflow stackroom ledgerly bagstreet helpline orbit wayfarer"
-          ARMS: "hybrid_final_v5 tune_bandit_b03 tune_bandit_b0 tune_bandit_b1 tune_bandit_b03_decay"
-          SEEDS: "0 1 2"
-          BUDGET: "2000"
+          APPS: "orbit tidewater"
+          ARMS: "tune_bandit_b03_decay"
+          SEEDS: "0"
+          BUDGET: "300"
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import itertools, json, os
