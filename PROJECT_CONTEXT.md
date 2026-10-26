@@ -584,8 +584,16 @@ without effect) go unseen. This adds an oracle the application does not have to 
 
    Only `bug` is reported as verified; the others are kept, with the judge's reason.
 
-**Use.** `SessionSettings(spec_oracle=True, spec_warmup=..., spec_model=...)` (off by
-default), or the demo command:
+**Use.**
+- **Web app:** the "Silent-bug finder" option on New Test is **on by default** (`TestSettings.spec`).
+  The warm-up is a third of the budget, clamped to 60–150 interactions. Verified silent
+  bugs appear in the report beside the other findings, with the rule and the judge's verdict.
+  A "Silent-bug finder" report section lists every rule (checked and violated counts) and
+  the violations not reported, with their reasons. The live log announces the rules and each
+  verdict.
+- **Library:** `SessionSettings(spec_oracle=True, spec_warmup=..., spec_model=...)`, off by
+  default, so research code never calls an LLM unasked.
+- **Demo command:**
 `python -m web_testing_agent.specinfer.demo --name <n> --url <url> [--setup '<sign-in steps JSON>']`,
 which writes `runs/spec-demo/<n>/session.json` and `summary.md`. Unit tests:
 `tests/unit/test_specinfer_rules.py`.

@@ -100,7 +100,28 @@ def verified_findings(result: SessionResult) -> list[dict]:
                 "original_length": (found.get("minimization") or {}).get("original_length"),
                 "signals": [],
             })
+    for number, finding in enumerate((result.spec or {}).get("findings", [])):
+        if not finding.get("verified"):
+            continue
+        judgement = finding.get("judgement") or {}
+        items.append({
+            "key": f"spec_{number}", "title": judgement.get("title") or finding["description"],
+            "where": finding["page"],
+            "detail": f"{finding['description']} Observed: {finding['details']}",
+            "source": (f"LLM-inferred rule {finding['rule_id']} ({finding['kind']}); judged a bug "
+                       f"(confidence {judgement.get('confidence', '?')}): {judgement.get('explanation', '')}"),
+            "first_seen_at": finding["first_seen_at"], "occurrences": 1,
+            "reproduction": finding["minimized_trace"],
+            "original_length": (finding.get("minimization") or {}).get("original_length"),
+            "signals": [],
+        })
     return items
+
+
+def _spec_sections(result: SessionResult) -> tuple[list[dict], list[dict], dict]:
+    spec = result.spec or {}
+    others = [f for f in spec.get("findings", []) if not f.get("verified")]
+    return spec.get("rules", []), others, spec
 
 
 def _agent_label(result) -> str:  # noqa: ANN001
@@ -168,6 +189,19 @@ def render_markdown(result: SessionResult) -> str:
                      + ("" if review.get("grounded") or not review.get("evidence")
                         else " — discarded: quote not found on the page"))
 
+    rules, others, spec = _spec_sections(result)
+    if result.spec is not None:
+        lines += ["", "## Silent-bug finder (LLM-inferred rules)", ""]
+        if not rules:
+            lines.append("No rules were written" + (f": {spec['dropped_rules'][0]}" if spec.get("dropped_rules") else "."))
+        for rule in rules:
+            lines.append(f"- **{rule['id']}** ({rule['kind']}): {rule['description']} "
+                         f"(checked {rule.get('applied', 0)} times, violated {rule.get('violated', 0)})")
+        for finding in others:
+            reason = (finding.get("judgement") or {}).get("explanation", "")
+            lines.append(f"- Not reported: rule {finding['rule_id']} on `{finding['page']}`, "
+                         f"{finding['status'].replace('_', ' ')}" + (f": {reason}" if reason else ""))
+
     agent = result.agent.get("summary") or {}
     reward = agent.get("reward") or {}
     lines += ["", "## How the agent explored", "",
@@ -230,6 +264,19 @@ def render_html(result: SessionResult, out_dir: Path) -> str:
     if not result.reviews:
         body.append("<li>No outcome pages were reviewed.</li>")
     body.append("</ul>")
+    rules, others, spec = _spec_sections(result)
+    if result.spec is not None:
+        body.append("<h2>Silent-bug finder <small>(LLM-inferred rules)</small></h2><ul>")
+        for rule in rules:
+            body.append(f"<li><b>{esc(rule['id'])}</b> ({esc(rule['kind'])}): {esc(rule['description'])} "
+                        f"<span class=meta>checked {rule.get('applied', 0)}, violated {rule.get('violated', 0)}</span></li>")
+        if not rules:
+            body.append("<li>No rules were written.</li>")
+        for finding in others:
+            reason = (finding.get("judgement") or {}).get("explanation", "")
+            body.append(f"<li>Not reported: rule {esc(finding['rule_id'])} on <code>{esc(finding['page'])}</code>, "
+                        f"{esc(finding['status'].replace('_', ' '))}{(': ' + esc(reason)) if reason else ''}</li>")
+        body.append("</ul>")
     style = """
 :root{--bg:#fbfaf7;--fg:#1d1d1b;--muted:#6b6a64;--line:#e3e0d8;--accent:#1f5f8b;--warn:#8a4b08;--card:#fff}
 @media (prefers-color-scheme:dark){:root{--bg:#161614;--fg:#ecebe6;--muted:#a3a29b;--line:#34332f;--accent:#7cb4dc;--warn:#e0a458;--card:#1f1f1c}}

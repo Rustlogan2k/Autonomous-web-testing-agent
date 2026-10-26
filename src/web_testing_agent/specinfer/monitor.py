@@ -93,8 +93,10 @@ class SpecMonitor:
     def __init__(self, replayer: SpecReplayer, *, app_name: str, warmup: int = 150,
                  model: str = llm.DEFAULT_MODEL, replays: int = 2, max_minimization_trials: int = 15,
                  max_verifications: int = 12, max_verification_seconds: float | None = 1500.0,
-                 judge: bool = True) -> None:
+                 judge: bool = True, on_event: Callable[[str, dict], None] | None = None) -> None:
         self.replayer = replayer
+        #: Progress for a live run log (`kind`, `{"message": ...}`); silent when None.
+        self.emit = on_event or (lambda kind, data: None)
         self.app_name = app_name
         self.warmup = warmup
         self.model = model
@@ -165,6 +167,8 @@ class SpecMonitor:
                           "seconds": round(time.monotonic() - started, 1), "model": self.model}
         logger.info("specification inferred: {} rules from {} pages ({} dropped)",
                     len(self.rules), len(snaps), len(self.dropped))
+        self.emit("stage", {"message": f"Silent-bug finder: the LLM wrote {len(self.rules)} rules from "
+                                       f"{len(snaps)} pages; hunting for violations"})
 
     # -- verification ---------------------------------------------------------------------------
 
@@ -221,6 +225,11 @@ class SpecMonitor:
                 return False
             finding.status = "verified" if finding.judgement.get("verdict") == "bug" else "rejected"
             logger.info("spec finding {} on {}: {}", finding.rule_id, finding.page, finding.status)
+            title = finding.judgement.get("title") or finding.description
+            self.emit("stage" if finding.verified else "info",
+                      {"message": (f"Silent bug verified: {title}" if finding.verified
+                                   else f"Rule {finding.rule_id} violation not reported "
+                                        f"({finding.judgement.get('verdict')})")})
             return finding.verified
         finally:
             finding.verification_seconds = round(time.monotonic() - started, 2)

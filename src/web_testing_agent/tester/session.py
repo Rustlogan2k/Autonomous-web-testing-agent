@@ -356,8 +356,8 @@ def run_session(base_url: str, settings: SessionSettings | None = None, *,
 
         spec = SpecMonitor(SpecReplayer(lambda: env_factory(base_url, 120)), app_name=result.app_name,
                            warmup=settings.spec_warmup, model=settings.spec_model,
-                           max_minimization_trials=settings.max_minimization_trials)
-        emit("stage", {"message": f"Inferred-specification oracle on: rules are written after "
+                           max_minimization_trials=settings.max_minimization_trials, on_event=emit)
+        emit("stage", {"message": f"Silent-bug finder on: the LLM writes rules after "
                                   f"{settings.spec_warmup} interactions"})
     monitor = CompositeMonitor(triggers=triggers, seeded=seeded, spec=spec)
 
@@ -484,6 +484,9 @@ def capture_evidence(result: SessionResult, base_url: str, env_factory, out_dir:
         found = fault.get("finding")
         if found and found.get("confirmed"):
             keep(f"seeded_{fault['fault_id']}", found["minimized_trace"])
+    for number, finding in enumerate((result.spec or {}).get("findings", [])):
+        if finding.get("verified"):
+            keep(f"spec_{number}", finding["minimized_trace"])
     return index
 
 

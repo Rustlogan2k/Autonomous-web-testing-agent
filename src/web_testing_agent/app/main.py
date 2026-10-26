@@ -169,7 +169,8 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
 
     @app.post("/api/runs/demo")
     def start_demo(target: str = Form(...), agent: str = Form(agent_registry.DEFAULT_AGENT),
-                   budget: int = Form(400), llm: bool = Form(True)):  # noqa: ANN202
+                   budget: int = Form(400), llm: bool = Form(True),
+                   spec: bool = Form(True)):  # noqa: ANN202
         """Start a test session against a bundled application. No user code is executed."""
         demo = target_registry.demo_target(target)
         if demo is None or not demo.available:
@@ -178,7 +179,7 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
             raise HTTPException(
                 400, "This demo builds a container and the Docker daemon is not reachable. "
                      "Start Docker Desktop, or pick a demo that does not need it.")
-        settings, choice = _session_settings(agent, budget, llm)
+        settings, choice = _session_settings(agent, budget, llm, spec)
         size, count = uploads.directory_stats(demo.path)
         source = SourceInfo(
             kind="demo", name=demo.name, size_bytes=size, file_count=count,
@@ -192,14 +193,15 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
 
     @app.post("/api/runs/url")
     def start_url(url: str = Form(...), agent: str = Form(agent_registry.DEFAULT_AGENT),
-                  budget: int = Form(400), llm: bool = Form(True)):  # noqa: ANN202
+                  budget: int = Form(400), llm: bool = Form(True),
+                   spec: bool = Form(True)):  # noqa: ANN202
         """Start a test session against an application that is already running."""
         from urllib.parse import urlsplit
 
         parts = urlsplit(url.strip())
         if parts.scheme not in ("http", "https") or not parts.netloc:
             raise HTTPException(400, "Enter a full http:// or https:// address.")
-        settings, choice = _session_settings(agent, budget, llm)
+        settings, choice = _session_settings(agent, budget, llm, spec)
         source = SourceInfo(kind="url", name=parts.netloc[:80], workspace="",
                             build_kind="url", build_file=url.strip()[:200], validation_ok=True,
                             validation_message="Live application; nothing is deployed.")
@@ -228,7 +230,8 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
     def start_upload_run(workspace: str = Form(...), repo: str = Form(...),  # noqa: ANN202
                          name: str = Form(...),
                          agent: str = Form(agent_registry.DEFAULT_AGENT),
-                         budget: int = Form(400), llm: bool = Form(True)):
+                         budget: int = Form(400), llm: bool = Form(True),
+                   spec: bool = Form(True)):
         """Start a test session against a previously validated upload."""
         workspace_path = Path(workspace)
         repo_path = Path(repo)
@@ -243,7 +246,7 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
                 400, "Testing an uploaded repository requires Docker, and the daemon is "
                      "not reachable. Start Docker Desktop and try again.")
 
-        settings, choice = _session_settings(agent, budget, llm)
+        settings, choice = _session_settings(agent, budget, llm, spec)
 
         size, count = uploads.directory_stats(repo_path)
         detail = _inspect_build(repo_path)
@@ -459,12 +462,12 @@ def _has_dockerfile(repo: Path) -> bool:
                for name in ("Dockerfile", "dockerfile"))
 
 
-def _session_settings(agent: str, budget: int, llm: bool):  # noqa: ANN202
+def _session_settings(agent: str, budget: int, llm: bool, spec: bool = True):  # noqa: ANN202
     """User settings for a test session, clamped, with the agent resolved."""
     choice = agent_registry.resolve(agent)
     if choice.key not in agent_registry.SESSION_AGENTS:
         choice = agent_registry.resolve(agent_registry.DEFAULT_AGENT)
-    settings = TestSettings(agent=choice.key, budget=budget, llm=llm).clamped()
+    settings = TestSettings(agent=choice.key, budget=budget, llm=llm, spec=spec).clamped()
     return settings, choice
 
 

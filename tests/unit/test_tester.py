@@ -165,3 +165,30 @@ def test_the_product_detects_listener_clickables_by_default():
 
     settings = SessionSettings()
     assert settings.custom_clickables and settings.listener_clickables
+
+
+def test_silent_bug_findings_are_reported_with_their_rule_and_verdict():
+    from web_testing_agent.tester.report import verified_findings
+
+    result = SessionResult(target="https://shop.test/", app_name="Shop", settings={}, started_at="now")
+    result.spec = {
+        "rules": [{"id": "R2", "kind": "counter", "description": "Remove lowers the badge by 1",
+                   "applied": 2, "violated": 2}],
+        "findings": [
+            {"rule_id": "R2", "kind": "counter", "description": "Remove lowers the badge by 1",
+             "page": "/inventory.html", "first_seen_at": 130, "details": {"before": 1, "after": 1},
+             "status": "verified", "verified": True, "minimized_trace": [{"type": "CLICK", "text": "Remove"}],
+             "minimization": {"original_length": 9},
+             "judgement": {"verdict": "bug", "confidence": 0.95, "title": "Remove does not update the badge",
+                           "explanation": "The badge stays at 1."}},
+            {"rule_id": "R5", "kind": "sorted", "description": "Prices descend", "page": "/inventory.html",
+             "first_seen_at": 140, "details": {}, "status": "rejected", "verified": False,
+             "minimized_trace": [], "judgement": {"verdict": "rule_error", "explanation": "wrong selector"}},
+        ],
+    }
+    items = verified_findings(result)
+    assert [i["title"] for i in items] == ["Remove does not update the badge"]
+    markdown = render_markdown(result)
+    assert "Silent-bug finder" in markdown and "**R2** (counter)" in markdown
+    assert "Not reported: rule R5" in markdown and "wrong selector" in markdown
+    assert "Remove does not update the badge" in render_html(result, Path("."))

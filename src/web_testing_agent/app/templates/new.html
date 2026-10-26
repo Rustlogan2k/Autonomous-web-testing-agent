@@ -157,6 +157,14 @@
         <span class="hint">Uses a local Ollama model. The model never decides what is a
           verified finding; if it is not running the test continues without it.</span>
       </label>
+      <label class="field">
+        <span class="name">Silent-bug finder</span>
+        <select id="spec"><option value="true" selected>On: LLM-inferred rules find silent bugs</option>
+          <option value="false">Off: crashes, failed requests and dead controls only</option></select>
+        <span class="hint">After a warm-up an LLM writes rules a correct app must obey (totals,
+          counters, sort order, data carried between pages). Each violation is replayed twice,
+          minimised and judged before it is reported. Sends page text to the LLM.</span>
+      </label>
     </div>
 
     <div class="alert info mb-0">
@@ -207,7 +215,8 @@
     return {
       agent: document.getElementById('agent').value,
       budget: document.getElementById('budget').value,
-      llm: document.getElementById('llm').value
+      llm: document.getElementById('llm').value,
+      spec: document.getElementById('spec').value
     };
   }
 
@@ -312,6 +321,7 @@
     body.append('agent', config.agent);
     body.append('budget', config.budget);
     body.append('llm', config.llm);
+    body.append('spec', config.spec);
     post('/api/runs', body);
   });
 
@@ -330,6 +340,7 @@
     body.append('agent', config.agent);
     body.append('budget', config.budget);
     body.append('llm', config.llm);
+    body.append('spec', config.spec);
     post('/api/runs/url', body, button);
   });
 
@@ -343,6 +354,7 @@
       body.append('agent', config.agent);
       body.append('budget', config.budget);
       body.append('llm', config.llm);
+    body.append('spec', config.spec);
       post('/api/runs/demo', body, button);
     });
   });

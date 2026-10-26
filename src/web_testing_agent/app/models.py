@@ -156,6 +156,10 @@ class TestSettings:
     budget: int = 400
     #: Use the local language model for the progress reward and the outcome review.
     llm: bool = True
+    #: Silent-bug finder: an LLM infers rules a correct application must obey after a
+    #: warm-up, and violations are reported once replayed, minimised and judged
+    #: (`specinfer`). On by default in the product; sends page text to the LLM.
+    spec: bool = True
 
     def clamped(self) -> "TestSettings":
         """Bound to what the product supports, so a hand-edited request cannot ask for a
@@ -167,6 +171,7 @@ class TestSettings:
             seed=max(0, min(int(self.seed), 2**31 - 1)),
             budget=max(50, min(int(self.budget), 3000)),
             llm=bool(self.llm),
+            spec=bool(self.spec),
         )
 
     def to_dict(self) -> dict:
