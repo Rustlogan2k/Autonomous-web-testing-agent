@@ -71,6 +71,12 @@ Rules use ONLY these kinds and fields (selectors MUST be copied from the page sn
 - blocked: {"form_page": regex, "field": a required input's selector or label, "submit": regex on the submit label,
   "forbidden_page": regex of the page that must NOT be reached while the field is empty}
 
+The pages were captured from the application as it is, and it MAY CONTAIN BUGS. Never assume that
+what a page shows is correct. Base every rule on what the labels, controls and the application's
+domain imply a correct application does. Digits observed on the pages are masked as # on purpose:
+reason about relationships between values, not about the values you happened to see.
+If documentation or tests from the application's repository are given ("intended_behaviour"), treat
+them as the statement of intended behaviour and prefer them over anything the pages show.
 Only write rules a correct application must obey in EVERY case; avoid rules that depend on data you cannot see.
 Prefer 8-15 specific, high-value rules. Each rule: {"id", "kind", "description" (what correct behaviour is,
 one sentence), "rationale" (why you believe it), ...kind fields}.
@@ -81,13 +87,20 @@ JUDGE_SYSTEM = """You are a senior software tester reviewing a candidate bug fou
 A rule describing expected behaviour was violated, reproducibly, by the minimal steps shown.
 Decide whether this is a genuine functional bug of the application, behaviour the application
 intends, or a mistake in the rule (wrong selector, wrong assumption, misapplied).
+The application may be buggy: do not excuse behaviour just because the application does it.
+If you answer "intended", you MUST give "evidence_quote": an exact quote, copied verbatim from the
+page text or from the intended-behaviour documents, that shows the behaviour is intended. Without
+such a quote, answer "bug" or "rule_error".
 Respond with JSON: {"verdict": "bug"|"intended"|"rule_error", "confidence": 0-1,
-"title": short bug title, "explanation": two sentences a developer can act on}"""
+"title": short bug title, "explanation": two sentences a developer can act on,
+"evidence_quote": "..." (required for "intended")}"""
 
 
 def propose_rules(app: str, snapshots: list[dict], journeys: list[list[str]], *,
-                  existing: list[str] | None = None, model: str = DEFAULT_MODEL) -> dict:
+                  existing: list[str] | None = None, intent: str = "", model: str = DEFAULT_MODEL) -> dict:
     payload = {"application": app, "pages": snapshots, "example_journeys": journeys[:6]}
+    if intent:
+        payload["intended_behaviour"] = intent
     if existing:
         payload["rules_already_written"] = existing
         payload["instruction"] = ("These pages are new. Write rules only for behaviour on them that the rules "
@@ -96,7 +109,10 @@ def propose_rules(app: str, snapshots: list[dict], journeys: list[list[str]], *,
     return chat_json(RULE_SYSTEM, user[:60000], model=model)
 
 
-def judge(rule: dict, details: dict, steps: list[str], page_text: str, *, model: str = DEFAULT_MODEL) -> dict:
-    user = json.dumps({"rule": rule, "observed": details, "minimal_steps": steps,
-                       "page_text_at_violation": page_text[:3500]}, ensure_ascii=False)
+def judge(rule: dict, details: dict, steps: list[str], page_text: str, *, intent: str = "",
+          model: str = DEFAULT_MODEL) -> dict:
+    payload = {"rule": rule, "observed": details, "minimal_steps": steps, "page_text_at_violation": page_text[:3500]}
+    if intent:
+        payload["intended_behaviour"] = intent[:6000]
+    user = json.dumps(payload, ensure_ascii=False)
     return chat_json(JUDGE_SYSTEM, user, model=model)

@@ -24,6 +24,7 @@ from ..evaluation.scripted import ScriptedPolicy
 from ..oracle import minimize_trace, observed_record
 from ..utils.logging import get_logger
 from . import llm
+from .intent import quote_supported
 from .pages import snapshot, template_of, visible_text
 from .rules import Rule, evaluate, parse_rules, violations
 
@@ -38,7 +39,7 @@ class SpecFinding:
     page: str
     first_seen_at: int
     details: dict = field(default_factory=dict)
-    status: str = "candidate"   # candidate | verified | not_reproduced | rejected | unjudged
+    status: str = "candidate"   # candidate | verified | not_reproduced | rejected | needs_review | unjudged
     replays: list[bool] = field(default_factory=list)
     original_trace: list[dict] = field(default_factory=list)
     minimized_trace: list[dict] = field(default_factory=list)
@@ -91,16 +92,37 @@ def _describe(step: dict | None) -> str:
     return f"{step.get('type', '?')} {target!s}" + (f" = {value!r}" if value is not None else "")
 
 
+def verdict_status(judgement: dict, page_text: str, intent: str) -> str:
+    """verified, rejected, or needs_review.
+
+    A real bug excused as "intended" is the costliest mistake the judge can make, so that
+    verdict must prove itself: its quote has to appear in the page text or the repository's
+    intent documents. An unsupported "intended" is not dismissed; it goes to a person.
+    """
+    verdict = judgement.get("verdict")
+    if verdict == "bug":
+        return "verified"
+    if verdict == "intended" and not quote_supported(judgement.get("evidence_quote", ""), page_text, intent):
+        judgement["note"] = "judged intended, but its quote was not found in the evidence"
+        return "needs_review"
+    return "rejected"
+
+
 class SpecMonitor:
     def __init__(self, replayer: SpecReplayer, *, app_name: str, warmup: int = 300,
                  min_warmup: int = 60, stall: int = 60, refresh_after: int = 2, max_refreshes: int = 2,
                  model: str = llm.DEFAULT_MODEL, replays: int = 2, max_minimization_trials: int = 15,
                  max_verifications: int = 12, max_verification_seconds: float | None = 1500.0,
-                 judge: bool = True, on_event: Callable[[str, dict], None] | None = None) -> None:
+                 judge: bool = True, on_event: Callable[[str, dict], None] | None = None,
+                 intent: str = "", intent_files: list[str] | None = None) -> None:
         self.replayer = replayer
         #: Progress for a live run log (`kind`, `{"message": ...}`); silent when None.
         self.emit = on_event or (lambda kind, data: None)
         self.app_name = app_name
+        #: Documentation and tests from the repository (`intent.collect_intent`): the statement
+        #: of intended behaviour given to the rule writer and the judge.
+        self.intent = intent
+        self.intent_files = list(intent_files or [])
         #: Rules are written once no new page has appeared for `stall` interactions, but not
         #: before `min_warmup` and not after `warmup` (the cap). A small app is ready early; a
         #: large one keeps exploring until it has seen its main pages.
@@ -190,7 +212,8 @@ class SpecMonitor:
         existing = [r.description for r in self.rules or []]
         prefix = f"N{len(self.inferences)}-" if self.inferences else ""
         try:
-            raw = llm.propose_rules(self.app_name, snaps, journeys, existing=existing, model=self.model)
+            raw = llm.propose_rules(self.app_name, snaps, journeys, existing=existing, intent=self.intent,
+                                    model=self.model)
             added, dropped = parse_rules(raw.get("rules", []))
         except llm.LLMError as exc:
             added, dropped = [], [f"inference failed: {exc}"]
@@ -269,16 +292,18 @@ class SpecMonitor:
             try:
                 finding.judgement = llm.judge(rule.to_dict(), finding.details,
                                               [_describe(s) for s in finding.minimized_trace], page_text,
-                                              model=self.model)
+                                              intent=self.intent, model=self.model)
             except llm.LLMError as exc:
                 finding.judgement = {"verdict": "unavailable", "explanation": str(exc)}
                 finding.status = "unjudged"
                 return False
-            finding.status = "verified" if finding.judgement.get("verdict") == "bug" else "rejected"
+            finding.status = verdict_status(finding.judgement, page_text, self.intent)
             logger.info("spec finding {} on {}: {}", finding.rule_id, finding.page, finding.status)
             title = finding.judgement.get("title") or finding.description
             self.emit("stage" if finding.verified else "info",
                       {"message": (f"Silent bug verified: {title}" if finding.verified
+                                   else f"Needs your review: {title} (judged intended without evidence)"
+                                   if finding.status == "needs_review"
                                    else f"Rule {finding.rule_id} violation not reported "
                                         f"({finding.judgement.get('verdict')})")})
             return finding.verified
@@ -303,6 +328,8 @@ class SpecMonitor:
             "candidates": len(findings),
             "verified": sum(f.verified for f in findings),
             "rejected": sum(f.status == "rejected" for f in findings),
+            "needs_review": sum(f.status == "needs_review" for f in findings),
+            "intent_files": self.intent_files,
             "not_reproduced": sum(f.status == "not_reproduced" for f in findings),
             "verification_seconds": round(self.verification_seconds, 1),
             "findings": [f.to_dict() for f in findings],

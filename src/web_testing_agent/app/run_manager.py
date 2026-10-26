@@ -47,6 +47,9 @@ from .registry import (
 
 logger = get_logger(__name__)
 
+#: The bundled full-stack demo applications (their docs and tests state intent).
+SUITE_APPS = Path(__file__).resolve().parents[3] / "e2e_suite" / "apps"
+
 #: Guard on a single run's total wall clock. A repository that builds forever or an
 #: application that never settles must not pin a worker thread indefinitely.
 RUN_DEADLINE_S = 45 * 60
@@ -267,6 +270,11 @@ class RunManager:
             with provide(kind, value) as target:
                 if target.setup_actions:
                     settings = dataclasses.replace(settings, setup_actions=tuple(target.setup_actions))
+                # Where the silent-bug finder reads intended behaviour (docs and tests only).
+                intent_dir = (value if kind == "repo" else (target.details or {}).get("root", "") if kind == "site"
+                              else str(SUITE_APPS / value) if kind == "suite" else "")
+                if intent_dir:
+                    settings = dataclasses.replace(settings, spec_intent_dir=str(intent_dir))
                     emit("info", f"Signing in at the start of every episode "
                                  f"({len(target.setup_actions)} steps)")
                 run.base_url = target.url

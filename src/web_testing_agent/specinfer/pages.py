@@ -83,8 +83,22 @@ def selector_for(el: Tag) -> str | None:
     return None
 
 
-def snapshot(url: str, html: str, *, max_elements: int = 45) -> dict:
-    """The page as the rule writer sees it: text, values, lists, inputs, controls."""
+_DIGIT = re.compile(r"\d")
+
+
+def _mask(text: str) -> str:
+    return _DIGIT.sub("#", text or "")
+
+
+def snapshot(url: str, html: str, *, max_elements: int = 45, mask: bool = True) -> dict:
+    """The page as the rule writer sees it: text, values, lists, inputs, controls.
+
+    With `mask`, every digit the page shows becomes `#` (`$29.99` -> `$##.##`), so the rule
+    writer sees *that* an element holds a price but not the possibly wrong price itself, and
+    cannot anchor a rule on a value the bug produced. Labels, option values and selectors are
+    left as they are, because rules must match them exactly.
+    """
+    hide = _mask if mask else (lambda t: t)
     soup = soup_of(html)
     seen: dict[str, dict] = {}
     for el in soup.find_all(True):
@@ -101,8 +115,8 @@ def snapshot(url: str, html: str, *, max_elements: int = 45) -> dict:
             continue
         entry = seen.setdefault(sel, {"selector": sel, "count": 0, "samples": []})
         entry["count"] += 1
-        if len(entry["samples"]) < 3 and text not in entry["samples"]:
-            entry["samples"].append(text)
+        if len(entry["samples"]) < 3 and hide(text) not in entry["samples"]:
+            entry["samples"].append(hide(text))
     elements = sorted(seen.values(), key=lambda e: (-(e["count"] > 1), e["selector"]))[:max_elements]
     inputs = []
     for el in soup.find_all(["input", "textarea", "select"]):
@@ -124,6 +138,6 @@ def snapshot(url: str, html: str, *, max_elements: int = 45) -> dict:
         if label and label not in controls:
             controls.append(label[:50])
     title = soup.find(["h1", "h2"]) or soup.find("title")
-    return {"page": template_of(url), "title": title.get_text(" ", strip=True)[:80] if title else "",
-            "text": visible_text(html, 700), "elements": elements, "inputs": inputs[:20],
+    return {"page": template_of(url), "title": hide(title.get_text(" ", strip=True)[:80]) if title else "",
+            "text": hide(visible_text(html, 700)), "elements": elements, "inputs": inputs[:20],
             "controls": controls[:30]}

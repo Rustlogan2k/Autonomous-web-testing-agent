@@ -591,6 +591,24 @@ without effect) go unseen. This adds an oracle the application does not have to 
 
    Only `bug` is reported as verified; the others are kept, with the judge's reason.
 
+**Safeguards against learning a bug as intended behaviour** (added 2026-10-27):
+1. **The pages may be buggy.** The rule writer is told plainly that the pages may contain
+   bugs, so it must not assume what it sees is correct. Rules must come from what labels,
+   controls and the domain imply.
+2. **Values are masked.** Every digit the rule writer sees becomes `#` (`$29.99` →
+   `$##.##`), so it knows an element holds a price but cannot anchor a rule on a value the
+   bug produced. Labels, option values and selectors stay exact.
+3. **Intent from the repository** (`specinfer/intent.py`). The README, docs and tests (never
+   source code) of an upload, site folder or bundled demo app are given to the rule writer
+   and the judge as the statement of intended behaviour. Answer keys are skipped: fault
+   manifests, patches, and files naming a seeded fault id such as `HELP-2`. A test checks
+   that no bundled app leaks a fault id. Three bundled apps (bagstreet, helpline, tidewater)
+   contribute their API tests.
+4. **"Intended" must quote its evidence.** The judge must quote, verbatim, text from the page
+   or the intent documents showing the behaviour is intended. If the quote is missing or
+   not found, the violation is not dismissed: it becomes **needs your review** and is listed
+   in the report with its reproduction.
+
 **Use.**
 - **Web app:** the "Silent-bug finder" option on New Test is **on by default** (`TestSettings.spec`).
   The warm-up cap is half the budget (at least 60). Verified silent

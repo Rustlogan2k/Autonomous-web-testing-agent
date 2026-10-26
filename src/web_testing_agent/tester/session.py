@@ -90,6 +90,8 @@ class SessionSettings:
     #: Warm-up cap: rules are written when page discovery levels off, and at the latest here.
     spec_warmup: int = 300
     spec_model: str = "gpt-oss:120b-cloud"
+    #: A repository whose README, docs and tests state the intended behaviour (empty: none).
+    spec_intent_dir: str = ""
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -354,10 +356,16 @@ def run_session(base_url: str, settings: SessionSettings | None = None, *,
     spec = None
     if settings.spec_oracle:
         from ..specinfer import SpecMonitor, SpecReplayer
+        from ..specinfer.intent import collect_intent
 
+        intent, intent_files = collect_intent(settings.spec_intent_dir)
+        if intent_files:
+            emit("stage", {"message": f"Silent-bug finder: read intended behaviour from {len(intent_files)} "
+                                      f"repository document(s): {', '.join(intent_files[:4])}"})
         spec = SpecMonitor(SpecReplayer(lambda: env_factory(base_url, 120)), app_name=result.app_name,
                            warmup=settings.spec_warmup, model=settings.spec_model,
-                           max_minimization_trials=settings.max_minimization_trials, on_event=emit)
+                           max_minimization_trials=settings.max_minimization_trials, on_event=emit,
+                           intent=intent, intent_files=intent_files)
         emit("stage", {"message": f"Silent-bug finder on: the LLM writes rules once page discovery "
                                   f"levels off (at most after {settings.spec_warmup} interactions)"})
     monitor = CompositeMonitor(triggers=triggers, seeded=seeded, spec=spec)

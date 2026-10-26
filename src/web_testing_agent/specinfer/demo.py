@@ -56,12 +56,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--budget", type=int, default=600)
     parser.add_argument("--warmup", type=int, default=None, help="warm-up cap (default: half the budget)")
     parser.add_argument("--agent", default="hybrid_final")
+    parser.add_argument("--intent", default="", help="repository folder whose docs and tests state intended behaviour")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--out", type=Path, default=Path("runs/spec-demo"))
     args = parser.parse_args(argv)
     settings = SessionSettings(budget=args.budget, agent=args.agent, seed=args.seed, llm_reward=False,
                                llm_review=False, spec_oracle=True, spec_warmup=args.warmup or max(60, args.budget // 2),
-                               setup_actions=tuple(json.loads(args.setup)))
+                               setup_actions=tuple(json.loads(args.setup)), spec_intent_dir=args.intent)
     out = args.out / args.name
     out.mkdir(parents=True, exist_ok=True)
     result = run_session(args.url, settings, app_name=args.name, out_dir=out,

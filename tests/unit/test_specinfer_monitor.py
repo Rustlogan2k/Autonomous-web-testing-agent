@@ -19,7 +19,7 @@ class FakeLLM:
     def __init__(self) -> None:
         self.calls: list[dict] = []
 
-    def __call__(self, app, snapshots, journeys, *, existing=None, model=None):  # noqa: ANN001, ANN204
+    def __call__(self, app, snapshots, journeys, *, existing=None, intent="", model=None):  # noqa: ANN001, ANN204
         self.calls.append({"pages": [s["page"] for s in snapshots], "existing": list(existing or [])})
         n = len(self.calls)
         return {"rules": [{"id": "R1", "kind": "arithmetic", "description": f"rule from call {n}",
