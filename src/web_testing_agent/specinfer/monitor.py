@@ -1,6 +1,8 @@
 """The inferred-specification oracle, driven by the hunt harness like any other monitor.
 
-    warm-up (no rules)  ->  LLM proposes rules from the pages seen so far
+    warm-up (no rules)  ->  LLM proposes rules from the pages seen so far, once page
+                            discovery levels off (or at the warm-up cap)
+    new pages later     ->  rules for just those pages (a bounded number of refreshes)
     every later step    ->  each rule checked; a violation is a candidate
     candidate           ->  replay twice in fresh sessions (the rule must be violated again)
                         ->  delta-debugging minimisation, every trial a real replay
@@ -90,7 +92,8 @@ def _describe(step: dict | None) -> str:
 
 
 class SpecMonitor:
-    def __init__(self, replayer: SpecReplayer, *, app_name: str, warmup: int = 150,
+    def __init__(self, replayer: SpecReplayer, *, app_name: str, warmup: int = 300,
+                 min_warmup: int = 60, stall: int = 60, refresh_after: int = 2, max_refreshes: int = 2,
                  model: str = llm.DEFAULT_MODEL, replays: int = 2, max_minimization_trials: int = 15,
                  max_verifications: int = 12, max_verification_seconds: float | None = 1500.0,
                  judge: bool = True, on_event: Callable[[str, dict], None] | None = None) -> None:
@@ -98,7 +101,16 @@ class SpecMonitor:
         #: Progress for a live run log (`kind`, `{"message": ...}`); silent when None.
         self.emit = on_event or (lambda kind, data: None)
         self.app_name = app_name
+        #: Rules are written once no new page has appeared for `stall` interactions, but not
+        #: before `min_warmup` and not after `warmup` (the cap). A small app is ready early; a
+        #: large one keeps exploring until it has seen its main pages.
         self.warmup = warmup
+        self.min_warmup = min(min_warmup, warmup)
+        self.stall = stall
+        #: When `refresh_after` page types appear that no rule covers, rules are written for
+        #: just those pages, at most `max_refreshes` times.
+        self.refresh_after = refresh_after
+        self.max_refreshes = max_refreshes
         self.model = model
         self.replays = replays
         self.max_minimization_trials = max_minimization_trials
@@ -108,13 +120,16 @@ class SpecMonitor:
         self.rules: list[Rule] | None = None
         self.dropped: list[str] = []
         self.rule_stats: dict[str, dict] = {}
-        self.inference: dict = {}
+        self.inferences: list[dict] = []
         self.findings: dict[tuple[str, str], SpecFinding] = {}
         self.verification_seconds = 0.0
         self.verification_steps = 0
         self._episodes: list[list[dict]] = []
         self._episode: list[dict] = []
         self._attempted = 0
+        self._pages: dict[str, dict] = {}          # page type -> latest record showing it
+        self._last_new_at = 0
+        self._covered: set[str] = set()
 
     # -- monitor interface ----------------------------------------------------------------------
 
@@ -125,16 +140,24 @@ class SpecMonitor:
         self._episode = [observed_record(info)]
 
     def observe(self, info: dict, executed, available, budget_used: int) -> list[SpecFinding]:  # noqa: ANN001
-        self._episode.append(observed_record(info, executed, available))
+        record = observed_record(info, executed, available)
+        self._episode.append(record)
+        self._note_page(record, budget_used)
         confirmed: list[SpecFinding] = []
         if self.rules is None:
-            if budget_used < self.warmup:
+            levelled = budget_used >= self.min_warmup and budget_used - self._last_new_at >= self.stall
+            if not (levelled or budget_used >= self.warmup):
                 return confirmed
-            self._infer()
-            for episode in self._episodes + [self._episode[:-1]]:
-                for rule in self.rules or []:
-                    for i, outcome in violations(rule, episode)[:1]:
-                        confirmed += self._candidate(rule, episode, i, outcome, budget_used)
+            why = (f"page discovery levelled off after {budget_used} interactions" if levelled
+                   else f"warm-up cap of {self.warmup} interactions reached")
+            self.rules = []
+            added = self._infer(list(self._pages), why=why)
+            confirmed += self._recheck(added, budget_used)
+        else:
+            uncovered = [t for t in self._pages if t not in self._covered]
+            if len(uncovered) >= self.refresh_after and len(self.inferences) <= self.max_refreshes:
+                added = self._infer(uncovered, why=f"{len(uncovered)} new page types since the last rules")
+                confirmed += self._recheck(added, budget_used)
         i = len(self._episode) - 1
         for rule in self.rules or []:
             outcome = evaluate(rule, self._episode, i)
@@ -148,27 +171,55 @@ class SpecMonitor:
 
     # -- inference ------------------------------------------------------------------------------
 
-    def _infer(self) -> None:
+    def _note_page(self, record: dict, budget_used: int) -> None:
+        if not record.get("html") or len(visible_text(record["html"], 200)) <= 40:
+            return
+        page = template_of(record["url"])
+        if page not in self._pages:
+            self._last_new_at = budget_used
+        self._pages[page] = record
+
+    def _infer(self, pages: list[str], *, why: str) -> list[Rule]:
+        """Rules for `pages` (page types), added to the active rules and returned."""
         started = time.monotonic()
-        pages: dict[str, dict] = {}
-        for episode in self._episodes + [self._episode]:
-            for rec in episode:
-                if rec.get("html") and len(visible_text(rec["html"], 200)) > 40:
-                    pages[template_of(rec["url"])] = rec
-        snaps = [snapshot(rec["url"], rec["html"]) for rec in list(pages.values())[:14]]
+        chosen = pages[:14]
+        self._covered.update(chosen)
+        snaps = [snapshot(self._pages[p]["url"], self._pages[p]["html"]) for p in chosen]
         journeys = [[_describe(r.get("action")) for r in ep if r.get("action")][:25]
                     for ep in (self._episodes + [self._episode])[-6:]]
+        existing = [r.description for r in self.rules or []]
+        prefix = f"N{len(self.inferences)}-" if self.inferences else ""
         try:
-            raw = llm.propose_rules(self.app_name, snaps, journeys, model=self.model)
-            self.rules, self.dropped = parse_rules(raw.get("rules", []))
+            raw = llm.propose_rules(self.app_name, snaps, journeys, existing=existing, model=self.model)
+            added, dropped = parse_rules(raw.get("rules", []))
         except llm.LLMError as exc:
-            self.rules, self.dropped = [], [f"inference failed: {exc}"]
-        self.inference = {"pages": len(snaps), "rules": len(self.rules), "dropped": len(self.dropped),
-                          "seconds": round(time.monotonic() - started, 1), "model": self.model}
-        logger.info("specification inferred: {} rules from {} pages ({} dropped)",
-                    len(self.rules), len(snaps), len(self.dropped))
-        self.emit("stage", {"message": f"Silent-bug finder: the LLM wrote {len(self.rules)} rules from "
-                                       f"{len(snaps)} pages; hunting for violations"})
+            added, dropped = [], [f"inference failed: {exc}"]
+        taken = {r.id for r in self.rules or []}
+        for rule in added:
+            rule.id = prefix + rule.id
+            while rule.id in taken:
+                rule.id += "'"
+            taken.add(rule.id)
+        self.rules = (self.rules or []) + added
+        self.dropped += dropped
+        self.inferences.append({"reason": why, "pages": chosen, "rules": len(added), "dropped": len(dropped),
+                                "seconds": round(time.monotonic() - started, 1), "model": self.model})
+        logger.info("specification inferred ({}): {} rules from {} pages ({} dropped)",
+                    why, len(added), len(snaps), len(dropped))
+        first = len(self.inferences) == 1
+        self.emit("stage", {"message": (f"Silent-bug finder: {why}; the LLM wrote {len(added)} rules from "
+                                        f"{len(snaps)} pages" if first else
+                                        f"Silent-bug finder: {why}; {len(added)} more rules")})
+        return added
+
+    def _recheck(self, rules: list[Rule], budget_used: int) -> list[SpecFinding]:
+        """New rules checked against the episodes already seen, so earlier bugs count."""
+        confirmed: list[SpecFinding] = []
+        for episode in self._episodes + [self._episode[:-1]]:
+            for rule in rules:
+                for i, outcome in violations(rule, episode)[:1]:
+                    confirmed += self._candidate(rule, episode, i, outcome, budget_used)
+        return confirmed
 
     # -- verification ---------------------------------------------------------------------------
 
@@ -245,7 +296,8 @@ class SpecMonitor:
     def summary(self) -> dict:
         findings = list(self.findings.values())
         return {
-            "inference": self.inference,
+            "inference": self.inferences[0] if self.inferences else {},
+            "inferences": self.inferences,
             "rules": [{**r.to_dict(), **self.rule_stats.get(r.id, {"applied": 0, "violated": 0})} for r in self.rules or []],
             "dropped_rules": self.dropped,
             "candidates": len(findings),

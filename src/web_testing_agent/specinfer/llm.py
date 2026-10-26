@@ -85,8 +85,14 @@ Respond with JSON: {"verdict": "bug"|"intended"|"rule_error", "confidence": 0-1,
 "title": short bug title, "explanation": two sentences a developer can act on}"""
 
 
-def propose_rules(app: str, snapshots: list[dict], journeys: list[list[str]], *, model: str = DEFAULT_MODEL) -> dict:
-    user = json.dumps({"application": app, "pages": snapshots, "example_journeys": journeys[:6]}, ensure_ascii=False)
+def propose_rules(app: str, snapshots: list[dict], journeys: list[list[str]], *,
+                  existing: list[str] | None = None, model: str = DEFAULT_MODEL) -> dict:
+    payload = {"application": app, "pages": snapshots, "example_journeys": journeys[:6]}
+    if existing:
+        payload["rules_already_written"] = existing
+        payload["instruction"] = ("These pages are new. Write rules only for behaviour on them that the rules "
+                                  "already written do not cover; do not repeat those rules.")
+    user = json.dumps(payload, ensure_ascii=False)
     return chat_json(RULE_SYSTEM, user[:60000], model=model)
 
 

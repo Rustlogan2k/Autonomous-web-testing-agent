@@ -87,7 +87,8 @@ class SessionSettings:
     #: proposes rules a correct application must obey, and violations become findings once
     #: replayed, minimised and judged. Off by default: it sends page text to `spec_model`.
     spec_oracle: bool = False
-    spec_warmup: int = 150
+    #: Warm-up cap: rules are written when page discovery levels off, and at the latest here.
+    spec_warmup: int = 300
     spec_model: str = "gpt-oss:120b-cloud"
 
     def to_dict(self) -> dict:
@@ -357,8 +358,8 @@ def run_session(base_url: str, settings: SessionSettings | None = None, *,
         spec = SpecMonitor(SpecReplayer(lambda: env_factory(base_url, 120)), app_name=result.app_name,
                            warmup=settings.spec_warmup, model=settings.spec_model,
                            max_minimization_trials=settings.max_minimization_trials, on_event=emit)
-        emit("stage", {"message": f"Silent-bug finder on: the LLM writes rules after "
-                                  f"{settings.spec_warmup} interactions"})
+        emit("stage", {"message": f"Silent-bug finder on: the LLM writes rules once page discovery "
+                                  f"levels off (at most after {settings.spec_warmup} interactions)"})
     monitor = CompositeMonitor(triggers=triggers, seeded=seeded, spec=spec)
 
     outcomes: dict[str, dict] = {}

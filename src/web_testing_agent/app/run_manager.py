@@ -248,10 +248,10 @@ class RunManager:
         settings = SessionSettings(
             budget=run.settings.budget, seed=run.settings.seed, agent=session_agent,
             llm_reward=run.settings.llm, llm_review=run.settings.llm,
-            # Rules are written after a third of the budget (60-150 interactions), so a short
-            # run still leaves most of its budget to hunting with them.
+            # Rules are written when page discovery levels off; half the budget is the cap, so
+            # a run always keeps at least half of its budget for hunting with them.
             spec_oracle=bool(getattr(run.settings, "spec", True)),
-            spec_warmup=max(60, min(150, run.settings.budget // 3)),
+            spec_warmup=max(60, run.settings.budget // 2),
             settle_quiet_ms=80 if kind in ("site", "benchmark", "suite") else None)
         run.progress.steps_total = settings.budget
         run.progress.episodes_total = max(1, settings.budget // settings.episode_steps)

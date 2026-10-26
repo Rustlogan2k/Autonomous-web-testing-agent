@@ -25,7 +25,7 @@ def _steps(trace: list[dict]) -> str:
 def summary_markdown(name: str, url: str, result) -> str:  # noqa: ANN001
     spec = result.spec or {}
     lines = [f"# Inferred-specification run: {name}", "", f"Target: {url}  ", f"Interactions: {result.hunt.get('steps')}  ",
-             f"Inference: {spec.get('inference')}", "", "## Rules the LLM proposed", "",
+             f"Rule writing: {spec.get('inferences') or spec.get('inference')}", "", "## Rules the LLM proposed", "",
              "| Rule | Kind | Expected behaviour | Applied | Violated |", "|---|---|---|---|---|"]
     for r in spec.get("rules", []):
         lines.append(f"| {r['id']} | {r['kind']} | {r['description']} | {r['applied']} | {r['violated']} |")
@@ -54,13 +54,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--url", required=True)
     parser.add_argument("--setup", default="[]", help="sign-in macro as JSON (scripted steps)")
     parser.add_argument("--budget", type=int, default=600)
-    parser.add_argument("--warmup", type=int, default=150)
+    parser.add_argument("--warmup", type=int, default=None, help="warm-up cap (default: half the budget)")
     parser.add_argument("--agent", default="hybrid_final")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--out", type=Path, default=Path("runs/spec-demo"))
     args = parser.parse_args(argv)
     settings = SessionSettings(budget=args.budget, agent=args.agent, seed=args.seed, llm_reward=False,
-                               llm_review=False, spec_oracle=True, spec_warmup=args.warmup,
+                               llm_review=False, spec_oracle=True, spec_warmup=args.warmup or max(60, args.budget // 2),
                                setup_actions=tuple(json.loads(args.setup)))
     out = args.out / args.name
     out.mkdir(parents=True, exist_ok=True)

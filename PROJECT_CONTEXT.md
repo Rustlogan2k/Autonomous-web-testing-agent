@@ -553,8 +553,15 @@ controls), and silent functional bugs (wrong totals, lost data, broken sorting, 
 without effect) go unseen. This adds an oracle the application does not have to supply.
 
 **How it works** (`src/web_testing_agent/specinfer/`).
-1. **Warm-up.** The tester explores for `spec_warmup` interactions (default 150), and
-   `SpecMonitor` keeps the episodes.
+1. **Adaptive warm-up.** The tester explores and `SpecMonitor` keeps the episodes. Rules are
+   written once page discovery levels off: no new page type for `stall` (60) interactions.
+   Never before `min_warmup` (60), never after the cap `spec_warmup` (300; half the budget
+   in the app).
+   **Refresh:** when ≥ 2 page types appear that no rule covers (one round covers at most 14
+   pages), the LLM writes rules for just those pages. It is shown the existing rules, and
+   at most 2 refreshes happen per run; new rules also re-check the kept episodes. Added
+   2026-10-27 after the Sauce Demo run's fixed 120-interaction warm-up saw only 3 page
+   types. Unit-tested (`test_specinfer_monitor.py`); not yet run live.
 2. **Page snapshots** (`pages.py`). Each distinct page (path with ids replaced) becomes:
    - the visible text;
    - elements with real CSS selectors (id, `data-test`, or tag with classes) and sample
@@ -586,7 +593,7 @@ without effect) go unseen. This adds an oracle the application does not have to 
 
 **Use.**
 - **Web app:** the "Silent-bug finder" option on New Test is **on by default** (`TestSettings.spec`).
-  The warm-up is a third of the budget, clamped to 60–150 interactions. Verified silent
+  The warm-up cap is half the budget (at least 60). Verified silent
   bugs appear in the report beside the other findings, with the rule and the judge's verdict.
   A "Silent-bug finder" report section lists every rule (checked and violated counts) and
   the violations not reported, with their reasons. The live log announces the rules and each
