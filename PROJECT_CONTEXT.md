@@ -29,6 +29,10 @@ Last updated: 2026-10-24.
 >   plot in it comes from `scripts/presentation_plots.py` (`presentation/plots/`).
 > - **Product:** the web UI's default is Katalyze (tuned), i.e. `hybrid_final` with
 >   listener-based clickable detection; agents carry plain names in the UI.
+> - **New (2026-10-26, preliminary): an LLM-inferred specification oracle** (`specinfer/`,
+>   §0.11). It finds silent functional bugs on applications that ship no oracle. In the first
+>   live demo (Sauce Demo, `problem_user`) it verified "Remove does not decrement the cart
+>   badge". This is a demonstration, not an evaluation.
 > - **Remaining:** the team-contributions slide (to be filled in by the team) and the demo.
 
 > **Documents removed on 2026-10-22.** At the owner's request the repository now keeps only
@@ -532,12 +536,90 @@ either external round, and this is added after round 2's results were seen.
   (branch `ext-gha`).
 - **Presentation:** `Katalyze_Final_Review.pptx`; plots from `scripts/presentation_plots.py`;
   thesis figures from `scripts/thesis_figures.py` (`--screens` retakes the UI screenshots).
+- **LLM-inferred oracle:** `src/web_testing_agent/specinfer/` (§0.11); demo runs in
+  `runs/spec-demo/`, LLM responses cached in `var/llm-cache/specinfer/`.
 - **Mentor update:** `Update.md` (not committed; the owner keeps two Markdown files in git).
 - **Thesis:** `thesis/mythesis.tex` and `thesis/chapters/`. Build with MiKTeX: `pdflatex`,
   `bibtex`, then `pdflatex` twice. Git Bash needs a PATH without the `python.exe` file
   entry.
 - **Worktrees**: `../rlwt-suite-v2` (branch `suite-v2`), `../rlwt-tune` (`tune-v3`),
   `../rlwt-ui` (`ui-v3`, merged) and `../rlwt-ext` (`ext-bench`, merged).
+
+### 0.11 Inferred-specification oracle (LLM) — IMPLEMENTED 2026-10-26, PRELIMINARY
+
+**Why.** Seeded faults come with hand-written assertions. On an unseen application without
+them, only generic triggers fire (script errors, failed requests, error pages, dead
+controls), and silent functional bugs (wrong totals, lost data, broken sorting, actions
+without effect) go unseen. This adds an oracle the application does not have to supply.
+
+**How it works** (`src/web_testing_agent/specinfer/`).
+1. **Warm-up.** The tester explores for `spec_warmup` interactions (default 150), and
+   `SpecMonitor` keeps the episodes.
+2. **Page snapshots** (`pages.py`). Each distinct page (path with ids replaced) becomes:
+   - the visible text;
+   - elements with real CSS selectors (id, `data-test`, or tag with classes) and sample
+     values;
+   - the inputs, with labels and select options;
+   - the controls.
+3. **Rule inference** (`llm.py`). An LLM proposes 8–15 rules from the snapshots and example
+   journeys, in a fixed JSON format. Default model: `gpt-oss:120b-cloud` via Ollama, which
+   sends page text to Ollama's cloud. Every response is cached under `var/llm-cache/specinfer/`.
+4. **Six rule kinds** (`rules.py`), each checked against the recorded steps; no code is executed:
+   - `arithmetic`: numbers on a page satisfy an expression. It is parsed into a restricted
+     syntax tree, never `eval`ed.
+   - `echo`: an entered value appears unchanged on a later page.
+   - `sorted`: after a sort option is chosen, the list is in that order.
+   - `counter`: an action changes a counter by a fixed delta.
+   - `consistency`: a value shown on one page equals one shown later on another.
+   - `blocked`: a required field left empty does not get through.
+
+   Malformed rules are dropped with a reason.
+5. **Hunt.** Every later step is checked against every rule, and the kept warm-up episodes
+   are checked as soon as the rules exist. A violation becomes a candidate, identified by
+   the rule and the page.
+6. **Verification:**
+   - replay twice in fresh sessions; the rule must be violated again;
+   - delta-debugging minimisation;
+   - LLM adjudication of the minimal reproduction: `bug`, `intended` or `rule_error`.
+
+   Only `bug` is reported as verified; the others are kept, with the judge's reason.
+
+**Use.** `SessionSettings(spec_oracle=True, spec_warmup=..., spec_model=...)` (off by
+default), or the demo command:
+`python -m web_testing_agent.specinfer.demo --name <n> --url <url> [--setup '<sign-in steps JSON>']`,
+which writes `runs/spec-demo/<n>/session.json` and `summary.md`. Unit tests:
+`tests/unit/test_specinfer_rules.py`.
+
+**First demo (2026-10-26, Sauce Demo `problem_user`, a public practice shop with known
+seeded bugs; 400 interactions, warm-up 120; `runs/spec-demo/saucedemo-problem/`).**
+- **Rules.** 10 proposed from 3 pages, 2 dropped as malformed (they used a `Number()`
+  function the expression syntax does not allow), 8 kept:
+  - add or remove changes the cart badge by ±1;
+  - the badge equals the cart's row count;
+  - the four sort orders are correct;
+  - a product's detail page shows the clicked name;
+  - (dropped) "Reset App State" clears the badge.
+- **Coverage of the rules.** Only 3 of the 8 were exercised: remove (2 applications, 2
+  violations), badge consistency (13, 0), and one more. The tester never chose a sort option
+  after the rules existed, so the four sort rules, and the site's known sorting bug, went
+  untested.
+- **Outcome:** 1 candidate, 1 verified, 0 rejected, 0 not reproduced.
+- **Verified silent bug:** *Remove does not decrement the cart badge*. Reproduced twice,
+  minimised; the judge said `bug` with confidence 0.95. It is one of the site's documented
+  problem-user bugs.
+- **Generic triggers in the same run:** product images fail to load (inventory and detail
+  pages), and a direct reload of `/inventory.html` returns 404.
+
+**Limits, stated plainly.**
+- **One run, one site:** this is a demonstration. Nothing yet measures recall (seeded faults
+  rediscovered) or the false-positive rate.
+- **Rules are only as good as the warm-up's pages:** this run saw 3 page templates.
+- **Rules only help if the explorer exercises them.** A natural next step is to steer the
+  explorer towards the actions the rules mention (the sort control, Add to cart).
+- **The judge is the same LLM family as the proposer.**
+- **Next step:** run it on the 16 seeded apps without their assertions, and on clean builds,
+  to measure seeded faults rediscovered against false findings. Sauce Demo's `standard_user`
+  and practicesoftwaretesting.com (with and without bugs) give public control pairs.
 
 ---
 
@@ -4120,6 +4202,13 @@ Acting on an external critical review of the thesis draft.
     (`SessionSettings.listener_clickables = True`).
   - UI names: "Katalyze, tuned (recommended)", "Bandit explorer", "Curiosity RL explorer",
     "Deep Q-network (research)", "Random exploration (baseline)".
+- **LLM-inferred specification oracle** implemented (§0.11), on owner request: "our RL
+  agent should find silent functional bugs on unseen apps without any oracle". The first
+  live demo on Sauce Demo verified a real silent bug (§0.11). Reported as a preliminary
+  demonstration.
+- **Deployment:** a public quick tunnel from the laptop (cloudflared installed). It must be
+  started from the owner's own terminal; the agent's sandbox cannot reach Cloudflare's port
+  7844.
 - **Other.**
   - `Update.md` was written for the final mentor meeting.
   - Unit tests: 1,288 passed, 5 skipped.

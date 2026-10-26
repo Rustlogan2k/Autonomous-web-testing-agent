@@ -83,6 +83,12 @@ class SessionSettings:
     #: raised the frozen tester's branch coverage on all six applications. Needs
     #: `custom_clickables`.
     listener_clickables: bool = True
+    #: Inferred-specification oracle (`specinfer`): after `spec_warmup` interactions an LLM
+    #: proposes rules a correct application must obey, and violations become findings once
+    #: replayed, minimised and judged. Off by default: it sends page text to `spec_model`.
+    spec_oracle: bool = False
+    spec_warmup: int = 150
+    spec_model: str = "gpt-oss:120b-cloud"
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -98,6 +104,7 @@ class SessionResult:
     agent: dict = field(default_factory=dict)
     triggers: dict = field(default_factory=dict)
     seeded: dict | None = None
+    spec: dict | None = None
     reviews: list[dict] = field(default_factory=list)
     degradations: list[str] = field(default_factory=list)
     evidence: dict = field(default_factory=dict)
@@ -343,7 +350,16 @@ def run_session(base_url: str, settings: SessionSettings | None = None, *,
     if suite_app is not None and suite_app.faults_by_oracle("extension"):
         seeded = _with_extension_oracle(suite_app, seeded, env_factory, base_url,
                                         clean_url or base_url, control_urls or {}, settings)
-    monitor = CompositeMonitor(triggers=triggers, seeded=seeded)
+    spec = None
+    if settings.spec_oracle:
+        from ..specinfer import SpecMonitor, SpecReplayer
+
+        spec = SpecMonitor(SpecReplayer(lambda: env_factory(base_url, 120)), app_name=result.app_name,
+                           warmup=settings.spec_warmup, model=settings.spec_model,
+                           max_minimization_trials=settings.max_minimization_trials)
+        emit("stage", {"message": f"Inferred-specification oracle on: rules are written after "
+                                  f"{settings.spec_warmup} interactions"})
+    monitor = CompositeMonitor(triggers=triggers, seeded=seeded, spec=spec)
 
     outcomes: dict[str, dict] = {}
     episode_trace: list[dict] = []
@@ -391,6 +407,7 @@ def run_session(base_url: str, settings: SessionSettings | None = None, *,
 
     result.triggers = triggers.summary()
     result.seeded = seeded.summary() if seeded is not None else None
+    result.spec = spec.summary() if spec is not None else None
 
     if settings.llm_review and settings.agent == "rl" and outcomes:
         available, why = _llm_available(settings.llm_model)
