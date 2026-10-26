@@ -313,6 +313,48 @@ def round2_markdown(r: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def bandit_followup(root: Path, round2_table: dict) -> dict:
+    """POST-HOC (tag bandit-v5): hybrid_bandit_v5, the bandit at its existing settings on
+    hybrid_final_v5's base, same protocol and hardware as round 2 (`runs/ext-bandit-gha`)."""
+    runs = load(sorted((root / "runs/ext-bandit-gha/results").glob("*.json")))
+    table = summarise(runs)
+    out = {"runs": len(runs), "table": table, "averages": {}, "vs_final_v5": {}}
+    for label, apps in (("6 apps", APPS), ("without Petclinic", NO_PETCLINIC)):
+        cells = [table[f"{a}|hybrid_bandit_v5"] for a in apps if f"{a}|hybrid_bandit_v5" in table]
+        out["averages"][label] = {
+            "coverage": statistics.mean(c["coverage_mean"] for c in cells) if cells else None,
+            "console": statistics.mean(c["console_mean"] for c in cells) if cells else None,
+            "failures": statistics.mean(c["failures_mean"] for c in cells) if cells else None}
+    per_app = {a: table[f"{a}|hybrid_bandit_v5"]["coverage_mean"] - round2_table[f"{a}|hybrid_final"]["coverage_mean"]
+               for a in APPS if f"{a}|hybrid_bandit_v5" in table and f"{a}|hybrid_final" in round2_table}
+    if per_app:
+        out["vs_final_v5"] = {"median": statistics.median(per_app.values()),
+                              "apps_higher": sum(v > 0 for v in per_app.values()),
+                              "apps_lower": sum(v < 0 for v in per_app.values()), "per_app": per_app}
+    return out
+
+
+def bandit_markdown(b: dict, r2: dict) -> str:
+    t, t2 = b["table"], r2["table"]
+    lines = ["", "## POST-HOC bandit follow-up (tag bandit-v5): hybrid_bandit_v5, 5 runs, GitHub Actions", "",
+             "| App | hybrid_bandit_v5 | hybrid_final_v5 | hybrid_curiosity_v5 | WebExplor | WebRLED |", "|---|---|---|---|---|---|"]
+    for app in APPS:
+        c = t.get(f"{app}|hybrid_bandit_v5")
+        cell = (f"{c['coverage_mean']:.1f} [{c['coverage_min']:.1f}, {c['coverage_max']:.1f}] / {c['console_mean']:.1f}"
+                if c else "-")
+        lines.append(f"| {app} | {cell} | {t2[f'{app}|hybrid_final']['coverage_mean']:.1f} | "
+                     f"{t2[f'{app}|hybrid_curiosity']['coverage_mean']:.1f} | {PUBLISHED['WebExplor'][app][0]:.1f} | "
+                     f"{PUBLISHED['WebRLED'][app][0]:.1f} |")
+    for label, v in b["averages"].items():
+        if v["coverage"] is not None:
+            lines.append(f"| average, {label} | {v['coverage']:.2f} / {v['console']:.2f} | | | | |")
+    d = b.get("vs_final_v5")
+    if d:
+        lines += ["", f"Against hybrid_final_v5 (same base, no learner): median {d['median']:+.2f} points, "
+                      f"{d['apps_higher']} apps higher / {d['apps_lower']} lower."]
+    return "\n".join(lines) + "\n"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--out", type=Path, required=True, help="output stem (.json and .md)")
@@ -341,6 +383,10 @@ def main() -> None:
         text += followup_markdown(result["followup_clickables"])
     if "round2" in result:
         text += round2_markdown(result["round2"])
+    if "round2" in result and (REPO / "runs/ext-bandit-gha/results").is_dir():
+        result["bandit_followup"] = bandit_followup(REPO, result["round2"]["table"])
+        args.out.with_suffix(".json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+        text += bandit_markdown(result["bandit_followup"], result["round2"])
     args.out.with_suffix(".md").write_text(text, encoding="utf-8")
     print(text)
 

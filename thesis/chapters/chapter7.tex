@@ -572,7 +572,7 @@ Phoenix & 82.4 [76.3, 84.2] / 2.6 & \textbf{84.7} [82.9, 85.5] / 2.6 & 71.8 / 0.
 Retroboard & 54.0 [53.8, 54.4] / 1.0 & 54.0 [53.8, 54.4] / 1.0 & 60.2 / 1.0 & 77.4 / 1.0 \\
 Petclinic & 51.0 [20.0, 75.0] / 1.8 & 46.0 [20.0, 85.0] / 2.4 & 85.0 / 3.8 & 85.0 / 3.8 \\
 \midrule
-Average, 6 apps & 51.5 / 1.9 & 53.6 / 2.3 & 55.5 / 3.1 & 64.2 / 4.1 \\
+Average, 6 apps & 51.4 / 1.9 & 53.6 / 2.3 & 55.5 / 3.1 & 64.2 / 4.1 \\
 Average, without Petclinic & 51.5 & 55.1 & 49.6 & 60.0 \\
 Round 1 on the same hardware, 6 apps & 41.8 & 52.6 & & \\
 \bottomrule
@@ -595,7 +595,7 @@ Round 1 on the same hardware, 6 apps & 41.8 & 52.6 & & \\
         Pagekit, Splittypie and Phoenix, and below both on Dimeshift, Retroboard and
         Petclinic.
   \item \textbf{Against round 1 on the same hardware.} \code{hybrid\_final} rose from 41.8\%
-        to 51.5\%, higher on all six applications (median $+3.2$ points). The curiosity arm
+        to 51.4\%, higher on all six applications (median $+3.2$ points). The curiosity arm
         rose on five of six (median $+1.1$); its round-1 average is lifted by one Petclinic
         run at 85\%. Against the heuristic clickables of the follow-up, both arms were
         higher on five of six applications (median about $+1.2$ points).
@@ -608,6 +608,49 @@ Round 1 on the same hardware, 6 apps & 41.8 & 52.6 & & \\
 The curiosity arm was ahead of \code{hybrid\_final} again on coverage, as in every
 coverage measurement in this thesis. All comparisons here are descriptive: our runs and the
 papers' ran on different machines, and the failure counts were deduplicated differently.
+
+\section{Post-hoc follow-up: the bandit on the external applications}
+\label{sec:bandit-ext}
+
+Neither external round included the bandit. To complete the comparison of learners, it was
+run afterwards. A tuning sweep of its back-off weight and of evidence forgetting was planned
+on the development applications, then cancelled for time before any result was read. The
+bandit therefore ran at its existing settings: back-off 0.3, no forgetting. It ran on
+\code{hybrid\_final\_v5}'s base, so the learner was the only difference (arm
+\code{hybrid\_bandit\_v5}, tag \code{bandit-v5}). The protocol matched round 2: six
+applications, five one-hour runs each, on the same hardware. All 30 runs completed. This
+follow-up is post-hoc and the bandit untuned.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Post-hoc: branch coverage (\%, mean [min, max] over five runs) of the bandit beside
+the same tester without a learner and the curiosity arm (round 2).}
+\label{tab:bandit-ext}
+\begin{tabular}{@{}llrr@{}}
+\toprule
+App & \code{hybrid\_bandit\_v5} & \code{hybrid\_final\_v5} & \code{hybrid\_curiosity\_v5} \\
+\midrule
+Dimeshift & \textbf{51.3} [48.4, 54.1] & 48.6 & 48.9 \\
+Pagekit & 34.8 [34.1, 35.7] & 35.0 & \textbf{41.0} \\
+Splittypie & 34.8 [19.9, 43.8] & 37.7 & \textbf{47.0} \\
+Phoenix & 82.9 [81.6, 85.5] & 82.4 & \textbf{84.7} \\
+Retroboard & 53.9 [53.8, 54.4] & 54.0 & 54.0 \\
+Petclinic & 42.0 [20.0, 80.0] & \textbf{51.0} & 46.0 \\
+\midrule
+Average, 6 apps & 50.0 & 51.4 & \textbf{53.6} \\
+Average, without Petclinic & 51.5 & 51.5 & \textbf{55.1} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The bandit was level with the same tester without a learner. The median difference per
+application was $-0.1$ points, with 2 applications higher and 4 lower, and without
+Petclinic both averaged 51.5\%. It reached the best Dimeshift coverage of our arms (51.3\%),
+and it triggered about two distinct console failures per run, like the other arms. It
+stayed below the curiosity arm and the published numbers. This matches its behaviour on our
+own applications: the bandit learns which operator produces an interesting outcome, not
+which page is new, so it should not be expected to widen coverage.
 
 \section{Discussion}
 \label{sec:discussion}
@@ -654,11 +697,12 @@ Arm & Structure & Learning & Held-out faults & RMST & Tuning faults & Round 1 & 
 \code{random} & -- & -- & 13 & 978 & 19 & 40.3 & 45.7 & -- \\
 \code{v1\_dqn\_pretrained} & -- & deep Q-network & 17 & \textbf{595} & 19 & -- & -- & -- \\
 \code{hybrid\_nolearn} & yes & -- & 18 & 737 & 19 & -- & -- & -- \\
-\code{hybrid\_bandit} & yes & Thompson bandit & \textbf{19} & 769 & 16 & -- & -- & -- \\
+\code{hybrid\_bandit} & yes & Thompson bandit & \textbf{19} & 769 & 16 & -- & -- & 50.0$^{\dagger}$ \\
 \code{hybrid\_curiosity} & yes & curiosity Q-learning & -- & -- & 16 & \textbf{44.7} & \textbf{54.1} & \textbf{53.6} \\
-\code{hybrid\_final} & yes, tuned & -- & -- & -- & \textbf{22}$^{*}$ & 44.3 & 45.5 & 51.5 \\
+\code{hybrid\_final} & yes, tuned & -- & -- & -- & \textbf{22}$^{*}$ & 44.3 & 45.5 & 51.4 \\
 \bottomrule
-\multicolumn{9}{@{}l}{\footnotesize $^{*}$ from the 24-run check of the combined configuration before freezing (Section~\ref{sec:tuning}).}
+\multicolumn{9}{@{}l}{\footnotesize $^{*}$ from the 24-run check of the combined configuration before freezing (Section~\ref{sec:tuning}).}\\
+\multicolumn{9}{@{}l}{\footnotesize $^{\dagger}$ post-hoc, untuned, on \code{hybrid\_final\_v5}'s base (Section~\ref{sec:bandit-ext}).}
 \end{tabular}}
 \end{table}
 
@@ -738,7 +782,9 @@ literature's measures: breadth of coverage and errors triggered.
 The structure without a learner does best on verified seeded faults, which require
 deliberate test actions rather than novelty. No learning layer added on top of the structure
 verified clearly more faults than the structure alone: at best one more on the held-out
-applications (19 against 18), and fewer in tuning. Since WebExplor and WebRLED are both RL
+applications (19 against 18), and fewer in tuning. On the external applications the bandit
+matched the same tester without a learner (50.0\% against 51.4\%; 51.5\% each without
+Petclinic). Since WebExplor and WebRLED are both RL
 testers, the like-for-like comparison is with \code{hybrid\_curiosity}. It reached
 44.7\% branch coverage; with custom clickables it reached 54.1\% over all six applications,
 and 53.6\% in the pre-registered second round: close to WebExplor (55.5\%) and below WebRLED

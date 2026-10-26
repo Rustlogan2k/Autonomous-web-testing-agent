@@ -167,7 +167,8 @@ random. Development-only arms (`dev_*`) and the post-hoc `*_clickables` arms are
 | 8 | Tuning round v3 on the rebuilt full-stack suite (192 + 24 runs) | `browse_list` + failure feedback best (22/41 distinct faults); bandit slower than no learner; frozen as `hybrid_final` | development |
 | 9 | **External:** WebExplor's 6 apps, measured as published (1 h runs, Istanbul branch coverage, console failures) | **Below the published numbers:** 44.3% coverage vs WebExplor 55.5% / WebRLED 64.2%; 1.8 vs 3.1 / 4.1 failures. Comparable on Pagekit and Splittypie | pre-registered (tag `v3-freeze`) |
 | 10 | Is the gap the action space? (all arms + custom clickables, 81 runs) | Phoenix 49% → 82–83% for every arm (WebRLED 82.9%); excluding Petclinic, ~50–53% vs WebExplor 49.6% / WebRLED 60.0%; Retroboard unchanged | post-hoc (tag `v4-clickables`) |
-| 11 | **External, round 2:** listener-based clickables, 5 runs per app (as the papers), same hardware (60 runs) | `hybrid_curiosity_v5` 53.6% (55.1% without Petclinic), `hybrid_final_v5` 51.5%, vs WebExplor 55.5% (49.6%) / WebRLED 64.2% (60.0%). Above both papers on Pagekit, Splittypie and Phoenix; below on Dimeshift, Retroboard and Petclinic. Console failures 1.9–2.3 vs 3.1 / 4.1. `hybrid_final` +9.7 points over round 1 on the same hardware, up on all six apps | pre-registered (tag `v5-freeze`), informed by round 1 |
+| 11 | **External, round 2:** listener-based clickables, 5 runs per app (as the papers), same hardware (60 runs) | `hybrid_curiosity_v5` 53.6% (55.1% without Petclinic), `hybrid_final_v5` 51.4%, vs WebExplor 55.5% (49.6%) / WebRLED 64.2% (60.0%). Above both papers on Pagekit, Splittypie and Phoenix; below on Dimeshift, Retroboard and Petclinic. Console failures 1.9–2.3 vs 3.1 / 4.1. `hybrid_final` +9.7 points over round 1 on the same hardware, up on all six apps | pre-registered (tag `v5-freeze`), informed by round 1 |
+| 12 | Does the bandit help on the external apps? (`hybrid_bandit_v5`: `hybrid_final_v5`'s base + bandit, untuned, 30 runs) | Level with no learner: 50.0% vs 51.4% (51.5% each without Petclinic); per-app median −0.1, 2 apps up / 4 down; best of our arms on Dimeshift (51.3%) | post-hoc (tag `bandit-v5`) |
 
 Held-out per arm:
 
@@ -189,7 +190,7 @@ Round 2 (v5, listener-based clickables): mean of 5.
 | Phoenix | 48.7 (82.0 with clickables) | 48.7 (83.3) | 46.9 (74.6) | 82.4 | **84.7** | 71.8 | 82.9 |
 | Retroboard | 53.2 | 53.2 | 53.2 | 54.0 | 54.0 | 60.2 | 77.4 |
 | Petclinic (20 branches, noisy) | 46.7 | 41.7 | 25.0 | 51.0 | 46.0 | 85.0 | 85.0 |
-| **Average** | 44.3 | 44.7 | 40.3 | 51.5 | 53.6 | 55.5 | 64.2 |
+| **Average** | 44.3 | 44.7 | 40.3 | 51.4 | 53.6 | 55.5 | 64.2 |
 
 WebExplor and WebRLED are both RL testers: tabular curiosity Q-learning, and deep Q-learning
 with a learned actionable-element discriminator. The like-for-like RL comparison is

@@ -50,11 +50,12 @@ that the evidence does not support, including some that a reader might assume.
         Of the 10 faults of moderate declared depth, \code{hybrid\_nolearn} verified 9 and
         random 5.
   \item \textbf{No learning layer measurably improved on the structure.} The bandit changed distinct
-        faults by at most one on held-out applications and was slower in tuning. Curiosity
+        faults by at most one on held-out applications, was slower in tuning, and matched
+        the same tester without a learner on the external applications (post-hoc). Curiosity
         Q-learning triggered more browser errors but verified fewer seeded faults.
   \item \textbf{The action space bounds coverage.} With custom clickables, Phoenix coverage
         rose from 49\% to 75--83\% for every arm, random included. With listener-based
-        detection, \code{hybrid\_final} rose from 41.8\% to 51.5\% on the same hardware,
+        detection, \code{hybrid\_final} rose from 41.8\% to 51.4\% on the same hardware,
         higher on all six applications.
 \end{itemize}
 

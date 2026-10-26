@@ -1612,5 +1612,119 @@
         }
       }
     }
+  },
+  "bandit_followup": {
+    "runs": 30,
+    "table": {
+      "dimeshift|hybrid_bandit_v5": {
+        "runs": 5,
+        "coverage_mean": 51.296,
+        "coverage_min": 48.43,
+        "coverage_max": 54.06999999999999,
+        "failures_mean": 35,
+        "failures_min": 21,
+        "failures_max": 47,
+        "console_mean": 4,
+        "console_min": 3,
+        "console_max": 5,
+        "v8_mean": 0.74212,
+        "steps_mean": 2897.8
+      },
+      "pagekit|hybrid_bandit_v5": {
+        "runs": 5,
+        "coverage_mean": 34.81,
+        "coverage_min": 34.050000000000004,
+        "coverage_max": 35.68,
+        "failures_mean": 58.2,
+        "failures_min": 44,
+        "failures_max": 88,
+        "console_mean": 2.4,
+        "console_min": 2,
+        "console_max": 3,
+        "v8_mean": 0.70014,
+        "steps_mean": 9693.4
+      },
+      "petclinic|hybrid_bandit_v5": {
+        "runs": 5,
+        "coverage_mean": 42.0,
+        "coverage_min": 20.0,
+        "coverage_max": 80.0,
+        "failures_mean": 2.8,
+        "failures_min": 0,
+        "failures_max": 4,
+        "console_mean": 1.4,
+        "console_min": 0,
+        "console_max": 2,
+        "v8_mean": 0.7461800000000001,
+        "steps_mean": 15427.8
+      },
+      "phoenix|hybrid_bandit_v5": {
+        "runs": 5,
+        "coverage_mean": 82.894,
+        "coverage_min": 81.58,
+        "coverage_max": 85.53,
+        "failures_mean": 20,
+        "failures_min": 16,
+        "failures_max": 30,
+        "console_mean": 2.6,
+        "console_min": 2,
+        "console_max": 3,
+        "v8_mean": 0.6432,
+        "steps_mean": 5612
+      },
+      "retroboard|hybrid_bandit_v5": {
+        "runs": 5,
+        "coverage_mean": 53.918000000000006,
+        "coverage_min": 53.800000000000004,
+        "coverage_max": 54.39000000000001,
+        "failures_mean": 49.2,
+        "failures_min": 32,
+        "failures_max": 74,
+        "console_mean": 1,
+        "console_min": 1,
+        "console_max": 1,
+        "v8_mean": 0.60368,
+        "steps_mean": 8397.2
+      },
+      "splittypie|hybrid_bandit_v5": {
+        "runs": 5,
+        "coverage_mean": 34.818,
+        "coverage_min": 19.86,
+        "coverage_max": 43.82,
+        "failures_mean": 8,
+        "failures_min": 6,
+        "failures_max": 10,
+        "console_mean": 1,
+        "console_min": 1,
+        "console_max": 1,
+        "v8_mean": 0.59344,
+        "steps_mean": 7158.4
+      }
+    },
+    "averages": {
+      "6 apps": {
+        "coverage": 49.956,
+        "console": 2.0666666666666664,
+        "failures": 28.866666666666667
+      },
+      "without Petclinic": {
+        "coverage": 51.547200000000004,
+        "console": 2.2,
+        "failures": 34.08
+      }
+    },
+    "vs_final_v5": {
+      "median": -0.13299999999999912,
+      "apps_higher": 2,
+      "apps_lower": 4,
+      "per_app": {
+        "dimeshift": 2.647999999999996,
+        "pagekit": -0.14799999999999613,
+        "splittypie": -2.847999999999999,
+        "phoenix": 0.5260000000000105,
+        "retroboard": -0.1180000000000021,
+        "petclinic": -9.0
+      }
+    }
   }
 }

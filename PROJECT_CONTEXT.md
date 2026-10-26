@@ -433,7 +433,7 @@ none rerun; `scripts/analyze_external.py` → `reports/external_comparison.{json
 | Phoenix | 82.4 | 84.7 | 71.8 | 82.9 |
 | Retroboard | 54.0 | 54.0 | 60.2 | 77.4 |
 | Petclinic | 51.0 | 46.0 | 85.0 | 85.0 |
-| Average, 6 apps | 51.5 | 53.6 | 55.5 | 64.2 |
+| Average, 6 apps | 51.4 | 53.6 | 55.5 | 64.2 |
 | Average without Petclinic | 51.5 | 55.1 | 49.6 | 60.0 |
 | Console failures (post-hoc) | 1.9 | 2.3 | 3.1 | 4.1 |
 
@@ -441,7 +441,7 @@ none rerun; `scripts/analyze_external.py` → `reports/external_comparison.{json
   curiosity arm is above WebExplor and below WebRLED. Per app it is above both on Pagekit,
   Splittypie and Phoenix, and below both on Dimeshift, Retroboard and Petclinic.
 - **Against round 1 on the same hardware** (the follow-up's runs without clickables):
-  `hybrid_final` 41.8 → 51.5, up on 6/6 apps (median +3.2); curiosity 52.6 → 53.6, up on 5/6.
+  `hybrid_final` 41.8 → 51.4, up on 6/6 apps (median +3.2); curiosity 52.6 → 53.6, up on 5/6.
   Against the heuristic clickables (`ext-v4-gha`), both arms are up on 5/6 (median ≈ +1.2).
 - **Unchanged:** console failures (about 2 per run); Retroboard ≈ 54% in every run.
 - Descriptive only. Round 2 is informed by round 1, so it is not an independent test.
@@ -480,6 +480,14 @@ either external round, and this is added after round 2's results were seen.
   `hybrid_bandit_v5` instead: the bandit at its existing, untuned settings (back-off 0.3,
   no forgetting) on hybrid_final_v5's base. It covers the 6 external apps × seeds 0–4,
   1 h each, on GitHub Actions (branch `ext-gha`). It is reported as post-hoc and untuned.
+- **RESULT (2026-10-26; GitHub run 40308019675, `runs/ext-bandit-gha`, 30/30 runs ok).**
+  - Branch coverage: `hybrid_bandit_v5` 50.0% over 6 apps (51.5% without Petclinic),
+    against `hybrid_final_v5` 51.4% (51.5%).
+  - Per app: median −0.1 points, 2 apps up and 4 down. Best of our arms on Dimeshift
+    (51.3%).
+  - Console failures 2.1 per run.
+  - The bandit is level with no learner on the external apps, as on our own.
+  - Also corrected: `hybrid_final_v5`'s 6-app average is 51.4 (51.446), not 51.5.
 
 ### 0.9 Known limitations of the tester
 
