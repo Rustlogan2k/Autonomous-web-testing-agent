@@ -104,6 +104,11 @@ ARMS: dict[str, dict] = {
                         "custom_clickables": True, "listener_clickables": True},
     "hybrid_curiosity_v5": {**HYBRID, "planner": "count", "explore": "curiosity",
                             "custom_clickables": True, "listener_clickables": True},
+    # Ablation (2026-10-27, diagnostic): the same arm without the "type, then Enter" actions,
+    # to tell whether they cost coverage on apps that do not need them.
+    "hybrid_curiosity_v5_noenter": {**HYBRID, "planner": "count", "explore": "curiosity",
+                                    "custom_clickables": True, "listener_clickables": True,
+                                    "enter_actions": False},
     # Bandit follow-up on the external apps (2026-10-26, post-hoc): hybrid_final_v5's base with
     # the Thompson-sampling bandit at its existing, untuned settings (back-off 0.3, no
     # forgetting). The planned tuning sweep was cancelled for time before any result was read.
@@ -174,6 +179,8 @@ def _settings(config: HybridConfig, spec: dict | None = None):
     if (spec or {}).get("custom_clickables"):
         registry = replace(EXTENDED_OPTIONS, custom_clickables=True,
                            listener_clickables=bool((spec or {}).get("listener_clickables")))
+    if (spec or {}).get("enter_actions") is False:
+        registry = replace(registry, enter_actions=False)
     return EnvSettings(
         max_steps=config.episode_steps,
         settle_quiet_ms=config.settle_quiet_ms,

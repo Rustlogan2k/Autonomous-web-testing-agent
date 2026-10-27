@@ -74,6 +74,8 @@ class RegistryOptions:
     #: With `custom_clickables`: also detect controls by the handlers actually attached to
     #: them (see `CLICK_LISTENER_INIT_JS` and `_CUSTOM_SCAN_JS`), not only by markup cues.
     listener_clickables: bool = False
+    #: A "type a valid value, then press Enter" action for each text input (2026-10-27).
+    enter_actions: bool = True
 
 
 #: The registry as it was for every pre-benchmark measurement.
@@ -578,7 +580,7 @@ def build_action_specs(elements: list[dict], page_url: str = "",
                         description=f"type {category.value} into {field_label!r}",
                     )
                 )
-            if tag == "input":
+            if tag == "input" and registry_options.enter_actions:
                 # Many inputs act on Enter and have no button at all (add a post, a chat line, a
                 # tag, a search): a typed value followed by Enter is its own action.
                 entered.append(
