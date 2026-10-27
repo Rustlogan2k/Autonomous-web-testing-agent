@@ -115,13 +115,19 @@ def test_rarely_broken_rules_are_verified_first_and_rules_broken_everywhere_are_
     monkeypatch.setattr(llm, "propose_rules", lambda *a, **k: rules)
     order = []
     monkeypatch.setattr(SpecMonitor, "_confirm", lambda self, rule, finding: order.append(rule.id) or False)
-    spec = SpecMonitor(replayer=None, app_name="shop", warmup=300, min_warmup=3, stall=3,  # type: ignore[arg-type]
-                       min_applications=8)
-    spec.start_episode(info("/"))
-    for step in range(1, 13):                     # the total is wrong once; the badge rule fails every time
-        spec.observe(_cart(7 if step == 6 else 5, 1), None, None, step)
-    spec.finish()
-    assert order == ["RARE"]
-    summary = spec.summary()
-    assert summary["contradicted"] == 1
+
+    def run(**kwargs) -> SpecMonitor:  # noqa: ANN003
+        spec = SpecMonitor(replayer=None, app_name="shop", warmup=300, min_warmup=3, stall=3,  # type: ignore[arg-type]
+                           min_applications=8, **kwargs)
+        spec.start_episode(info("/"))
+        for step in range(1, 13):                 # the total is wrong once; the badge rule fails every time
+            spec.observe(_cart(7 if step == 6 else 5, 1), None, None, step)
+        spec.finish()
+        return spec
+
+    run()
+    assert order == ["RARE", "WRONG"]             # the rule broken everywhere goes last
+    order.clear()
+    summary = run(max_contradicted=0).summary()
+    assert order == ["RARE"] and summary["contradicted"] == 1
     assert {r["id"]: (r["applied"], r["violated"]) for r in summary["rules"]}["WRONG"][1] >= 8

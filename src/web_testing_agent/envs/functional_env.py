@@ -103,8 +103,7 @@ class WebFunctionalEnv(WebTestingEnv):
         if handler is None:
             return {"success": False, "error": f"no handler for {spec.action_type}"}
         try:
-            handler(page, spec)
-            return {"success": True, "error": None}
+            return {"success": True, "error": None, **(handler(page, spec) or {})}
         except PlaywrightTimeoutError as exc:
             logger.debug("Action {} timed out: {}", spec.description, exc)
             return {"success": False, "error": f"timeout: {exc}"}
@@ -132,6 +131,10 @@ class WebFunctionalEnv(WebTestingEnv):
         # Measured on demo.playwright.dev's TodoMVC: its three footer links to other
         # sites were each reported, reproduced and minimised as "navigation does nothing".
         if context.exec_info.get("left_application") or context.exec_info.get("opened_offsite_tab"):
+            was_navigation_action = False
+        # The click did load a document: a form that posts and redirects back to its own URL
+        # (a cart's "+") changes only numbers, which the text comparison above ignores.
+        if context.exec_info.get("navigated"):
             was_navigation_action = False
         exec_success = bool(context.exec_info.get("success", False))
         bug_signals = detect_bug_signals(
@@ -172,9 +175,24 @@ class WebFunctionalEnv(WebTestingEnv):
         return reward, breakdown
 
 
-def _do_click(page: "Page", spec: ActionSpec) -> None:
+#: How long a click on a link or submit button waits for the navigation it starts to commit.
+#: Playwright's click no longer waits for navigations, so without this the settle probe can
+#: run on the page being left and see "nothing changed" after a perfectly good form post.
+_NAVIGATION_COMMIT_MS = 600
+
+
+def _do_click(page: "Page", spec: ActionSpec) -> dict | None:
     assert spec.selector is not None
-    page.locator(spec.selector).first.click(timeout=_PLAYWRIGHT_ACTION_TIMEOUT_MS)
+    locator = page.locator(spec.selector).first
+    if not spec.params.get("navigational", False):
+        locator.click(timeout=_PLAYWRIGHT_ACTION_TIMEOUT_MS)
+        return None
+    try:
+        with page.expect_navigation(wait_until="commit", timeout=_NAVIGATION_COMMIT_MS):
+            locator.click(timeout=_PLAYWRIGHT_ACTION_TIMEOUT_MS)
+    except PlaywrightTimeoutError:
+        return None  # no navigation (or a slow one): the settle probe and the trigger rules decide
+    return {"navigated": True}
 
 
 def _do_type(page: "Page", spec: ActionSpec) -> None:

@@ -335,6 +335,7 @@ def test_settings_are_clamped_to_what_the_product_supports(given, expected):
 
 
 def test_demo_targets_point_at_fixtures_that_exist():
+    assert [t.key for t in target_registry.demo_targets()] == ["suite:helpline", "suite:orbit"]
     for target in target_registry.demo_targets():
         assert target.path.is_dir(), f"{target.key} fixture missing"
         assert target.available, f"{target.key} is not runnable"
@@ -347,9 +348,9 @@ def test_the_static_deployer_serves_a_fixture_and_shuts_down():
 
     from web_testing_agent.pipeline import RunSettings
 
-    target = target_registry.demo_target("toy_site")
-    deploy = target_registry.static_deployer(target.path, target.entry)
-    with deploy(target.path, RunSettings()) as deployment:
+    site = target_registry.REPO_ROOT / "tests" / "fixtures" / "toy_site"
+    deploy = target_registry.static_deployer(site, "index.html")
+    with deploy(site, RunSettings()) as deployment:
         assert deployment.base_url.endswith("/index.html")
         with urllib.request.urlopen(deployment.base_url, timeout=5) as response:
             assert response.status == 200

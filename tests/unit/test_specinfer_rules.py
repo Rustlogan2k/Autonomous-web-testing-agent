@@ -70,6 +70,30 @@ def test_counter_and_blocked():
     assert evaluate(blocked, [form, filled, through], 2) is None
 
 
+def test_a_control_recorded_by_its_id_is_matched_by_the_label_it_shows():
+    counter = _one({"id": "C", "kind": "counter", "page": "/shop", "action": "add to cart", "counter": "#cart-count", "delta": 1})
+    shop = "<span id='cart-count'>{}</span><form><button id='add-7'>Add to cart</button></form>"
+    runs = [rec("https://x/shop", shop.format(1)), rec("https://x/shop", shop.format(1), {"type": "CLICK", "id": "add-7"})]
+    outcome = evaluate(counter, runs, 1)
+    assert outcome is not None and not outcome.holds and outcome.details["action"].startswith("Add to cart")
+    blocked = _one({"id": "B", "kind": "blocked", "form_page": "/checkout", "field": "#postcode",
+                    "submit": "place order", "forbidden_page": "^/order/"})
+    form = rec("https://x/checkout", "<input id='postcode'><button id='place-order'>Place order</button>")
+    placed = rec("https://x/order/1001", "<p/>", {"type": "CLICK", "id": "place-order"})
+    assert not evaluate(blocked, [form, placed], 1).holds
+
+
+def test_a_counter_shown_once_per_row_follows_the_row_that_was_clicked():
+    plus = _one({"id": "P", "kind": "counter", "page": "/cart", "action": r"\+", "counter": "span.qty", "delta": 1})
+    cart = lambda a, b: rec("https://x/cart", f"<tr><td><span class='qty'>{a}</span><button id='inc-1'>+</button></td></tr>"  # noqa: E731
+                                              f"<tr><td><span class='qty'>{b}</span><button id='inc-4'>+</button></td></tr>")
+    click = {"type": "CLICK", "id": "inc-4"}
+    assert evaluate(plus, [cart(1, 1), {**cart(1, 2), "action": click}], 1).holds          # the second line went up
+    assert not evaluate(plus, [cart(1, 1), {**cart(1, 1), "action": click}], 1).holds      # it did not
+    gone = rec("https://x/cart", "<tr><td><span class='qty'>3</span><button id='inc-1'>+</button></td></tr>", click)
+    assert evaluate(plus, [cart(1, 1), gone], 1) is None                                    # the clicked row vanished
+
+
 def test_consistency_and_bad_rules_are_dropped():
     rule = _one({"id": "K", "kind": "consistency", "a": {"page": "/cart", "selector": "#total"},
                  "b": {"page": "/checkout", "selector": "#total"}, "compare": "number"})

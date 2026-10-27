@@ -29,7 +29,6 @@ from ..utils.logging import get_logger
 logger = get_logger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-FIXTURES = REPO_ROOT / "tests" / "fixtures"
 
 
 @dataclass(frozen=True, slots=True)
@@ -68,20 +67,18 @@ class DemoTarget:
 def demo_targets() -> list[DemoTarget]:
     """The allow-list of bundled demo applications.
 
-    These are the project's existing research fixtures, used **as they are**. Nothing in
-    this module edits a fixture, its answer key or its behaviour: the whole point of a
-    demo built on them is that the report it produces is the report the research system
-    produces.
-
-    The benchmark applications come first: each is served in both builds, so a demo run
-    on one of them also exercises the seeded-fault oracle and its clean-build control.
+    The two development-suite applications on which the default agent verified the most
+    findings in this app's own runs (Helpline, then Orbit). They are used **as they are**:
+    nothing here edits an application, its answer key or its behaviour, so the report a demo
+    produces is the report the research system produces. Each is served with its clean build
+    and per-fault control builds, so a demo run also exercises the seeded-fault oracle.
     """
-    return [*_suite_demos(), *_benchmark_demos(), _harbor_demo(), *_fixture_demos()]
+    return _suite_demos()
 
 
-#: Full-stack applications of the development suite offered as demos: three architectures and
-#: both databases, each behind a sign-in and with seeded functional and crash-type faults.
-SUITE_DEMOS = ("orbit", "helpline", "stackroom")
+#: Full-stack applications of the development suite offered as demos, each behind a sign-in
+#: and with seeded functional and crash-type faults.
+SUITE_DEMOS = ("helpline", "orbit")
 
 
 def _suite_demos() -> list[DemoTarget]:
@@ -104,78 +101,6 @@ def _suite_demos() -> list[DemoTarget]:
                         "the per-fault control builds. Needs Docker for the database.",
             needs_docker=True, session=("suite", app_id)))
     return demos
-
-
-def _benchmark_demos() -> list[DemoTarget]:
-    from ..benchmark.suite import discover
-
-    demos = []
-    for app in discover():
-        faults = ", ".join(f"{f.fault_id} ({f.fault_class.value.replace('_', ' ')})"
-                           for f in app.manifest.faults)
-        demos.append(DemoTarget(
-            key=f"benchmark:{app.app_id}", name=f"{app.manifest.name} (benchmark)",
-            path=app.root / "buggy", entry=app.manifest.entry,
-            summary=f"Benchmark application `{app.app_id}` with seeded functional faults: "
-                    f"{faults}.",
-            expectation="Seeded faults are checked by the deterministic oracle, replayed "
-                        "against the clean build, and minimized.",
-            session=("benchmark", app.app_id)))
-    return demos
-
-
-def _harbor_demo() -> DemoTarget:
-    path = REPO_ROOT / "demo app" / "www"
-    return DemoTarget(
-        key="harbor_pine", name="Harbor & Pine (demo app)", path=path, entry="index.html",
-        summary="A small static shop with five documented defects: a missing pricing page, "
-                "a failing export, a stuck contact form, a length check that is not enforced "
-                "and a broken back link.",
-        expectation="Console errors and broken navigation are verified by replay; the "
-                    "unenforced length check needs the LLM review to be noticed.",
-        session=("site", str(path)))
-
-
-def _fixture_demos() -> list[DemoTarget]:
-    return [
-        DemoTarget(
-            key="toy_site",
-            name="Acme Tools (validation site)",
-            path=FIXTURES / "toy_site",
-            entry="index.html",
-            summary="The project's 10-bug validation application. Shallow flows, a signup "
-                    "form, a settings page and an archive view.",
-            expectation="Several deterministic findings are expected — broken navigation "
-                        "and console errors are seeded here on purpose.",
-            session=("site", str(FIXTURES / "toy_site")),
-        ),
-        DemoTarget(
-            key="deep_flow_site",
-            name="Northwind Supply (deep-flow fixture)",
-            path=FIXTURES / "deep_flow_site",
-            entry="index.html",
-            summary="A four-stage gated ordering flow whose single seeded defect is only "
-                    "reachable after completing every stage in order.",
-            expectation="The deterministic ceiling here is zero by construction: the seeded "
-                        "defect needs a language model to see. Expect depth and coverage, "
-                        "not deterministic findings.",
-            session=("site", str(FIXTURES / "deep_flow_site")),
-        ),
-        DemoTarget(
-            key="demo_repo",
-            name="Northwind static site (Docker)",
-            path=FIXTURES / "demo_repo",
-            # Served by the image's own httpd from /www, so the URL entry is the root.
-            entry="",
-            summary="A tiny Dockerised repository (busybox httpd). Exercises the full "
-                    "upload path — policy gate, image build, sandboxed container, health "
-                    "check — without an upload.",
-            expectation="Demonstrates the container pipeline end to end. Requires a running "
-                        "Docker daemon.",
-            needs_docker=True,
-            session=("repo", str(FIXTURES / "demo_repo")),
-        ),
-    ]
 
 
 def demo_target(key: str) -> DemoTarget | None:

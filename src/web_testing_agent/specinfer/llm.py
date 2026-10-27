@@ -61,7 +61,8 @@ lost or altered data, broken sorting, actions that do not take effect, invalid i
 Rules use ONLY these kinds and fields (selectors MUST be copied from the page snapshots):
 - arithmetic: {"page": regex on the page path, "operands": {name: {"selector": css, "agg": "first"|"sum"|"count"}},
   "expression": e.g. "total == round(subtotal + tax, 2)", "tolerance": 0.01}
-- echo: {"field": the input's selector or label, "page": regex of a LATER page, "selector": css where the value must appear (optional)}
+- echo: {"field": the input's selector or label, "page": regex of the LATER page that must show the value (e.g. a
+  confirmation page; never the page holding the input), "selector": css on that later page where the value must appear (optional)}
 - sorted: {"page": regex, "control": the select's selector, "option": option value, "items": css of the sorted values,
   "key": "number"|"text", "order": "asc"|"desc"}
 - counter: {"page": regex of the page where the action is taken, "action": regex on the clicked control's label,

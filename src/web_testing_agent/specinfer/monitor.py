@@ -120,7 +120,7 @@ class SpecMonitor:
                  max_verifications: int = 12, max_verification_seconds: float | None = 1500.0,
                  judge: bool = True, on_event: Callable[[str, dict], None] | None = None,
                  intent: str = "", intent_files: list[str] | None = None,
-                 min_applications: int = 8, contradiction_rate: float = 0.9) -> None:
+                 min_applications: int = 8, contradiction_rate: float = 0.9, max_contradicted: int = 3) -> None:
         self.replayer = replayer
         #: Progress for a live run log (`kind`, `{"message": ...}`); silent when None.
         self.emit = on_event or (lambda kind, data: None)
@@ -151,6 +151,8 @@ class SpecMonitor:
         #: `contradiction_rate` of its checks or more is contradicted, not verified.
         self.min_applications = min_applications
         self.contradiction_rate = contradiction_rate
+        #: Contradicted rules verified at the very end, if budget remains (one candidate each).
+        self.max_contradicted = max_contradicted
         self._pending: list[tuple[Rule, SpecFinding]] = []
         self.rules: list[Rule] | None = None
         self.dropped: list[str] = []
@@ -302,7 +304,7 @@ class SpecMonitor:
                 if applied >= self.min_applications and rate >= self.contradiction_rate:
                     finding.status = "contradicted"
                     finding.judgement = {"note": f"rule violated on {rate:.0%} of {applied} checks: a wrong rule "
-                                                 "or a bug present everywhere; not verified"}
+                                                 "or a bug present everywhere; verified last, if budget remains"}
                 else:
                     keep.append((rule, finding))
             ready = [p for p in keep if final or self._rate(p[0])[0] >= self.min_applications]
@@ -316,6 +318,35 @@ class SpecMonitor:
                 confirmed.append(finding)
             if not final:
                 break
+        if final:
+            confirmed += self._verify_contradicted()
+        return confirmed
+
+    def _verify_contradicted(self) -> list[SpecFinding]:
+        """Last, with what budget is left: one candidate each for a few contradicted rules.
+
+        A rule broken on nearly every check is usually a wrong rule, but a bug visible every
+        time (a sort that is always wrong, a button that never works) breaks its rule just as
+        often. Replay and the judge separate the two; going last, such rules cannot take the
+        budget from rarer violations.
+        """
+        confirmed: list[SpecFinding] = []
+        tried: set[str] = set()
+        for finding in sorted(self.findings.values(), key=lambda f: f.first_seen_at):
+            if len(tried) >= self.max_contradicted or self._out_of_budget():
+                break
+            if finding.status != "contradicted" or finding.rule_id in tried:
+                continue
+            rule = next((r for r in self.rules or [] if r.id == finding.rule_id), None)
+            if rule is None:
+                continue
+            tried.add(rule.id)
+            note = finding.judgement.get("note", "")
+            finding.status, finding.judgement = "candidate", {}
+            self._attempted += 1
+            if self._confirm(rule, finding):
+                confirmed.append(finding)
+            finding.judgement.setdefault("note", note)
         return confirmed
 
     def _reproduces(self, rule: Rule, actions: list[dict]) -> tuple[bool, list[dict]]:

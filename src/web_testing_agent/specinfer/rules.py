@@ -114,10 +114,18 @@ def _page_matches(pattern: str | None, url: str) -> bool:
         return False
 
 
-def _label(step: dict | None) -> str:
+def _label(step: dict | None, html: str = "") -> str:
+    """What a clicked control says. A recorded step names an element by its id when it has
+    one, so the visible text (or aria-label, or value) is read from the page it was on."""
     if not step:
         return ""
-    return str(step.get("text") or step.get("id") or step.get("selector") or step.get("label") or "")
+    name = str(step.get("text") or step.get("id") or step.get("selector") or step.get("label") or "")
+    if step.get("id") and html:
+        el = soup_of(html).find(id=step["id"])
+        if el is not None:
+            shown = text_of(el) or el.get("aria-label") or el.get("value") or ""
+            return f"{shown} {name}".strip()
+    return name
 
 
 def _field_matches(want: str, step: dict | None, entered: dict) -> bool:
@@ -230,15 +238,26 @@ def _counter(spec: dict, records: list[dict], i: int) -> Outcome | None:
     if step.get("type") != "CLICK" or not _page_matches(spec.get("page"), before["url"]):
         return None
     try:
-        if not re.search(spec["action"], _label(step), re.I):
+        if not re.search(spec["action"], _label(step, before["html"]), re.I):
             return None
     except re.error:
         return None
-    a = _numbers(before["html"], spec["counter"])
-    b = _numbers(rec["html"], spec["counter"])
-    old, new = (a[0] if a else 0.0), (b[0] if b else 0.0)
+    if len(select_all(before["html"], spec["counter"])) > 1:
+        # One counter per row (a quantity per cart line): the row of the control clicked,
+        # before and after. A row that is gone afterwards (its last unit removed) says nothing.
+        rows = [_row_of(r["html"], select_all(r["html"], spec["counter"]), step) for r in (before, rec)]
+        if rows[0] is None or rows[1] is None:
+            return None
+        a, b = [number_in(text_of(row)) for row in rows]
+        if a is None or b is None:
+            return None
+        old, new = a, b
+    else:
+        a = _numbers(before["html"], spec["counter"])
+        b = _numbers(rec["html"], spec["counter"])
+        old, new = (a[0] if a else 0.0), (b[0] if b else 0.0)
     holds = abs((new - old) - float(spec.get("delta", 1))) < 1e-9
-    return Outcome(holds, {"action": _label(step), "before": old, "after": new, "expected_delta": spec.get("delta", 1)})
+    return Outcome(holds, {"action": _label(step, before["html"]), "before": old, "after": new, "expected_delta": spec.get("delta", 1)})
 
 
 def _same(spec: dict, x: str, y: str) -> bool | None:
@@ -317,7 +336,7 @@ def _blocked(spec: dict, records: list[dict], i: int) -> Outcome | None:
     if step.get("type") != "CLICK" or not _page_matches(spec.get("form_page"), before["url"]):
         return None
     try:
-        if not re.search(spec.get("submit", "."), _label(step), re.I):
+        if not re.search(spec.get("submit", "."), _label(step, before["html"]), re.I):
             return None
     except re.error:
         return None

@@ -683,6 +683,45 @@ seeded bugs; 400 interactions, warm-up 120; `runs/spec-demo/saucedemo-problem/`)
   here are conditional (month boundaries, a rounding edge, an edit after a note): the
   explorer does not steer to the rule's trigger conditions.
 
+**Presentation demo app (2026-10-27, `demo/`, owner request; a DEMONSTRATION, not evidence).**
+Inkwell Stationers, a Node.js shop with no dependencies and a Dockerfile, made to be uploaded
+through the web app. It has six silent bugs and **no clean build, no manifest and no oracle**:
+the README states intended behaviour as product documentation, and the LLM writes every rule.
+The bugs (for the presenters only; nothing in the repository's docs or code names them):
+1. the header cart count counts distinct products, not items;
+2. "Price: low to high" sorts prices as text ($12 before $9.50) in lists with mixed digits;
+3. the cart total subtracts the discount twice once the subtotal reaches $50;
+4. an empty postcode is accepted with standard delivery (it is checked only for express);
+5. an express order's confirmation charges the standard delivery fee (differs from checkout);
+6. the confirmation shows the customer's name cut to 12 characters.
+
+Checked through the upload path (`provide("repo")`: Docker build and sandboxed run), app
+defaults (Katalyze tuned, budget 400, finder on). Seeds 1-3 each verified bugs 1, 2 and 3, and
+seed 1 also bug 5. Seed 4 verified 1-3 plus two false findings (a cart-vs-checkout delivery-fee
+rule, and "Place order" as broken navigation because the browser's own email check blocked
+the form); the app was then changed so the cart shows the total before delivery and the
+checkout form is `novalidate` (server-side messages). Final app, seeds 5 and 6: bugs 1, 2 and
+3 verified in both, no false finding, no trigger finding (one judge title in seed 6 blames the
+delivery fee for what is bug 3). Bugs 4 and 6 need a completed checkout after the rules exist,
+which a 400-interaction run rarely reaches. Runs: `runs/demo-check/`.
+
+**Fixes found while building the demo (2026-10-27; AFTER the seeded-app evaluation above,
+whose numbers were measured without them):**
+- counter and blocked rules matched a click's label, but a recorded step names an element by
+  its id; the label is now read from the page clicked (`rules._label`). Before, these rules
+  never applied to controls with ids;
+- a counter shown once per row (cart quantities) is read from the clicked control's row, and
+  not checked when the row disappears (two false findings before);
+- the echo rule's `page` is described to the LLM as the later page that must show the value
+  (it had named the form page, so echo rules never applied);
+- contradicted rules (≥ 90 % of ≥ 8 checks violated) are verified last, at most 3 per run,
+  instead of never: a bug visible every time (the sort) breaks its rule as often as a wrong
+  rule does;
+- environment: a click on a link or submit button waits up to 600 ms for the navigation it
+  starts (`expect_navigation`; Playwright's click no longer waits), and a click that loaded a
+  document is not "broken navigation" even when only numbers changed (a cart's "+", a
+  repeated "Add to cart"). Both had produced false trigger findings.
+
 **Limits, stated plainly.**
 - **Small evidence:** one live site and three seeded apps, tuned on the latter. Recall is
   1 of 9 on those three.
