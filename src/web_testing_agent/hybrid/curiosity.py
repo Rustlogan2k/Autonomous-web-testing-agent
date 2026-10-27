@@ -58,9 +58,16 @@ def action_key(spec: ActionSpec) -> str:
 
 
 class CuriosityQ:
-    """Tabular Q-learning over (abstract state, action) with a count-based curiosity reward."""
+    """Tabular Q-learning over (abstract state, action) with a count-based curiosity reward.
 
-    def __init__(self, seed: int = 0) -> None:
+    `alpha` and `gamma` default to the development rounds' values; the benchmark's published
+    settings are passed by the arm that uses them.
+    """
+
+    def __init__(self, seed: int = 0, *, alpha: float = ALPHA, gamma: float = GAMMA) -> None:
+        self.alpha, self.gamma = alpha, gamma
+        #: As `OPTIMISTIC_Q`, for this learner's discount.
+        self.optimistic_q = (1.0 + EPISODIC_BONUS) / (1.0 - gamma)
         self.rng = np.random.default_rng(seed + 7)
         self.q: dict[tuple[str, str], float] = {}
         self.transitions: dict[tuple[str, str, str], int] = {}
@@ -75,7 +82,7 @@ class CuriosityQ:
         self.episode_states = set()
 
     def _value(self, state: str, key: str) -> float:
-        return self.q.get((state, key), OPTIMISTIC_Q)
+        return self.q.get((state, key), self.optimistic_q)
 
     def _candidates(self, specs: list[ActionSpec]) -> list[ActionSpec]:
         return [s for s in specs if s.action_type is not ActionType.NO_OP]
@@ -113,7 +120,7 @@ class CuriosityQ:
             self.offered.setdefault(after, set()).update(action_key(s) for s in nexts)
             future = max((self._value(after, action_key(s)) for s in nexts), default=0.0)
         old = self._value(state, key)
-        self.q[(state, key)] = old + ALPHA * (r + GAMMA * future - old)
+        self.q[(state, key)] = old + self.alpha * (r + self.gamma * future - old)
         self.updates += 1
         self.reward_total += r
         return r
@@ -125,6 +132,8 @@ class CuriosityQ:
 
     def summary(self) -> dict:
         return {
+            "alpha": self.alpha,
+            "gamma": self.gamma,
             "states": len(self.state_visits),
             "q_entries": len(self.q),
             "transitions": len(self.transitions),

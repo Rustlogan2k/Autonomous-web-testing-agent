@@ -114,6 +114,22 @@ ARMS: dict[str, dict] = {
     # forgetting). The planned tuning sweep was cancelled for time before any result was read.
     "hybrid_bandit_v5": {**HYBRID, "planner": "bandit", "browse": True, "failure_bonus": 2.0,
                          "custom_clickables": True, "listener_clickables": True},
+    # Benchmark agents (2026-10-28), each hybrid_curiosity_v5 with one part changed, at
+    # published settings rather than tuned ones:
+    # A. the tabular curiosity learner at WebExplor's settings as WebRLED ran it (learning
+    #    rate 0.95, discount 0.65, 100-step episodes);
+    "hybrid_curiosity_v5_pub": {**HYBRID, "planner": "count", "explore": "curiosity",
+                                "custom_clickables": True, "listener_clickables": True,
+                                "learner_params": {"alpha": 0.95, "gamma": 0.65},
+                                "episode_steps": 100},
+    # B. a deep, action-conditioned DQN with an NGU-style reward in place of the table, at
+    #    WebRLED's settings (ε 0.4, L 5, γ 0.95; `deep_curiosity.py`);
+    "hybrid_deep_v5": {**HYBRID, "planner": "count", "explore": "deep_curiosity",
+                       "custom_clickables": True, "listener_clickables": True},
+    # C. Go-Explore with a learned return policy: Thompson sampling over a linear model of
+    #    each return's yield of new states (`cell_learner.py`).
+    "hybrid_goexplore_v5": {**HYBRID, "planner": "learned_cells", "explore": "curiosity",
+                            "custom_clickables": True, "listener_clickables": True},
     # Bandit tuning (2026-10-26, development apps only, GitHub Actions): the learner on the
     # base of hybrid_final_v5, so the learner is the only difference. Back-off weight and
     # forgetting were never swept before.
@@ -169,6 +185,11 @@ class HybridJob:
         return {**asdict(self), "job_id": self.job_id}
 
 
+def _episode_steps(config: HybridConfig, spec: dict | None) -> int:
+    """The arm's own episode length where it has one (a published setting), else the run's."""
+    return int((spec or {}).get("episode_steps", config.episode_steps))
+
+
 def _settings(config: HybridConfig, spec: dict | None = None):
     from dataclasses import replace
 
@@ -182,7 +203,7 @@ def _settings(config: HybridConfig, spec: dict | None = None):
     if (spec or {}).get("enter_actions") is False:
         registry = replace(registry, enter_actions=False)
     return EnvSettings(
-        max_steps=config.episode_steps,
+        max_steps=_episode_steps(config, spec),
         settle_quiet_ms=config.settle_quiet_ms,
         capture_screenshots=False,
         registry=registry,
@@ -255,6 +276,10 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
 
         labeller = SemanticLabeller()
     planner = BanditPlanner if spec["planner"] == "bandit" else None
+    if spec["planner"] == "learned_cells":
+        from .cell_learner import LearnedCellPlanner
+
+        planner = LearnedCellPlanner
     if planner is not None and ("backoff" in spec or "decay" in spec):
         import functools
 
@@ -271,7 +296,7 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
         context=app_name,
         seed=job.seed,
         planner_factory=planner,
-        episode_steps=config.episode_steps,
+        episode_steps=_episode_steps(config, spec),
         explore=spec.get("explore", "weighted"),
         depth_bias=float(spec.get("depth_bias", 0.0)),
         outcome=spec.get("outcome", "alert"),
@@ -280,6 +305,7 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
         form_submit=bool(spec.get("form_submit", False)),
         browse=bool(spec.get("browse", False)),
         failure_bonus=float(spec.get("failure_bonus", 0.0)),
+        learner_params=spec.get("learner_params"),
     )
     return policy, labeller
 

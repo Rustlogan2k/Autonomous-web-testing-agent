@@ -64,6 +64,8 @@ class Planner:
     #: Choose a technique (operator family) first, then its target: one candidate per family,
     #: so a family's chance does not grow with how many targets the page gives it.
     family_choice = False
+    #: Does this planner learn which cell to return to (`episode_feedback`)?
+    learns_cells = False
 
     def __init__(self, archive: Archive, seed: int = 0) -> None:
         self.archive = archive
@@ -109,6 +111,10 @@ class Planner:
     def feedback(self, cell: Cell, decision: Decision, view: PageView, outcome: float) -> None:
         """Learning planners update here; this one does not learn."""
 
+    def episode_feedback(self, cell: Cell, new_cells: int) -> None:
+        """The outcome of an episode that returned to `cell` (new archive cells it found);
+        planners that learn which cell to return to update here."""
+
 
 class HybridPolicy:
     def __init__(
@@ -127,6 +133,7 @@ class HybridPolicy:
         form_submit: bool = False,
         browse: bool = False,
         failure_bonus: float = 0.0,
+        learner_params: dict | None = None,
     ) -> None:
         if outcome not in OUTCOMES:
             raise ValueError(f"unknown outcome {outcome!r}; expected one of {OUTCOMES}")
@@ -147,13 +154,18 @@ class HybridPolicy:
         #: score ("search"), which keeps its own visit memory over every step taken.
         self.explore = explore
         self.search = None
-        #: Free exploration by curiosity-driven Q-learning (`curiosity.py`), learned from every
-        #: transition the policy observes, operator and replay steps included.
+        #: Free exploration by curiosity-driven Q-learning, tabular (`curiosity.py`) or deep
+        #: (`deep_curiosity.py`), learned from every transition the policy observes, operator
+        #: and replay steps included. `learner_params` overrides the learner's settings.
         self.curiosity = None
         if explore == "curiosity":
             from .curiosity import CuriosityQ
 
-            self.curiosity = CuriosityQ(seed)
+            self.curiosity = CuriosityQ(seed, **(learner_params or {}))
+        if explore == "deep_curiosity":
+            from .deep_curiosity import DeepCuriosityQ
+
+            self.curiosity = DeepCuriosityQ(seed, **(learner_params or {}))
         if explore == "search":
             from ..rl.search import FeatureSearchPolicy
 
@@ -183,6 +195,10 @@ class HybridPolicy:
         self.base_cells: set[str] = set()
         self._base_before = 0
         self._operator_alerted = False
+        #: The cell the current episode returned to and the archive size when it began, for
+        #: `Planner.episode_feedback`.
+        self._episode_target: Cell | None = None
+        self._episode_cells = 0
         self.reset()
 
     # -- the hunt protocol ----------------------------------------------------------------------
@@ -208,7 +224,12 @@ class HybridPolicy:
     def begin_episode(self, info: dict) -> None:
         self.stats["episodes"] += 1
         self.invariants.begin_episode()
+        if self._episode_target is not None:
+            self.planner.episode_feedback(
+                self._episode_target, len(self.archive) - self._episode_cells
+            )
         self.target = self.planner.choose_cell(self.offered) if len(self.archive) else None
+        self._episode_target, self._episode_cells = self.target, len(self.archive)
         self.replay = list(self.target.trace) if self.target is not None else []
         self.phase = "return" if self.replay else "operate"
         if self.target is not None:
@@ -297,6 +318,7 @@ class HybridPolicy:
             "archive": self.archive.summary(),
             **self.stats,
             "curiosity": self.curiosity.summary() if self.curiosity is not None else None,
+            "cell_learner": self.planner.state() if self.planner.learns_cells else None,
             "invariant_candidates": [c.to_dict() for c in self.candidates],
             "labeller": self.labeller.stats.to_dict() if self.labeller is not None else None,
         }
