@@ -169,7 +169,7 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
 
     @app.post("/api/runs/demo")
     def start_demo(target: str = Form(...), agent: str = Form(agent_registry.DEFAULT_AGENT),
-                   budget: int = Form(400), llm: bool = Form(True),
+                   budget: int = Form(1000), llm: bool = Form(True),
                    spec: bool = Form(True)):  # noqa: ANN202
         """Start a test session against a bundled application. No user code is executed."""
         demo = target_registry.demo_target(target)
@@ -193,7 +193,7 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
 
     @app.post("/api/runs/url")
     def start_url(url: str = Form(...), agent: str = Form(agent_registry.DEFAULT_AGENT),
-                  budget: int = Form(400), llm: bool = Form(True),
+                  budget: int = Form(1000), llm: bool = Form(True),
                    spec: bool = Form(True)):  # noqa: ANN202
         """Start a test session against an application that is already running."""
         from urllib.parse import urlsplit
@@ -230,7 +230,7 @@ def create_app(var_dir: Path | None = None) -> FastAPI:
     def start_upload_run(workspace: str = Form(...), repo: str = Form(...),  # noqa: ANN202
                          name: str = Form(...),
                          agent: str = Form(agent_registry.DEFAULT_AGENT),
-                         budget: int = Form(400), llm: bool = Form(True),
+                         budget: int = Form(1000), llm: bool = Form(True),
                    spec: bool = Form(True)):
         """Start a test session against a previously validated upload."""
         workspace_path = Path(workspace)

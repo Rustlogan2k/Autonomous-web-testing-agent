@@ -153,7 +153,7 @@ class TestSettings:
     agent: str = "hybrid_final"
     seed: int = 0
     #: Browser interactions for a test session (the learning tester's unit of effort).
-    budget: int = 400
+    budget: int = 1000
     #: Use the local language model for the progress reward and the outcome review.
     llm: bool = True
     #: Silent-bug finder: an LLM infers rules a correct application must obey after a

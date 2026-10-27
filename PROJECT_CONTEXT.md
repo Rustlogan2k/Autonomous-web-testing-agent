@@ -703,7 +703,8 @@ the form); the app was then changed so the cart shows the total before delivery 
 checkout form is `novalidate` (server-side messages). Final app, seeds 5 and 6: bugs 1, 2 and
 3 verified in both, no false finding, no trigger finding (one judge title in seed 6 blames the
 delivery fee for what is bug 3). Bugs 4 and 6 need a completed checkout after the rules exist,
-which a 400-interaction run rarely reaches. Runs: `runs/demo-check/`.
+which a 400-interaction run rarely reaches. Runs: `runs/demo-check/`. The web app's default
+interaction budget was then raised from 400 to 1000 (owner request, 2026-10-27).
 
 **Fixes found while building the demo (2026-10-27; AFTER the seeded-app evaluation above,
 whose numbers were measured without them):**
