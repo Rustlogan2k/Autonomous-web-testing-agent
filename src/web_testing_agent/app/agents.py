@@ -1,7 +1,7 @@
 """Which exploration policies the product offers.
 
-The product offers the frozen hybrid tester (recommended: it verifies the most faults), the
-project's reinforcement-learning agents, and the random baseline they are measured against,
+The product offers the contextual bandit explorer (recommended: the most distinct faults in
+the held-out evaluation), the project's other agents, and the random baseline they are measured against,
 so a user can compare each on an application of their own. Each
 is built by `tester.session.build_agent` from the experiments' own configuration and
 checkpoints; the UI renders whatever `available_agents()` returns.
@@ -31,11 +31,11 @@ AGENT_HYBRID_CURIOSITY = "hybrid_curiosity"
 AGENT_V1_DQN = "v1_dqn_pretrained"
 AGENT_RANDOM = "random"
 
-#: The default is Katalyze, tuned: the frozen hybrid tester (tag v3-freeze) with listener-based
-#: clickable detection (round 2 of the external comparison). It needs no checkpoint, so it is
-#: always available; it verified the most distinct faults in the final tuning round, and the
-#: listener clickables raised its benchmark coverage on all six applications.
-DEFAULT_AGENT = AGENT_HYBRID_FINAL
+#: The default is the contextual bandit explorer (owner decision, 2026-10-27): the held-out
+#: evaluation's bandit arm, whose Thompson sampling is keyed by the page's context (page kind,
+#: operator, target type). It needs no checkpoint, so it is always available, and it verified
+#: the most distinct held-out faults (19 of 24) and a fault in 34 of 40 runs.
+DEFAULT_AGENT = AGENT_HYBRID_BANDIT
 
 #: Every offered agent runs through the test-session path (`tester.run_session`); the key is
 #: also the session's name for it.
@@ -68,8 +68,18 @@ def available_agents() -> list[AgentChoice]:
     v1_ok = torch_ok and checkpoint_ok
     return [
         AgentChoice(
+            key=AGENT_HYBRID_BANDIT,
+            name="Contextual bandit explorer (recommended)",
+            method="Contextual Thompson-sampling bandit",
+            summary="Structured exploration (pages abstracted by function, an archive of "
+                    "reached states it returns to exactly, test operators from standard test "
+                    "design) with a contextual Thompson-sampling bandit that learns, inside this "
+                    "application, which test pays off on which kind of page. Held-out evaluation: "
+                    "a fault in 34 of 40 runs, 19 of 24 distinct faults, the most of any agent.",
+        ),
+        AgentChoice(
             key=AGENT_HYBRID_FINAL,
-            name="Katalyze, tuned (recommended)",
+            name="Katalyze, tuned",
             method="Structured exploration, no learning",
             summary="Pages abstracted by function, an archive of reached states it returns to "
                     "exactly, and test operators from standard test design (complete the step, "
@@ -92,16 +102,6 @@ def available_agents() -> list[AgentChoice]:
             unavailable_reason=("" if v1_ok else
                                 "Requires torch." if not torch_ok else
                                 f"Pretraining checkpoints not on this machine ({why})."),
-        ),
-        AgentChoice(
-            key=AGENT_HYBRID_BANDIT,
-            name="Bandit explorer",
-            method="Thompson-sampling bandit",
-            summary="Structured exploration (pages abstracted by function, an archive of "
-                    "reached states it returns to exactly, test operators from standard test "
-                    "design) with a Thompson-sampling bandit that learns, inside this "
-                    "application, which operators pay off where. Held-out evaluation: a "
-                    "fault in 34 of 40 runs, 19 of 24 distinct faults, the most of any agent.",
         ),
         AgentChoice(
             key=AGENT_HYBRID_CURIOSITY,
