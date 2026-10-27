@@ -87,13 +87,26 @@ def _toggle_fill(view: PageView) -> ActionSpec | None:
     return None
 
 
+_NAME = re.compile(r'\[name="([^"]+)"\]$')
+
+
+def _holds_value(identity: str, actions: list[ActionSpec], signature: dict[str, bool]) -> bool:
+    """Whether a field already holds a value: by its id or name in the page's form state, else
+    as the registry saw the field itself (a field with neither id nor name, such as an
+    AngularJS `ng-model` date input). Fields of unknown state count as filled."""
+    if identity.startswith('[id="') and identity.endswith('"]') and identity[5:-2] in signature:
+        return signature[identity[5:-2]]
+    named = _NAME.search(identity)
+    if named and named.group(1) in signature:
+        return signature[named.group(1)]
+    seen = [a.params["filled"] for a in actions if "filled" in (a.params or {})]
+    return seen[0] if seen else True
+
+
 def _text_fill(view: PageView, skip: str) -> ActionSpec | None:
-    filled = dict(view.signature)
+    signature = dict(view.signature)
     for identity, actions in view.fields().items():
-        if identity == skip:
-            continue
-        dom = identity[5:-2] if identity.startswith('[id="') else identity
-        if filled.get(dom, True):
+        if identity == skip or _holds_value(identity, actions, signature):
             continue
         valid = next((a for a in actions if _category(a) == "valid_typical"), None)
         if valid is not None:

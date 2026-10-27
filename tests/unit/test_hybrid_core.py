@@ -7,6 +7,7 @@ from web_testing_agent.hybrid.abstraction import (
     PageView,
     deterministic_labels,
     form_signature,
+    forget_id_evidence,
     path_template,
     shows_alert,
 )
@@ -65,8 +66,28 @@ def test_main_heading_separates_single_page_views():
     assert main_heading("<h1 hidden>x</h1><h2>Basket</h2>") == "basket"
 
 
+def _expected(route: str) -> str:
+    return route.replace("2", "{n}")
+
+
 def test_abstraction():
     assert path_template("http://h:9/orders/17#step-2") == "/orders/{n}#step-{n}"
+    # Generated record ids are one page, not a new page per record ...
+    for session in ("B1kKc_2nMg", "SJzq3_q2zl", "HJya9uqhGx"):
+        assert path_template(f"http://h/session/{session}") == "/session/{id}"
+    assert path_template("http://h/doc/550e8400-e29b-41d4-a716-446655440000/edit") == "/doc/{id}/edit"
+    assert path_template("http://h/#/commit/9f86d081884c") == "/#/commit/{id}"
+    # Letter-only ids are recognised once several different ones appear at the same place ...
+    forget_id_evidence()
+    assert path_template("http://h/session/SkGvNlChfl") == "/session/SkGvNlChfl"
+    path_template("http://h/session/rJZtEeChze")
+    assert path_template("http://h/session/SJYUVxRnzl") == "/session/{id}"
+    assert path_template("http://h/session/SkGvNlChfl") == "/session/{id}"
+    forget_id_evidence()
+    # ... while route names stay distinct.
+    for route in ("/settings", "/userProfile", "/checkout-step-two", "/myPosts", "/v2/api", "/strengthsList",
+                  "/wizard/step-2", "/page2", "/getHTMLData", "/orderHistory", "/myAccount"):
+        assert path_template(f"http://h{route}") == _expected(route)
     assert form_signature(HTML) == (("email", False), ("qty", True))
     assert shows_alert(HTML) and not shows_alert('<p class="notice"></p><br>')
     view = _view()
@@ -335,6 +356,27 @@ def test_attribution_follows_the_per_fault_control_rule(monkeypatch):
     assert out == {"on_clean": False, "faults": ["B"]}  # silenced when B's patch is removed
     builds["clean"] = True
     assert invariants.attribute(candidate, lambda: "clean", {})["on_clean"] is True
+
+
+def test_complete_step_fills_fields_that_have_only_a_name_or_nothing_at_all():
+    from web_testing_agent.hybrid.operators import fill_step
+
+    # Petclinic-style markup: fields addressed by name, and one AngularJS field with neither.
+    html = ('<input name="firstName" value="Ada"><input name="telephone" value="">'
+            '<input type="date" ng-model="pet.birthDate" value="">')
+
+    def typed(i, selector, label, filled):
+        return ActionSpec(index=i, action_type=ActionType.TYPE, selector=selector, element_id=label,
+                          params={"category": "valid_typical", "filled": filled}, description=f"type {label}")
+
+    def view_of(specs):
+        return PageView("http://h/x", deterministic_labels("http://h/x", html, specs), form_signature(html),
+                        False, specs, html=html)
+
+    specs = [typed(0, '[name="firstName"]', "firstName", True), typed(1, '[name="telephone"]', "telephone", False),
+             typed(2, "input, textarea, select, button, a[href] >> nth=2", "date", False)]
+    assert fill_step(view_of(specs)).index == 1          # the empty named field, found by its name
+    assert fill_step(view_of(specs[:1] + specs[2:])).index == 2   # no id, no name: its own state
 
 
 def test_complete_step_ticks_boxes_and_chooses_radios_after_text():

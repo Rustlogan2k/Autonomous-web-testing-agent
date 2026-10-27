@@ -250,6 +250,11 @@ class IstanbulCollector:
                       for _, bits in branches.values())
         statements = sum(t for t, _ in self.statements.values())
         hit = sum(h for _, h in self.statements.values())
+        #: Per file, the branch arms never executed ("<branch id>.<arm>"): which code a run
+        #: missed, resolved to source lines with the file's branchMap (scripts/diagnose_coverage.py).
+        uncovered = {file: [f"{bid}.{arm}" for bid, (n, bits) in branches.items() for arm in range(n)
+                            if not bits >> arm & 1]
+                     for file, branches in self.branches.items()}
         return {
             "files": len(self.branches),
             "branches": arms,
@@ -259,4 +264,5 @@ class IstanbulCollector:
             "statements_hit_max": hit,
             "samples": self.samples,
             "sample_errors": self.errors,
+            "uncovered": {file: arms_ for file, arms_ in uncovered.items() if arms_},
         }

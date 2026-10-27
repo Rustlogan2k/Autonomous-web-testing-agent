@@ -65,13 +65,23 @@ def test_link_produces_click_only():
     assert dynamic[0].action_type == ActionType.CLICK
 
 
-def test_text_input_produces_all_five_type_variants():
+def test_text_input_produces_all_five_type_variants_and_a_valid_value_with_enter():
     elements = [_el(tag="input", index=0, type="text", name="username")]
     specs = build_action_specs(elements)
     type_specs = [s for s in specs if s.action_type == ActionType.TYPE and s.element_id == "username"]
-    assert len(type_specs) == 5
-    categories = {s.params["category"] for s in type_specs}
-    assert len(categories) == 5
+    assert len(type_specs) == 6
+    assert {s.params["category"] for s in type_specs if not s.params["press_enter"]} == {
+        "valid_typical", "boundary_min", "boundary_max", "empty_string", "type_mismatch"}
+    entered = [s for s in type_specs if s.params["press_enter"]]
+    assert [s.params["category"] for s in entered] == ["valid_typical"]
+    # The plain valid value comes first, so operators that pick "the valid value" do not press Enter.
+    first_valid = next(s for s in type_specs if s.params["category"] == "valid_typical")
+    assert first_valid.params["press_enter"] is False
+
+
+def test_a_textarea_gets_no_enter_variant():
+    specs = build_action_specs([_el(tag="textarea", index=0, name="notes")])
+    assert not any(s.params.get("press_enter") for s in specs if s.action_type == ActionType.TYPE)
 
 
 def test_select_targets_last_option():
@@ -250,7 +260,7 @@ def test_valid_typical_is_prioritized_over_boundary_variants_under_tight_budget(
     elements = [_el(tag="input", index=i, type="text", name=f"f{i}") for i in range(30)]
     specs = build_action_specs(elements)
     type_specs = [s for s in specs if s.action_type == ActionType.TYPE]
-    valid_count = sum(1 for s in type_specs if s.params["category"] == "valid_typical")
+    valid_count = sum(1 for s in type_specs if s.params["category"] == "valid_typical" and not s.params["press_enter"])
     # every field's primary (valid_typical) value should make it in before any secondary variant does
     assert valid_count == 30
 

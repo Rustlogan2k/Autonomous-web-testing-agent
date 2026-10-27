@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
 from ..utils.logging import get_logger
-from .input_values import generate_input_value
+from .input_values import field_type, generate_input_value
 from .types import (
     MAX_ACTIONS,
     ActionSpec,
@@ -461,6 +461,7 @@ def build_action_specs(elements: list[dict], page_url: str = "",
     clicks: list[ActionSpec] = []
     primary_types: list[ActionSpec] = []
     selects: list[ActionSpec] = []
+    entered: list[ActionSpec] = []
     rapid_clicks: list[ActionSpec] = []
     secondary_types: list[ActionSpec] = []
 
@@ -548,7 +549,11 @@ def build_action_specs(elements: list[dict], page_url: str = "",
         if tag in ("input", "textarea") and el_type not in _NON_TEXT_INPUT_TYPES:
             selector = _selector_for(el, shared_names)
             field_label = el.get("name") or el.get("id") or selector
-            html_type = "textarea" if tag == "textarea" else (el_type or "text")
+            html_type = "textarea" if tag == "textarea" else field_type(
+                el_type or "text", " ".join(str(el.get(k) or "") for k in ("name", "id", "label")))
+            # Whether the field holds a value now (an input's `text` is its value): lets a form
+            # be completed even when its fields have neither an id nor a name.
+            filled = bool((el.get("text") or "").strip())
             for category, bucket in (
                 (InputValueCategory.VALID_TYPICAL, primary_types),
                 (InputValueCategory.BOUNDARY_MIN, secondary_types),
@@ -565,14 +570,36 @@ def build_action_specs(elements: list[dict], page_url: str = "",
                         params={
                             "value": generate_input_value(html_type, category),
                             "category": category.value,
+                            "press_enter": False,
+                            "filled": filled,
                             "in_viewport": in_viewport,
                             **label_params(el),
                         },
                         description=f"type {category.value} into {field_label!r}",
                     )
                 )
+            if tag == "input":
+                # Many inputs act on Enter and have no button at all (add a post, a chat line, a
+                # tag, a search): a typed value followed by Enter is its own action.
+                entered.append(
+                    ActionSpec(
+                        index=-1,
+                        action_type=ActionType.TYPE,
+                        selector=selector,
+                        element_id=field_label,
+                        params={
+                            "value": generate_input_value(html_type, InputValueCategory.VALID_TYPICAL),
+                            "category": InputValueCategory.VALID_TYPICAL.value,
+                            "press_enter": True,
+                            "filled": filled,
+                            "in_viewport": in_viewport,
+                            **label_params(el),
+                        },
+                        description=f"type valid_typical into {field_label!r} and press Enter",
+                    )
+                )
 
-    ordered = clicks + primary_types + selects + rapid_clicks + secondary_types
+    ordered = clicks + primary_types + selects + entered + rapid_clicks + secondary_types
     dynamic = ordered[:budget]
     if len(ordered) > budget:
         dropped_onscreen = sum(1 for spec in ordered[budget:] if spec.params.get("in_viewport"))

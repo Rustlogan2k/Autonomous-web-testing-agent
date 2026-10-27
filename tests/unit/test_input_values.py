@@ -1,6 +1,6 @@
 import pytest
 
-from web_testing_agent.envs.input_values import generate_input_value
+from web_testing_agent.envs.input_values import field_type, generate_input_value
 from web_testing_agent.envs.types import InputValueCategory
 
 _KNOWN_TYPES = ["text", "email", "number", "tel", "url", "password", "date", "search", "textarea"]
@@ -31,6 +31,18 @@ def test_type_mismatch_email_is_not_a_valid_email_shape():
 def test_type_mismatch_number_is_not_numeric():
     value = generate_input_value("number", InputValueCategory.TYPE_MISMATCH)
     assert not value.isdigit()
+
+
+def test_a_plain_text_field_gets_the_values_its_name_or_label_calls_for():
+    assert field_type("text", "telephone") == "tel"
+    assert field_type("text", "mobileNumber Mobile number") == "tel"
+    assert field_type("text", "userEmail") == "email"
+    assert field_type("text", "postalCode") == "postcode"
+    assert field_type("text", "birthDate") == "date"
+    assert field_type("text", "firstName First name") == "text"
+    assert field_type("text", "hotel") == "text"                # not a phone field
+    assert field_type("password", "telephone") == "password"    # an explicit type wins
+    assert generate_input_value("tel", InputValueCategory.VALID_TYPICAL).isdigit()
 
 
 def test_boundary_max_is_longer_than_boundary_min():

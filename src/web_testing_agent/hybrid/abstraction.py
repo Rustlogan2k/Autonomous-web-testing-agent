@@ -47,11 +47,67 @@ _FIXED = {
 }
 
 
+_UUID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.I)
+_HEX = re.compile(r"^(?=.*\d)[0-9a-f]{8,}$", re.I)
+#: Letters and digits interleaved (`B1kKc_2nMg`), unlike route names that end in a number (`step-2`).
+_MIXED = re.compile(r"^(?=.*[A-Za-z]\d+[A-Za-z])[A-Za-z0-9_-]{6,32}$")
+_TOKEN_CHARS = re.compile(r"^[A-Za-z0-9_-]{6,32}$")
+#: Case chunks, acronyms kept whole: `getHTMLData` -> get, HTML, Data; `SkGvNlChfl` -> Sk, Gv, Nl, Chfl.
+_CHUNK = re.compile(r"[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+")
+
+
+def _looks_generated(segment: str) -> bool:
+    """A letter-only token that reads like a generated id, not words: mixed case, and it splits
+    into at least three case chunks averaging under 3.5 letters (`SkGvNlChfl`), where route
+    names split into words (`userProfile`, `strengthsList`, `getHTMLData`)."""
+    if not _TOKEN_CHARS.match(segment) or segment.islower() or segment.isupper():
+        return False
+    chunks = _CHUNK.findall(segment)
+    return len(chunks) >= 3 and sum(map(len, chunks)) / len(chunks) < 3.5
+#: Distinct such tokens seen at one place in a URL before that place counts as an id.
+ID_EVIDENCE = 3
+#: Per URL prefix, the distinct candidate tokens seen after it (at most ID_EVIDENCE kept).
+_SEEN: dict[str, set[str]] = {}
+
+
+def _id_like(segment: str) -> bool:
+    """A generated identifier by its shape alone: a UUID, a hex hash, or a token with letters
+    and digits interleaved (`B1kKc_2nMg`), unlike route names that end in a number (`step-2`)."""
+    return bool(_UUID.match(segment) or _HEX.match(segment) or _MIXED.match(segment))
+
+
+def _template(part: str) -> str:
+    """Ids by shape, and letter-only ids (`SkGvNlChfl`) by evidence: once `ID_EVIDENCE`
+    different mixed-case tokens have appeared after the same prefix (`/session/`), that
+    position holds generated ids. A route name such as `strengthsList` is never one of several
+    siblings minted at run time, so it stays itself."""
+    out: list[str] = []
+    for seg in part.split("/"):
+        if _id_like(seg):
+            out.append("{id}")
+            continue
+        if _looks_generated(seg):
+            seen = _SEEN.setdefault("/".join(out), set())
+            if len(seen) < ID_EVIDENCE:
+                seen.add(seg)
+            if len(seen) >= ID_EVIDENCE:
+                out.append("{id}")
+                continue
+        out.append(seg)
+    return _NUMBER.sub("{n}", "/".join(out))
+
+
+def forget_id_evidence() -> None:
+    """Start a new application: the evidence about where its URLs carry ids is per application."""
+    _SEEN.clear()
+
+
 def path_template(url: str) -> str:
-    """The page's location without host, port or ids: `/orders/17#edit` -> `/orders/{n}#edit`."""
+    """The page's location without host, port or ids: `/orders/17#edit` -> `/orders/{n}#edit`,
+    `/session/B1kKc_2nMg` -> `/session/{id}`."""
     parsed = urlparse(url or "")
-    path = _NUMBER.sub("{n}", parsed.path or "/")
-    return path + (f"#{_NUMBER.sub('{n}', parsed.fragment)}" if parsed.fragment else "")
+    path = _template(parsed.path or "/")
+    return path + (f"#{_template(parsed.fragment)}" if parsed.fragment else "")
 
 
 class _AlertParser(HTMLParser):

@@ -36,7 +36,7 @@ from ..evaluation.scripted import ScriptedPolicy
 #: generated `value` and its `category`; the category is matched because the value is
 #: regenerated from it on every page.
 _DISCRIMINATING_PARAMS: dict[ActionType, tuple[str, ...]] = {
-    ActionType.TYPE: ("category",),
+    ActionType.TYPE: ("category", "press_enter"),
     ActionType.SELECT: ("option",),
     ActionType.RESIZE_VIEWPORT: ("preset",),
     ActionType.SCROLL: ("direction",),

@@ -18,7 +18,7 @@ import numpy as np
 
 from ..envs.types import ActionSpec, ActionType
 from ..evaluation.scripted import ScriptedPolicy
-from .abstraction import PageView, observe
+from .abstraction import PageView, forget_id_evidence, observe
 from .archive import Archive, Cell, step_for
 from .invariants import Candidate, InvariantChecker
 from .labels import control_identity
@@ -130,6 +130,8 @@ class HybridPolicy:
     ) -> None:
         if outcome not in OUTCOMES:
             raise ValueError(f"unknown outcome {outcome!r}; expected one of {OUTCOMES}")
+        # Where this application's URLs carry generated ids is learned afresh for each run.
+        forget_id_evidence()
         self.outcome = outcome
         #: Development options (suite round 4): pairwise operators, technique-first choice,
         #: form-submitting buttons as submit controls. Off: the behaviour of rounds 1-3.

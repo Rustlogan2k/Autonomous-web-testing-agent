@@ -53,7 +53,7 @@ GUIDE_PROBABILITY = 0.5
 def action_key(spec: ActionSpec) -> str:
     """An action as the same choice across visits: its control and what it does there."""
     params = spec.params or {}
-    detail = params.get("category") or params.get("option") or ""
+    detail = (params.get("category") or params.get("option") or "") + ("+enter" if params.get("press_enter") else "")
     return f"{spec.action_type.value}|{control_identity(spec)}|{detail}"
 
 

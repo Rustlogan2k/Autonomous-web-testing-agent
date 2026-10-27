@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 from .types import InputValueCategory
 
 _LONG_STRING = "A" * 2048
@@ -29,7 +31,8 @@ _BY_TYPE: dict[str, dict[InputValueCategory, str]] = {
         InputValueCategory.TYPE_MISMATCH: "not-a-number",
     },
     "tel": {
-        InputValueCategory.VALID_TYPICAL: "+1-202-555-0143",
+        # Digits only: many validators (Spring's @Digits, HTML patterns) reject "+" and dashes.
+        InputValueCategory.VALID_TYPICAL: "2025550143",
         InputValueCategory.BOUNDARY_MIN: "1",
         InputValueCategory.BOUNDARY_MAX: "1" * 32,
         InputValueCategory.EMPTY_STRING: "",
@@ -72,7 +75,36 @@ _BY_TYPE: dict[str, dict[InputValueCategory, str]] = {
     },
 }
 
+_BY_TYPE["postcode"] = {
+    InputValueCategory.VALID_TYPICAL: "10001",
+    InputValueCategory.BOUNDARY_MIN: "1",
+    InputValueCategory.BOUNDARY_MAX: "9" * 16,
+    InputValueCategory.EMPTY_STRING: "",
+    InputValueCategory.TYPE_MISMATCH: "ABCDE",
+}
+
 _DEFAULT_TYPE = "text"
+
+#: What a plain text field holds, read from its name, id and label, in priority order. Many
+#: forms use `type="text"` for phone numbers, emails and dates and then validate them, so a
+#: generic value is refused and the form never goes through.
+_MEANINGS = (
+    ("tel", re.compile(r"phone|\btel\b|telephone|mobile|\bcell\b")),
+    ("email", re.compile(r"e-?mail")),
+    ("postcode", re.compile(r"\bzip\b|zip_?code|post_?code|postal|pin_?code")),
+    ("date", re.compile(r"\bdate\b|birth|\bdob\b|_date\b|date_")),
+    ("url", re.compile(r"\burl\b|website|homepage")),
+    ("number", re.compile(r"\b(age|qty|quantity|amount|price|count|number)\b")),
+)
+
+
+def field_type(html_input_type: str, hints: str) -> str:
+    """The value set for a field: its HTML type, or for a plain text field what its name, id
+    and label say it holds (`telephone` -> tel, `birthDate` -> date)."""
+    if (html_input_type or "text").lower() != "text":
+        return html_input_type
+    words = re.sub(r"([a-z])([A-Z])", r"\1 \2", hints or "").lower()
+    return next((kind for kind, pattern in _MEANINGS if pattern.search(words)), html_input_type or "text")
 
 
 def generate_input_value(html_input_type: str, category: InputValueCategory) -> str:

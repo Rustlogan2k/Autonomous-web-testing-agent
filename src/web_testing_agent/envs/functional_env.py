@@ -195,9 +195,19 @@ def _do_click(page: "Page", spec: ActionSpec) -> dict | None:
     return {"navigated": True}
 
 
-def _do_type(page: "Page", spec: ActionSpec) -> None:
+def _do_type(page: "Page", spec: ActionSpec) -> dict | None:
     assert spec.selector is not None
-    page.locator(spec.selector).first.fill(spec.params["value"], timeout=_PLAYWRIGHT_ACTION_TIMEOUT_MS)
+    locator = page.locator(spec.selector).first
+    locator.fill(spec.params["value"], timeout=_PLAYWRIGHT_ACTION_TIMEOUT_MS)
+    if not spec.params.get("press_enter"):
+        return None
+    # Enter may submit a form and navigate: wait for that as a link click does.
+    try:
+        with page.expect_navigation(wait_until="commit", timeout=_NAVIGATION_COMMIT_MS):
+            locator.press("Enter", timeout=_PLAYWRIGHT_ACTION_TIMEOUT_MS)
+    except PlaywrightTimeoutError:
+        return None
+    return {"navigated": True}
 
 
 def _do_select(page: "Page", spec: ActionSpec) -> None:

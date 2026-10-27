@@ -25,7 +25,7 @@ def step_for(spec: ActionSpec) -> dict:
         else:
             step["selector"] = spec.selector
     params = spec.params or {}
-    for key in ("category", "option", "direction", "preset", "n"):
+    for key in ("category", "press_enter", "option", "direction", "preset", "n"):
         if key in params:
             step.setdefault("params", {})[key] = params[key]
     if spec.action_type in (ActionType.CLICK, ActionType.RAPID_CLICK) and not spec.selector:
