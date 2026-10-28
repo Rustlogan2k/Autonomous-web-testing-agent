@@ -1,6 +1,7 @@
 # WebRLED (Gu et al., 2025), the published baseline, run from its released artifact on the same
 # GitHub-hosted runners and one-hour budget as our agents (external-comparison.yml), so the
-# comparison does not rest on numbers measured on other machines. Started by hand only.
+# comparison does not rest on numbers measured on other machines. Started by pushing to the
+# webrled-gha branch (the full plan) or by hand.
 #
 # The artifact (webrled.zip, 3 GB, and express-istanbul.zip) is downloaded from the authors'
 # Google Drive once and kept in the Actions cache; every run restores it from there.
@@ -10,6 +11,9 @@
 name: WebRLED baseline
 
 on:
+  # A push to this branch runs the default plan (the inputs' defaults below).
+  push:
+    branches: [webrled-gha]
   workflow_dispatch:
     inputs:
       apps:
@@ -56,8 +60,8 @@ jobs:
           key: ${{ env.CACHE_KEY }}
       - id: plan
         env:
-          APPS: ${{ inputs.apps }}
-          RUNS: ${{ inputs.runs }}
+          APPS: ${{ inputs.apps || 'dimeshift pagekit splittypie phoenix retroboard petclinic' }}
+          RUNS: ${{ inputs.runs || '1 2 3 4 5' }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import itertools, json, os
@@ -129,7 +133,7 @@ jobs:
       - name: Run WebRLED
         env:
           APP: ${{ matrix.app }}
-          TIME_LIMIT: ${{ inputs.time_limit }}
+          TIME_LIMIT: ${{ inputs.time_limit || '3600' }}
           OUT_DIR: out
         run: |
           WEBRLED_DIR="$RUNNER_TEMP/w/webrled" ISTANBUL_DIR="$RUNNER_TEMP/w/express-istanbul" \
