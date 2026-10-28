@@ -68,6 +68,11 @@ def _looks_generated(segment: str) -> bool:
 ID_EVIDENCE = 3
 #: Per URL prefix, the distinct candidate tokens seen after it (at most ID_EVIDENCE kept).
 _SEEN: dict[str, set[str]] = {}
+#: Bumped whenever a URL position is newly found to hold ids, so a caller holding cell keys
+#: made before (with the literal token) knows to re-key them (`retemplate_key`).
+_EVIDENCE_VERSION = 0
+#: Once a position holds ids, any mixed-case token there is one (`forget_id_evidence`).
+_WHOLE_POSITION = False
 
 
 def _id_like(segment: str) -> bool:
@@ -81,15 +86,21 @@ def _template(part: str) -> str:
     different mixed-case tokens have appeared after the same prefix (`/session/`), that
     position holds generated ids. A route name such as `strengthsList` is never one of several
     siblings minted at run time, so it stays itself."""
+    global _EVIDENCE_VERSION
     out: list[str] = []
     for seg in part.split("/"):
         if _id_like(seg):
+            out.append("{id}")
+            continue
+        if _WHOLE_POSITION and _at_id_position("/".join(out), seg):
             out.append("{id}")
             continue
         if _looks_generated(seg):
             seen = _SEEN.setdefault("/".join(out), set())
             if len(seen) < ID_EVIDENCE:
                 seen.add(seg)
+                if len(seen) == ID_EVIDENCE:
+                    _EVIDENCE_VERSION += 1
             if len(seen) >= ID_EVIDENCE:
                 out.append("{id}")
                 continue
@@ -97,9 +108,47 @@ def _template(part: str) -> str:
     return _NUMBER.sub("{n}", "/".join(out))
 
 
-def forget_id_evidence() -> None:
-    """Start a new application: the evidence about where its URLs carry ids is per application."""
+def _at_id_position(prefix: str, segment: str) -> bool:
+    """A mixed-case token after a prefix already shown to hold ids. The shape test alone
+    misses ids that happen to split into few case chunks: Retroboard's `BkxmocRhze` (two)
+    stayed a page of its own after `/session/` had been recognised, and every return to it
+    failed."""
+    seen = _SEEN.get(prefix)
+    return (seen is not None and len(seen) >= ID_EVIDENCE and bool(_TOKEN_CHARS.match(segment))
+            and not segment.islower() and not segment.isupper())
+
+
+def forget_id_evidence(*, whole_position: bool = False) -> None:
+    """Start a new application: the evidence about where its URLs carry ids is per application.
+
+    `whole_position`: once a position holds ids, every mixed-case token there is one, not only
+    those that look generated (`HybridPolicy.robust_returns`). Off: as before.
+    """
+    global _EVIDENCE_VERSION, _WHOLE_POSITION
     _SEEN.clear()
+    _EVIDENCE_VERSION = 0
+    _WHOLE_POSITION = whole_position
+
+
+def id_evidence_version() -> int:
+    """How many URL positions have been found to hold ids since `forget_id_evidence`."""
+    return _EVIDENCE_VERSION
+
+
+def retemplate_key(key: str) -> str:
+    """A cell key (`kind|path|...`) with its path templated under the evidence now held.
+
+    Until a position has shown `ID_EVIDENCE` different tokens, the first ones stay literal,
+    so cells made then (`form|/session/SkJCqqCnGl|...`) no longer match the page they name
+    once the position counts as an id (`form|/session/{id}|...`): every return to them
+    "arrived elsewhere" (Retroboard, 211 of 228 logged return failures)."""
+    kind, sep, rest = key.partition("|")
+    path, sep2, tail = rest.partition("|")
+    if not sep or not sep2:
+        return key
+    base, hash_, fragment = path.partition("#")
+    path = _template(base) + (f"#{_template(fragment)}" if hash_ else "")
+    return f"{kind}|{path}|{tail}"
 
 
 def path_template(url: str) -> str:

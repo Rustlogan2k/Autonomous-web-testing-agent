@@ -18,8 +18,14 @@ import numpy as np
 
 from ..envs.types import ActionSpec, ActionType
 from ..evaluation.scripted import ScriptedPolicy
-from .abstraction import PageView, forget_id_evidence, observe
-from .archive import Archive, Cell, step_for
+from .abstraction import (
+    PageView,
+    forget_id_evidence,
+    id_evidence_version,
+    observe,
+    retemplate_key,
+)
+from .archive import Archive, Cell, resolve_step, step_for
 from .invariants import Candidate, InvariantChecker
 from .labels import control_identity
 from .operators import DEVIANT_OPERATORS, Operator, options
@@ -134,11 +140,12 @@ class HybridPolicy:
         browse: bool = False,
         failure_bonus: float = 0.0,
         learner_params: dict | None = None,
+        robust_returns: bool = False,
     ) -> None:
         if outcome not in OUTCOMES:
             raise ValueError(f"unknown outcome {outcome!r}; expected one of {OUTCOMES}")
         # Where this application's URLs carry generated ids is learned afresh for each run.
-        forget_id_evidence()
+        forget_id_evidence(whole_position=robust_returns)
         self.outcome = outcome
         #: Development options (suite round 4): pairwise operators, technique-first choice,
         #: form-submitting buttons as submit controls. Off: the behaviour of rounds 1-3.
@@ -146,6 +153,11 @@ class HybridPolicy:
         #: Tuning options (round v3, 2026-10-19): the list-browsing operator, and extra
         #: archive weight for cells where errors followed actions. Off: as before.
         self.browse = browse
+        #: Returns that survive a changed page (2026-10-29): steps on controls without an id
+        #: also carry their label (`step_for`, `resolve_step`), and cells named before a URL
+        #: position was known to hold ids are re-keyed (`retemplate_key`). Off: as before.
+        self.robust_returns = robust_returns
+        self._id_version = id_evidence_version()
         self.labeller = labeller
         self.context = context
         self.archive = Archive(seed, episode_steps=episode_steps, depth_bias=depth_bias,
@@ -228,6 +240,8 @@ class HybridPolicy:
             self.planner.episode_feedback(
                 self._episode_target, len(self.archive) - self._episode_cells
             )
+        if self.robust_returns and id_evidence_version() != self._id_version:
+            self._rekey()
         self.target = self.planner.choose_cell(self.offered) if len(self.archive) else None
         self._episode_target, self._episode_cells = self.target, len(self.archive)
         self.replay = list(self.target.trace) if self.target is not None else []
@@ -271,7 +285,7 @@ class HybridPolicy:
             self.phase = "explore"
             spec = self._explore_step(view, cell, observation, info)
             self._explore_left -= 1
-        self.trace.append(step_for(spec))
+        self.trace.append(step_for(spec, view.specs if self.robust_returns else None))
         self._last_page = page
         self._last_cell = view.cell
         self._last_prunable = spec.action_type not in (ActionType.TYPE, ActionType.SELECT)
@@ -327,14 +341,17 @@ class HybridPolicy:
 
     def _return_step(self, view: PageView, cell: Cell) -> ActionSpec | None:
         if not self.replay:
-            if self.target is not None and cell.key != self.target.key:
+            if self.target is not None and cell.key != self._target_key():
                 self.target.failed_returns += 1
                 self.stats["failed_returns"] += 1
                 self._log_failure("arrived elsewhere", reached=cell.key)
             self.phase = "operate"
             return None
         step = self.replay[0]
-        index = ScriptedPolicy._match(step, view.specs)  # noqa: SLF001 - the oracle's own matcher
+        if self.robust_returns:
+            index = resolve_step(step, view.specs)
+        else:
+            index = ScriptedPolicy._match(step, view.specs)  # noqa: SLF001 - the oracle's own matcher
         if index is None:
             if self.target is not None:
                 self.target.failed_returns += 1
@@ -345,6 +362,24 @@ class HybridPolicy:
             return None
         self.replay.pop(0)
         return next(s for s in view.specs if s.index == index)
+
+    def _target_key(self) -> str:
+        """The target's key as the page would now produce it: a URL position can become an id
+        while the return is under way."""
+        key = self.target.key
+        return retemplate_key(key) if self.robust_returns else key
+
+    def _rekey(self) -> None:
+        """Rename cells made before the latest id evidence (`Archive.rekey`), with what the
+        policy keeps per cell."""
+        self._id_version = id_evidence_version()
+        changed = self.archive.rekey(retemplate_key)
+        for old, new in changed.items():
+            choices = self.offered.pop(old, None)
+            if choices is not None:
+                self.offered.setdefault(new, choices)
+        if changed:
+            self.stats["rekeyed_cells"] = self.stats.get("rekeyed_cells", 0) + len(changed)
 
     def _log_failure(self, reason: str, *, reached: str, step: dict | None = None) -> None:
         """Keep the first few failed returns whole, for diagnosis."""

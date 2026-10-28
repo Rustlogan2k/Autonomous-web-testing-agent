@@ -14,10 +14,18 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from ..envs.types import ActionSpec, ActionType
+from ..evaluation.scripted import ScriptedPolicy
 
 
-def step_for(spec: ActionSpec) -> dict:
-    """A scripted step that resolves back to `spec` on a page offering the same control."""
+def step_for(spec: ActionSpec, specs: list[ActionSpec] | None = None) -> dict:
+    """A scripted step that resolves back to `spec` on a page offering the same control.
+
+    A control without an id is named by a positional selector (`... >> nth=5`, or a chain
+    of `nth-of-type`), which points at another control once the page gains or loses an
+    element: a list that grew by one owner, a board added. Given the page's `specs`, the
+    step also records the control's label and which of the same-labelled controls it was,
+    so `resolve_step` can find it when the position has moved.
+    """
     step: dict = {"type": spec.action_type.value}
     if spec.selector:
         if spec.selector.startswith('[id="') and spec.selector.endswith('"]'):
@@ -30,7 +38,42 @@ def step_for(spec: ActionSpec) -> dict:
             step.setdefault("params", {})[key] = params[key]
     if spec.action_type in (ActionType.CLICK, ActionType.RAPID_CLICK) and not spec.selector:
         step["text"] = spec.element_id
+    if "selector" in step and spec.element_id.strip() and specs is not None:
+        step["label"] = spec.element_id
+        same = [s for s in specs if _labelled_as(step, s)]
+        step["label_nth"] = next((i for i, s in enumerate(same) if s.index == spec.index), 0)
     return step
+
+
+def _labelled_as(step: dict, spec: ActionSpec) -> bool:
+    if spec.action_type is not ActionType(step["type"]):
+        return False
+    if spec.element_id.strip().lower() != step["label"].strip().lower():
+        return False
+    constraints = step.get("params") or {}
+    return not any((spec.params or {}).get(key) != value for key, value in constraints.items())
+
+
+def resolve_step(step: dict, specs: list[ActionSpec]) -> int | None:
+    """The action index `step` names on this page, or None.
+
+    The exact match (`ScriptedPolicy._match`) wins when it is the same control, or when the
+    step has no label to check it by. A positional selector that now lands on a control with
+    another label has drifted; the label then decides, taking the same-labelled control the
+    step recorded (or the only one).
+    """
+    exact = ScriptedPolicy._match(step, specs)  # noqa: SLF001 - the oracle's own matcher
+    if "label" not in step:
+        return exact
+    if exact is not None:
+        spec = next(s for s in specs if s.index == exact)
+        if _labelled_as(step, spec):
+            return exact
+    same = [s for s in specs if _labelled_as(step, s)]
+    nth = int(step.get("label_nth", 0))
+    if nth < len(same):
+        return same[nth].index
+    return same[0].index if len(same) == 1 else None
 
 
 @dataclass
@@ -95,6 +138,38 @@ class Archive:
                 cell.trace, cell.depth = list(trace), len(trace)
         cell.visits += 1
         return cell, created
+
+    def rekey(self, rename) -> dict[str, str]:
+        """Rename every cell by `rename(key)`, merging cells that now share a key.
+
+        For keys made before a URL position was known to hold ids (`retemplate_key`). The
+        merged cell keeps the shorter walk and the sum of the counts. A renamed cell's
+        failed returns are dropped: they were returns to a key the page no longer produced,
+        not walks that stopped working. Returns {old key: new key} for the keys that changed.
+        """
+        changed: dict[str, str] = {}
+        cells: dict[str, Cell] = {}
+        for key, cell in self.cells.items():
+            new = rename(key)
+            if new != key:
+                changed[key] = new
+                cell.failed_returns = 0
+            cell.key = new
+            kept = cells.get(new)
+            if kept is None:
+                cells[new] = cell
+                continue
+            if len(cell.trace) < len(kept.trace):
+                kept.trace, kept.depth = cell.trace, cell.depth
+            kept.visits += cell.visits
+            kept.returns += cell.returns
+            kept.failed_returns = min(kept.failed_returns, cell.failed_returns)
+            kept.tried |= cell.tried
+            kept.candidates += cell.candidates
+            kept.failures += cell.failures
+            kept.first_seen_step = min(kept.first_seen_step, cell.first_seen_step)
+        self.cells = cells
+        return changed
 
     def weight(self, cell: Cell, untried: int) -> float:
         """Count-based selection weight: rarely visited cells with untried operators first.

@@ -144,6 +144,21 @@ ARMS: dict[str, dict] = {
            "hybrid_goexplore_v5": {**HYBRID, "planner": "learned_cells", "explore": "curiosity",
                                    "custom_clickables": True, "listener_clickables": True},
        }.items()},
+    # Version 7 (2026-10-29): returns that survive a changed page (`HybridPolicy.robust_returns`).
+    # Diagnosed from the failed-return logs of the 2026-10-27 benchmark runs (benchmark 1,
+    # disclosed): positional selectors drifting as lists grew (Petclinic, Phoenix, Pagekit) and
+    # cells named before a URL position counted as an id (Retroboard). The v5 arms plus that
+    # option, and one new composition: agent C's learned return choice on hybrid_final's base
+    # (list browsing, failure feedback, role-weighted exploration), with no new settings.
+    **{name: {**HYBRID, "custom_clickables": True, "listener_clickables": True,
+              "robust_returns": True, **extra}
+       for name, extra in {
+           "hybrid_final_v7": {"planner": "count", "browse": True, "failure_bonus": 2.0},
+           "hybrid_curiosity_v7": {"planner": "count", "explore": "curiosity"},
+           "hybrid_goexplore_v7": {"planner": "learned_cells", "explore": "curiosity"},
+           "hybrid_combined_v7": {"planner": "learned_cells", "browse": True,
+                                  "failure_bonus": 2.0},
+       }.items()},
     # Bandit tuning (2026-10-26, development apps only, GitHub Actions): the learner on the
     # base of hybrid_final_v5, so the learner is the only difference. Back-off weight and
     # forgetting were never swept before.
@@ -321,6 +336,7 @@ def _policy(job: HybridJob, app_name: str, config: HybridConfig):
         browse=bool(spec.get("browse", False)),
         failure_bonus=float(spec.get("failure_bonus", 0.0)),
         learner_params=spec.get("learner_params"),
+        robust_returns=bool(spec.get("robust_returns", False)),
     )
     return policy, labeller
 
