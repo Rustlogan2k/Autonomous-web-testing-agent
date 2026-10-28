@@ -47,6 +47,7 @@ class WebFunctionalEnv(WebTestingEnv):
         reveal_min_retained: float = 0.0,
         reveal_run_decay: bool = False,
         navigation_needs_change: bool = False,
+        persist_session: bool = False,
     ) -> None:
         super().__init__(
             base_url=base_url,
@@ -59,6 +60,7 @@ class WebFunctionalEnv(WebTestingEnv):
             capture_screenshots=capture_screenshots,
             reveal_min_retained=reveal_min_retained,
             reveal_run_decay=reveal_run_decay,
+            persist_session=persist_session,
         )
         # Default is the original registry, so every pre-benchmark experiment re-runs
         # against the action space it was measured on. See `RegistryOptions`.

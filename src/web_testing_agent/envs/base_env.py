@@ -148,6 +148,7 @@ class WebTestingEnv(gym.Env, ABC):
         capture_screenshots: bool = True,
         reveal_min_retained: float = 0.0,
         reveal_run_decay: bool = False,
+        persist_session: bool = False,
     ) -> None:
         super().__init__()
         if render_mode is not None and render_mode not in self.metadata["render_modes"]:
@@ -167,7 +168,8 @@ class WebTestingEnv(gym.Env, ABC):
         self._bootstrap_steps = 0
         self._base_domain = BrowserSession.domain_of(base_url)
 
-        self._browser = BrowserSession(headless=headless, quiet_ms=settle_quiet_ms)
+        self._browser = BrowserSession(headless=headless, quiet_ms=settle_quiet_ms,
+                                       persist_session=persist_session)
         self._network_recorder: NetworkRecorder | None = None
         self._carried_network_events: list = []
         self._console_buffer: list[str] = []

@@ -139,9 +139,15 @@ class BrowserSession:
     the run instead of being an ambient property of the build.
     """
 
-    def __init__(self, headless: bool = True, quiet_ms: int | None = None) -> None:
+    def __init__(self, headless: bool = True, quiet_ms: int | None = None,
+                 persist_session: bool = False) -> None:
         self._headless = headless
         self._quiet_ms = DOM_QUIET_MS if quiet_ms is None else int(quiet_ms)
+        #: Carry cookies and local storage from each episode's context into the next, so a
+        #: sign-in made in one episode holds in the next, as in testers that keep one browser
+        #: session for the whole run (WebRLED resets an episode by navigating to the start
+        #: URL). Off: every episode starts signed out, with nothing stored.
+        self.persist_session = persist_session
         self._browser: Browser | None = None
         self.context: BrowserContext | None = None
         self.page: Page | None = None
@@ -163,12 +169,20 @@ class BrowserSession:
         self._browser = _SharedChromium.acquire(self._headless)
 
     def new_episode(self, base_url: str) -> Page:
-        """Fresh context (no cookies/storage carried over from any previous episode) + navigate."""
+        """Fresh context + navigate. No cookies or storage are carried over from the previous
+        episode unless `persist_session` is set."""
         self.start()
         assert self._browser is not None
+        stored = None
         if self.context is not None:
+            if self.persist_session:
+                try:
+                    stored = self.context.storage_state()
+                except Exception as exc:  # noqa: BLE001 - a closed or crashed context: start clean
+                    logger.warning("Could not carry the session over: {}", exc)
             self.context.close()
-        self.context = self._browser.new_context(viewport=dict(CANONICAL_VIEWPORT))
+        self.context = self._browser.new_context(viewport=dict(CANONICAL_VIEWPORT),
+                                                 storage_state=stored)
         self.context.set_default_navigation_timeout(NAVIGATION_TIMEOUT_MS)
         for script in self.init_scripts:
             self.context.add_init_script(script)

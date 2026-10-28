@@ -164,6 +164,8 @@ class EnvSettings:
     reveal_min_retained: float = 0.8
     #: Decay repeated reveals across the run as novelty is decayed across state visits.
     reveal_run_decay: bool = True
+    #: Keep cookies and local storage across episodes (`BrowserSession.persist_session`).
+    persist_session: bool = False
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -187,6 +189,7 @@ def make_env(base_url: str, settings: EnvSettings | None = None, **overrides):
         "capture_screenshots": settings.capture_screenshots,
         "reveal_min_retained": settings.reveal_min_retained,
         "reveal_run_decay": settings.reveal_run_decay,
+        "persist_session": settings.persist_session,
     }
     kwargs.update(overrides)
     return WebFunctionalEnv(**kwargs)

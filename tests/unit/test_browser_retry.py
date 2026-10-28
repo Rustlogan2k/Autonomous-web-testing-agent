@@ -21,8 +21,13 @@ class _Page:
 
 
 class _Context:
-    def __init__(self, page: _Page) -> None:
+    def __init__(self, page: _Page, storage_state=None) -> None:  # noqa: ANN001
         self.page = page
+        self.received = storage_state
+        self.cookies = list((storage_state or {}).get("cookies", []))
+
+    def storage_state(self) -> dict:
+        return {"cookies": list(self.cookies), "origins": []}
 
     def set_default_navigation_timeout(self, ms):  # noqa: ANN001, ARG002
         pass
@@ -41,8 +46,8 @@ class _Browser:
     def __init__(self, page: _Page) -> None:
         self.page = page
 
-    def new_context(self, viewport):  # noqa: ANN001, ARG002
-        return _Context(self.page)
+    def new_context(self, viewport, storage_state=None):  # noqa: ANN001, ARG002
+        return _Context(self.page, storage_state)
 
 
 def _session(page: _Page, monkeypatch) -> BrowserSession:
@@ -52,6 +57,7 @@ def _session(page: _Page, monkeypatch) -> BrowserSession:
     session.page = None
     session.init_scripts = []
     session.on_new_page = None
+    session.persist_session = False
     monkeypatch.setattr(BrowserSession, "start", lambda self: None)
     monkeypatch.setattr(BrowserSession, "wait_settled", lambda self, *a, **k: True)
     return session
@@ -69,3 +75,14 @@ def test_a_site_that_never_loads_still_fails(monkeypatch):
         _session(page, monkeypatch).new_episode("https://example.test/")
     assert page.loads == START_ATTEMPTS
     assert browser_session.START_ATTEMPTS == START_ATTEMPTS
+
+
+@pytest.mark.parametrize("persist", [False, True])
+def test_the_session_is_carried_over_only_when_asked(monkeypatch, persist):
+    session = _session(_Page(failures=0), monkeypatch)
+    session.persist_session = persist
+    session.new_episode("http://app/")
+    session.context.cookies.append({"name": "sid", "value": "signed-in"})
+    session.new_episode("http://app/")
+    carried = [c["name"] for c in session.context.cookies]
+    assert carried == (["sid"] if persist else [])

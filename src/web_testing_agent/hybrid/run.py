@@ -130,6 +130,20 @@ ARMS: dict[str, dict] = {
     #    each return's yield of new states (`cell_learner.py`).
     "hybrid_goexplore_v5": {**HYBRID, "planner": "learned_cells", "explore": "curiosity",
                             "custom_clickables": True, "listener_clickables": True},
+    # Version 6 (2026-10-28): the strongest v5 arms with the browser session kept across
+    # episodes, as WebRLED keeps one session for its whole run, so a sign-in made in one
+    # episode holds in the next. Diagnosed on Dimeshift (benchmark 1, disclosed): every
+    # signed-in page sat behind a registration that a fresh context undid each episode.
+    **{name.replace("_v5", "_v6"): {**ARM, "persist_session": True}
+       for name, ARM in {
+           "hybrid_final_v5": {**HYBRID, "planner": "count", "browse": True,
+                               "failure_bonus": 2.0, "custom_clickables": True,
+                               "listener_clickables": True},
+           "hybrid_curiosity_v5": {**HYBRID, "planner": "count", "explore": "curiosity",
+                                   "custom_clickables": True, "listener_clickables": True},
+           "hybrid_goexplore_v5": {**HYBRID, "planner": "learned_cells", "explore": "curiosity",
+                                   "custom_clickables": True, "listener_clickables": True},
+       }.items()},
     # Bandit tuning (2026-10-26, development apps only, GitHub Actions): the learner on the
     # base of hybrid_final_v5, so the learner is the only difference. Back-off weight and
     # forgetting were never swept before.
@@ -207,6 +221,7 @@ def _settings(config: HybridConfig, spec: dict | None = None):
         settle_quiet_ms=config.settle_quiet_ms,
         capture_screenshots=False,
         registry=registry,
+        persist_session=bool((spec or {}).get("persist_session")),
     )
 
 

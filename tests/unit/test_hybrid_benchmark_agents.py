@@ -174,3 +174,13 @@ def test_goexplore_arm_uses_the_learned_planner():
     policy, _ = _policy(HybridJob("hybrid_goexplore_v5", "app", 0), "app", HybridConfig())
     assert isinstance(policy.planner, LearnedCellPlanner)
     assert policy.summary()["cell_learner"]["decisions"] == 0
+
+
+def test_v6_arms_keep_the_session_and_v5_arms_do_not():
+    config = HybridConfig()
+    for name in ("hybrid_final", "hybrid_curiosity", "hybrid_goexplore"):
+        assert _settings(config, ARMS[f"{name}_v6"]).persist_session
+        assert not _settings(config, ARMS[f"{name}_v5"]).persist_session
+        v5 = {k: v for k, v in ARMS[f"{name}_v5"].items()}
+        v6 = {k: v for k, v in ARMS[f"{name}_v6"].items() if k != "persist_session"}
+        assert v5 == v6  # the session is the only difference
