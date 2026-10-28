@@ -123,7 +123,7 @@ ARMS: dict[str, dict] = {
                                 "learner_params": {"alpha": 0.95, "gamma": 0.65},
                                 "episode_steps": 100},
     # B. a deep, action-conditioned DQN with an NGU-style reward in place of the table, at
-    #    WebRLED's settings (ε 0.4, L 5, γ 0.95; `deep_curiosity.py`);
+    #    WebRLED's ε 0.4 and L 5, γ 0.95 (WebRLED's config: 0.997; `deep_curiosity.py`);
     "hybrid_deep_v5": {**HYBRID, "planner": "count", "explore": "deep_curiosity",
                        "custom_clickables": True, "listener_clickables": True},
     # C. Go-Explore with a learned return policy: Thompson sampling over a linear model of

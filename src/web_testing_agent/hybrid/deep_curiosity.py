@@ -21,7 +21,9 @@ hybrid tester's free exploration steps (`HybridPolicy(explore="deep_curiosity")`
 learns from every transition the policy observes (off-policy), replays and operator steps
 included.
 
-Defaults are WebRLED's published settings (ε 0.4, L 5, γ 0.95); the network sizes and
+Defaults: WebRLED's ε 0.4 and L 5, and γ 0.95 (WebRLED's released config uses γ 0.997;
+the 0.95 here was taken from an earlier note and is what the 2026-10-28 runs used); the
+network sizes and
 optimiser settings are the usual small-DQN ones, fixed here and not tuned.
 """
 
@@ -42,7 +44,8 @@ from .labels import control_identity
 #: Hashed feature sizes for states and actions.
 STATE_DIM = 256
 ACTION_DIM = 256
-#: WebRLED's settings: exploration rate, the lifelong multiplier's cap, discount.
+#: Exploration rate and the lifelong multiplier's cap (WebRLED's), and the discount (not
+#: WebRLED's 0.997; see the module docstring).
 EPSILON = 0.4
 MAX_LIFELONG = 5.0
 GAMMA = 0.95
