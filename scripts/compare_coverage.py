@@ -26,7 +26,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 APPS = ["dimeshift", "pagekit", "splittypie", "phoenix", "retroboard", "petclinic"]
-OUR_RESULTS = ["runs/gha-fix2/results", "runs/gha-agents/results", "runs/gha-v7/results"]
+OUR_RESULTS = ["runs/gha-fix2/results", "runs/gha-agents/results", "runs/gha-v6/results",
+               "runs/gha-v7/results", "runs/gha-v8/results"]
 
 Arm = tuple[str, str, int]  # file, branch id, arm
 
