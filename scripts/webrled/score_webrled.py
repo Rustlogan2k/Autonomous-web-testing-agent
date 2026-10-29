@@ -46,9 +46,14 @@ def score(folder: Path) -> dict:
     collector.merge(snapshot(json.loads((folder / "coverage.json").read_text(encoding="utf-8"))))
     html = folder / "coverage.html"
     run = int(re.search(r"run-(\d+)", folder.name).group(1)) if "run-" in folder.name else 1
+    # Complete when WebRLED logged the end of its time budget. It sometimes exits 1 after that,
+    # while shutting down ("Event loop is closed"); the coverage then already spans the run.
+    log = folder / "webrled.log"
+    reached = log.exists() and "Reached 1 hours." in log.read_text(encoding="utf-8", errors="replace")
     return {
         "job": {"arm": "webrled", "app": meta["app"], "seed": run - 1, "kind": "external"},
-        "status": "ok" if meta.get("exit_status") in (0, 124) else "error",
+        "status": "ok" if reached else "error",
+        "exit_status": meta.get("exit_status"),
         "istanbul": collector.summary(),
         "webrled_report": own_report(html.read_text(encoding="utf-8")) if html.exists() else {},
         "meta": meta,
