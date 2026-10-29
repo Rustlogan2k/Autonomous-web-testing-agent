@@ -36,9 +36,11 @@ import traceback
 import urllib.error
 import urllib.request
 from collections import defaultdict
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 
 from ..experiments.transfer import _write_json, provenance
 from ..utils.logging import get_logger
@@ -135,15 +137,19 @@ def stub_third_party(env, hosts) -> None:  # noqa: ANN001
     session.on_new_page = hook
 
 
-def run_external_job(job: HybridJob, spec: dict, config: ExternalConfig) -> dict:
-    """One time-budgeted run of `job.arm` on a fresh instance of the application."""
+def run_external_job(job: HybridJob, spec: dict, config: ExternalConfig,
+                     trace: Callable[[dict, Any], None] | None = None) -> dict:
+    """One time-budgeted run of `job.arm` on a fresh instance of the application.
+
+    `trace`, when given, receives every step's `run_hunt` event and the environment, after
+    the collectors have sampled it (`scripts/trace_external.py`); it must not act on either."""
     from ..benchmark import make_env, run_hunt
     from .metrics import CoverageCollector, FailureCounter, IstanbulCollector
 
     hybrid_config = config.hybrid()
-    settings = _settings(hybrid_config, ARMS[job.arm])
     url = spec["url"]
     login = list(spec.get("login") or [])
+    settings = _settings(hybrid_config, ARMS[job.arm], login)
     if spec.get("down"):
         _run(spec["down"])
     if spec.get("up"):
@@ -163,6 +169,8 @@ def run_external_job(job: HybridJob, spec: dict, config: ExternalConfig) -> dict
             failures.observe(event["info"], event["step"])
             coverage.sample(env)
             istanbul.sample(env)
+            if trace is not None:
+                trace(event, env)
 
         try:
             result = run_hunt(env, policy, NullMonitor(), budget=UNLIMITED, on_step=on_step,

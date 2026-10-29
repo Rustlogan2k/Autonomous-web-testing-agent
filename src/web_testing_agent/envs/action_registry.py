@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
 from ..utils.logging import get_logger
-from .input_values import field_type, generate_input_value
+from .input_values import credential_kind, field_type, generate_input_value
 from .types import (
     MAX_ACTIONS,
     ActionSpec,
@@ -76,6 +76,14 @@ class RegistryOptions:
     listener_clickables: bool = False
     #: A "type a valid value, then press Enter" action for each text input (2026-10-27).
     enter_actions: bool = True
+    #: The account the session signs in with, as (kind, value) pairs
+    #: (`input_values.credentials_from_login`). A field holding that kind of value -
+    #: password, email or username (`input_values.credential_kind`) - is only ever typed
+    #: that value. Otherwise an edit-profile form saved with a generated username or
+    #: password changes the account itself, and every later episode's sign-in fails: on
+    #: Pagekit the user menu's "Settings" opens exactly that form (2026-10-30). WebRLED's
+    #: input vocabulary does the same.
+    credentials: tuple[tuple[str, str], ...] = ()
 
 
 #: The registry as it was for every pre-benchmark measurement.
@@ -551,11 +559,32 @@ def build_action_specs(elements: list[dict], page_url: str = "",
         if tag in ("input", "textarea") and el_type not in _NON_TEXT_INPUT_TYPES:
             selector = _selector_for(el, shared_names)
             field_label = el.get("name") or el.get("id") or selector
-            html_type = "textarea" if tag == "textarea" else field_type(
-                el_type or "text", " ".join(str(el.get(k) or "") for k in ("name", "id", "label")))
+            hints = " ".join(str(el.get(k) or "") for k in ("name", "id", "label"))
+            html_type = "textarea" if tag == "textarea" else field_type(el_type or "text", hints)
             # Whether the field holds a value now (an input's `text` is its value): lets a form
             # be completed even when its fields have neither an id nor a name.
             filled = bool((el.get("text") or "").strip())
+            credential = (dict(registry_options.credentials).get(credential_kind(el_type, hints))
+                          if registry_options.credentials and tag == "input" else None)
+            if credential is not None:
+                for press_enter, bucket in ((False, primary_types), (True, entered)):
+                    if press_enter and not registry_options.enter_actions:
+                        continue
+                    bucket.append(
+                        ActionSpec(
+                            index=-1,
+                            action_type=ActionType.TYPE,
+                            selector=selector,
+                            element_id=field_label,
+                            params={"value": credential,
+                                    "category": InputValueCategory.VALID_TYPICAL.value,
+                                    "press_enter": press_enter, "filled": filled,
+                                    "in_viewport": in_viewport, **label_params(el)},
+                            description=f"type the session's credential into {field_label!r}"
+                                        + (" and press Enter" if press_enter else ""),
+                        )
+                    )
+                continue
             for category, bucket in (
                 (InputValueCategory.VALID_TYPICAL, primary_types),
                 (InputValueCategory.BOUNDARY_MIN, secondary_types),

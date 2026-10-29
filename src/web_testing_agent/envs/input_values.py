@@ -107,6 +107,37 @@ def field_type(html_input_type: str, hints: str) -> str:
     return next((kind for kind, pattern in _MEANINGS if pattern.search(words)), html_input_type or "text")
 
 
+def credential_kind(html_input_type: str, hints: str) -> str | None:
+    """Which part of an account a field holds - "password", "email" or "username" - read from
+    its HTML type and its name, id and label (`credentials[username]`, `form-username`,
+    `user_email`), or None for any other field."""
+    if (html_input_type or "").lower() == "password":
+        return "password"
+    words = set(re.findall(r"[a-z]+", re.sub(r"([a-z])([A-Z])", r"\1 \2", hints or "").lower()))
+    if words & {"password", "passwd"}:
+        return "password"
+    if (html_input_type or "").lower() == "email" or field_type("text", hints) == "email":
+        return "email"
+    if words & {"username", "login", "loginname"} or {"user", "name"} <= words:
+        return "username"
+    return None
+
+
+def credentials_from_login(steps: list[dict]) -> tuple[tuple[str, str], ...]:
+    """The account a sign-in macro logs in with, as (kind, value) pairs for
+    `RegistryOptions.credentials`: each TYPE step's literal value, by the field it targets."""
+    found: dict[str, str] = {}
+    for step in steps:
+        value = (step.get("params") or {}).get("value")
+        if step.get("type") != "TYPE" or value is None:
+            continue
+        hints = " ".join(str(step.get(key) or "") for key in ("selector", "id", "text"))
+        kind = credential_kind("", hints)
+        if kind is not None:
+            found.setdefault(kind, value)
+    return tuple(sorted(found.items()))
+
+
 def generate_input_value(html_input_type: str, category: InputValueCategory) -> str:
     """Return a deterministic test value for an HTML input type + value category.
 

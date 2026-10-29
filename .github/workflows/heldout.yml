@@ -1,0 +1,112 @@
+# The held-out benchmark: WebRLED's second benchmark (Gu et al., 2025, Table 4), on which
+# none of our agents was developed or tuned. Its applications ship as Docker images in the
+# authors' Google Drive (webapps/second_benchmark); each image serves its own server-side
+# coverage at port 6969 (/coverage: line and branch coverage as JSON), so every tool is
+# scored by the application itself. Realworld and 4gaBoards are left out: the authors'
+# README says their containers fail at runtime.
+#
+# mode=probe starts each application once and keeps what configuring it needs (the start
+# page's controls, HTML and screenshot, the coverage server's starting JSON, the image's
+# settings). Images are downloaded once and kept in the Actions cache, one entry per app.
+name: Held-out benchmark
+
+on:
+  push:
+    branches: [heldout-gha]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "probe"
+        default: "probe"
+      apps:
+        description: "applications (space-separated)"
+        default: "timeoff parabank agilefant gadael"
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - id: plan
+        env:
+          APPS: ${{ inputs.apps || 'timeoff parabank agilefant gadael' }}
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_OUTPUT"
+          import json, os
+          # Drive file ids of webapps/second_benchmark/<app>.tar; url and image run command
+          # as in the authors' README (section 3.2) and src/settings.py.
+          APPS = {
+            "timeoff": {"file": "1ZYYOa6XLXLRvnAdS68Zp5nEFXhvxFj8c", "url": "http://localhost:3000/",
+                        "ports": "-p 6969:6969 -p 3000:3000"},
+            "parabank": {"file": "1pdUV89d5nzoFK2An8GaRze2BZx1NVkjL", "url": "http://localhost:8080/parabank",
+                         "ports": "-p 6969:6969 -p 8080:8080"},
+            "agilefant": {"file": "1wvV8CawgKm1z7IMvbkrK3fqrLPFD0D7V", "url": "http://localhost:8080/agilefant/",
+                          "ports": "-p 6969:6969 -p 8080:8080 -p 3306:3306"},
+            "gadael": {"file": "1GC0qQJQjQy7SvkoGjVvBPLj7Z_MyNjD8", "url": "http://localhost:3000",
+                       "ports": "-p 6969:6969 -p 3000:3000"},
+          }
+          runs = [{"app": a, **APPS[a]} for a in os.environ["APPS"].split()]
+          print("matrix=" + json.dumps({"include": runs}))
+          EOF
+
+  probe:
+    needs: plan
+    if: ${{ (inputs.mode || 'probe') == 'probe' }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
+      - id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: image
+          key: heldout-${{ matrix.app }}-${{ matrix.file }}
+      - if: steps.cache.outputs.cache-hit != 'true'
+        name: Download the image from the authors' Google Drive
+        run: |
+          python3 -m pip install --quiet gdown==6.4.2
+          mkdir -p image
+          gdown --continue -O image/${{ matrix.app }}.tar ${{ matrix.file }}
+          ls -l image
+      - if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: image
+          key: heldout-${{ matrix.app }}-${{ matrix.file }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Start the application (README section 3.2)
+        run: |
+          mkdir -p out
+          docker load < image/${{ matrix.app }}.tar | tee out/load.txt
+          IMAGE=$(sed -n 's/^Loaded image: //p' out/load.txt | head -1)
+          docker inspect "$IMAGE" > out/image_inspect.json
+          docker run -d -t --name app ${{ matrix.ports }} "$IMAGE"
+          for i in $(seq 1 90); do
+            curl -s -o /dev/null -w '%{http_code}' "${{ matrix.url }}" | grep -qE '^(2|3)' && echo "app ready after ${i}0 s" && break
+            sleep 10
+          done
+          for i in $(seq 1 30); do curl -sf -o /dev/null http://localhost:6969/coverage && echo "coverage ready" && break; sleep 10; done
+          docker ps -a
+      - name: Probe
+        run: |
+          pip install --quiet playwright==1.48.0 && python -m playwright install --with-deps chromium
+          python scripts/heldout/probe.py "${{ matrix.url }}" http://localhost:6969/coverage out
+      - if: always()
+        run: docker logs app > out/container.log 2>&1 || true
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: probe__${{ matrix.app }}
+          path: out/
+          if-no-files-found: warn

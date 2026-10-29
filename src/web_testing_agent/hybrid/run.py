@@ -159,6 +159,14 @@ ARMS: dict[str, dict] = {
            "hybrid_combined_v7": {"planner": "learned_cells", "browse": True,
                                   "failure_bonus": 2.0},
        }.items()},
+    # Version 8 (2026-10-30): the session's own account kept intact
+    # (`RegistryOptions.credentials`). Diagnosed post-hoc from the benchmark runs (disclosed):
+    # in 4 of hybrid_final_v5's 5 Pagekit runs the agent saved the admin's own profile with a
+    # generated username ("12345") and every later sign-in failed; the run that kept its
+    # login scored 47.4%, the others 33-44%. hybrid_final_v5 plus that option, nothing else.
+    "hybrid_final_v8": {**HYBRID, "planner": "count", "browse": True, "failure_bonus": 2.0,
+                        "custom_clickables": True, "listener_clickables": True,
+                        "keep_credentials": True},
     # Bandit tuning (2026-10-26, development apps only, GitHub Actions): the learner on the
     # base of hybrid_final_v5, so the learner is the only difference. Back-off weight and
     # forgetting were never swept before.
@@ -219,11 +227,12 @@ def _episode_steps(config: HybridConfig, spec: dict | None) -> int:
     return int((spec or {}).get("episode_steps", config.episode_steps))
 
 
-def _settings(config: HybridConfig, spec: dict | None = None):
+def _settings(config: HybridConfig, spec: dict | None = None, login: list[dict] | None = None):
     from dataclasses import replace
 
     from ..benchmark import EnvSettings
     from ..envs.action_registry import EXTENDED_OPTIONS
+    from ..envs.input_values import credentials_from_login
 
     registry = EXTENDED_OPTIONS
     if (spec or {}).get("custom_clickables"):
@@ -231,6 +240,8 @@ def _settings(config: HybridConfig, spec: dict | None = None):
                            listener_clickables=bool((spec or {}).get("listener_clickables")))
     if (spec or {}).get("enter_actions") is False:
         registry = replace(registry, enter_actions=False)
+    if (spec or {}).get("keep_credentials") and login:
+        registry = replace(registry, credentials=credentials_from_login(login))
     return EnvSettings(
         max_steps=_episode_steps(config, spec),
         settle_quiet_ms=config.settle_quiet_ms,
@@ -374,7 +385,6 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
     from .invariants import attribute, verify
     from .metrics import CoverageCollector, FailureCounter
 
-    settings = _settings(config, ARMS[job.arm])
     suite = job.app not in DEVELOPMENT_APPS
     if suite:
         from e2e_suite.harness.variants import control_key as suite_control_key
@@ -397,6 +407,7 @@ def run_hunt_job(job: HybridJob, config: HybridConfig, out_dir: Path) -> dict:
     # tester's session bootstrap (outside the interaction budget, as for Gitea). Apps without
     # one get exactly the environment they always had.
     login = list(getattr(suite_app, "login_steps", None) or []) if suite else []
+    settings = _settings(config, ARMS[job.arm], login)
 
     def env_for(url: str, **overrides):  # noqa: ANN202
         return make_env(url, settings, setup_actions=login or None, **overrides)

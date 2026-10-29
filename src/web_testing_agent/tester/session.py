@@ -32,6 +32,7 @@ from pathlib import Path
 from ..benchmark.hunt import run_hunt
 from ..benchmark.suite import EnvSettings, make_env
 from ..envs.action_registry import EXTENDED_OPTIONS
+from ..envs.input_values import credentials_from_login
 from ..utils.logging import get_logger
 from .triggers import CompositeMonitor, TriggerMonitor, TriggerReplayer
 
@@ -320,7 +321,9 @@ def run_session(base_url: str, settings: SessionSettings | None = None, *,
                          listener_clickables=settings.custom_clickables and settings.listener_clickables,
                          # Behind a sign-in macro, signing out only ends the session the
                          # macro opened; the episode would be spent on the login page.
-                         avoid_labels=SIGN_OUT_LABELS if settings.setup_actions else ()))
+                         avoid_labels=SIGN_OUT_LABELS if settings.setup_actions else (),
+                         # ...and an edit-profile form must not change the account it uses.
+                         credentials=credentials_from_login(list(settings.setup_actions))))
     setup = [dict(step) for step in settings.setup_actions]
 
     def env_factory(url: str, steps: int | None = None):  # noqa: ANN202

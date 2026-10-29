@@ -287,3 +287,62 @@ def test_custom_clickables_become_clicks_on_their_structural_selector():
     assert [s.selector for s in clicks] == ['[id="board"] > div:nth-of-type(2)', '[id="tab-2"]']
     assert [s.element_id for s in clicks] == ["Card 7", "Archived"]
     assert not [s for s in build_action_specs([custom]) if s.action_type is ActionType.RAPID_CLICK]
+
+
+def test_credential_fields_are_classified_by_type_and_name():
+    from web_testing_agent.envs.input_values import credential_kind
+
+    assert credential_kind("password", "") == "password"
+    assert credential_kind("text", "credentials[username] ") == "username"
+    assert credential_kind("text", "username form-username Username") == "username"
+    assert credential_kind("text", "userName") == "username"
+    assert credential_kind("email", "") == "email"
+    assert credential_kind("text", "user_email") == "email"
+    assert credential_kind("text", "name form-name Name") is None
+    assert credential_kind("text", "title") is None
+
+
+def test_credentials_are_read_from_the_benchmark_sign_in_macros():
+    import json
+    from pathlib import Path
+
+    from web_testing_agent.envs.input_values import credentials_from_login
+
+    apps = json.loads((Path(__file__).resolve().parents[2] / "configs" / "external_apps.json").read_text())
+    assert credentials_from_login(apps["pagekit"]["login"]) == (
+        ("password", "asdfghjkl123"), ("username", "admin"))
+    assert credentials_from_login(apps["phoenix"]["login"]) == (
+        ("email", "john@phoenix-trello.com"), ("password", "12345678"))
+    assert credentials_from_login([]) == ()
+
+
+def test_a_signed_in_session_only_types_its_own_credentials_into_account_fields():
+    from web_testing_agent.envs.action_registry import RegistryOptions
+
+    # Pagekit's edit-profile form: saving a generated username locked every later sign-in out.
+    elements = [_el(tag="input", index=0, type="text", name="username", id="form-username"),
+                _el(tag="input", index=1, type="password", id="form-password"),
+                _el(tag="input", index=2, type="text", name="name", id="form-name")]
+    kept = RegistryOptions(credentials=(("password", "pw"), ("username", "admin")))
+    typed = [s for s in build_action_specs(elements, options=kept) if s.action_type is ActionType.TYPE]
+    by_field: dict[str, set] = {}
+    for spec in typed:
+        by_field.setdefault(spec.element_id, set()).add(spec.params["value"])
+    assert by_field["username"] == {"admin"}
+    assert by_field["form-password"] == {"pw"}
+    assert len(by_field["name"]) > 1  # any other field keeps every generated value
+    # Without credentials (no sign-in macro) the registry is unchanged.
+    plain = [s for s in build_action_specs(elements) if s.action_type is ActionType.TYPE]
+    assert "admin" not in {s.params["value"] for s in plain}
+
+
+def test_hybrid_final_v8_differs_from_v5_only_in_keeping_credentials():
+    from web_testing_agent.hybrid.run import ARMS, HybridConfig, _settings
+
+    login = [{"type": "TYPE", "selector": "input[name=\"credentials[username]\"]", "params": {"value": "admin"}},
+             {"type": "TYPE", "selector": "input[name=\"credentials[password]\"]", "params": {"value": "pw"}}]
+    v5, v8 = ARMS["hybrid_final_v5"], ARMS["hybrid_final_v8"]
+    assert {k: v for k, v in v8.items() if k != "keep_credentials"} == v5
+    assert _settings(HybridConfig(), v8, login).registry.credentials == (("password", "pw"), ("username", "admin"))
+    assert _settings(HybridConfig(), v5, login).registry.credentials == ()
+    assert _settings(HybridConfig(), v8, []).registry.credentials == ()
