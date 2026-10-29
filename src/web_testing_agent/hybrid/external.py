@@ -120,6 +120,22 @@ STUB_HOSTS = ("localhost:35729", "127.0.0.1:35729", "www.google-analytics.com",
               "analytics.google.com", "www.googletagmanager.com", "stats.g.doubleclick.net")
 
 
+def server_coverage(url: str, attempts: int = 5) -> dict:
+    """The coverage an application measures itself, read once a run has ended: the held-out
+    benchmark's images serve their server-side line and branch coverage as JSON
+    (`{"line_coverage": "35.01%", "branch_coverage": "2.23%", "line_coverage_info": ...}`),
+    the figure WebRLED reports for them. Read before the application is stopped."""
+    last = ""
+    for attempt in range(attempts):
+        try:
+            with urllib.request.urlopen(url, timeout=120) as response:  # noqa: S310 - local apps
+                return json.loads(response.read())
+        except Exception as exc:  # noqa: BLE001 - retried; the run's result stands without it
+            last = str(exc)
+            time.sleep(5 * (attempt + 1))
+    return {"error": last}
+
+
 def stub_third_party(env, hosts) -> None:  # noqa: ANN001
     """Answer requests to `hosts` with an empty 200, on every episode's page."""
     from urllib.parse import urlsplit
@@ -177,6 +193,7 @@ def run_external_job(job: HybridJob, spec: dict, config: ExternalConfig,
                               deadline_s=config.time_budget_s)
         finally:
             env.close()
+        server = server_coverage(spec["server_coverage"]) if spec.get("server_coverage") else None
     finally:
         if spec.get("down"):
             try:
@@ -191,6 +208,8 @@ def run_external_job(job: HybridJob, spec: dict, config: ExternalConfig,
         "arm": {"name": job.arm, **ARMS[job.arm]},
         "external": True,
     }
+    if server is not None:
+        payload["server_coverage"] = server
     if hasattr(policy, "summary"):
         payload["policy"] = policy.summary()
         payload["policy"].pop("invariant_candidates", None)

@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import argparse
 import glob
-import itertools
 import json
 import statistics
 from collections import defaultdict
@@ -26,8 +25,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 APPS = ["dimeshift", "pagekit", "splittypie", "phoenix", "retroboard", "petclinic"]
-OUR_RESULTS = ["runs/gha-fix2/results", "runs/gha-agents/results", "runs/gha-v6/results",
-               "runs/gha-v7/results", "runs/gha-v8/results"]
+OUR_RESULTS = [
+    "runs/gha-fix2/results",
+    "runs/gha-agents/results",
+    "runs/gha-v6/results",
+    "runs/gha-v7/results",
+    "runs/gha-v8/results",
+]
 
 Arm = tuple[str, str, int]  # file, branch id, arm
 
@@ -35,13 +39,25 @@ Arm = tuple[str, str, int]  # file, branch id, arm
 def webrled_runs(app: str) -> tuple[list[dict], dict]:
     """Each run's loaded files and executed arms, and the branch map of every file seen."""
     runs, branch_map = [], {}
-    for path in sorted(glob.glob(str(ROOT / f"runs/gha-webrled/artifacts/webrled__{app}__run-*/coverage.json"))):
+    for path in sorted(
+        glob.glob(str(ROOT / f"runs/gha-webrled/artifacts/webrled__{app}__run-*/coverage.json"))
+    ):
         raw = json.loads(Path(path).read_text(encoding="utf-8"))
         covered = set()
         for file, data in raw.items():
-            branch_map.setdefault(file, {bid: {**meta, "arms": len(data["b"][bid])}
-                                         for bid, meta in data["branchMap"].items()})
-            covered |= {(file, bid, i) for bid, counts in data["b"].items() for i, c in enumerate(counts) if c}
+            branch_map.setdefault(
+                file,
+                {
+                    bid: {**meta, "arms": len(data["b"][bid])}
+                    for bid, meta in data["branchMap"].items()
+                },
+            )
+            covered |= {
+                (file, bid, i)
+                for bid, counts in data["b"].items()
+                for i, c in enumerate(counts)
+                if c
+            }
         runs.append({"files": set(raw), "covered": covered})
     return runs, branch_map
 
@@ -64,16 +80,29 @@ def our_runs(app: str, agent: str, branch_map: dict) -> list[dict]:
             uncovered = istanbul["uncovered"]
             files = {f for f in uncovered if f in branch_map}
             residual = istanbul["branches"] - sum(_arms(branch_map, f) for f in uncovered)
-            open_ = [f for f in branch_map if f not in files and 0 < _arms(branch_map, f) <= residual]
+            open_ = [
+                f for f in branch_map if f not in files and 0 < _arms(branch_map, f) <= residual
+            ]
             complete = _only_subset(open_, residual, branch_map)
             unknown = set() if complete is not None else set(open_)
             files |= set(complete or [])
             missing = {(f, *a.rsplit(".", 1)) for f, arms in uncovered.items() for a in arms}
-            covered = {(f, bid, i) for f in files for bid, meta in branch_map.get(f, {}).items()
-                       for i in range(meta["arms"]) if (f, bid, str(i)) not in missing}
-            runs.append({"files": files, "covered": covered, "unknown": unknown,
-                         "unattributed": 0 if complete is not None else residual,
-                         "seed": record["job"]["seed"]})
+            covered = {
+                (f, bid, i)
+                for f in files
+                for bid, meta in branch_map.get(f, {}).items()
+                for i in range(meta["arms"])
+                if (f, bid, str(i)) not in missing
+            }
+            runs.append(
+                {
+                    "files": files,
+                    "covered": covered,
+                    "unknown": unknown,
+                    "unattributed": 0 if complete is not None else residual,
+                    "seed": record["job"]["seed"],
+                }
+            )
     return runs
 
 
@@ -90,7 +119,9 @@ def _only_subset(candidates: list[str], target: int, branch_map: dict) -> list[s
     if ways[target] != 1:
         return None
     chosen, total = [], target
-    for i in range(len(candidates) - 1, -1, -1):  # walk back: keep f when the rest still sums uniquely
+    for i in range(
+        len(candidates) - 1, -1, -1
+    ):  # walk back: keep f when the rest still sums uniquely
         f = candidates[i]
         n = _arms(branch_map, f)
         rest = [0] * (target + 1)
@@ -136,9 +167,17 @@ def compare(app: str, agent: str) -> dict:
         cov_t = statistics.mean(sum(1 for a in r["covered"] if a[0] == file) for r in theirs)
         cov_o = statistics.mean(sum(1 for a in r["covered"] if a[0] == file) for r in ours)
         if cov_t or cov_o:
-            per_file.append({"file": file, "arms": _arms(branch_map, file), "loaded_webrled": loaded_t,
-                             "loaded_ours": loaded_o, "covered_webrled": round(cov_t, 1),
-                             "covered_ours": round(cov_o, 1), "difference": round(cov_o - cov_t, 1)})
+            per_file.append(
+                {
+                    "file": file,
+                    "arms": _arms(branch_map, file),
+                    "loaded_webrled": loaded_t,
+                    "loaded_ours": loaded_o,
+                    "covered_webrled": round(cov_t, 1),
+                    "covered_ours": round(cov_o, 1),
+                    "difference": round(cov_o - cov_t, 1),
+                }
+            )
     per_file.sort(key=lambda row: row["difference"])
 
     def lines(mostly: dict, rarely: dict, n_mostly: int, n_rarely: int) -> list[dict]:
@@ -148,15 +187,29 @@ def compare(app: str, agent: str) -> dict:
                 continue
             if hits / n_mostly >= 0.6 and rarely.get(arm, 0) / n_rarely <= 0.2:
                 grouped[(arm[0], _line(branch_map, arm))].append(arm)
-        return sorted(({"file": f, "line": line, "arms": len(arms),
-                        "types": sorted({branch_map[f][a[1]].get("type") for a in arms})}
-                       for (f, line), arms in grouped.items()), key=lambda r: (r["file"], r["line"]))
+        return sorted(
+            (
+                {
+                    "file": f,
+                    "line": line,
+                    "arms": len(arms),
+                    "types": sorted({branch_map[f][a[1]].get("type") for a in arms}),
+                }
+                for (f, line), arms in grouped.items()
+            ),
+            key=lambda r: (r["file"], r["line"]),
+        )
 
     return {
-        "app": app, "agent": agent, "runs_webrled": n_t, "runs_ours": n_o,
+        "app": app,
+        "agent": agent,
+        "runs_webrled": n_t,
+        "runs_ours": n_o,
         "arms_covered_webrled": [len(r["covered"]) for r in theirs],
         "arms_covered_ours": [len(r["covered"]) for r in ours],
-        "files_loaded_webrled": [sum(1 for f in r["files"] if _arms(branch_map, f)) for r in theirs],
+        "files_loaded_webrled": [
+            sum(1 for f in r["files"] if _arms(branch_map, f)) for r in theirs
+        ],
         "files_loaded_ours": [len(r["files"]) for r in ours],
         "unattributed_ours": [r["unattributed"] for r in ours],
         "unknown_files": sorted(unknown_files),
@@ -176,23 +229,33 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
     for app in args.apps:
         result = compare(app, args.ours)
-        (out / f"{app}__{args.ours}.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
+        (out / f"{app}__{args.ours}.json").write_text(
+            json.dumps(result, indent=1), encoding="utf-8"
+        )
         if "error" in result:
             print(f"{app}: {result['error']}")
             continue
         mean = statistics.mean
-        print(f"\n{app}: arms covered, WebRLED {mean(result['arms_covered_webrled']):.0f} "
-              f"vs ours {mean(result['arms_covered_ours']):.0f}; files loaded "
-              f"{mean(result['files_loaded_webrled']):.1f} vs {mean(result['files_loaded_ours']):.1f} "
-              f"(files with branches; ours + {len(result['unknown_files'])} undetermined, "
-              f"{mean(result['unattributed_ours']):.0f} fully covered arms unattributed)")
-        print(f"  {'file':48} {'arms':>5} {'loaded W/O':>11} {'covered W':>10} {'ours':>6} {'diff':>6}")
+        print(
+            f"\n{app}: arms covered, WebRLED {mean(result['arms_covered_webrled']):.0f} "
+            f"vs ours {mean(result['arms_covered_ours']):.0f}; files loaded "
+            f"{mean(result['files_loaded_webrled']):.1f} vs "
+            f"{mean(result['files_loaded_ours']):.1f} "
+            f"(files with branches; ours + {len(result['unknown_files'])} undetermined, "
+            f"{mean(result['unattributed_ours']):.0f} fully covered arms unattributed)"
+        )
+        print(f"  {'file':48} {'arms':>5} {'loaded W/O':>11} "
+              f"{'covered W':>10} {'ours':>6} {'diff':>6}")
         for row in [r for r in result["per_file"] if r["difference"]][:12]:
             loaded = "?" if row["loaded_ours"] is None else f"{row['loaded_ours']:.0%}"
-            print(f"  {row['file'][-48:]:48} {row['arms']:5} {row['loaded_webrled']:5.0%}/{loaded:<5}"
-                  f"{row['covered_webrled']:10} {row['covered_ours']:6} {row['difference']:6}")
-        print(f"  lines WebRLED reaches in most runs and we rarely: {len(result['webrled_only'])}; "
-              f"the reverse: {len(result['ours_only'])}")
+            print(
+                f"  {row['file'][-48:]:48} {row['arms']:5} {row['loaded_webrled']:5.0%}/{loaded:<5}"
+                f"{row['covered_webrled']:10} {row['covered_ours']:6} {row['difference']:6}"
+            )
+        print(
+            f"  lines WebRLED reaches in most runs and we rarely: {len(result['webrled_only'])}; "
+            f"the reverse: {len(result['ours_only'])}"
+        )
     return 0
 
 

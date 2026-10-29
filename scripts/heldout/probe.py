@@ -1,6 +1,7 @@
 """What a held-out application looks like before anything tests it.
 
-    python scripts/heldout/probe.py <url> <coverage url> <out dir> [--click TEXT] [--login USER:PASSWORD ...]
+    python scripts/heldout/probe.py <url> <coverage url> <out dir>
+        [--click TEXT] [--login USER:PASSWORD ...]
 
 Opens `url` in Chromium and keeps, for writing the application's entry in
 configs/heldout_apps.json: the page after redirects (URL, title, HTML, screenshot), every
@@ -27,7 +28,8 @@ _CONTROLS = """
     tag: el.tagName.toLowerCase(), type: el.type || null, name: el.name || null, id: el.id || null,
     text: (el.innerText || el.value || '').trim().slice(0, 60),
     href: el.getAttribute('href'),
-    label: (el.labels && el.labels[0] ? el.labels[0].innerText.trim() : (el.placeholder || '')).slice(0, 60),
+    label: (el.labels && el.labels[0] ? el.labels[0].innerText.trim()
+            : (el.placeholder || '')).slice(0, 60),
 }))
 """
 
@@ -36,8 +38,12 @@ def _record(page, out: Path, name: str) -> dict:
     page.wait_for_timeout(3000)
     (out / f"{name}.html").write_text(page.content(), encoding="utf-8")
     page.screenshot(path=str(out / f"{name}.png"), full_page=True)
-    summary = {"final_url": page.url, "title": page.title(), "controls": page.evaluate(_CONTROLS),
-               "password_field_shown": page.locator("input[type=password]:visible").count() > 0}
+    summary = {
+        "final_url": page.url,
+        "title": page.title(),
+        "controls": page.evaluate(_CONTROLS),
+        "password_field_shown": page.locator("input[type=password]:visible").count() > 0,
+    }
     (out / f"{name}.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
     return summary
 
@@ -49,11 +55,17 @@ def _try_login(browser, url: str, account: str, out: Path, name: str) -> dict:
     secret = page.locator("input[type=password]:visible").first
     if not secret.count():
         return {"account": user, "error": "no password field"}
-    fields = page.locator("input:visible:not([type=password]):not([type=hidden]):not([type=checkbox])"
-                          ":not([type=submit]):not([type=radio])")
-    before = [i for i in range(fields.count())
-              if fields.nth(i).evaluate("(el, pw) => !!(el.compareDocumentPosition(pw) & 4)",
-                                        secret.element_handle())]
+    fields = page.locator(
+        "input:visible:not([type=password]):not([type=hidden]):not([type=checkbox])"
+        ":not([type=submit]):not([type=radio])"
+    )
+    before = [
+        i
+        for i in range(fields.count())
+        if fields.nth(i).evaluate(
+            "(el, pw) => !!(el.compareDocumentPosition(pw) & 4)", secret.element_handle()
+        )
+    ]
     if before:
         fields.nth(before[-1]).fill(user)
     secret.fill(password)
@@ -61,8 +73,12 @@ def _try_login(browser, url: str, account: str, out: Path, name: str) -> dict:
     page.wait_for_load_state("networkidle", timeout=60_000)
     summary = _record(page, out, name)
     page.close()
-    return {"account": user, "final_url": summary["final_url"], "title": summary["title"],
-            "password_field_shown": summary["password_field_shown"]}
+    return {
+        "account": user,
+        "final_url": summary["final_url"],
+        "title": summary["title"],
+        "password_field_shown": summary["password_field_shown"],
+    }
 
 
 def main() -> int:
@@ -83,8 +99,12 @@ def main() -> int:
         page.wait_for_timeout(3000)
         (out / "page.html").write_text(page.content(), encoding="utf-8")
         page.screenshot(path=str(out / "page.png"), full_page=True)
-        summary = {"requested": url, "final_url": page.url, "title": page.title(),
-                   "controls": page.evaluate(_CONTROLS)}
+        summary = {
+            "requested": url,
+            "final_url": page.url,
+            "title": page.title(),
+            "controls": page.evaluate(_CONTROLS),
+        }
         (out / "page.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
         if click:
             page.get_by_text(click).first.click()
@@ -93,7 +113,10 @@ def main() -> int:
             for control in clicked["controls"]:
                 if control["tag"] in ("input", "select", "textarea", "button"):
                     print("   ", control)
-        logins = [_try_login(browser, url, account, out, f"login_{n}") for n, account in enumerate(accounts)]
+        logins = [
+            _try_login(browser, url, account, out, f"login_{n}")
+            for n, account in enumerate(accounts)
+        ]
         (out / "logins.json").write_text(json.dumps(logins, indent=1), encoding="utf-8")
         for outcome in logins:
             print("login", outcome)

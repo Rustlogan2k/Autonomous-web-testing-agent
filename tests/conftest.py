@@ -49,6 +49,32 @@ HEAVY_MODULES = frozenset({
     "test_network_canonicalization.py",
     "test_trained_policy_eval.py",
     "test_transfer_rl.py",
+    # Added with the hybrid tester and the external benchmark (they import torch through
+    # the hybrid policy and its learners); registered 2026-10-30.
+    "test_contextual_bandit.py",
+    "test_external_runs.py",
+    "test_hybrid_benchmark_agents.py",
+    "test_hybrid_core.py",
+    "test_hybrid_curiosity.py",
+    "test_hybrid_policy_episode.py",
+    "test_hybrid_returns.py",
+    "test_input_masks.py",
+    "test_trained_action_q_diagnostic.py",
+})
+
+# Test modules whose imports need one optional package outside the portable install: the
+# web app (`app` extra) and the specification checker (its page fetching and parsing).
+# Not collected without it, and reported in the header like the heavy modules.
+OPTIONAL_MODULES = {
+    "test_app_layer.py": ("fastapi",),
+    "test_specinfer_intent.py": ("requests", "bs4"),
+    "test_specinfer_monitor.py": ("requests", "bs4"),
+    "test_specinfer_rules.py": ("requests", "bs4"),
+}
+
+# Single tests that import the deep-learning stack inside an otherwise portable module.
+HEAVY_TESTS = frozenset({
+    "test_markov_context.py::test_the_perception_wrapper_accepts_the_new_width_and_rejects_the_old_one",
 })
 
 DOCKER_MODULES = frozenset({"test_intake_docker_smoke.py"})
@@ -71,6 +97,19 @@ def has_torch_stack() -> bool:
     except Exception:  # noqa: BLE001 - a broken install is as unusable as a missing one
         return False
     return True
+
+
+@functools.lru_cache(maxsize=None)
+def importable(module: str) -> bool:
+    try:
+        __import__(module)
+    except Exception:  # noqa: BLE001 - a broken install is as unusable as a missing one
+        return False
+    return True
+
+
+def _missing(name: str) -> list[str]:
+    return [m for m in OPTIONAL_MODULES.get(name, ()) if not importable(m)]
 
 
 @functools.lru_cache(maxsize=1)
@@ -135,6 +174,8 @@ def pytest_ignore_collect(collection_path: Path, config: pytest.Config) -> bool 
     name = collection_path.name
     if name in HEAVY_MODULES and not has_torch_stack():
         return True
+    if _missing(name):
+        return True
     return None
 
 
@@ -142,7 +183,7 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
     """Attach the requirement markers, so `-m` selection works without editing test files."""
     for item in items:
         name = Path(str(item.fspath)).name
-        if name in HEAVY_MODULES:
+        if name in HEAVY_MODULES or f"{name}::{item.name}" in HEAVY_TESTS:
             item.add_marker(pytest.mark.requires_torch)
         if name in DOCKER_MODULES:
             item.add_marker(pytest.mark.requires_docker)
@@ -165,4 +206,8 @@ def pytest_report_header(config: pytest.Config) -> list[str]:
             f"browser={has_browser()}")
     if ignored:
         line += f" ({ignored} deep-learning test modules not collected)"
-    return [line]
+    lines = [line]
+    for name in sorted(OPTIONAL_MODULES):
+        if _missing(name):
+            lines.append(f"not collected: {name} (needs {', '.join(_missing(name))})")
+    return lines

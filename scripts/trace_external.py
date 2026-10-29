@@ -41,26 +41,37 @@ def main() -> int:
     args.out.parent.mkdir(parents=True, exist_ok=True)
 
     with args.out.open("w", encoding="utf-8") as sink:
+
         def trace(event: dict, env) -> None:  # noqa: ANN001
             spec_ = event.get("action")
             page = getattr(env._browser, "page", None)  # noqa: SLF001 - read-only
             info = event["info"]
-            sink.write(json.dumps({
-                "episode": event["episode"], "step": event["step"],
-                "url": page.url if page is not None else None,
-                "action": spec_.description if spec_ is not None else None,
-                "type": spec_.action_type.value if spec_ is not None else None,
-                "value": (spec_.params or {}).get("value") if spec_ is not None else None,
-                "ok": bool((info.get("exec_info") or {}).get("success", False)),
-                "state": event["state_key"],
-            }) + "\n")
+            sink.write(
+                json.dumps(
+                    {
+                        "episode": event["episode"],
+                        "step": event["step"],
+                        "url": page.url if page is not None else None,
+                        "action": spec_.description if spec_ is not None else None,
+                        "type": spec_.action_type.value if spec_ is not None else None,
+                        "value": (spec_.params or {}).get("value") if spec_ is not None else None,
+                        "ok": bool((info.get("exec_info") or {}).get("success", False)),
+                        "state": event["state_key"],
+                    }
+                )
+                + "\n"
+            )
 
         result = run_external_job(job, spec, config, trace=trace)
-    args.out.with_suffix(".result.json").write_text(json.dumps(result, indent=1, default=str),
-                                                    encoding="utf-8")
+    args.out.with_suffix(".result.json").write_text(
+        json.dumps(result, indent=1, default=str), encoding="utf-8"
+    )
     istanbul = result["istanbul"]
-    print(f"{args.app} {args.arm} seed {args.seed}: {istanbul['branches_covered']}/{istanbul['branches']} "
-          f"arms ({istanbul['branch_coverage']}), {result['hunt']['episodes']} episodes")
+    print(
+        f"{args.app} {args.arm} seed {args.seed}: "
+        f"{istanbul['branches_covered']}/{istanbul['branches']} "
+        f"arms ({istanbul['branch_coverage']}), {result['hunt']['episodes']} episodes"
+    )
     return 0
 
 

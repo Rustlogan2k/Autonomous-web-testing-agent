@@ -308,7 +308,8 @@ def test_credentials_are_read_from_the_benchmark_sign_in_macros():
 
     from web_testing_agent.envs.input_values import credentials_from_login
 
-    apps = json.loads((Path(__file__).resolve().parents[2] / "configs" / "external_apps.json").read_text())
+    config = Path(__file__).resolve().parents[2] / "configs" / "external_apps.json"
+    apps = json.loads(config.read_text())
     assert credentials_from_login(apps["pagekit"]["login"]) == (
         ("password", "asdfghjkl123"), ("username", "admin"))
     assert credentials_from_login(apps["phoenix"]["login"]) == (
@@ -324,7 +325,8 @@ def test_a_signed_in_session_only_types_its_own_credentials_into_account_fields(
                 _el(tag="input", index=1, type="password", id="form-password"),
                 _el(tag="input", index=2, type="text", name="name", id="form-name")]
     kept = RegistryOptions(credentials=(("password", "pw"), ("username", "admin")))
-    typed = [s for s in build_action_specs(elements, options=kept) if s.action_type is ActionType.TYPE]
+    typed = [s for s in build_action_specs(elements, options=kept)
+             if s.action_type is ActionType.TYPE]
     by_field: dict[str, set] = {}
     for spec in typed:
         by_field.setdefault(spec.element_id, set()).add(spec.params["value"])
@@ -339,10 +341,13 @@ def test_a_signed_in_session_only_types_its_own_credentials_into_account_fields(
 def test_hybrid_final_v8_differs_from_v5_only_in_keeping_credentials():
     from web_testing_agent.hybrid.run import ARMS, HybridConfig, _settings
 
-    login = [{"type": "TYPE", "selector": "input[name=\"credentials[username]\"]", "params": {"value": "admin"}},
-             {"type": "TYPE", "selector": "input[name=\"credentials[password]\"]", "params": {"value": "pw"}}]
+    login = [{"type": "TYPE", "selector": 'input[name="credentials[username]"]',
+              "params": {"value": "admin"}},
+             {"type": "TYPE", "selector": 'input[name="credentials[password]"]',
+              "params": {"value": "pw"}}]
     v5, v8 = ARMS["hybrid_final_v5"], ARMS["hybrid_final_v8"]
     assert {k: v for k, v in v8.items() if k != "keep_credentials"} == v5
-    assert _settings(HybridConfig(), v8, login).registry.credentials == (("password", "pw"), ("username", "admin"))
+    assert _settings(HybridConfig(), v8, login).registry.credentials == (
+        ("password", "pw"), ("username", "admin"))
     assert _settings(HybridConfig(), v5, login).registry.credentials == ()
     assert _settings(HybridConfig(), v8, []).registry.credentials == ()

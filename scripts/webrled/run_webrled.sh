@@ -14,6 +14,10 @@
 #                  and is recorded in meta.json)
 #   URL, DOMAIN    override WebRLED's built-in address for APP (its defaults are localhost:400x)
 #   SKIP_INSTALL   1 to skip the Python dependency install
+#   SERVER_COVERAGE  for the second (held-out) benchmark: the application image's own coverage
+#                  server (http://localhost:6969/coverage). express-istanbul is then not
+#                  started (the image owns port 6969) and coverage.json is that server's JSON,
+#                  read when the run ends; ISTANBUL_DIR is not needed.
 #
 # Changes from the released artifact, all recorded in meta.json:
 #   - torch/torchvision are the CPU builds of the pinned versions and the CUDA-only packages
@@ -25,7 +29,8 @@
 # report, the figure WebRLED itself logs), webrled.log, meta.json.
 set -euo pipefail
 
-: "${APP:?}" "${WEBRLED_DIR:?}" "${ISTANBUL_DIR:?}" "${OUT_DIR:?}"
+: "${APP:?}" "${WEBRLED_DIR:?}" "${OUT_DIR:?}"
+[ -n "${SERVER_COVERAGE:-}" ] || : "${ISTANBUL_DIR:?}"
 TIME_LIMIT="${TIME_LIMIT:-3600}"
 mkdir -p "$OUT_DIR"
 OUT_DIR="$(cd "$OUT_DIR" && pwd)"
@@ -50,13 +55,15 @@ grep -E "^time_limit = " "$WEBRLED_DIR/src/settings.py"
 # /client) first writes each post to /home/gzy/Desktop/nyc_output.txt, a path on the authors'
 # machine; without that folder every post fails and WebRLED resets the page forever. The
 # folder is created rather than the code edited.
-GZY=/home/gzy/Desktop
-mkdir -p "$GZY" 2>/dev/null || { sudo mkdir -p "$GZY" && sudo chmod -R a+rwx /home/gzy; }
-(cd "$ISTANBUL_DIR" && node index.js > "$OUT_DIR/istanbul.log" 2>&1 &)
-for _ in $(seq 1 60); do
-  curl -sf -o /dev/null http://localhost:6969/coverage && break
-  sleep 1
-done
+if [ -z "${SERVER_COVERAGE:-}" ]; then
+  GZY=/home/gzy/Desktop
+  mkdir -p "$GZY" 2>/dev/null || { sudo mkdir -p "$GZY" && sudo chmod -R a+rwx /home/gzy; }
+  (cd "$ISTANBUL_DIR" && node index.js > "$OUT_DIR/istanbul.log" 2>&1 &)
+  for _ in $(seq 1 60); do
+    curl -sf -o /dev/null http://localhost:6969/coverage && break
+    sleep 1
+  done
+fi
 curl -sf -o /dev/null http://localhost:6969/coverage
 
 args=(--appname "$APP" --coverage)
@@ -70,12 +77,17 @@ status=0
   xvfb-run -a python src/main.py "${args[@]}") || status=$?
 finished=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-curl -sf http://localhost:6969/coverage/object -o "$OUT_DIR/coverage.json" || echo "{}" > "$OUT_DIR/coverage.json"
-curl -sf http://localhost:6969/coverage -o "$OUT_DIR/coverage.html" || true
+if [ -n "${SERVER_COVERAGE:-}" ]; then
+  curl -sf "$SERVER_COVERAGE" -o "$OUT_DIR/coverage.json" || echo "{}" > "$OUT_DIR/coverage.json"
+else
+  curl -sf http://localhost:6969/coverage/object -o "$OUT_DIR/coverage.json" || echo "{}" > "$OUT_DIR/coverage.json"
+  curl -sf http://localhost:6969/coverage -o "$OUT_DIR/coverage.html" || true
+fi
 find "$WEBRLED_DIR/src/run" -name "$APP.log" -exec cp {} "$OUT_DIR/webrled.log" \; || true
 
 cat > "$OUT_DIR/meta.json" <<EOF
 {"tool": "webrled", "app": "$APP", "time_limit_s": $TIME_LIMIT, "exit_status": $status,
+ "server_coverage": "${SERVER_COVERAGE:-}",
  "started": "$started", "finished": "$finished",
  "changes": ["torch 2.6.0+cpu, torchvision 0.21.0+cpu; nvidia-* and triton not installed (code is CPU-only)",
              "xvfb-run for the headed browser",
