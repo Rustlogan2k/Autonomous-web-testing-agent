@@ -20,8 +20,10 @@ on:
         description: "applications (space-separated)"
         default: "dimeshift pagekit splittypie phoenix retroboard petclinic"
       runs:
+        # Runs 1-5: 2026-10-29 (run 40829426407). Runs 6-10: 2026-10-30, ten runs per
+        # application for both tools, so per-app differences of 2-3 points can be resolved.
         description: "run numbers (space-separated)"
-        default: "1 2 3 4 5"
+        default: "6 7 8 9 10"
       time_limit:
         description: "seconds of testing per run (3600 as released)"
         default: "3600"
@@ -61,7 +63,7 @@ jobs:
       - id: plan
         env:
           APPS: ${{ inputs.apps || 'dimeshift pagekit splittypie phoenix retroboard petclinic' }}
-          RUNS: ${{ inputs.runs || '1 2 3 4 5' }}
+          RUNS: ${{ inputs.runs || '6 7 8 9 10' }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import itertools, json, os
