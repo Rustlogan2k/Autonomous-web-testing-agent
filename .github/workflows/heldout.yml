@@ -38,16 +38,22 @@ jobs:
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import json, os
           # Drive file ids of webapps/second_benchmark/<app>.tar; url and image run command
-          # as in the authors' README (section 3.2) and src/settings.py.
+          # as in the authors' README (section 3.2) and src/settings.py. "probe": the accounts
+          # WebRLED's input vocabulary would type (src/settings.py, get_valid_dict) and the
+          # controls to open, for the probe to try.
           APPS = {
             "timeoff": {"file": "1ZYYOa6XLXLRvnAdS68Zp5nEFXhvxFj8c", "url": "http://localhost:3000/",
-                        "ports": "-p 6969:6969 -p 3000:3000"},
+                        "ports": "-p 6969:6969 -p 3000:3000",
+                        "probe": "--login secret@126.com:123456"},
             "parabank": {"file": "1pdUV89d5nzoFK2An8GaRze2BZx1NVkjL", "url": "http://localhost:8080/parabank",
-                         "ports": "-p 6969:6969 -p 8080:8080"},
+                         "ports": "-p 6969:6969 -p 8080:8080",
+                         "probe": "--login secret:secret --login john:demo"},
             "agilefant": {"file": "1wvV8CawgKm1z7IMvbkrK3fqrLPFD0D7V", "url": "http://localhost:8080/agilefant/",
-                          "ports": "-p 6969:6969 -p 8080:8080 -p 3306:3306"},
+                          "ports": "-p 6969:6969 -p 8080:8080 -p 3306:3306",
+                          "probe": "--login admin:123456"},
             "gadael": {"file": "1GC0qQJQjQy7SvkoGjVvBPLj7Z_MyNjD8", "url": "http://localhost:3000",
-                       "ports": "-p 6969:6969 -p 3000:3000"},
+                       "ports": "-p 6969:6969 -p 3000:3000",
+                       "probe": "--click 'Create first administrator'"},
           }
           runs = [{"app": a, **APPS[a]} for a in os.environ["APPS"].split()]
           print("matrix=" + json.dumps({"include": runs}))
@@ -101,7 +107,7 @@ jobs:
       - name: Probe
         run: |
           pip install --quiet playwright==1.48.0 && python -m playwright install --with-deps chromium
-          python scripts/heldout/probe.py "${{ matrix.url }}" http://localhost:6969/coverage out
+          python scripts/heldout/probe.py "${{ matrix.url }}" http://localhost:6969/coverage out ${{ matrix.probe }}
       - if: always()
         run: docker logs app > out/container.log 2>&1 || true
       - if: always()
