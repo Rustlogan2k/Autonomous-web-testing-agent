@@ -40,7 +40,7 @@ permissions:
 env:
   # The push plan (2026-10-30): our primary agent (hybrid_final_v9), five runs per
   # application, as the paper.
-  MODE: ${{ inputs.mode || 'ours' }}
+  MODE: ${{ inputs.mode || 'webrled' }}
   WEBRLED_CACHE_KEY: webrled-artifact-1oWr9jGU-1LjwhgvN
 
 jobs:
