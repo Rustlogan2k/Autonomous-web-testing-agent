@@ -1,0 +1,43 @@
+{
+  "timeoff": {
+    "url": "http://127.0.0.1:3000/",
+    "ready": "http://127.0.0.1:3000/login/",
+    "up": ["docker", "run", "-d", "-t", "--name", "wta-heldout-timeoff",
+           "-p", "6969:6969", "-p", "3000:3000", "timeoff:latest"],
+    "down": ["docker", "rm", "-f", "wta-heldout-timeoff"],
+    "server_coverage": "http://127.0.0.1:6969/coverage",
+    "credentials": {"username": "secret@126.com", "password": "123456", "email": "secret@126.com"}
+  },
+  "parabank": {
+    "url": "http://127.0.0.1:8080/parabank",
+    "ready": "http://127.0.0.1:8080/parabank/index.htm",
+    "up": ["docker", "run", "-d", "-t", "--name", "wta-heldout-parabank",
+           "-p", "6969:6969", "-p", "8080:8080", "parabank:latest"],
+    "down": ["docker", "rm", "-f", "wta-heldout-parabank"],
+    "server_coverage": "http://127.0.0.1:6969/coverage",
+    "credentials": {"username": "secret", "password": "secret", "email": "secret@126.com"}
+  },
+  "agilefant": {
+    "url": "http://127.0.0.1:8080/agilefant/",
+    "ready": "http://127.0.0.1:8080/agilefant/login.jsp",
+    "up": ["docker", "run", "-d", "-t", "--name", "wta-heldout-agilefant",
+           "-p", "6969:6969", "-p", "8080:8080", "-p", "3306:3306", "agilefant:latest"],
+    "down": ["docker", "rm", "-f", "wta-heldout-agilefant"],
+    "server_coverage": "http://127.0.0.1:6969/coverage",
+    "credentials": {"username": "admin", "password": "123456", "email": "secret@126.com"},
+    "login": [
+      {"type": "TYPE", "id": "username", "params": {"value": "admin"}},
+      {"type": "TYPE", "selector": "input[name=\"j_password\"]", "params": {"value": "123456"}},
+      {"type": "CLICK", "text": "Log in"}
+    ]
+  },
+  "gadael": {
+    "url": "http://127.0.0.1:3000",
+    "ready": "http://127.0.0.1:3000",
+    "up": ["docker", "run", "-d", "-t", "--name", "wta-heldout-gadael",
+           "-p", "6969:6969", "-p", "3000:3000", "gadael:latest"],
+    "down": ["docker", "rm", "-f", "wta-heldout-gadael"],
+    "server_coverage": "http://127.0.0.1:6969/coverage",
+    "credentials": {"username": "secret@126.com", "password": "secret", "email": "secret@126.com"}
+  }
+}

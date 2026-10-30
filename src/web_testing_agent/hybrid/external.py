@@ -165,7 +165,7 @@ def run_external_job(job: HybridJob, spec: dict, config: ExternalConfig,
     hybrid_config = config.hybrid()
     url = spec["url"]
     login = list(spec.get("login") or [])
-    settings = _settings(hybrid_config, ARMS[job.arm], login)
+    settings = _settings(hybrid_config, ARMS[job.arm], login, spec.get("credentials"))
     if spec.get("down"):
         _run(spec["down"])
     if spec.get("up"):

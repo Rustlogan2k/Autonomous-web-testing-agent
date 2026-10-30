@@ -2,12 +2,18 @@
 # none of our agents was developed or tuned. Its applications ship as Docker images in the
 # authors' Google Drive (webapps/second_benchmark); each image serves its own server-side
 # coverage at port 6969 (/coverage: line and branch coverage as JSON), so every tool is
-# scored by the application itself. Realworld and 4gaBoards are left out: the authors'
-# README says their containers fail at runtime.
+# scored by the application itself, with the paper's metric (line coverage). Realworld and
+# 4gaBoards are left out: the authors' README says their containers fail at runtime.
 #
-# mode=probe starts each application once and keeps what configuring it needs (the start
-# page's controls, HTML and screenshot, the coverage server's starting JSON, the image's
-# settings). Images are downloaded once and kept in the Actions cache, one entry per app.
+# Modes (input "mode"; a push to heldout-gha runs the push plan below):
+#   probe    start each application once and keep what configuring it needs
+#   ours     our agent (configs/heldout_apps.json), one job per (app, seed), one hour
+#   webrled  WebRLED's released artifact (scripts/webrled/run_webrled.sh, SERVER_COVERAGE)
+#
+# Our agent gets exactly the account information WebRLED's input vocabulary holds
+# (src/settings.py get_valid_dict) and, where that account already exists in the image
+# (Agilefant only, checked by the probe), a sign-in macro, as Pagekit and Phoenix have in
+# the first benchmark. Decided before any held-out run.
 name: Held-out benchmark
 
 on:
@@ -16,24 +22,38 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "probe"
-        default: "probe"
+        description: "probe | ours | webrled"
+        default: "ours"
       apps:
         description: "applications (space-separated)"
         default: "timeoff parabank agilefant gadael"
+      seeds:
+        description: "seeds / run numbers (space-separated)"
+        default: "0 1 2 3 4"
+      arm:
+        description: "our arm"
+        default: "hybrid_final_v8"
 
 permissions:
   contents: read
+
+env:
+  # The push plan (2026-10-30): our agent, five runs per application, as the paper.
+  MODE: ${{ inputs.mode || 'ours' }}
+  WEBRLED_CACHE_KEY: webrled-artifact-1oWr9jGU-1LjwhgvN
 
 jobs:
   plan:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.plan.outputs.matrix }}
+      apps: ${{ steps.plan.outputs.apps }}
+      runs: ${{ steps.plan.outputs.runs }}
+      mode: ${{ steps.plan.outputs.mode }}
     steps:
       - id: plan
         env:
           APPS: ${{ inputs.apps || 'timeoff parabank agilefant gadael' }}
+          SEEDS: ${{ inputs.seeds || '0 1 2 3 4' }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import json, os
@@ -55,27 +75,27 @@ jobs:
                        "ports": "-p 6969:6969 -p 3000:3000",
                        "probe": "--click 'Create first administrator'"},
           }
-          runs = [{"app": a, **APPS[a]} for a in os.environ["APPS"].split()]
-          print("matrix=" + json.dumps({"include": runs}))
+          apps = [{"app": a, **APPS[a]} for a in os.environ["APPS"].split()]
+          runs = [{**a, "seed": s} for a in apps for s in os.environ["SEEDS"].split()]
+          print("apps=" + json.dumps({"include": apps}))
+          print("runs=" + json.dumps({"include": runs}))
+          print("mode=" + os.environ["MODE"])
           EOF
 
-  probe:
+  # One download per application, kept in the Actions cache for every later job.
+  image:
     needs: plan
-    if: ${{ (inputs.mode || 'probe') == 'probe' }}
-    runs-on: ubuntu-22.04
-    timeout-minutes: 90
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.plan.outputs.apps) }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Free disk space
-        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
       - id: cache
         uses: actions/cache/restore@v4
         with:
           path: image
           key: heldout-${{ matrix.app }}-${{ matrix.file }}
+          lookup-only: true
       - if: steps.cache.outputs.cache-hit != 'true'
         name: Download the image from the authors' Google Drive
         run: |
@@ -88,6 +108,51 @@ jobs:
         with:
           path: image
           key: heldout-${{ matrix.app }}-${{ matrix.file }}
+
+  # WebRLED's artifact, cached once for this branch (caches are per branch). Only in webrled
+  # mode, started after the first-benchmark WebRLED runs have finished: with these images
+  # the Actions cache is near its 10 GB limit and evicts its oldest entries.
+  webrled_artifact:
+    needs: plan
+    if: needs.plan.outputs.mode == 'webrled'
+    runs-on: ubuntu-latest
+    steps:
+      - id: cached
+        uses: actions/cache/restore@v4
+        with:
+          path: artifact
+          key: ${{ env.WEBRLED_CACHE_KEY }}
+          lookup-only: true
+      - if: steps.cached.outputs.cache-hit != 'true'
+        name: Download the artifact from the authors' Google Drive
+        run: |
+          python3 -m pip install --quiet gdown==6.4.2
+          mkdir -p artifact
+          gdown --continue -O artifact/webrled.zip 1oWr9jGUyITl96InW_zFmuqTqB3W_iriw
+          test "$(stat -c %s artifact/webrled.zip)" -eq 3052458257
+      - if: steps.cached.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: artifact
+          key: ${{ env.WEBRLED_CACHE_KEY }}
+
+  probe:
+    needs: [plan, image]
+    if: needs.plan.outputs.mode == 'probe'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.plan.outputs.apps) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
+      - uses: actions/cache/restore@v4
+        with:
+          path: image
+          key: heldout-${{ matrix.app }}-${{ matrix.file }}
+          fail-on-cache-miss: true
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -114,5 +179,109 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: probe__${{ matrix.app }}
+          path: out/
+          if-no-files-found: warn
+
+  ours:
+    needs: [plan, image]
+    if: needs.plan.outputs.mode == 'ours'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJson(needs.plan.outputs.runs) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
+      - uses: actions/cache/restore@v4
+        with:
+          path: image
+          key: heldout-${{ matrix.app }}-${{ matrix.file }}
+          fail-on-cache-miss: true
+      - name: Load the application image
+        run: docker load < image/${{ matrix.app }}.tar && rm -rf image
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: docker/requirements-runtime.txt
+      - name: Install
+        run: |
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu "torch==2.6.0+cpu" -r docker/requirements-runtime.txt
+          pip install --no-deps -e .
+          python -m playwright install --with-deps chromium
+      - name: Run
+        env:
+          WTA_GIT_COMMIT: ${{ github.sha }}
+        run: |
+          python -m web_testing_agent.hybrid.external --out-dir runs/heldout-gha \
+            --apps-file configs/heldout_apps.json --apps ${{ matrix.app }} \
+            --arms ${{ inputs.arm || 'hybrid_final_v8' }} --seeds ${{ matrix.seed }} --workers 1 \
+            --time-budget 3600
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: heldout__${{ matrix.app }}__ours__${{ matrix.seed }}
+          path: runs/heldout-gha/results/
+          if-no-files-found: warn
+
+  webrled:
+    needs: [plan, image, webrled_artifact]
+    if: needs.plan.outputs.mode == 'webrled'
+    # As in webrled.yml: the release was verified on Ubuntu 22.04.
+    runs-on: ubuntu-22.04
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJson(needs.plan.outputs.runs) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space, virtual display
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
+          sudo apt-get update -qq && sudo apt-get install -y -qq xvfb
+      - uses: actions/cache/restore@v4
+        with:
+          path: image
+          key: heldout-${{ matrix.app }}-${{ matrix.file }}
+          fail-on-cache-miss: true
+      - name: Start the application (README section 3.2)
+        run: |
+          docker load < image/${{ matrix.app }}.tar | tee load.txt && rm -rf image
+          IMAGE=$(sed -n 's/^Loaded image: //p' load.txt | head -1)
+          docker run -d -t --name app ${{ matrix.ports }} "$IMAGE"
+          for i in $(seq 1 90); do
+            curl -s -o /dev/null -w '%{http_code}' "${{ matrix.url }}" | grep -qE '^(2|3)' && echo "app ready after ${i}0 s" && break
+            sleep 10
+          done
+          for i in $(seq 1 30); do curl -sf -o /dev/null http://localhost:6969/coverage && break; sleep 10; done
+      - uses: actions/cache/restore@v4
+        with:
+          path: artifact
+          key: ${{ env.WEBRLED_CACHE_KEY }}
+          fail-on-cache-miss: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Unpack
+        run: |
+          mkdir -p "$RUNNER_TEMP/w"
+          unzip -q artifact/webrled.zip -d "$RUNNER_TEMP/w"
+          rm -rf artifact
+      - name: Run WebRLED
+        env:
+          APP: ${{ matrix.app }}
+          TIME_LIMIT: "3600"
+          OUT_DIR: out
+          SERVER_COVERAGE: http://localhost:6969/coverage
+        run: |
+          WEBRLED_DIR="$RUNNER_TEMP/w/webrled" bash scripts/webrled/run_webrled.sh
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: heldout__${{ matrix.app }}__webrled__${{ matrix.seed }}
           path: out/
           if-no-files-found: warn

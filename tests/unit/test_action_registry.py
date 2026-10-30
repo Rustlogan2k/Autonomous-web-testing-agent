@@ -351,3 +351,13 @@ def test_hybrid_final_v8_differs_from_v5_only_in_keeping_credentials():
         ("password", "pw"), ("username", "admin"))
     assert _settings(HybridConfig(), v5, login).registry.credentials == ()
     assert _settings(HybridConfig(), v8, []).registry.credentials == ()
+
+
+def test_an_application_without_a_sign_in_macro_can_state_its_account():
+    from web_testing_agent.hybrid.run import ARMS, HybridConfig, _settings
+
+    stated = {"username": "secret@126.com", "password": "123456", "email": "secret@126.com"}
+    registry = _settings(HybridConfig(), ARMS["hybrid_final_v8"], [], stated).registry
+    assert registry.credentials == (
+        ("email", "secret@126.com"), ("password", "123456"), ("username", "secret@126.com"))
+    assert _settings(HybridConfig(), ARMS["hybrid_final_v5"], [], stated).registry.credentials == ()

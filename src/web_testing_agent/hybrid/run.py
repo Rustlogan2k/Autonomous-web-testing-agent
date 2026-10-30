@@ -227,7 +227,11 @@ def _episode_steps(config: HybridConfig, spec: dict | None) -> int:
     return int((spec or {}).get("episode_steps", config.episode_steps))
 
 
-def _settings(config: HybridConfig, spec: dict | None = None, login: list[dict] | None = None):
+def _settings(config: HybridConfig, spec: dict | None = None, login: list[dict] | None = None,
+              credentials: dict[str, str] | None = None):
+    """The environment for an arm. With `keep_credentials`, the account kept intact is
+    `credentials` ({kind: value}: an application's stated account, for one without a
+    sign-in macro) or else the one `login` signs in with."""
     from dataclasses import replace
 
     from ..benchmark import EnvSettings
@@ -240,8 +244,9 @@ def _settings(config: HybridConfig, spec: dict | None = None, login: list[dict] 
                            listener_clickables=bool((spec or {}).get("listener_clickables")))
     if (spec or {}).get("enter_actions") is False:
         registry = replace(registry, enter_actions=False)
-    if (spec or {}).get("keep_credentials") and login:
-        registry = replace(registry, credentials=credentials_from_login(login))
+    if (spec or {}).get("keep_credentials") and (credentials or login):
+        registry = replace(registry, credentials=tuple(sorted(credentials.items())) if credentials
+                           else credentials_from_login(login))
     return EnvSettings(
         max_steps=_episode_steps(config, spec),
         settle_quiet_ms=config.settle_quiet_ms,
