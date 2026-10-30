@@ -32,13 +32,14 @@ on:
         default: "0 1 2 3 4"
       arm:
         description: "our arm"
-        default: "hybrid_final_v8"
+        default: "hybrid_final_v9"
 
 permissions:
   contents: read
 
 env:
-  # The push plan (2026-10-30): our agent, five runs per application, as the paper.
+  # The push plan (2026-10-30): our primary agent (hybrid_final_v9), five runs per
+  # application, as the paper.
   MODE: ${{ inputs.mode || 'ours' }}
   WEBRLED_CACHE_KEY: webrled-artifact-1oWr9jGU-1LjwhgvN
 
@@ -218,7 +219,7 @@ jobs:
         run: |
           python -m web_testing_agent.hybrid.external --out-dir runs/heldout-gha \
             --apps-file configs/heldout_apps.json --apps ${{ matrix.app }} \
-            --arms ${{ inputs.arm || 'hybrid_final_v8' }} --seeds ${{ matrix.seed }} --workers 1 \
+            --arms ${{ inputs.arm || 'hybrid_final_v9' }} --seeds ${{ matrix.seed }} --workers 1 \
             --time-budget 3600
       - uses: actions/upload-artifact@v4
         if: always()
