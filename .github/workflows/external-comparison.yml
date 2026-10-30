@@ -37,9 +37,9 @@ jobs:
       - id: plan
         env:
           APPS: ${{ inputs.apps || 'dimeshift pagekit splittypie phoenix retroboard petclinic' }}
-          # The push plan: 2026-10-30, hybrid_final_v8 (credential keeping) with ten seeds
+          # The push plan: 2026-10-30, hybrid_final_v9 (the primary agent) with ten seeds
           # per application. Earlier plans are in this file's history.
-          ARMS: ${{ inputs.arms || 'hybrid_final_v8' }}
+          ARMS: ${{ inputs.arms || 'hybrid_final_v9' }}
           SEEDS: ${{ inputs.seeds || '0 1 2 3 4 5 6 7 8 9' }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
