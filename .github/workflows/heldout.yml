@@ -38,9 +38,10 @@ permissions:
   contents: read
 
 env:
-  # The push plan (2026-10-30): our primary agent (hybrid_final_v9), five runs per
-  # application, as the paper.
-  MODE: ${{ inputs.mode || 'webrled' }}
+  # The push plan (2026-10-30): our primary agent (hybrid_final_v9) on ParaBank again, all
+  # five runs, after the fix for tabs that never load a web page (b62afed) - three of five
+  # ParaBank runs of hybrid_final_v8 hung on one. Other applications keep run 41013950012.
+  MODE: ${{ inputs.mode || 'ours' }}
   WEBRLED_CACHE_KEY: webrled-artifact-1oWr9jGU-1LjwhgvN
 
 jobs:
@@ -53,7 +54,7 @@ jobs:
     steps:
       - id: plan
         env:
-          APPS: ${{ inputs.apps || 'timeoff parabank agilefant gadael' }}
+          APPS: ${{ inputs.apps || 'parabank' }}
           SEEDS: ${{ inputs.seeds || '0 1 2 3 4' }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
