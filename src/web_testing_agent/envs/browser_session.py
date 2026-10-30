@@ -12,10 +12,12 @@ this raw observation has already been captured.
 from __future__ import annotations
 
 import threading
+import time
 from typing import Callable
 from urllib.parse import urlparse
 
 from playwright.sync_api import Browser, BrowserContext, Page, Playwright, sync_playwright
+from playwright.sync_api import Error as PlaywrightError
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 from ..utils.logging import get_logger
@@ -27,6 +29,10 @@ DEFAULT_VIEWPORT = dict(CANONICAL_VIEWPORT)
 NAVIGATION_TIMEOUT_MS = 15_000
 #: Attempts at an episode's opening page load before the episode fails.
 START_ATTEMPTS = 3
+#: Pause before retrying a failed opening load, multiplied by the attempt number.
+START_RETRY_DELAY_S = 2.0
+#: How long a new tab may take to commit its first navigation before it is closed unadopted.
+POPUP_COMMIT_TIMEOUT_MS = 5_000
 
 # How long the DOM must stay unmutated before we call the page settled, and the hard
 # ceiling on waiting for that. `networkidle` is deliberately NOT used: it requires 500ms
@@ -58,6 +64,10 @@ _QUIESCENCE_JS = """
     const hardStop = setTimeout(() => finish(false), timeoutMs);
 })
 """
+
+
+def _is_web_url(url: str) -> bool:
+    return url.lower().startswith(("http://", "https://"))
 
 
 class _SharedChromium:
@@ -191,16 +201,21 @@ class BrowserSession:
             self.on_new_page(self.page)
         logger.info("Navigating to {}", base_url)
         # A public site can stall one load; without a retry a single slow response at an
-        # episode boundary ended a whole session (measured on demo.playwright.dev).
+        # episode boundary ended a whole session (measured on demo.playwright.dev). A server
+        # that has only just started can also reset the connection once after answering its
+        # readiness probe (Time Off on the held-out benchmark: ERR_CONNECTION_RESET on the
+        # first load ended an hour's run before its first step).
         for attempt in range(1, START_ATTEMPTS + 1):
             try:
                 self.page.goto(base_url, wait_until="domcontentloaded")
                 break
-            except PlaywrightTimeoutError:
-                if attempt == START_ATTEMPTS:
+            except PlaywrightError as exc:
+                transient = isinstance(exc, PlaywrightTimeoutError) or "net::ERR_" in str(exc)
+                if not transient or attempt == START_ATTEMPTS:
                     raise
-                logger.warning("Loading {} timed out (attempt {} of {}); retrying",
-                               base_url, attempt, START_ATTEMPTS)
+                logger.warning("Loading {} failed (attempt {} of {}): {}; retrying",
+                               base_url, attempt, START_ATTEMPTS, str(exc).splitlines()[0])
+                time.sleep(START_RETRY_DELAY_S * attempt)
         self.wait_settled()
         return self.page
 
@@ -263,6 +278,25 @@ class BrowserSession:
             return None, ""
 
         adopted = candidates[-1]
+        if not _is_web_url(adopted.url):
+            # A popup reports a placeholder URL until its first navigation commits. Give it a
+            # bounded moment; one that still has no web page is never adopted. Measured on
+            # ParaBank (held-out benchmark): a tab reporting the URL ":" was adopted, and the
+            # next call on it waited for a JavaScript context that never came - three of five
+            # runs hung until the CI job's two-hour limit and produced no result at all.
+            try:
+                adopted.wait_for_load_state("domcontentloaded", timeout=POPUP_COMMIT_TIMEOUT_MS)
+            except Exception:  # noqa: BLE001 - judged by the URL below
+                pass
+            if not _is_web_url(adopted.url):
+                logger.info("Closing a new tab that never loaded a web page: {!r}",
+                            adopted.url[:80])
+                for page in candidates:
+                    try:
+                        page.close()
+                    except Exception:  # noqa: BLE001 - best-effort teardown
+                        logger.debug("Could not close unloaded popup")
+                return None, ""
         if accept is not None and not accept(adopted.url):
             # An off-site tab tells us nothing about the application under test, and the
             # page the click came from correctly did not change. Close it and say so, so

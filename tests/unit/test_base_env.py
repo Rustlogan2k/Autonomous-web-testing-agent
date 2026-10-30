@@ -206,12 +206,18 @@ def test_a_non_error_console_message_is_never_recorded():
 
 
 class _FakeTab:
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, loads_to: str | None = None) -> None:
         self.url = url
+        self.loads_to = loads_to
         self.closed = False
 
     def is_closed(self) -> bool:
         return self.closed
+
+    def wait_for_load_state(self, state: str, timeout: float) -> None:
+        if self.loads_to is None:
+            raise TimeoutError(f"waiting for {state} timed out after {timeout}ms")
+        self.url = self.loads_to
 
     def close(self) -> None:
         self.closed = True
@@ -274,6 +280,28 @@ def test_an_in_app_tab_opened_by_this_action_is_adopted():
     assert adopted is not None and adopted.url == "http://localhost:4280/popup"
     assert offsite == ""
     assert session.page is adopted
+
+
+def test_a_tab_that_never_loads_a_web_page_is_closed_not_adopted():
+    """Regression, measured on ParaBank: a new tab reporting the URL ":" was adopted, the
+    next call on it never returned, and three of five runs hung until the CI limit."""
+    session, _ = _session("http://localhost:4280/app", [])
+    active = session.page
+    session.mark_pages()
+    stuck = _FakeTab(":")
+    session.context.pages.append(stuck)
+    assert session.take_new_page(accept=_in_app) == (None, "")
+    assert stuck.closed
+    assert session.page is active
+
+
+def test_a_tab_still_committing_its_first_navigation_is_adopted_once_it_loads():
+    session, _ = _session("http://localhost:4280/app", [])
+    session.mark_pages()
+    session.context.pages.append(_FakeTab("about:blank", loads_to="http://localhost:4280/help"))
+    adopted, offsite = session.take_new_page(accept=_in_app)
+    assert adopted is not None and adopted.url == "http://localhost:4280/help"
+    assert offsite == ""
 
 
 def test_no_new_tab_means_nothing_happens():

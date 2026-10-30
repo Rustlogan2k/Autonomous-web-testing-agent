@@ -52,6 +52,9 @@ logger = get_logger(__name__)
 ONE_HOUR = 3600.0
 #: Effectively unlimited interactions: the wall clock ends the run.
 UNLIMITED = 10**9
+#: Time a run may take past its budget and readiness wait (model loading, coverage
+#: collection, teardown) before its process is presumed hung and stopped.
+JOB_OVERRUN_S = 900.0
 
 
 @dataclass(frozen=True)
@@ -271,7 +274,21 @@ def run_all(jobs: list[HybridJob], apps: dict, config: ExternalConfig, out_dir: 
                        "--out-dir", str(out_dir), "--job", json.dumps(job.to_dict()),
                        "--app-spec", json.dumps(apps[app]),
                        "--config", json.dumps(config.to_dict())]
-            completed = subprocess.run(command, check=False)
+            limit = config.time_budget_s + config.ready_timeout_s + JOB_OVERRUN_S
+            try:
+                completed = subprocess.run(command, check=False, timeout=limit)
+            except subprocess.TimeoutExpired:
+                # The budget is checked between steps, so only a browser call that never
+                # returns gets here. Record it and free the worker rather than hold it.
+                logger.error("job {} still running after {:.0f}s; stopped", job.job_id, limit)
+                _write_json(result_path(out_dir, job), {
+                    "job": job.to_dict(), "provenance": provenance(config),
+                    "config": config.to_dict(), "status": "error",
+                    "error": f"run exceeded {limit:.0f}s and was stopped",
+                })
+                if apps[app].get("down"):
+                    subprocess.run(apps[app]["down"], check=False)
+                completed = subprocess.CompletedProcess(command, returncode=-1)
             with lock:
                 if completed.returncode == 0 and _done(out_dir, job):
                     status["done"] += 1
