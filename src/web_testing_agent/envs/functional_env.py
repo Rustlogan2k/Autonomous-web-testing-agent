@@ -85,7 +85,8 @@ class WebFunctionalEnv(WebTestingEnv):
         elements = scan_page_elements(page)
         if self.registry_options.custom_clickables:
             elements = elements + scan_custom_clickables(
-                page, listeners=self.registry_options.listener_clickables)
+                page, listeners=self.registry_options.listener_clickables,
+                toggles=self.registry_options.toggle_clickables)
         # The page's own URL decides whether a link is a self-link, and a self-link
         # cannot be a broken navigation. Read here rather than cached, because the scan
         # describes whatever document is loaded *now*.

@@ -167,6 +167,23 @@ ARMS: dict[str, dict] = {
     "hybrid_final_v8": {**HYBRID, "planner": "count", "browse": True, "failure_bonus": 2.0,
                         "custom_clickables": True, "listener_clickables": True,
                         "keep_credentials": True},
+    # Version 9 (2026-10-30), from the v8 confirmation run (benchmark 1, post-hoc, disclosed):
+    # v8 ended every Pagekit lockout (0 of 1,681 sign-ins failed) yet Pagekit fell to 34.9%,
+    # because the real gap is elsewhere: Pagekit's admin module menu (Site, Users, System)
+    # opens from a UIkit `data-uk-dropdown` that no detector offered (`toggle_clickables`);
+    # and typing only the real credentials everywhere stopped the tester failing a sign-in,
+    # which lost Phoenix's sign-in error handling (all v8 runs <= 82.9%), so credentials are
+    # now exclusive only on the account's own form ("own_account"). And as the product's
+    # session does, a run with a sign-in macro does not sign out (a local Pagekit trace spent
+    # 247 of 800 steps on the login page after 11 sign-outs). hybrid_final_v9 is the primary
+    # agent, named before its runs; hybrid_final_v9t (toggles only) is its ablation.
+    "hybrid_final_v9": {**HYBRID, "planner": "count", "browse": True, "failure_bonus": 2.0,
+                        "custom_clickables": True, "listener_clickables": True,
+                        "toggle_clickables": True, "keep_credentials": "own_account",
+                        "avoid_sign_out": True},
+    "hybrid_final_v9t": {**HYBRID, "planner": "count", "browse": True, "failure_bonus": 2.0,
+                         "custom_clickables": True, "listener_clickables": True,
+                         "toggle_clickables": True},
     # Bandit tuning (2026-10-26, development apps only, GitHub Actions): the learner on the
     # base of hybrid_final_v5, so the learner is the only difference. Back-off weight and
     # forgetting were never swept before.
@@ -244,9 +261,20 @@ def _settings(config: HybridConfig, spec: dict | None = None, login: list[dict] 
                            listener_clickables=bool((spec or {}).get("listener_clickables")))
     if (spec or {}).get("enter_actions") is False:
         registry = replace(registry, enter_actions=False)
-    if (spec or {}).get("keep_credentials") and (credentials or login):
+    if (spec or {}).get("toggle_clickables"):
+        registry = replace(registry, toggle_clickables=True)
+    if (spec or {}).get("avoid_sign_out") and login:
+        # As the product's tester session: behind a sign-in macro, signing out only ends the
+        # session the macro opened and the rest of the episode is spent on the login page.
+        from ..tester.session import SIGN_OUT_LABELS
+
+        registry = replace(registry, avoid_labels=SIGN_OUT_LABELS)
+    keep = (spec or {}).get("keep_credentials")
+    if keep and (credentials or login):
+        # True: hybrid_final_v8's "everywhere"; or the scope by name ("own_account").
         registry = replace(registry, credentials=tuple(sorted(credentials.items())) if credentials
-                           else credentials_from_login(login))
+                           else credentials_from_login(login),
+                           credentials_scope="everywhere" if keep is True else keep)
     return EnvSettings(
         max_steps=_episode_steps(config, spec),
         settle_quiet_ms=config.settle_quiet_ms,

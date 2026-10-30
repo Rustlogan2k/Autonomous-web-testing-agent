@@ -361,3 +361,61 @@ def test_an_application_without_a_sign_in_macro_can_state_its_account():
     assert registry.credentials == (
         ("email", "secret@126.com"), ("password", "123456"), ("username", "secret@126.com"))
     assert _settings(HybridConfig(), ARMS["hybrid_final_v5"], [], stated).registry.credentials == ()
+
+
+def test_own_account_scope_protects_only_the_accounts_own_form():
+    from web_testing_agent.envs.action_registry import RegistryOptions
+
+    scoped = RegistryOptions(credentials=(("password", "pw"), ("username", "admin")),
+                             credentials_scope="own_account")
+
+    def values(elements):
+        out: dict[str, list] = {}
+        for spec in build_action_specs(elements, options=scoped):
+            if spec.action_type is ActionType.TYPE and not spec.params["press_enter"]:
+                out.setdefault(spec.element_id, []).append(spec.params["value"])
+        return out
+
+    # A sign-in form: generated values stay (a wrong sign-in is still tested), the real
+    # account is one more choice, behind the generated valid value.
+    sign_in = values([_el(tag="input", index=0, type="text", name="username"),
+                      _el(tag="input", index=1, type="password", name="password")])
+    assert "admin" in sign_in["username"] and len(sign_in["username"]) > 2
+    assert sign_in["username"][0] != "admin"
+    assert "pw" in sign_in["password"] and len(sign_in["password"]) > 2
+    # The account's own edit form (it shows the username): only the account's values.
+    own = values([_el(tag="input", index=0, type="text", name="username", text="admin"),
+                  _el(tag="input", index=1, type="password", name="password"),
+                  _el(tag="input", index=2, type="text", name="nickname")])
+    assert own["username"] == ["admin"] and own["password"] == ["pw"]
+    assert len(own["nickname"]) > 1
+
+
+def test_v9_adds_toggles_and_scoped_credentials_to_v5():
+    from web_testing_agent.hybrid.run import ARMS, HybridConfig, _settings
+
+    v5, v9, v9t = ARMS["hybrid_final_v5"], ARMS["hybrid_final_v9"], ARMS["hybrid_final_v9t"]
+    added = ("toggle_clickables", "keep_credentials", "avoid_sign_out")
+    assert {k: v for k, v in v9.items() if k not in added} == v5
+    assert {k: v for k, v in v9t.items() if k != "toggle_clickables"} == v5
+    login = [{"type": "TYPE", "id": "username", "params": {"value": "admin"}}]
+    registry = _settings(HybridConfig(), v9, login).registry
+    assert registry.toggle_clickables and registry.credentials_scope == "own_account"
+    assert registry.credentials == (("username", "admin"),)
+    v8 = _settings(HybridConfig(), ARMS["hybrid_final_v8"], login).registry
+    assert v8.credentials_scope == "everywhere"
+    assert not _settings(HybridConfig(), v5, login).registry.toggle_clickables
+    assert "sign out" in registry.avoid_labels
+    assert _settings(HybridConfig(), v9, []).registry.avoid_labels == ()  # no macro, no rule
+    assert _settings(HybridConfig(), v5, login).registry.avoid_labels == ()
+
+
+def test_an_icon_sign_out_link_is_avoided_by_its_address():
+    from web_testing_agent.envs.action_registry import RegistryOptions
+
+    elements = [_el(tag="a", index=0, href="/pagekit/index.php/user/logout?redirect=admin/login"),
+                _el(tag="a", index=1, href="/pagekit/index.php/admin/user", text="Users")]
+    avoid = RegistryOptions(avoid_labels=("sign out", "log out", "logout"))
+    clicks = [s.element_id for s in build_action_specs(elements, options=avoid)
+              if s.action_type is ActionType.CLICK]
+    assert clicks == ["Users"]

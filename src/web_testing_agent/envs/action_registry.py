@@ -61,7 +61,7 @@ class RegistryOptions:
       jQuery click handler, an AngularJS or Ember action attribute, or a link without an
       `href`. Listeners delegated to a page-sized container are ignored.
     * `avoid_labels` -- controls not to offer, matched against an element's visible text,
-      id and name (case, spaces, hyphens and underscores ignored). A crawler's "don't
+      id, name and link address (case, spaces, hyphens and underscores ignored). A crawler's "don't
       click" list: with a sign-in macro, pressing *Sign out* only ends the session the
       macro opened, and the rest of the episode is spent on the login page.
     """
@@ -76,6 +76,14 @@ class RegistryOptions:
     listener_clickables: bool = False
     #: A "type a valid value, then press Enter" action for each text input (2026-10-27).
     enter_actions: bool = True
+    #: With `custom_clickables`: also offer the openers of declarative disclosure widgets -
+    #: elements carrying a framework's dropdown/toggle attribute (UIkit `data-uk-dropdown`,
+    #: Bootstrap `data-toggle`/`data-bs-toggle`, Foundation `data-dropdown`) or ARIA's
+    #: `aria-haspopup` / `aria-expanded="false"`. Their click is handled by one listener on
+    #: the document, which `listener_clickables` deliberately ignores, so the menu they open
+    #: was unreachable: Pagekit's whole admin module menu (Site, Users, System) sits behind
+    #: one (2026-10-30).
+    toggle_clickables: bool = False
     #: The account the session signs in with, as (kind, value) pairs
     #: (`input_values.credentials_from_login`). A field holding that kind of value -
     #: password, email or username (`input_values.credential_kind`) - is only ever typed
@@ -84,6 +92,14 @@ class RegistryOptions:
     #: Pagekit the user menu's "Settings" opens exactly that form (2026-10-30). WebRLED's
     #: input vocabulary does the same.
     credentials: tuple[tuple[str, str], ...] = ()
+    #: Where `credentials` are the only values typed. "everywhere" (hybrid_final_v8): every
+    #: account field - which also stops the tester from ever failing a sign-in, and that
+    #: lost Phoenix's sign-in error handling. "own_account": only on a page that shows the
+    #: account's own username or email in a field (an edit-profile form, the lockout's
+    #: cause); elsewhere an account field keeps every generated value and gains the
+    #: credential as one more, so sign-in and sign-up forms are still tested with wrong
+    #: values and an account can still be created and used (2026-10-30).
+    credentials_scope: str = "everywhere"
 
 
 #: The registry as it was for every pre-benchmark measurement.
@@ -179,11 +195,18 @@ CLICK_LISTENER_INIT_JS = """
 """
 
 _CUSTOM_SCAN_JS = """
-([limit, listeners]) => {
+([limit, listeners, toggles]) => {
     const NATIVE = 'a[href], button, input, select, textarea, option, label, summary';
     const HANDLERS = ['onClick', 'onMouseDown', 'onMouseUp', 'onPointerDown', 'onTouchStart',
                       'onDoubleClick'];
     const ATTRS = ['ng-click', 'data-ng-click', 'ui-sref', 'data-ember-action', 'v-on:click'];
+    // Declarative disclosure widgets: a menu, dropdown or panel that a CSS framework opens
+    // from markup alone, its click handled by one listener on the whole document.
+    const TOGGLE_ATTRS = ['data-uk-dropdown', 'uk-dropdown', 'data-uk-toggle', 'uk-toggle',
+        'data-uk-offcanvas', 'data-toggle', 'data-bs-toggle', 'data-dropdown', 'aria-haspopup'];
+    const toggle = el => TOGGLE_ATTRS.some(a => el.hasAttribute(a)
+            && (el.getAttribute(a) || '').toLowerCase() !== 'false')
+        || el.getAttribute('aria-expanded') === 'false';
     const area = window.innerWidth * window.innerHeight;
     const framework = el => {
         for (const key of Object.keys(el)) {
@@ -236,7 +259,7 @@ _CUSTOM_SCAN_JS = """
             (el.__wtaClick && rect.width * rect.height < 0.5 * area)
             || framework(el) || (el.tagName === 'A' && !el.hasAttribute('href')));
         if (!(ROLES.has(role) || el.hasAttribute('onclick') || (tab !== null && tab !== '-1')
-              || ownPointer || handled)) continue;
+              || ownPointer || handled || (toggles && toggle(el)))) continue;
         const visible = rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden'
             && style.display !== 'none';
         if (!visible) continue;
@@ -257,11 +280,11 @@ _CUSTOM_SCAN_JS = """
 
 
 def scan_custom_clickables(page: "Page", limit: int = MAX_CUSTOM_CLICKABLES,
-                           listeners: bool = False) -> list[dict]:
+                           listeners: bool = False, toggles: bool = False) -> list[dict]:
     """Clickable controls outside the native scan (see `RegistryOptions.custom_clickables`
     and `listener_clickables`)."""
     try:
-        return page.evaluate(_CUSTOM_SCAN_JS, [limit, listeners])
+        return page.evaluate(_CUSTOM_SCAN_JS, [limit, listeners, toggles])
     except Exception:  # noqa: BLE001 - navigation mid-scan, detached DOM, etc.
         logger.warning("Failed to scan custom clickables; offering none")
         return []
@@ -426,7 +449,9 @@ def _avoided(el: dict, avoid: tuple[str, ...]) -> bool:
     """Whether `el` is one of the controls `RegistryOptions.avoid_labels` excludes."""
     if not avoid:
         return False
-    names = {_squash(str(el.get(key) or "")) for key in ("text", "id", "name")} - {""}
+    # The link's address too: an icon link has no text, and Pagekit's sign-out is one
+    # (`/user/logout?redirect=...`).
+    names = {_squash(str(el.get(key) or "")) for key in ("text", "id", "name", "href")} - {""}
     return any(_squash(word) in name for word in avoid for name in names)
 
 
@@ -456,6 +481,12 @@ def build_action_specs(elements: list[dict], page_url: str = "",
     exactly. See `RegistryOptions`.
     """
     registry_options = options
+    credentials = dict(registry_options.credentials)
+    # A page showing the session's own account in a field: there, account fields only ever
+    # get the account's own values (`RegistryOptions.credentials_scope`).
+    identity = {credentials.get("username"), credentials.get("email")} - {None}
+    own_account = registry_options.credentials_scope == "everywhere" or any(
+        el.get("tag") == "input" and (el.get("text") or "").strip() in identity for el in elements)
     shared_names: frozenset[str] = frozenset()
     if registry_options.disambiguate_shared_names:
         counts = Counter(el["name"] for el in elements if el.get("name") and not el.get("id"))
@@ -564,26 +595,26 @@ def build_action_specs(elements: list[dict], page_url: str = "",
             # Whether the field holds a value now (an input's `text` is its value): lets a form
             # be completed even when its fields have neither an id nor a name.
             filled = bool((el.get("text") or "").strip())
-            credential = (dict(registry_options.credentials).get(credential_kind(el_type, hints))
-                          if registry_options.credentials and tag == "input" else None)
-            if credential is not None:
-                for press_enter, bucket in ((False, primary_types), (True, entered)):
-                    if press_enter and not registry_options.enter_actions:
-                        continue
-                    bucket.append(
-                        ActionSpec(
-                            index=-1,
-                            action_type=ActionType.TYPE,
-                            selector=selector,
-                            element_id=field_label,
-                            params={"value": credential,
-                                    "category": InputValueCategory.VALID_TYPICAL.value,
-                                    "press_enter": press_enter, "filled": filled,
-                                    "in_viewport": in_viewport, **label_params(el)},
-                            description=f"type the session's credential into {field_label!r}"
-                                        + (" and press Enter" if press_enter else ""),
-                        )
-                    )
+            credential = (credentials.get(credential_kind(el_type, hints))
+                          if credentials and tag == "input" else None)
+
+            typed_credential = None if credential is None else ActionSpec(
+                index=-1,
+                action_type=ActionType.TYPE,
+                selector=selector,
+                element_id=field_label,
+                params={"value": credential, "category": InputValueCategory.VALID_TYPICAL.value,
+                        "press_enter": False, "filled": filled, "in_viewport": in_viewport,
+                        **label_params(el)},
+                description=f"type the session's credential into {field_label!r}",
+            )
+            if credential is not None and own_account:
+                # The account's own form: its fields only ever get the account's own values.
+                primary_types.append(typed_credential)
+                if registry_options.enter_actions:
+                    entered.append(replace(
+                        typed_credential, params={**typed_credential.params, "press_enter": True},
+                        description=f"{typed_credential.description} and press Enter"))
                 continue
             for category, bucket in (
                 (InputValueCategory.VALID_TYPICAL, primary_types),
@@ -609,6 +640,10 @@ def build_action_specs(elements: list[dict], page_url: str = "",
                         description=f"type {category.value} into {field_label!r}",
                     )
                 )
+            if typed_credential is not None:
+                # Elsewhere one more choice, behind the generated valid value (operators that
+                # take "the field's valid value" take the first).
+                primary_types.append(typed_credential)
             if tag == "input" and registry_options.enter_actions:
                 # Many inputs act on Enter and have no button at all (add a post, a chat line, a
                 # tag, a search): a typed value followed by Enter is its own action.
