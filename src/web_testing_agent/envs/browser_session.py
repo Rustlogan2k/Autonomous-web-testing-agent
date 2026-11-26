@@ -210,10 +210,11 @@ class BrowserSession:
             self.on_new_page(self.page)
         logger.info("Navigating to {}", base_url)
         # A public site can stall one load; without a retry a single slow response at an
-        # episode boundary ended a whole session (measured on demo.playwright.dev). A server
-        # that has only just started can also reset the connection once after answering its
-        # readiness probe (Time Off on the held-out benchmark: ERR_CONNECTION_RESET on the
-        # first load ended an hour's run before its first step).
+        # episode boundary ended a whole session (measured on demo.playwright.dev). A
+        # connection error is retried too. It was added for Time Off's ERR_CONNECTION_RESET
+        # (held-out benchmark), first taken for a server not yet ready; those runs failed
+        # 11-30 minutes in and were most likely the application's import-form crash, which
+        # no retry survives. The retry is kept: a transient reset costs one episode, not a run.
         for attempt in range(1, START_ATTEMPTS + 1):
             try:
                 self.page.goto(base_url, wait_until="domcontentloaded")
