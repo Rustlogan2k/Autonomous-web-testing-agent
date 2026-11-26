@@ -69,6 +69,31 @@ def is_network(text: str) -> bool:
     return bool(_NETWORK.match(text))
 
 
+#: Triage of a failure's text, first match wins. The rules are written from the classes of
+#: message seen in both tools' logs and apply to both alike; "client exception" and "HTTP
+#: 5xx" are the candidate defects, the rest are not evidence of a bug in the application.
+CATEGORIES: list[tuple[str, re.Pattern[str]]] = [
+    ("network", _NETWORK),
+    ("third party", re.compile(r"blocked by CORS policy|gravatar|geoip|googleapis|"
+                               r"FIREBASE FATAL ERROR: Cannot parse Firebase url", re.I)),
+    ("HTTP 5xx", re.compile(r"status of \((Internal Server Error|Bad Gateway|"
+                            r"Service Unavailable|Gateway Timeout)\)")),
+    ("HTTP 4xx", re.compile(r"status of \(")),
+    ("client exception", re.compile(r"(TypeError|ReferenceError|SyntaxError|RangeError|"
+                                    r"Error:|Cannot read propert|is not a function|"
+                                    r"is not defined|Unexpected token|Transition Rejection|"
+                                    r"Can not |AbortError|Uncaught)", re.I)),
+    ("application logging", re.compile(r".")),
+]
+
+
+def category(text: str) -> str:
+    for name, pattern in CATEGORIES:
+        if pattern.search(text):
+            return name
+    return "application logging"
+
+
 def our_failures(directories: list[str], arm: str) -> dict[str, list[set[str]]]:
     """app -> one set of normalised failure texts per run."""
     runs: dict[str, list[set[str]]] = defaultdict(list)
@@ -170,7 +195,20 @@ def main() -> int:
             for label in ("only_ours", "only_webrled", "both"):
                 for text in r[label]:
                     print(f"    {label:12} {text}")
+    print()
+    print("triage of the union over runs (ours / WebRLED / both):")
+    for r in rows:
+        counts = {}
+        for label in ("only_ours", "only_webrled", "both"):
+            for text in r[label]:
+                counts.setdefault(category(text), [0, 0, 0])[
+                    ("only_ours", "only_webrled", "both").index(label)] += 1
+        cells = "  ".join(f"{k}: {v[0]}/{v[1]}/{v[2]}" for k, v in sorted(counts.items()))
+        print(f"  {r['app']:11} {cells}")
     if args.json:
+        for r in rows:
+            r["triage"] = {label: {t: category(t) for t in r[label]}
+                           for label in ("only_ours", "only_webrled", "both")}
         args.json.write_text(json.dumps(rows, indent=1), encoding="utf-8")
     return 0
 
