@@ -51,6 +51,18 @@ PROTOCOLS: dict[str, tuple] = {
         ),
         (),
     ),
+    # RQ4b (.github/workflows/seeded-faults.yml, written 2026-11-26 before any run of these
+    # arms on the validation suite): the primary comparison as the workflow states it; the
+    # curiosity agent against random and against hybrid_final_v5 added as secondary before
+    # any of the batch's fault results were read.
+    "rq4b-2026-11-26": (
+        ("hybrid_final_v5", "random"),
+        (
+            ("hybrid_curiosity_v5_pub", "random"),
+            ("hybrid_curiosity_v5_pub", "hybrid_final_v5"),
+        ),
+        (),
+    ),
 }
 
 
