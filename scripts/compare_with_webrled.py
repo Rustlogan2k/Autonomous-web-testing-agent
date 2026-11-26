@@ -6,7 +6,10 @@ Reads our result files (`istanbul.branch_coverage`, status ok) for the agent fro
 directory given, and WebRLED's runs as scored on the same runners
 (`runs/gha-webrled/results`, `scripts/webrled/score_webrled.py`). Prints, per application:
 both means, standard deviations and run counts, the difference, its 95% Welch interval and
-two-sided p-value; then both six-application averages.
+two-sided p-value, the two-sided Mann-Whitney U p-value and the Vargha-Delaney A12 effect
+size (the probability that a run of ours beats a run of WebRLED, ties counted half; 0.5 is
+no difference; |A12 - 0.5| >= 0.06 / 0.14 / 0.21 is small / medium / large); then both
+six-application averages.
 """
 
 from __future__ import annotations
@@ -58,6 +61,25 @@ def welch(a: list[float], b: list[float]) -> tuple[float, float, float]:
     return diff, float(stats.t.ppf(0.975, dof) * se), float(2 * stats.t.sf(abs(diff) / se, dof))
 
 
+def a12(a: list[float], b: list[float]) -> float:
+    """Vargha-Delaney A12: P(X > Y) + 0.5 P(X = Y), X from `a`, Y from `b`."""
+    wins = sum((x > y) + 0.5 * (x == y) for x in a for y in b)
+    return wins / (len(a) * len(b))
+
+
+def magnitude(effect: float) -> str:
+    distance = abs(effect - 0.5)
+    return ("large" if distance >= 0.21 else "medium" if distance >= 0.14
+            else "small" if distance >= 0.06 else "negligible")
+
+
+def mann_whitney(a: list[float], b: list[float]) -> float:
+    """Two-sided Mann-Whitney U p-value (1.0 when every value is equal)."""
+    if len(set(a) | set(b)) == 1:
+        return 1.0
+    return float(stats.mannwhitneyu(a, b, alternative="two-sided").pvalue)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("arm")
@@ -68,7 +90,7 @@ def main() -> int:
     webrled = branch_coverage([args.webrled], None)
     print(
         f"{'app':11} {'ours':>6} {'sd':>5} {'n':>3}  {'WebRLED':>7} {'sd':>5} {'n':>3}"
-        f"  {'diff':>6} {'95% CI':>17} {'p':>6}"
+        f"  {'diff':>6} {'95% CI':>17} {'p':>6}  {'MWU p':>6} {'A12':>5}"
     )
     for app in APPS:
         a, b = ours[app], webrled[app]
@@ -80,7 +102,8 @@ def main() -> int:
         print(
             f"{app:11} {statistics.mean(a):6.2f} {sd[0]:5.2f} {len(a):3}  "
             f"{statistics.mean(b):7.2f} {sd[1]:5.2f} {len(b):3}  {diff:+6.2f} "
-            f"[{diff - half:+6.2f}, {diff + half:+6.2f}] {p:6.3f}"
+            f"[{diff - half:+6.2f}, {diff + half:+6.2f}] {p:6.3f}  "
+            f"{mann_whitney(a, b):6.3f} {a12(a, b):5.2f} {magnitude(a12(a, b))}"
         )
     if all(ours[app] and webrled[app] for app in APPS):
         averages = [
