@@ -1,36 +1,1698 @@
 {
-  "_about": "Applications of the security study (src/web_testing_agent/security). Ground truth is each application's own documented vulnerability list, copied before any scan; 'detectable' marks the classes OWASP ZAP has active scan rules for (fixed 2026-11-26, before any scan). A vulnerability counts as found when ZAP raises an alert (confidence above 'False Positive') whose CWE is in 'cwe' and whose URL path (or, for stored vulnerabilities, any path listed) matches 'paths'; 'param', when given, must also match the alert's parameter.",
-  "dvwa": {
-    "image": "vulnerables/web-dvwa",
-    "port": 80,
-    "url": "http://dvwa/",
-    "role": "development",
-    "source": "harness development only (plumbing, budgets); never scored or reported",
-    "vulnerabilities": []
-  },
-  "wackopicko": {
-    "image": "adamdoupe/wackopicko",
-    "port": 80,
-    "url": "http://wp/",
-    "role": "held-out",
-    "source": "https://github.com/adamdoupe/WackoPicko README, section Vulnerabilities (15 entries); Doupe, Cova, Vigna, DIMVA 2010",
-    "accounts": {"user": ["scanner1", "scanner1"], "admin": ["admin", "admin"]},
-    "vulnerabilities": [
-      {"id": "WP-01", "title": "Reflected XSS", "cwe": [79], "paths": ["/pictures/search.php"], "param": "query", "detectable": true},
-      {"id": "WP-02", "title": "Stored XSS (guestbook comment)", "cwe": [79], "paths": ["/guestbook.php"], "detectable": true},
-      {"id": "WP-03", "title": "Session ID vulnerability (auto-incrementing admin_session)", "cwe": [330, 384], "paths": ["/admin/login.php", "/admin/index.php"], "detectable": false},
-      {"id": "WP-04", "title": "Stored SQL injection (first name, register -> similar users)", "cwe": [89], "paths": ["/users/register.php", "/users/similar.php"], "detectable": true},
-      {"id": "WP-05", "title": "Reflected SQL injection (login username)", "cwe": [89], "paths": ["/users/login.php"], "param": "username", "detectable": true},
-      {"id": "WP-06", "title": "Directory traversal (upload tag)", "cwe": [22], "paths": ["/pictures/upload.php"], "param": "tag", "detectable": true},
-      {"id": "WP-07", "title": "Multi-step stored XSS (picture comment via preview)", "cwe": [79], "paths": ["/pictures/view.php", "/comments/preview_comment.php", "/comments/add_comment.php"], "detectable": true, "note": "form targets from the application's source (include/comments.php), read before any scan"},
-      {"id": "WP-08", "title": "Forceful browsing (high-quality picture without purchase)", "cwe": [425], "paths": ["/pictures/highquality.php"], "detectable": false},
-      {"id": "WP-09", "title": "Command-line injection (passcheck password)", "cwe": [78], "paths": ["/passcheck.php"], "param": "password", "detectable": true},
-      {"id": "WP-10", "title": "File inclusion (admin page parameter)", "cwe": [98, 22], "paths": ["/admin/index.php"], "param": "page", "detectable": true},
-      {"id": "WP-11", "title": "Parameter manipulation (sample user page userid)", "cwe": [639], "paths": ["/users/sample.php"], "detectable": false},
-      {"id": "WP-12", "title": "Reflected XSS behind JavaScript", "cwe": [79], "paths": ["/piccheck.php"], "param": "name", "detectable": true},
-      {"id": "WP-13", "title": "Logic flaw (coupon applied repeatedly)", "cwe": [840], "paths": ["/cart/review.php"], "detectable": false},
-      {"id": "WP-14", "title": "Reflected XSS behind a Flash form", "cwe": [79], "paths": ["/submitname.php"], "param": "value", "detectable": true},
-      {"id": "WP-15", "title": "Weak username/password (admin/admin)", "cwe": [521, 1391], "paths": ["/admin/login.php"], "detectable": false}
+ "_about": "Applications of the security study (src/web_testing_agent/security). Ground truth is each application's own documented vulnerability list, copied before any scan; 'detectable' marks the classes OWASP ZAP has active scan rules for (fixed 2026-11-26, before any scan). A vulnerability counts as found when ZAP raises an alert (confidence above 'False Positive') whose CWE is in 'cwe' and whose URL path (or, for stored vulnerabilities, any path listed) matches 'paths'; 'param', when given, must also match the alert's parameter.",
+ "dvwa": {
+  "image": "vulnerables/web-dvwa",
+  "port": 80,
+  "url": "http://dvwa/",
+  "role": "development",
+  "source": "harness development only (plumbing, budgets); never scored or reported",
+  "init": [
+   {
+    "path": "/setup.php",
+    "macro": [
+     {
+      "type": "CLICK",
+      "selector": "input[name=create_db]"
+     },
+     {
+      "type": "NO_OP"
+     },
+     {
+      "type": "NO_OP"
+     }
     ]
-  }
+   }
+  ],
+  "login": [
+   {
+    "type": "TYPE",
+    "selector": "input[name=username]",
+    "params": {
+     "value": "admin"
+    }
+   },
+   {
+    "type": "TYPE",
+    "selector": "input[name=password]",
+    "params": {
+     "value": "password"
+    }
+   },
+   {
+    "type": "CLICK",
+    "selector": "input[name=Login]"
+   }
+  ],
+  "logout": "http://dvwa/logout\\.php.*",
+  "vulnerabilities": []
+ },
+ "wackopicko": {
+  "image": "adamdoupe/wackopicko",
+  "port": 80,
+  "url": "http://wp/",
+  "role": "held-out",
+  "source": "https://github.com/adamdoupe/WackoPicko README, section Vulnerabilities (15 entries); Doupe, Cova, Vigna, DIMVA 2010",
+  "accounts": {
+   "user": [
+    "scanner1",
+    "scanner1"
+   ],
+   "admin": [
+    "admin",
+    "admin"
+   ]
+  },
+  "vulnerabilities": [
+   {
+    "id": "WP-01",
+    "title": "Reflected XSS",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/pictures/search.php"
+    ],
+    "param": "query",
+    "detectable": true
+   },
+   {
+    "id": "WP-02",
+    "title": "Stored XSS (guestbook comment)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/guestbook.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "WP-03",
+    "title": "Session ID vulnerability (auto-incrementing admin_session)",
+    "cwe": [
+     330,
+     384
+    ],
+    "paths": [
+     "/admin/login.php",
+     "/admin/index.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "WP-04",
+    "title": "Stored SQL injection (first name, register -> similar users)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/users/register.php",
+     "/users/similar.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "WP-05",
+    "title": "Reflected SQL injection (login username)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/users/login.php"
+    ],
+    "param": "username",
+    "detectable": true
+   },
+   {
+    "id": "WP-06",
+    "title": "Directory traversal (upload tag)",
+    "cwe": [
+     22
+    ],
+    "paths": [
+     "/pictures/upload.php"
+    ],
+    "param": "tag",
+    "detectable": true
+   },
+   {
+    "id": "WP-07",
+    "title": "Multi-step stored XSS (picture comment via preview)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/pictures/view.php",
+     "/comments/preview_comment.php",
+     "/comments/add_comment.php"
+    ],
+    "detectable": true,
+    "note": "form targets from the application's source (include/comments.php), read before any scan"
+   },
+   {
+    "id": "WP-08",
+    "title": "Forceful browsing (high-quality picture without purchase)",
+    "cwe": [
+     425
+    ],
+    "paths": [
+     "/pictures/highquality.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "WP-09",
+    "title": "Command-line injection (passcheck password)",
+    "cwe": [
+     78
+    ],
+    "paths": [
+     "/passcheck.php"
+    ],
+    "param": "password",
+    "detectable": true
+   },
+   {
+    "id": "WP-10",
+    "title": "File inclusion (admin page parameter)",
+    "cwe": [
+     98,
+     22
+    ],
+    "paths": [
+     "/admin/index.php"
+    ],
+    "param": "page",
+    "detectable": true
+   },
+   {
+    "id": "WP-11",
+    "title": "Parameter manipulation (sample user page userid)",
+    "cwe": [
+     639
+    ],
+    "paths": [
+     "/users/sample.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "WP-12",
+    "title": "Reflected XSS behind JavaScript",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/piccheck.php"
+    ],
+    "param": "name",
+    "detectable": true
+   },
+   {
+    "id": "WP-13",
+    "title": "Logic flaw (coupon applied repeatedly)",
+    "cwe": [
+     840
+    ],
+    "paths": [
+     "/cart/review.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "WP-14",
+    "title": "Reflected XSS behind a Flash form",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/submitname.php"
+    ],
+    "param": "value",
+    "detectable": true
+   },
+   {
+    "id": "WP-15",
+    "title": "Weak username/password (admin/admin)",
+    "cwe": [
+     521,
+     1391
+    ],
+    "paths": [
+     "/admin/login.php"
+    ],
+    "detectable": false
+   }
+  ]
+ },
+ "bwapp": {
+  "image": "raesene/bwapp",
+  "port": 80,
+  "url": "http://bwapp/login.php",
+  "role": "held-out",
+  "source": "bWAPP v2.2 (Malik Mesellem), the authors' bug list /app/bugs.txt in the image; built by scripts/security/bwapp_truth.py (CWE and detectability by its fixed table, 2026-11-26, before any scan)",
+  "condition": "auth",
+  "init": [
+   {
+    "path": "/install.php?install=yes",
+    "macro": [
+     {
+      "type": "NO_OP"
+     }
+    ]
+   }
+  ],
+  "login": [
+   {
+    "type": "TYPE",
+    "selector": "input[name=login]",
+    "params": {
+     "value": "bee"
+    }
+   },
+   {
+    "type": "TYPE",
+    "selector": "input[name=password]",
+    "params": {
+     "value": "bug"
+    }
+   },
+   {
+    "type": "CLICK",
+    "selector": "button[name=form]"
+   }
+  ],
+  "logout": "http://bwapp/logout\\.php.*",
+  "vulnerabilities": [
+   {
+    "id": "BW-001",
+    "title": "HTML Injection - Reflected (GET)",
+    "cwe": [
+     79,
+     80
+    ],
+    "paths": [
+     "/htmli_get.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-002",
+    "title": "HTML Injection - Reflected (POST)",
+    "cwe": [
+     79,
+     80
+    ],
+    "paths": [
+     "/htmli_post.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-003",
+    "title": "HTML Injection - Reflected (Current URL)",
+    "cwe": [
+     79,
+     80
+    ],
+    "paths": [
+     "/htmli_current_url.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-004",
+    "title": "HTML Injection - Stored (Blog)",
+    "cwe": [
+     79,
+     80
+    ],
+    "paths": [
+     "/htmli_stored.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-005",
+    "title": "iFrame Injection",
+    "cwe": [
+     79,
+     80
+    ],
+    "paths": [
+     "/iframei.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-006",
+    "title": "LDAP Injection (Search)",
+    "cwe": [
+     90
+    ],
+    "paths": [
+     "/ldapi.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-007",
+    "title": "Mail Header Injection (SMTP)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/maili.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-008",
+    "title": "OS Command Injection",
+    "cwe": [
+     78
+    ],
+    "paths": [
+     "/commandi.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-009",
+    "title": "OS Command Injection - Blind",
+    "cwe": [
+     78
+    ],
+    "paths": [
+     "/commandi_blind.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-010",
+    "title": "PHP Code Injection",
+    "cwe": [
+     94,
+     95
+    ],
+    "paths": [
+     "/phpi.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-011",
+    "title": "Server-Side Includes (SSI) Injection",
+    "cwe": [
+     97
+    ],
+    "paths": [
+     "/ssii.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-012",
+    "title": "SQL Injection (GET/Search)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_1.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-013",
+    "title": "SQL Injection (GET/Select)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_2.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-014",
+    "title": "SQL Injection (POST/Search)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_6.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-015",
+    "title": "SQL Injection (POST/Select)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_13.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-016",
+    "title": "SQL Injection (AJAX/JSON/jQuery)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_10-1.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-017",
+    "title": "SQL Injection (CAPTCHA)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_9.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-018",
+    "title": "SQL Injection (Login Form/Hero)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_3.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-019",
+    "title": "SQL Injection (Login Form/User)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_16.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-020",
+    "title": "SQL Injection (SQLite)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_11.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-021",
+    "title": "SQL Injection (Drupal) / Drupal SQL Injection (Drupageddon)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_drupal.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-022",
+    "title": "SQL Injection - Stored (Blog)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_7.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-023",
+    "title": "SQL Injection - Stored (SQLite)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_12.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-024",
+    "title": "SQL Injection - Stored (User-Agent)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_17.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-025",
+    "title": "SQL Injection - Stored (XML)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_8-1.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-026",
+    "title": "SQL Injection - Blind - Boolean-Based",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_4.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-027",
+    "title": "SQL Injection - Blind - Time-Based",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_15.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-028",
+    "title": "SQL Injection - Blind (SQLite)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_14.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-029",
+    "title": "SQL Injection - Blind (Web Services/SOAP)",
+    "cwe": [
+     89
+    ],
+    "paths": [
+     "/sqli_5.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-030",
+    "title": "XML/XPath Injection (Login Form)",
+    "cwe": [
+     643
+    ],
+    "paths": [
+     "/xmli_1.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-031",
+    "title": "XML/XPath Injection (Search)",
+    "cwe": [
+     643
+    ],
+    "paths": [
+     "/xmli_2.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-032",
+    "title": "Broken Authentication - CAPTCHA Bypassing",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/ba_captcha_bypass.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-033",
+    "title": "Broken Authentication - Forgotten Function",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/ba_forgotten.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-034",
+    "title": "Broken Authentication - Insecure Login Forms",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/ba_insecure_login.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-035",
+    "title": "Broken Authentication - Logout Management",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/ba_logout.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-036",
+    "title": "Broken Authentication - Password Attacks",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/ba_pwd_attacks.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-037",
+    "title": "Broken Authentication - Weak Passwords",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/ba_weak_pwd.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-038",
+    "title": "Session Management - Administrative Portals",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/smgmt_admin_portal.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-039",
+    "title": "Session Management - Cookies (HTTPOnly)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/smgmt_cookies_httponly.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-040",
+    "title": "Session Management - Cookies (Secure)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/smgmt_cookies_secure.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-041",
+    "title": "Session Management - Session ID in URL",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/smgmt_sessionid_url.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-042",
+    "title": "Session Management - Strong Sessions",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/smgmt_strong_sessions.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-043",
+    "title": "Cross-Site Scripting - Reflected (GET)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_get.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-044",
+    "title": "Cross-Site Scripting - Reflected (POST)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_post.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-045",
+    "title": "Cross-Site Scripting - Reflected (JSON)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_json.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-046",
+    "title": "Cross-Site Scripting - Reflected (AJAX/JSON)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_ajax_2-1.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-047",
+    "title": "Cross-Site Scripting - Reflected (AJAX/XML)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_ajax_1-1.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-048",
+    "title": "Cross-Site Scripting - Reflected (Back Button)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_back_button.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-049",
+    "title": "Cross-Site Scripting - Reflected (Custom Header)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_custom_header.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-050",
+    "title": "Cross-Site Scripting - Reflected (Eval)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_eval.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-051",
+    "title": "Cross-Site Scripting - Reflected (HREF)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_href-1.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-052",
+    "title": "Cross-Site Scripting - Reflected (Login Form)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_login.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-053",
+    "title": "Cross-Site Scripting - Reflected (phpMyAdmin) / phpMyAdmin BBCode Tag XSS",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_phpmyadmin.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-054",
+    "title": "Cross-Site Scripting - Reflected (PHP_SELF)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_php_self.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-055",
+    "title": "Cross-Site Scripting - Reflected (Referer)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_referer.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-056",
+    "title": "Cross-Site Scripting - Reflected (User-Agent)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_user_agent.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-057",
+    "title": "Cross-Site Scripting - Stored (Blog)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_stored_1.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-058",
+    "title": "Cross-Site Scripting - Stored (Change Secret)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_stored_3.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-059",
+    "title": "Cross-Site Scripting - Stored (Cookies)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_stored_2.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-060",
+    "title": "Cross-Site Scripting - Stored (SQLiteManager) / SQLiteManager XSS",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_sqlitemanager.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-061",
+    "title": "Cross-Site Scripting - Stored (User-Agent)",
+    "cwe": [
+     79
+    ],
+    "paths": [
+     "/xss_stored_4.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-062",
+    "title": "Insecure DOR (Change Secret)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/insecure_direct_object_ref_1.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-063",
+    "title": "Insecure DOR (Reset Secret)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/insecure_direct_object_ref_3.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-064",
+    "title": "Insecure DOR (Order Tickets)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/insecure_direct_object_ref_2.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-065",
+    "title": "Arbitrary File Access (Samba)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_samba.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-066",
+    "title": "Cross-Domain Policy File (Flash)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_cross_domain_policy.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-067",
+    "title": "Cross-Origin Resource Sharing (AJAX)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_cors.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-068",
+    "title": "Cross-Site Tracing (XST)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_xst.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-069",
+    "title": "Denial-of-Service (Large Chunk Size)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_dos_3.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-070",
+    "title": "Denial-of-Service (Slow HTTP DoS)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_dos_1.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-071",
+    "title": "Denial-of-Service (SSL-Exhaustion)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_dos_4.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-072",
+    "title": "Denial-of-Service (XML Bomb)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_dos_2.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-073",
+    "title": "Insecure FTP Configuration",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_ftp.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-074",
+    "title": "Insecure SNMP Configuration",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_snmp.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-075",
+    "title": "Insecure WebDAV Configuration",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_webdav.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-076",
+    "title": "Local Privilege Escalation (sendpage)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_local_priv_esc_1.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-077",
+    "title": "Local Privilege Escalation (udev)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_local_priv_esc_2.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-078",
+    "title": "Man-in-the-Middle Attack (HTTP)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_mitm_1.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-079",
+    "title": "Man-in-the-Middle Attack (SMTP)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_mitm_2.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-080",
+    "title": "Old/Backup & Unreferenced Files",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_obu_files.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-081",
+    "title": "Robots File",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/sm_robots.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-082",
+    "title": "Base64 Encoding (Secret)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/insecure_crypt_storage_3.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-083",
+    "title": "BEAST/CRIME/BREACH Attacks",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/insuff_transp_layer_protect_3.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-084",
+    "title": "Clear Text HTTP (Credentials)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/insuff_transp_layer_protect_1.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-085",
+    "title": "Heartbleed Vulnerability / Heartbleed Vulnerability",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/heartbleed.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-086",
+    "title": "Host Header Attack (Reset Poisoning) / Host Header Attack (Reset Poisoning)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/hostheader_2.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-087",
+    "title": "HTML5 Web Storage (Secret)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/insecure_crypt_storage_1.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-088",
+    "title": "POODLE Vulnerability",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/insuff_transp_layer_protect_4.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-089",
+    "title": "SSL 2.0 Deprecated Protocol",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/insuff_transp_layer_protect_2.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-090",
+    "title": "Text Files (Accounts)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/insecure_crypt_storage_2.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-091",
+    "title": "Directory Traversal - Directories",
+    "cwe": [
+     22,
+     98
+    ],
+    "paths": [
+     "/directory_traversal_2.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-092",
+    "title": "Directory Traversal - Files",
+    "cwe": [
+     22,
+     98
+    ],
+    "paths": [
+     "/directory_traversal_1.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-093",
+    "title": "Host Header Attack (Cache Poisoning)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/hostheader_1.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-094",
+    "title": "Local File Inclusion (SQLiteManager) / SQLiteManager Local File Inclusion",
+    "cwe": [
+     22,
+     98
+    ],
+    "paths": [
+     "/lfi_sqlitemanager.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-095",
+    "title": "Remote & Local File Inclusion (RFI/LFI)",
+    "cwe": [
+     22,
+     98
+    ],
+    "paths": [
+     "/rlfi.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-096",
+    "title": "Restrict Device Access",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/restrict_device_access.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-097",
+    "title": "Restrict Folder Access",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/restrict_folder_access.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-098",
+    "title": "Server Side Request Forgery (SSRF)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/ssrf.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-099",
+    "title": "XML External Entity Attacks (XXE)",
+    "cwe": [
+     611
+    ],
+    "paths": [
+     "/xxe-1.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-100",
+    "title": "Cross-Site Request Forgery (Change Password)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/csrf_1.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-101",
+    "title": "Cross-Site Request Forgery (Change Secret)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/csrf_3.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-102",
+    "title": "Cross-Site Request Forgery (Transfer Amount)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/csrf_2.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-103",
+    "title": "Buffer Overflow (Local)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/bof_1.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-104",
+    "title": "Buffer Overflow (Remote)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/bof_2.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-105",
+    "title": "PHP CGI Remote Code Execution",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/php_cgi.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-106",
+    "title": "PHP Eval Function",
+    "cwe": [
+     94,
+     95
+    ],
+    "paths": [
+     "/php_eval.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-107",
+    "title": "Shellshock Vulnerability (CGI)",
+    "cwe": [
+     78
+    ],
+    "paths": [
+     "/shellshock.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-108",
+    "title": "SQLiteManager PHP Code Injection",
+    "cwe": [
+     94,
+     95
+    ],
+    "paths": [
+     "/phpi_sqlitemanager.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-109",
+    "title": "Unvalidated Redirects & Forwards (1)",
+    "cwe": [
+     601
+    ],
+    "paths": [
+     "/unvalidated_redir_fwd_1.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-110",
+    "title": "Unvalidated Redirects & Forwards (2)",
+    "cwe": [
+     601
+    ],
+    "paths": [
+     "/unvalidated_redir_fwd_2.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-111",
+    "title": "ClickJacking (Movie Tickets)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/clickjacking.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-112",
+    "title": "Client-Side Validation (Password)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/cs_validation.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-113",
+    "title": "HTTP Parameter Pollution",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/hpp-1.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-114",
+    "title": "HTTP Response Splitting",
+    "cwe": [
+     113
+    ],
+    "paths": [
+     "/http_response_splitting.php"
+    ],
+    "detectable": true
+   },
+   {
+    "id": "BW-115",
+    "title": "HTTP Verb Tampering",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/http_verb_tampering.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-116",
+    "title": "Information Disclosure - Favicon",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/information_disclosure_4.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-117",
+    "title": "Information Disclosure - Headers",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/information_disclosure_2.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-118",
+    "title": "Information Disclosure - PHP version",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/information_disclosure_1.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-119",
+    "title": "Information Disclosure - Robots File",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/information_disclosure_3.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-120",
+    "title": "Insecure iFrame (Login Form)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/insecure_iframe.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-121",
+    "title": "Unrestricted File Upload",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/unrestricted_file_upload.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-122",
+    "title": "A.I.M. - No-authentication Mode",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/aim.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-123",
+    "title": "Manual Intervention Required!",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/manual_interv.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-124",
+    "title": "Unprotected Admin Portal",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/admin/index.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-125",
+    "title": "We Steal Secrets... (html)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/secret_html.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-126",
+    "title": "We Steal Secrets... (plain)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/secret.php"
+    ],
+    "detectable": false
+   },
+   {
+    "id": "BW-127",
+    "title": "WSDL File (Web Services/SOAP)",
+    "cwe": [
+     0
+    ],
+    "paths": [
+     "/ws_soap.php"
+    ],
+    "detectable": false
+   }
+  ]
+ }
 }

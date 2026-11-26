@@ -8,16 +8,22 @@
 #     (hybrid_final_v5, unchanged since the external comparison), both unauthenticated
 #     from the start URL, 30 minutes of navigation each; then the same active scan
 #     (at most 60 minutes) over everything in scope.
-#   - Held-out application: WackoPicko (Doupe et al., DIMVA 2010), ground truth its README's
-#     15 documented vulnerabilities (configs/security_apps.json), 10 of them in classes ZAP
-#     has active rules for. Never scanned before this run; DVWA was used only to develop
-#     the harness and is never scored.
+#   - Held-out applications (never scanned before these runs; DVWA was used only to develop
+#     the harness and is never scored):
+#       WackoPicko (Doupe et al., DIMVA 2010): its README's 15 documented vulnerabilities,
+#       10 in classes ZAP has active rules for; unauthenticated.
+#       bWAPP v2.2: the authors' bug list (127 distinct pages, 60 in classes ZAP has active
+#       rules for, by scripts/security/bwapp_truth.py's fixed table); every page is behind a
+#       sign-in, so both front ends are signed in with the authors' default account.
+#   - A first push of this plan (WackoPicko only, run 45858211793) was cancelled before any
+#     job finished: ZAP updated its add-ons at start-up; every run now uses -silent.
 #   - Primary comparison: documented detectable vulnerabilities found per run, katalyze
 #     against zap, five runs each (Mann-Whitney U, A12). Secondary: the union over runs;
 #     paths, messages and parameters in ZAP's site tree before the scan; alerts of the
 #     documented classes that match no documented vulnerability, triaged by hand.
 #
-# Every job gets a fresh ZAP and a fresh application container. A push to branch sec-gha runs
+# Every job gets a fresh ZAP (-silent: no update checks, so every run uses the add-ons
+# bundled in the image) and a fresh application container. A push to branch sec-gha runs
 # this plan; each job uploads its result as sec-<app>-<front>-<seed>.
 name: Security study
 
@@ -36,7 +42,7 @@ jobs:
     steps:
       - id: plan
         env:
-          APPS: "wackopicko"
+          APPS: "wackopicko bwapp"
           FRONTS: "katalyze zap"
           SEEDS: "0 1 2 3 4"
         run: |
@@ -76,7 +82,7 @@ jobs:
           docker network create sec
           docker run -d --name "$HOST" --network sec "$IMAGE"
           docker run -d --name zap --network sec -p 18090:8080 ghcr.io/zaproxy/zaproxy:stable \
-            zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.disablekey=true \
+            zap.sh -daemon -silent -host 0.0.0.0 -port 8080 -config api.disablekey=true \
             -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true
           for i in $(seq 1 60); do
             curl -sf -o /dev/null -x http://127.0.0.1:18090 http://zap/JSON/core/view/version/ && echo "ZAP ready" && break

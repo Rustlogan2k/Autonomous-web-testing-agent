@@ -14,6 +14,14 @@ Front ends (equal navigation budget `--explore-min`):
   katalyze  the tester's explorer (`--arm`, default hybrid_final_v5, unchanged) from the same
             start URL, unauthenticated, its browser routed through ZAP.
 
+Signed-in condition (`--auth`, for applications with a "login" macro in their spec): both
+front ends get the same account. Katalyze runs the macro at every episode start (its usual
+session bootstrap, as on Pagekit); for ZAP the same macro is replayed in a browser routed
+through ZAP, and that HTTP session is made ZAP's active session, so its spiders and scanner
+send it. The spec's "logout" pattern is kept out of ZAP's context, as ZAP's documentation
+advises. An application's one-time "init" steps (e.g. creating DVWA's database) run first,
+through ZAP, before ZAP's session is reset.
+
 Then, identically for both: ZAP's passive scan is drained and its active scan (default
 policy) runs over everything in scope that the front end left in ZAP's site tree, for at
 most `--scan-min`. Detection is ZAP's alone. Scoring uses configs/security_apps.json:
@@ -98,6 +106,48 @@ def score(alerts: list[dict], vulnerabilities: list[dict]) -> dict:
     }
 
 
+# -- browser macros (application set-up and ZAP's sign-in) ------------------------------
+
+
+def run_macro(page, steps: list[dict]) -> None:  # noqa: ANN001 - playwright Page
+    """The sign-in macro format of the app specs (TYPE by selector or id, CLICK by text or
+    selector, NO_OP), replayed with Playwright."""
+    for step in steps:
+        kind = step["type"]
+        if kind == "NO_OP":
+            page.wait_for_timeout(1000)
+            continue
+        if step.get("selector"):
+            target = page.locator(step["selector"]).first
+        elif step.get("id"):
+            target = page.locator(f"#{step['id']}").first
+        else:
+            target = page.get_by_text(step["text"], exact=False).first
+        if kind == "TYPE":
+            target.fill(str(step.get("params", {}).get("value", "")))
+        elif kind == "CLICK":
+            target.click()
+            page.wait_for_load_state("networkidle")
+        else:
+            raise ValueError(f"unsupported macro step {kind}")
+
+
+def browse_through_zap(zap: Zap, url: str, steps: list[dict]) -> str:
+    """Open `url` in a Chromium routed through ZAP, run `steps`, return the final URL."""
+    from playwright.sync_api import sync_playwright
+
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        context = browser.new_context(proxy={"server": zap.proxy}, ignore_https_errors=True)
+        page = context.new_page()
+        page.goto(url)
+        page.wait_for_load_state("networkidle")
+        run_macro(page, steps)
+        final = page.url
+        browser.close()
+    return final
+
+
 # -- front ends ------------------------------------------------------------------------
 
 
@@ -120,7 +170,7 @@ def explore_with_zap(zap: Zap, url: str, explore_s: float) -> dict:
 
 
 def explore_with_katalyze(zap: Zap, url: str, explore_s: float, arm: str, seed: int,
-                          app: str) -> dict:
+                          app: str, login: list[dict] | None = None) -> dict:
     from ..benchmark import make_env, run_hunt
     from ..hybrid.external import UNLIMITED, ExternalConfig, NullMonitor
     from ..hybrid.run import ARMS, HybridJob, _policy, _settings
@@ -129,7 +179,8 @@ def explore_with_katalyze(zap: Zap, url: str, explore_s: float, arm: str, seed: 
     hybrid = config.hybrid()
     job = HybridJob(arm, app, seed, build="external")
     policy, _ = _policy(job, app, hybrid)
-    env = make_env(url, _settings(hybrid, ARMS[arm], [], None))
+    env = make_env(url, _settings(hybrid, ARMS[arm], list(login or []), None),
+                   setup_actions=list(login) if login else None)
     env._browser.proxy = zap.proxy  # noqa: SLF001 - the session's documented option
     started = time.monotonic()
     try:
@@ -146,21 +197,41 @@ def explore_with_katalyze(zap: Zap, url: str, explore_s: float, arm: str, seed: 
 
 
 def run(app_name: str, front: str, seed: int, explore_min: float, scan_min: int, zap: Zap,
-        arm: str = "hybrid_final_v5") -> dict:
+        arm: str = "hybrid_final_v5", auth: bool = False) -> dict:
     app = load_app(app_name)
     url = app["url"]
     base = url.rstrip("/")
     site = urlsplit(url).netloc
+    if urlsplit(url).port is None:
+        site += ":443" if urlsplit(url).scheme == "https" else ":80"
+    # An application whose pages all sit behind a sign-in is always run signed in.
+    auth = auth or app.get("condition") == "auth"
+    login = app.get("login") if auth else None
+    if auth and not login:
+        raise SystemExit(f"{app_name} has no login macro for the signed-in condition")
     version = zap.wait_ready()
+    for step in app.get("init") or []:
+        browse_through_zap(zap, base + step["path"], step.get("macro") or [])
     zap.new_session()
     zap.include_in_scope(f"{base}.*")
+    if app.get("logout"):
+        zap.exclude_from_scope(app["logout"])
     started = time.time()
+    session = None
     if front == "zap":
+        if login:
+            browse_through_zap(zap, url, login)
+            session = zap.activate_latest_session(site)
+            if session is None:
+                raise RuntimeError("the sign-in through ZAP left no HTTP session to activate")
         navigation = explore_with_zap(zap, url, explore_min * 60)
     elif front == "katalyze":
-        navigation = explore_with_katalyze(zap, url, explore_min * 60, arm, seed, app_name)
+        navigation = explore_with_katalyze(zap, url, explore_min * 60, arm, seed, app_name,
+                                           login=login)
     else:
         raise SystemExit(f"unknown front end {front}")
+    navigation["auth"] = bool(login)
+    navigation["zap_session"] = session
     left = zap.wait_passive()
     reached = {
         "urls": len(zap.urls(base)),
@@ -198,12 +269,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--explore-min", type=float, default=20)
     parser.add_argument("--scan-min", type=int, default=40)
     parser.add_argument("--zap", default="http://127.0.0.1:18090")
+    parser.add_argument("--auth", action="store_true",
+                        help="both front ends signed in with the spec's account")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
     record = run(args.app, args.front, args.seed, args.explore_min, args.scan_min,
-                 Zap(proxy=args.zap), arm=args.arm)
+                 Zap(proxy=args.zap), arm=args.arm, auth=args.auth)
     args.out.mkdir(parents=True, exist_ok=True)
-    name = f"sec__{args.app}__{args.front}__{args.seed}.json"
+    condition = "auth" if record["navigation"]["auth"] else "anon"
+    name = f"sec__{args.app}__{args.front}__{condition}__{args.seed}.json"
     (args.out / name).write_text(json.dumps(record, indent=1), encoding="utf-8")
     s = record["score"]
     logger.info("{} {} seed {}: {} of {} detectable found ({} of {} documented)", args.app,

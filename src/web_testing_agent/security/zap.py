@@ -41,7 +41,7 @@ class Zap:
 
     # -- lifecycle -----------------------------------------------------------
 
-    def wait_ready(self, timeout_s: float = 300.0) -> str:
+    def wait_ready(self, timeout_s: float = 900.0) -> str:
         deadline, last = time.monotonic() + timeout_s, ""
         while time.monotonic() < deadline:
             try:
@@ -58,6 +58,26 @@ class Zap:
         with contextlib.suppress(ZapError):  # it may already exist
             self.call("context", "action", "newContext", contextName=context)
         self.call("context", "action", "includeInContext", contextName=context, regex=regex)
+
+    def exclude_from_scope(self, regex: str, context: str = "app") -> None:
+        """Kept out of the context: neither crawled nor attacked (ZAP's documented way of
+        keeping a sign-out link from ending the scan's session)."""
+        self.call("context", "action", "excludeFromContext", contextName=context, regex=regex)
+
+    # -- sessions -----------------------------------------------------------------
+
+    def sessions(self, site: str) -> list[dict]:
+        return self.call("httpSessions", "view", "sessions", site=site).get("sessions", [])
+
+    def activate_latest_session(self, site: str) -> str | None:
+        """Make the most recent HTTP session ZAP saw on `site` the active one, so its spider
+        and active scanner send that session's tokens (a sign-in made through the proxy)."""
+        found = self.sessions(site)
+        if not found:
+            return None
+        name = found[-1]["session"][0]
+        self.call("httpSessions", "action", "setActiveSession", site=site, session=name)
+        return name
 
     # -- crawling (the baseline front end) -----------------------------------
 
