@@ -1,0 +1,36 @@
+{
+  "_about": "Applications of the security study (src/web_testing_agent/security). Ground truth is each application's own documented vulnerability list, copied before any scan; 'detectable' marks the classes OWASP ZAP has active scan rules for (fixed 2026-11-26, before any scan). A vulnerability counts as found when ZAP raises an alert (confidence above 'False Positive') whose CWE is in 'cwe' and whose URL path (or, for stored vulnerabilities, any path listed) matches 'paths'; 'param', when given, must also match the alert's parameter.",
+  "dvwa": {
+    "image": "vulnerables/web-dvwa",
+    "port": 80,
+    "url": "http://dvwa/",
+    "role": "development",
+    "source": "harness development only (plumbing, budgets); never scored or reported",
+    "vulnerabilities": []
+  },
+  "wackopicko": {
+    "image": "adamdoupe/wackopicko",
+    "port": 80,
+    "url": "http://wp/",
+    "role": "held-out",
+    "source": "https://github.com/adamdoupe/WackoPicko README, section Vulnerabilities (15 entries); Doupe, Cova, Vigna, DIMVA 2010",
+    "accounts": {"user": ["scanner1", "scanner1"], "admin": ["admin", "admin"]},
+    "vulnerabilities": [
+      {"id": "WP-01", "title": "Reflected XSS", "cwe": [79], "paths": ["/pictures/search.php"], "param": "query", "detectable": true},
+      {"id": "WP-02", "title": "Stored XSS (guestbook comment)", "cwe": [79], "paths": ["/guestbook.php"], "detectable": true},
+      {"id": "WP-03", "title": "Session ID vulnerability (auto-incrementing admin_session)", "cwe": [330, 384], "paths": ["/admin/login.php", "/admin/index.php"], "detectable": false},
+      {"id": "WP-04", "title": "Stored SQL injection (first name, register -> similar users)", "cwe": [89], "paths": ["/users/register.php", "/users/similar.php"], "detectable": true},
+      {"id": "WP-05", "title": "Reflected SQL injection (login username)", "cwe": [89], "paths": ["/users/login.php"], "param": "username", "detectable": true},
+      {"id": "WP-06", "title": "Directory traversal (upload tag)", "cwe": [22], "paths": ["/pictures/upload.php"], "param": "tag", "detectable": true},
+      {"id": "WP-07", "title": "Multi-step stored XSS (picture comment via preview)", "cwe": [79], "paths": ["/pictures/view.php", "/comments/preview_comment.php", "/comments/add_comment.php"], "detectable": true, "note": "form targets from the application's source (include/comments.php), read before any scan"},
+      {"id": "WP-08", "title": "Forceful browsing (high-quality picture without purchase)", "cwe": [425], "paths": ["/pictures/highquality.php"], "detectable": false},
+      {"id": "WP-09", "title": "Command-line injection (passcheck password)", "cwe": [78], "paths": ["/passcheck.php"], "param": "password", "detectable": true},
+      {"id": "WP-10", "title": "File inclusion (admin page parameter)", "cwe": [98, 22], "paths": ["/admin/index.php"], "param": "page", "detectable": true},
+      {"id": "WP-11", "title": "Parameter manipulation (sample user page userid)", "cwe": [639], "paths": ["/users/sample.php"], "detectable": false},
+      {"id": "WP-12", "title": "Reflected XSS behind JavaScript", "cwe": [79], "paths": ["/piccheck.php"], "param": "name", "detectable": true},
+      {"id": "WP-13", "title": "Logic flaw (coupon applied repeatedly)", "cwe": [840], "paths": ["/cart/review.php"], "detectable": false},
+      {"id": "WP-14", "title": "Reflected XSS behind a Flash form", "cwe": [79], "paths": ["/submitname.php"], "param": "value", "detectable": true},
+      {"id": "WP-15", "title": "Weak username/password (admin/admin)", "cwe": [521, 1391], "paths": ["/admin/login.php"], "detectable": false}
+    ]
+  }
+}

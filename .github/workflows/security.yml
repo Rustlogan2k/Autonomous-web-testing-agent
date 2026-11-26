@@ -1,0 +1,104 @@
+# Security study (src/web_testing_agent/security/campaign.py): does a better navigation front
+# end make an unchanged black-box scanner find more of an application's documented
+# vulnerabilities? Detection is OWASP ZAP's own (default passive and active scan rules);
+# the front ends differ only in where the browser goes.
+#
+# Written 2026-11-26, before any scan of a held-out application:
+#   - Front ends: "zap" (ZAP's traditional spider, then its AJAX spider) and "katalyze"
+#     (hybrid_final_v5, unchanged since the external comparison), both unauthenticated
+#     from the start URL, 30 minutes of navigation each; then the same active scan
+#     (at most 60 minutes) over everything in scope.
+#   - Held-out application: WackoPicko (Doupe et al., DIMVA 2010), ground truth its README's
+#     15 documented vulnerabilities (configs/security_apps.json), 10 of them in classes ZAP
+#     has active rules for. Never scanned before this run; DVWA was used only to develop
+#     the harness and is never scored.
+#   - Primary comparison: documented detectable vulnerabilities found per run, katalyze
+#     against zap, five runs each (Mann-Whitney U, A12). Secondary: the union over runs;
+#     paths, messages and parameters in ZAP's site tree before the scan; alerts of the
+#     documented classes that match no documented vulnerability, triaged by hand.
+#
+# Every job gets a fresh ZAP and a fresh application container. A push to branch sec-gha runs
+# this plan; each job uploads its result as sec-<app>-<front>-<seed>.
+name: Security study
+
+on:
+  push:
+    branches: [sec-gha]
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - id: plan
+        env:
+          APPS: "wackopicko"
+          FRONTS: "katalyze zap"
+          SEEDS: "0 1 2 3 4"
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_OUTPUT"
+          import itertools, json, os
+          runs = [{"app": a, "front": f, "seed": s} for a, f, s in itertools.product(
+              os.environ["APPS"].split(), os.environ["FRONTS"].split(), os.environ["SEEDS"].split())]
+          print("matrix=" + json.dumps({"include": runs}))
+          EOF
+
+  run:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    env:
+      EXPLORE_MIN: "30"
+      SCAN_MIN: "60"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: docker/requirements-runtime.txt
+      - name: Install
+        run: |
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu "torch==2.6.0+cpu" -r docker/requirements-runtime.txt
+          pip install --no-deps -e .
+          python -m playwright install --with-deps chromium
+      - name: Start the application and ZAP
+        run: |
+          read IMAGE HOST < <(python -c "import json,urllib.parse as u; a=json.load(open('configs/security_apps.json'))['${{ matrix.app }}']; print(a['image'], u.urlsplit(a['url']).hostname)")
+          docker network create sec
+          docker run -d --name "$HOST" --network sec "$IMAGE"
+          docker run -d --name zap --network sec -p 18090:8080 ghcr.io/zaproxy/zaproxy:stable \
+            zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.disablekey=true \
+            -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true
+          for i in $(seq 1 60); do
+            curl -sf -o /dev/null -x http://127.0.0.1:18090 http://zap/JSON/core/view/version/ && echo "ZAP ready" && break
+            sleep 5
+          done
+          curl -sf -o /dev/null -x http://127.0.0.1:18090 "http://$HOST/" && echo "application ready"
+      - name: Run
+        env:
+          WTA_GIT_COMMIT: ${{ github.sha }}
+        run: |
+          python scripts/ci/measure.py \
+            --out "runs/sec-gha/results/usage__${{ matrix.app }}__${{ matrix.front }}__${{ matrix.seed }}.json" -- \
+            python -m web_testing_agent.security.campaign --app ${{ matrix.app }} \
+            --front ${{ matrix.front }} --seed ${{ matrix.seed }} \
+            --explore-min "$EXPLORE_MIN" --scan-min "$SCAN_MIN" --out runs/sec-gha/results
+      - if: always()
+        run: |
+          mkdir -p runs/sec-gha/results
+          docker logs zap > "runs/sec-gha/results/zap__${{ matrix.app }}__${{ matrix.front }}__${{ matrix.seed }}.log" 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sec-${{ matrix.app }}-${{ matrix.front }}-${{ matrix.seed }}
+          path: runs/sec-gha/results/
+          if-no-files-found: warn
