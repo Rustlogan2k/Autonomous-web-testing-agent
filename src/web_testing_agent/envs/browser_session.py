@@ -149,6 +149,9 @@ class BrowserSession:
     the run instead of being an ambient property of the build.
     """
 
+    #: See `__init__`; a class default too, for sessions built without it.
+    proxy: str | None = None
+
     def __init__(self, headless: bool = True, quiet_ms: int | None = None,
                  persist_session: bool = False) -> None:
         self._headless = headless
@@ -168,6 +171,10 @@ class BrowserSession:
         self.on_new_page: Callable[[Page], None] | None = None
         #: Scripts run in every document before its own scripts (empty by default).
         self.init_scripts: list[str] = []
+        #: An HTTP proxy every episode's context sends its traffic through (None: direct).
+        #: Used to put an intercepting scanner (OWASP ZAP) between the tester and the
+        #: application; the proxy's own certificate is then accepted for HTTPS.
+        self.proxy: str | None = None
 
     @property
     def quiet_ms(self) -> int:
@@ -191,8 +198,10 @@ class BrowserSession:
                 except Exception as exc:  # noqa: BLE001 - a closed or crashed context: start clean
                     logger.warning("Could not carry the session over: {}", exc)
             self.context.close()
-        self.context = self._browser.new_context(viewport=dict(CANONICAL_VIEWPORT),
-                                                 storage_state=stored)
+        options: dict = {"viewport": dict(CANONICAL_VIEWPORT), "storage_state": stored}
+        if self.proxy:
+            options.update(proxy={"server": self.proxy}, ignore_https_errors=True)
+        self.context = self._browser.new_context(**options)
         self.context.set_default_navigation_timeout(NAVIGATION_TIMEOUT_MS)
         for script in self.init_scripts:
             self.context.add_init_script(script)
