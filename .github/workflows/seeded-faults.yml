@@ -1,0 +1,99 @@
+# Functional bugs with ground truth (RQ4b): the agents of the external comparison on the
+# held-out validation suite (validation_suite/apps: 8 applications, 24 seeded functional
+# faults, designed without reading the tester's code), under the same seeded-fault oracle and
+# protocol as the v2 held-out evaluation (PROJECT_CONTEXT.md §0.6): 2,000 interactions per
+# hunt, replay x2, a per-fault control build, ddmin minimisation; one clean-build control per
+# (arm, app) for false positives.
+#
+# Written 2026-11-26, before any run of these arms on this suite:
+#   - Arms: hybrid_final_v5 (the count-based explorer, best on the main benchmark),
+#     hybrid_curiosity_v5_pub (tabular curiosity Q-learning), random. Unchanged since
+#     the external comparison; exploration tuning stopped on 2026-11-10.
+#   - Primary comparison: hybrid_final_v5 against random. Measures: distinct seeded faults
+#     verified over the five seeds (of 24), runs that verified at least one fault, and
+#     interactions to the first verified fault (restricted mean, as in §0.6); clean-build
+#     verified findings are false positives.
+#   - What the suite has seen: the v2 evaluation's arms (random, hybrid_nolearn,
+#     hybrid_bandit, v1 AC-DQN) ran on it on 2026-10-08/09, and the inferred-specification
+#     oracle (not used here) was developed on dutyday, larder and markbook. No exploration
+#     arm was tuned on it.
+#
+# A push to branch faults-gha runs this plan. Each job uploads results and logs as
+# faults-<app>-<arm>-<seed>-<build>.
+name: Seeded faults
+
+on:
+  push:
+    branches: [faults-gha]
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      budget: ${{ steps.plan.outputs.budget }}
+    steps:
+      - id: plan
+        env:
+          APPS: "dutyday markbook sideline skylark larder fosterly tally quizcraft"
+          ARMS: "hybrid_final_v5 hybrid_curiosity_v5_pub random"
+          SEEDS: "0 1 2 3 4"
+          CLEAN_SEED: "0"
+          BUDGET: "2000"
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_OUTPUT"
+          import itertools, json, os
+          apps, arms = os.environ["APPS"].split(), os.environ["ARMS"].split()
+          runs = [{"app": a, "arm": r, "seed": s, "build": "buggy"}
+                  for a, r, s in itertools.product(apps, arms, os.environ["SEEDS"].split())]
+          runs += [{"app": a, "arm": r, "seed": os.environ["CLEAN_SEED"], "build": "clean"}
+                   for a, r in itertools.product(apps, arms)]
+          print("matrix=" + json.dumps({"include": runs}))
+          print("budget=" + os.environ["BUDGET"])
+          EOF
+
+  run:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: docker/requirements-runtime.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install
+        run: |
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu "torch==2.6.0+cpu" -r docker/requirements-runtime.txt
+          pip install --no-deps -e .
+          python -m playwright install --with-deps chromium
+      - name: Database servers
+        run: python -m e2e_suite.harness.dbctl up
+      - name: Run
+        env:
+          WTA_GIT_COMMIT: ${{ github.sha }}
+        run: |
+          python scripts/ci/measure.py \
+            --out "runs/faults-gha/results/usage__${{ matrix.app }}__${{ matrix.arm }}__${{ matrix.seed }}__${{ matrix.build }}.json" -- \
+            python -m web_testing_agent.hybrid.run --out-dir runs/faults-gha \
+            --apps ${{ matrix.app }} --arms ${{ matrix.arm }} --seeds ${{ matrix.seed }} \
+            --build ${{ matrix.build }} --workers 1 --budget ${{ needs.plan.outputs.budget }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: faults-${{ matrix.app }}-${{ matrix.arm }}-${{ matrix.seed }}-${{ matrix.build }}
+          path: |
+            runs/faults-gha/results/
+            runs/faults-gha/logs/
+          if-no-files-found: warn

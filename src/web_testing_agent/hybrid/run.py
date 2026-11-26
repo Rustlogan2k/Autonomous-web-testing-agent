@@ -580,6 +580,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--clean", action="store_true", help="also run each arm once on clean builds"
     )
+    parser.add_argument(
+        "--build", choices=("buggy", "clean"), default="buggy",
+        help="the build every listed job runs on (clean: false-positive controls only, one "
+             "job per arm, app and seed; for running each control as its own CI job)",
+    )
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--budget", type=int, default=HybridConfig.budget)
     parser.add_argument("--config", type=Path, help="(internal)")
@@ -596,7 +601,7 @@ def main(argv: list[str] | None = None) -> int:
     if unknown:
         parser.error(f"unknown arm(s): {sorted(unknown)}")
     jobs = [
-        HybridJob(arm, app, seed)
+        HybridJob(arm, app, seed, build=arguments.build)
         for app in arguments.apps
         for arm in arguments.arms
         for seed in arguments.seeds
