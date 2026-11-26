@@ -70,3 +70,32 @@ def test_finished_runs_are_skipped_on_restart(tmp_path, monkeypatch):
     status = run_all([job], {"demo": {"url": "http://127.0.0.1:1/"}},
                      external.ExternalConfig(), tmp_path, workers=1)
     assert status["done"] == 1 and not calls
+
+
+def test_the_container_comes_from_the_spec_or_its_docker_run_name():
+    from web_testing_agent.hybrid.external import container_name
+
+    assert container_name({"up": ["docker", "run", "-d", "--name", "wta-x", "img"]}) == "wta-x"
+    assert container_name({"up": ["docker", "run", "--name=wta-y", "img"]}) == "wta-y"
+    assert container_name({"container": "app", "up": ["docker", "compose", "up"]}) == "app"
+    assert container_name({"up": ["docker", "compose", "up", "-d"]}) is None
+    assert container_name({}) is None
+
+
+def test_the_server_log_keeps_the_end_of_a_long_log(tmp_path, monkeypatch):
+    from web_testing_agent.hybrid import external
+
+    monkeypatch.setattr(external, "SERVER_LOG_BYTES", 10)
+    monkeypatch.setattr(external.subprocess, "run", lambda *a, **k: external.subprocess.
+                        CompletedProcess(a[0], 0, stdout=b"0123456789ABCDEF"))
+    path = tmp_path / "job.server.log"
+    assert external.save_server_log({"container": "app"}, path)
+    assert path.read_bytes().endswith(b"6789ABCDEF")
+    assert path.read_bytes().startswith(b"[... truncated")
+
+
+def test_no_container_means_no_server_log(tmp_path):
+    from web_testing_agent.hybrid.external import save_server_log
+
+    assert not save_server_log({"up": ["docker", "compose", "up"]}, tmp_path / "x.log")
+    assert not (tmp_path / "x.log").exists()

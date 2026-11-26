@@ -139,6 +139,49 @@ def server_coverage(url: str, attempts: int = 5) -> dict:
     return {"error": last}
 
 
+#: Most of a container's log kept per run: the end, where a run's last errors are.
+SERVER_LOG_BYTES = 20 * 1024 * 1024
+
+
+def container_name(spec: dict) -> str | None:
+    """The Docker container an application spec starts: its "container" entry, else the
+    `--name` of its `docker run` "up" command."""
+    if spec.get("container"):
+        return spec["container"]
+    up = list(spec.get("up") or [])
+    if up[:2] != ["docker", "run"]:
+        return None
+    for index, argument in enumerate(up):
+        if argument == "--name" and index + 1 < len(up):
+            return up[index + 1]
+        if argument.startswith("--name="):
+            return argument.split("=", 1)[1]
+    return None
+
+
+def save_server_log(spec: dict, path: Path) -> bool:
+    """Write the application container's log (stdout and stderr, the server's own record of
+    requests and exceptions) to `path`, before the container is removed. The same log is
+    kept for WebRLED's runs (the workflows' `docker logs app`), so server-side failures are
+    counted the same way for every tool. Best effort: a missing log never fails a run."""
+    name = container_name(spec)
+    if name is None:
+        return False
+    try:
+        completed = subprocess.run(["docker", "logs", "--timestamps", name],
+                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                   timeout=300, check=False)
+    except Exception as exc:  # noqa: BLE001 - the run's result stands without its log
+        logger.warning("{}: reading the container log failed: {}", name, exc)
+        return False
+    data = completed.stdout
+    if len(data) > SERVER_LOG_BYTES:
+        data = b"[... truncated: first bytes dropped ...]\n" + data[-SERVER_LOG_BYTES:]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(data)
+    return completed.returncode == 0
+
+
 def stub_third_party(env, hosts) -> None:  # noqa: ANN001
     """Answer requests to `hosts` with an empty 200, on every episode's page."""
     from urllib.parse import urlsplit
@@ -157,11 +200,13 @@ def stub_third_party(env, hosts) -> None:  # noqa: ANN001
 
 
 def run_external_job(job: HybridJob, spec: dict, config: ExternalConfig,
-                     trace: Callable[[dict, Any], None] | None = None) -> dict:
+                     trace: Callable[[dict, Any], None] | None = None,
+                     server_log: Path | None = None) -> dict:
     """One time-budgeted run of `job.arm` on a fresh instance of the application.
 
     `trace`, when given, receives every step's `run_hunt` event and the environment, after
-    the collectors have sampled it (`scripts/trace_external.py`); it must not act on either."""
+    the collectors have sampled it (`scripts/trace_external.py`); it must not act on either.
+    `server_log`, when given, receives the application container's log at the end."""
     from ..benchmark import make_env, run_hunt
     from .metrics import CoverageCollector, FailureCounter, IstanbulCollector
 
@@ -198,6 +243,8 @@ def run_external_job(job: HybridJob, spec: dict, config: ExternalConfig,
             env.close()
         server = server_coverage(spec["server_coverage"]) if spec.get("server_coverage") else None
     finally:
+        if server_log is not None:
+            save_server_log(spec, server_log)
         if spec.get("down"):
             try:
                 _run(spec["down"])
@@ -223,6 +270,10 @@ def result_path(out_dir: Path, job: HybridJob) -> Path:
     return Path(out_dir) / "results" / f"{job.job_id}.json"
 
 
+def server_log_path(out_dir: Path, job: HybridJob) -> Path:
+    return Path(out_dir) / "results" / f"{job.job_id}.server.log"
+
+
 def run_job(job: HybridJob, spec: dict, config: ExternalConfig, out_dir: Path) -> dict:
     import torch
 
@@ -231,7 +282,8 @@ def run_job(job: HybridJob, spec: dict, config: ExternalConfig, out_dir: Path) -
     record = {"job": job.to_dict(), "provenance": provenance(config),
               "config": config.to_dict()}
     try:
-        record.update(status="ok", **run_external_job(job, spec, config))
+        record.update(status="ok", **run_external_job(
+            job, spec, config, server_log=server_log_path(out_dir, job)))
     except Exception as exc:  # noqa: BLE001 - a failed job is recorded, and retried on restart
         logger.exception("job {} failed", job.job_id)
         record.update(status="error", error=f"{type(exc).__name__}: {exc}",
@@ -286,6 +338,7 @@ def run_all(jobs: list[HybridJob], apps: dict, config: ExternalConfig, out_dir: 
                     "config": config.to_dict(), "status": "error",
                     "error": f"run exceeded {limit:.0f}s and was stopped",
                 })
+                save_server_log(apps[app], server_log_path(out_dir, job))
                 if apps[app].get("down"):
                     subprocess.run(apps[app]["down"], check=False)
                 completed = subprocess.CompletedProcess(command, returncode=-1)

@@ -37,10 +37,14 @@ jobs:
       - id: plan
         env:
           APPS: ${{ inputs.apps || 'dimeshift pagekit splittypie phoenix retroboard petclinic' }}
-          # The push plan: 2026-10-30, hybrid_final_v9t (v9's ablation: menu openers only),
-          # five seeds per application. Earlier plans are in this file's history.
-          ARMS: ${{ inputs.arms || 'hybrid_final_v9t' }}
-          SEEDS: ${{ inputs.seeds || '0 1 2 3 4' }}
+          # The push plan: 2026-11-26, runs 6-10 (seeds 5-9) of the count-based explorer
+          # (hybrid_final_v5) and the curiosity agent (hybrid_curiosity_v5_pub), so both have
+          # ten runs per application, as WebRLED does. No arm changes: exploration tuning
+          # stopped on 2026-11-10. Seeds 0-4 ran on 8027edf-era code; these run on the current
+          # commit (b62afed's hang fix included), disclosed with the results.
+          # Earlier plans are in this file's history.
+          ARMS: ${{ inputs.arms || 'hybrid_final_v5 hybrid_curiosity_v5_pub' }}
+          SEEDS: ${{ inputs.seeds || '5 6 7 8 9' }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import itertools, json, os
@@ -76,8 +80,12 @@ jobs:
       - name: Run
         env:
           WTA_GIT_COMMIT: ${{ github.sha }}
+        # scripts/ci/measure.py records the run's CPU time and memory (its process tree:
+        # agent and browser, not the application's container), as for WebRLED.
         run: |
-          python -m web_testing_agent.hybrid.external --out-dir runs/ext-eval-gha \
+          python scripts/ci/measure.py \
+            --out "runs/ext-eval-gha/results/usage__${{ matrix.app }}__${{ matrix.arm }}__${{ matrix.seed }}.json" -- \
+            python -m web_testing_agent.hybrid.external --out-dir runs/ext-eval-gha \
             --apps-file configs/external_apps.json --apps ${{ matrix.app }} \
             --arms ${{ matrix.arm }} --seeds ${{ matrix.seed }} --workers 1 \
             --time-budget ${{ inputs.time_budget || '3600' }}

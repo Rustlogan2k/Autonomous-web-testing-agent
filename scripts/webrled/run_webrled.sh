@@ -14,6 +14,8 @@
 #                  and is recorded in meta.json)
 #   URL, DOMAIN    override WebRLED's built-in address for APP (its defaults are localhost:400x)
 #   SKIP_INSTALL   1 to skip the Python dependency install
+#   MEASURE_OUT    when set, the run's CPU time and memory (WebRLED's process tree: Python,
+#                  its browser, the virtual display) go to this JSON (scripts/ci/measure.py)
 #   SERVER_COVERAGE  for the second (held-out) benchmark: the application image's own coverage
 #                  server (http://localhost:6969/coverage). express-istanbul is then not
 #                  started (the image owns port 6969) and coverage.json is that server's JSON,
@@ -73,7 +75,12 @@ started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 status=0
 # The released loop stops at time_limit or after n_learner_cycle learner updates; the outer
 # timeout only guards against a hang (model loading and the last episode come on top).
-(cd "$WEBRLED_DIR" && PYTHONPATH="$WEBRLED_DIR" timeout --kill-after=60 $((TIME_LIMIT + 1200)) \
+measure=()
+if [ -n "${MEASURE_OUT:-}" ]; then
+  mkdir -p "$(dirname "$MEASURE_OUT")"
+  measure=(python "$(cd "$(dirname "$0")/.." && pwd)/ci/measure.py" --out "$(cd "$(dirname "$MEASURE_OUT")" && pwd)/$(basename "$MEASURE_OUT")" --)
+fi
+(cd "$WEBRLED_DIR" && PYTHONPATH="$WEBRLED_DIR" "${measure[@]}" timeout --kill-after=60 $((TIME_LIMIT + 1200)) \
   xvfb-run -a python src/main.py "${args[@]}") || status=$?
 finished=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 

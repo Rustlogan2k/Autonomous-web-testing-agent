@@ -5,10 +5,16 @@
 # scored by the application itself, with the paper's metric (line coverage). Realworld and
 # 4gaBoards are left out: the authors' README says their containers fail at runtime.
 #
-# Modes (input "mode"; a push to heldout-gha runs the push plan below):
+# Modes (input "mode", one or more, space-separated; a push to heldout-gha runs the push
+# plan below):
 #   probe    start each application once and keep what configuring it needs
-#   ours     our agent (configs/heldout_apps.json), one job per (app, seed), one hour
+#   ours     our agents (configs/heldout_apps.json), one job per (app, arm, seed), one hour
 #   webrled  WebRLED's released artifact (scripts/webrled/run_webrled.sh, SERVER_COVERAGE)
+#   repro    Time Off only: the steps that ended every WebRLED run on it, without a tester
+#            (scripts/heldout/repro_timeoff_import.py)
+#
+# Every run keeps the application container's log (server-side errors, counted the same way
+# for every tool) and its CPU time and memory (scripts/ci/measure.py).
 #
 # Our agent gets exactly the account information WebRLED's input vocabulary holds
 # (src/settings.py get_valid_dict) and, where that account already exists in the image
@@ -30,18 +36,23 @@ on:
       seeds:
         description: "seeds / run numbers (space-separated)"
         default: "0 1 2 3 4"
-      arm:
-        description: "our arm"
-        default: "hybrid_final_v9"
+      arms:
+        description: "our arms (space-separated)"
+        default: "hybrid_final_v5 hybrid_curiosity_v5_pub"
 
 permissions:
   contents: read
 
 env:
-  # The push plan (2026-10-30): our primary agent (hybrid_final_v9) on ParaBank again, all
-  # five runs, after the fix for tabs that never load a web page (b62afed) - three of five
-  # ParaBank runs of hybrid_final_v8 hung on one. Other applications keep run 41013950012.
-  MODE: ${{ inputs.mode || 'ours' }}
+  # The push plan (2026-11-26): the count-based explorer (hybrid_final_v5, best on the main
+  # benchmark) and the curiosity agent (hybrid_curiosity_v5_pub) on all four held-out
+  # applications, five runs each. Both arms predate the held-out benchmark and are unchanged
+  # (exploration tuning stopped on 2026-11-10); chosen after their main-benchmark results,
+  # before any held-out run of either. Neither has a credential option: they get the sign-in
+  # macro (Agilefant) and type their own values elsewhere, as on the main benchmark.
+  # With them, "repro" for Time Off.
+  # Earlier plans (v8, v9, WebRLED, ParaBank rerun) are in this file's history.
+  MODE: ${{ inputs.mode || 'ours repro' }}
   WEBRLED_CACHE_KEY: webrled-artifact-1oWr9jGU-1LjwhgvN
 
 jobs:
@@ -50,12 +61,15 @@ jobs:
     outputs:
       apps: ${{ steps.plan.outputs.apps }}
       runs: ${{ steps.plan.outputs.runs }}
+      ours: ${{ steps.plan.outputs.ours }}
+      repro: ${{ steps.plan.outputs.repro }}
       mode: ${{ steps.plan.outputs.mode }}
     steps:
       - id: plan
         env:
-          APPS: ${{ inputs.apps || 'parabank' }}
+          APPS: ${{ inputs.apps || 'timeoff parabank agilefant gadael' }}
           SEEDS: ${{ inputs.seeds || '0 1 2 3 4' }}
+          ARMS: ${{ inputs.arms || 'hybrid_final_v5 hybrid_curiosity_v5_pub' }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import json, os
@@ -79,8 +93,12 @@ jobs:
           }
           apps = [{"app": a, **APPS[a]} for a in os.environ["APPS"].split()]
           runs = [{**a, "seed": s} for a in apps for s in os.environ["SEEDS"].split()]
+          ours = [{**r, "arm": arm} for r in runs for arm in os.environ["ARMS"].split()]
+          repro = [a for a in apps if a["app"] == "timeoff"]
           print("apps=" + json.dumps({"include": apps}))
           print("runs=" + json.dumps({"include": runs}))
+          print("ours=" + json.dumps({"include": ours}))
+          print("repro=" + json.dumps({"include": repro}))
           print("mode=" + os.environ["MODE"])
           EOF
 
@@ -116,7 +134,7 @@ jobs:
   # the Actions cache is near its 10 GB limit and evicts its oldest entries.
   webrled_artifact:
     needs: plan
-    if: needs.plan.outputs.mode == 'webrled'
+    if: contains(needs.plan.outputs.mode, 'webrled')
     runs-on: ubuntu-latest
     steps:
       - id: cached
@@ -140,7 +158,7 @@ jobs:
 
   probe:
     needs: [plan, image]
-    if: needs.plan.outputs.mode == 'probe'
+    if: contains(needs.plan.outputs.mode, 'probe')
     runs-on: ubuntu-22.04
     timeout-minutes: 90
     strategy:
@@ -184,15 +202,62 @@ jobs:
           path: out/
           if-no-files-found: warn
 
+  repro:
+    needs: [plan, image]
+    if: contains(needs.plan.outputs.mode, 'repro')
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.plan.outputs.repro) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
+      - uses: actions/cache/restore@v4
+        with:
+          path: image
+          key: heldout-${{ matrix.app }}-${{ matrix.file }}
+          fail-on-cache-miss: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Start the application (README section 3.2)
+        run: |
+          mkdir -p out
+          docker load < image/${{ matrix.app }}.tar | tee out/load.txt && rm -rf image
+          IMAGE=$(sed -n 's/^Loaded image: //p' out/load.txt | head -1)
+          docker run -d -t --name app ${{ matrix.ports }} "$IMAGE"
+          for i in $(seq 1 90); do
+            curl -s -o /dev/null -w '%{http_code}' "${{ matrix.url }}" | grep -qE '^(2|3)' && echo "app ready after ${i}0 s" && break
+            sleep 10
+          done
+          for i in $(seq 1 30); do curl -sf -o /dev/null http://localhost:6969/coverage && echo "coverage ready" && break; sleep 10; done
+      - name: Reproduce
+        run: |
+          pip install --quiet playwright==1.48.0 && python -m playwright install --with-deps chromium
+          python scripts/heldout/repro_timeoff_import.py "${{ matrix.url }}" http://localhost:6969/coverage out
+      - if: always()
+        run: |
+          docker ps -a > out/docker_ps.txt
+          docker logs --timestamps app > out/container.log 2>&1 || true
+          docker exec app sh -c 'ps aux' > out/container_ps.txt 2>&1 || true
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repro__${{ matrix.app }}
+          path: out/
+          if-no-files-found: warn
+
   ours:
     needs: [plan, image]
-    if: needs.plan.outputs.mode == 'ours'
+    if: contains(needs.plan.outputs.mode, 'ours')
     runs-on: ubuntu-latest
     timeout-minutes: 120
     strategy:
       fail-fast: false
       max-parallel: 20
-      matrix: ${{ fromJson(needs.plan.outputs.runs) }}
+      matrix: ${{ fromJson(needs.plan.outputs.ours) }}
     steps:
       - uses: actions/checkout@v4
       - name: Free disk space
@@ -217,21 +282,24 @@ jobs:
       - name: Run
         env:
           WTA_GIT_COMMIT: ${{ github.sha }}
+        # The runner keeps the container's log next to the result; measure.py the cost.
         run: |
-          python -m web_testing_agent.hybrid.external --out-dir runs/heldout-gha \
+          python scripts/ci/measure.py \
+            --out "runs/heldout-gha/results/usage__${{ matrix.app }}__${{ matrix.arm }}__${{ matrix.seed }}.json" -- \
+            python -m web_testing_agent.hybrid.external --out-dir runs/heldout-gha \
             --apps-file configs/heldout_apps.json --apps ${{ matrix.app }} \
-            --arms ${{ inputs.arm || 'hybrid_final_v9' }} --seeds ${{ matrix.seed }} --workers 1 \
+            --arms ${{ matrix.arm }} --seeds ${{ matrix.seed }} --workers 1 \
             --time-budget 3600
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: heldout__${{ matrix.app }}__ours__${{ matrix.seed }}
+          name: heldout__${{ matrix.app }}__${{ matrix.arm }}__${{ matrix.seed }}
           path: runs/heldout-gha/results/
           if-no-files-found: warn
 
   webrled:
     needs: [plan, image, webrled_artifact]
-    if: needs.plan.outputs.mode == 'webrled'
+    if: contains(needs.plan.outputs.mode, 'webrled')
     # As in webrled.yml: the release was verified on Ubuntu 22.04.
     runs-on: ubuntu-22.04
     timeout-minutes: 150
@@ -279,8 +347,11 @@ jobs:
           TIME_LIMIT: "3600"
           OUT_DIR: out
           SERVER_COVERAGE: http://localhost:6969/coverage
+          MEASURE_OUT: out/usage.json
         run: |
           WEBRLED_DIR="$RUNNER_TEMP/w/webrled" bash scripts/webrled/run_webrled.sh
+      - if: always()
+        run: docker logs --timestamps app > out/server.log 2>&1 || true
       - if: always()
         uses: actions/upload-artifact@v4
         with:

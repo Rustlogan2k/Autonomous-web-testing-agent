@@ -22,8 +22,11 @@ on:
       runs:
         # Runs 1-5: 2026-10-29 (run 40829426407). Runs 6-10: 2026-10-30, ten runs per
         # application for both tools, so per-app differences of 2-3 points can be resolved.
+        # Runs 11-15: 2026-11-26, for bug finding (RQ4): the same runs again with the
+        # application's server log and the run's CPU time and memory kept, which runs 1-10
+        # did not record. Coverage of 11-15 is reported beside 1-10, not pooled into it.
         description: "run numbers (space-separated)"
-        default: "6 7 8 9 10"
+        default: "11 12 13 14 15"
       time_limit:
         description: "seconds of testing per run (3600 as released)"
         default: "3600"
@@ -63,7 +66,7 @@ jobs:
       - id: plan
         env:
           APPS: ${{ inputs.apps || 'dimeshift pagekit splittypie phoenix retroboard petclinic' }}
-          RUNS: ${{ inputs.runs || '6 7 8 9 10' }}
+          RUNS: ${{ inputs.runs || '11 12 13 14 15' }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import itertools, json, os
@@ -141,9 +144,12 @@ jobs:
           APP: ${{ matrix.app }}
           TIME_LIMIT: ${{ inputs.time_limit || '3600' }}
           OUT_DIR: out
+          MEASURE_OUT: out/usage.json
         run: |
           WEBRLED_DIR="$RUNNER_TEMP/w/webrled" ISTANBUL_DIR="$RUNNER_TEMP/w/express-istanbul" \
             bash scripts/webrled/run_webrled.sh
+      - if: always()
+        run: docker logs --timestamps app > out/server.log 2>&1 || true
       - if: always()
         uses: actions/upload-artifact@v4
         with:
