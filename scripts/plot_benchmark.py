@@ -74,6 +74,12 @@ def _sd(values: list[float]) -> float:
     return statistics.stdev(values) if len(values) > 1 else 0.0
 
 
+def _n(per_app: dict[str, list[float]]) -> str:
+    """Runs per application: one number when every application has the same, else a range."""
+    counts = sorted({len(per_app[a]) for a in APPS})
+    return str(counts[0]) if len(counts) == 1 else f"{counts[0]}-{counts[-1]}"
+
+
 def _average(per_app: dict[str, list[float]]) -> float:
     return statistics.mean(_mean(per_app[a]) for a in APPS)
 
@@ -136,8 +142,10 @@ def per_app(ours, webrled, out: Path) -> None:
     ax.set_ylim(0, 100)
     ax.set_ylabel("Branch coverage after 1 hour (%)", color=INK2, fontsize=9)
     handles = [
-        plt.Rectangle((0, 0), 1, 1, color=BLUE, label=f"{AGENT_NAMES[BEST]}, mean of 5 runs"),
-        plt.Rectangle((0, 0), 1, 1, color=ORANGE, label="WebRLED run by us, mean of 5 runs"),
+        plt.Rectangle((0, 0), 1, 1, color=BLUE,
+                      label=f"{AGENT_NAMES[BEST]}, mean of {_n(ours)} runs"),
+        plt.Rectangle((0, 0), 1, 1, color=ORANGE,
+                      label=f"WebRLED run by us, mean of {_n(webrled)} runs"),
         plt.Line2D([], [], marker="o", ls="", markerfacecolor=SURFACE, markeredgecolor=INK2,
                    label="one run"),
         plt.Line2D([], [], marker="D", ls="", markerfacecolor=SURFACE, markeredgecolor=ORANGE,
@@ -159,12 +167,12 @@ def averages(ours, webrled, round2, out: Path) -> None:
     rows = [
         (ROUND1_BEST[0] + ", best agent: curiosity", ROUND1_BEST[1], BLUE, 0.35),
         ("Round 2, 24 Oct (5 runs), best agent: curiosity", _average(round2), BLUE, 0.6),
-        (f"Now, 27 Oct (5 runs), best agent: hybrid_final", _average(ours), BLUE, 1.0),
+        (f"Final ({_n(ours)} runs), best agent: hybrid_final", _average(ours), BLUE, 1.0),
         ("WebExplor, published", statistics.mean(v[0] for v in PUBLISHED["WebExplor"].values()),
          AQUA, 0.45),
         ("WebRLED, published", statistics.mean(v[0] for v in PUBLISHED["WebRLED"].values()),
          ORANGE, 0.45),
-        ("WebRLED, run by us (5 runs)", _average(webrled), ORANGE, 1.0),
+        (f"WebRLED, run by us ({_n(webrled)} runs)", _average(webrled), ORANGE, 1.0),
     ]
     fig, ax = _figure(10, 4.4)
     _style(ax, xgrid=True)
@@ -201,7 +209,8 @@ def gaps(ours, webrled, out: Path) -> None:
     ax.set_xlabel("hybrid_final minus WebRLED, percentage points of branch coverage "
                   "(right of 0: Katalyze ahead)", color=INK2, fontsize=9)
     _title(fig, "Gap to WebRLED on each application",
-           "Both run on identical machines, 5 runs each. Lines show the 95% interval of the "
+           f"Both run on identical machines ({_n(ours)} and {_n(webrled)} runs). Lines show "
+           "the 95% interval of the "
            "difference: an interval crossing 0 is not a clear win or loss.")
     fig.subplots_adjust(left=0.13, right=0.97, top=0.8, bottom=0.14)
     fig.savefig(out / "3 - Gap to WebRLED per app.png", facecolor=SURFACE)
@@ -266,7 +275,9 @@ def main() -> int:
     args.out.mkdir(parents=True, exist_ok=True)
     plt.rcParams["font.family"] = ["Segoe UI", "DejaVu Sans", "sans-serif"]
 
-    sources = "runs/gha-fix2/results runs/gha-agents/results runs/gha-v7/results".split()
+    # gha-final: seeds 5-9 of hybrid_final_v5 and hybrid_curiosity_v5_pub (2026-11-26).
+    sources = ("runs/gha-fix2/results runs/gha-agents/results runs/gha-v7/results "
+               "runs/gha-final/*/").split()
     all_agents: dict[str, dict[str, list[float]]] = {}
     for arm in AGENT_NAMES:
         per = {app: [] for app in APPS}
@@ -278,9 +289,10 @@ def main() -> int:
     round2 = _runs("runs/ext-v5-gha/results/*__hybrid_curiosity_v5__*.json")
     ours = all_agents[BEST]
     for name, data in [("ours", ours), ("webrled", webrled), ("round2", round2)]:
-        short = [a for a in APPS if len(data[a]) != 5]
-        if short:
-            raise SystemExit(f"{name}: not 5 runs for {short}")
+        missing = [a for a in APPS if not data[a]]
+        if missing:
+            raise SystemExit(f"{name}: no runs for {missing}")
+        print(f"{name}: runs per application {_n(data)}")
 
     per_app(ours, webrled, args.out)
     averages(ours, webrled, round2, args.out)

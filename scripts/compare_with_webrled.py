@@ -33,6 +33,7 @@ OUR_RESULTS = [
     "runs/gha-v8/results",
     "runs/gha-v9/results",
     "runs/gha-v9t/results",
+    "runs/gha-final/*",  # seeds 5-9 of hybrid_final_v5 and hybrid_curiosity_v5_pub (2026-11-26)
 ]
 
 
