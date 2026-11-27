@@ -30,7 +30,13 @@
 #     macro uses the registry's names, the campaign stops a run whose explorer did not
 #     sign in, a hung explorer is abandoned at its budget plus 5 minutes (the run is
 #     marked hung, the scan goes on), and each run records ZAP's site tree. bWAPP is rerun,
-#     both front ends, after another two-job smoke test that is not scored.
+#     both front ends, after smoke tests that are not scored.
+#   - Smoke tests after 9c29ada, katalyze only, not scored: the explorer signed in (3/3
+#     steps every episode) but still hung in 1 of 1 (45971714422) and 1 of 2 (45975334624)
+#     runs, each just after opening and closing a burst of off-site tabs (bWAPP's footer
+#     links). Since e29348d the explorer's browser requests only the
+#     application's host, so nothing third-party is fetched through ZAP; then 0 of 4 hung
+#     (45978880173, 12 minutes each). ZAP's crawlers are unchanged.
 #   - Primary comparison: documented detectable vulnerabilities found per run, katalyze
 #     against zap, five runs each (Mann-Whitney U, A12). Secondary: the union over runs;
 #     paths, messages and parameters in ZAP's site tree before the scan; alerts of the
@@ -57,8 +63,8 @@ jobs:
       - id: plan
         env:
           APPS: "bwapp"
-          FRONTS: "katalyze"
-          SEEDS: "0 1 2 3"
+          FRONTS: "katalyze zap"
+          SEEDS: "0 1 2 3 4"
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import itertools, json, os
@@ -76,8 +82,8 @@ jobs:
       max-parallel: 20
       matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
     env:
-      EXPLORE_MIN: "12"
-      SCAN_MIN: "2"
+      EXPLORE_MIN: "30"
+      SCAN_MIN: "60"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
