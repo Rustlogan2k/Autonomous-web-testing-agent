@@ -156,10 +156,10 @@ def browse_through_zap(zap: Zap, url: str, steps: list[dict],
         page = context.new_page()
         page.goto(url)
         page.wait_for_load_state("networkidle")
-        first = next((s for s in steps if s["type"] == "TYPE"), None) if check_signed_in else None
+        selector = _login_field(steps) if check_signed_in else None
         field = None
-        if first is not None:
-            field = page.locator(first.get("selector") or f"#{first['id']}")
+        if selector is not None:
+            field = page.locator(selector)
             if field.count() == 0:
                 raise RuntimeError(f"no sign-in form at {page.url}: "
                                    f"{page.inner_text('body')[:200]!r}")
@@ -192,28 +192,101 @@ def explore_with_zap(zap: Zap, url: str, explore_s: float) -> dict:
             "explore_s": round(time.monotonic() - started, 1)}
 
 
+def _login_field(steps: list[dict]) -> str | None:
+    """The CSS selector of a sign-in macro's first field, the one the checks look for."""
+    first = next((s for s in steps if s["type"] == "TYPE"), None)
+    if first is None:
+        return None
+    return first.get("selector") or f'[id="{first["id"]}"]'
+
+
+def check_explorer_signed_in(env, login: list[dict]) -> None:  # noqa: ANN001 - an env
+    """Raise unless the explorer's own session bootstrap signs in.
+
+    The explorer resolves a macro step against its action registry (`ScriptedPolicy`),
+    not with the browser, and a step that resolves to nothing is only logged: on bWAPP a
+    macro written as `input[name=login]` matched no registry action (the registry names
+    that field `[id="login"]`), so every Katalyze run of run 45951931563 explored signed
+    out while ZAP's own sign-in check, which uses the browser, passed. One reset before
+    the hunt, with the same check as `browse_through_zap`: every step landed and the
+    first field is gone."""
+    env.reset()
+    landed = getattr(env, "_bootstrap_steps", 0)
+    field = _login_field(login)
+    page = env._browser.page  # noqa: SLF001
+    left = page is None or (field is not None and page.locator(field).count() > 0)
+    if landed != len(login) or left:
+        raise RuntimeError(
+            f"the explorer's sign-in did not work: {landed}/{len(login)} macro steps "
+            f"matched an action, now at {page.url if page else '?'}")
+
+
+# The explorer's whole run happens on one worker thread (Playwright's sync API belongs to
+# the thread that started it). A browser call that never returns (two of five bWAPP runs
+# of run 45951931563 stopped logging mid-exploration and sat until the job's time limit)
+# would otherwise take the run with it; past its budget plus this grace the explorer is
+# abandoned, the run is marked `hung`, and the scan goes on over what ZAP recorded.
+HANG_GRACE_S = 300
+
+
+def run_abandoning_after(fn, timeout_s: float) -> bool:  # noqa: ANN001 - a callable
+    """Run `fn` on a daemon thread; True if it was still running after `timeout_s` (it is
+    then abandoned). An exception it raised is re-raised here."""
+    import threading
+
+    box: dict = {}
+
+    def work() -> None:
+        try:
+            fn()
+        except BaseException as exc:  # noqa: BLE001 - re-raised on the caller's thread
+            box["error"] = exc
+
+    worker = threading.Thread(target=work, name="katalyze-explorer", daemon=True)
+    worker.start()
+    worker.join(timeout_s)
+    if worker.is_alive():
+        logger.error("the explorer has not returned after {:.0f} s; abandoned", timeout_s)
+        return True
+    if "error" in box:
+        raise box["error"]
+    return False
+
+
 def explore_with_katalyze(zap: Zap, url: str, explore_s: float, arm: str, seed: int,
                           app: str, login: list[dict] | None = None) -> dict:
     from ..benchmark import make_env, run_hunt
     from ..hybrid.external import UNLIMITED, ExternalConfig, NullMonitor
     from ..hybrid.run import ARMS, HybridJob, _policy, _settings
 
-    config = ExternalConfig(time_budget_s=explore_s)
-    hybrid = config.hybrid()
-    job = HybridJob(arm, app, seed, build="external")
-    policy, _ = _policy(job, app, hybrid)
-    env = make_env(url, _settings(hybrid, ARMS[arm], list(login or []), None),
-                   setup_actions=list(login) if login else None)
-    env._browser.proxy = zap.proxy  # noqa: SLF001 - the session's documented option
     started = time.monotonic()
-    try:
-        result = run_hunt(env, policy, NullMonitor(), budget=UNLIMITED, deadline_s=explore_s)
-    finally:
-        env.close()
-    hunt = result.to_dict()
-    return {"front": "katalyze", "arm": arm, "explore_s": round(time.monotonic() - started, 1),
-            "steps": hunt.get("steps"), "episodes": hunt.get("episodes"),
-            "unique_states": hunt.get("unique_states")}
+    box: dict = {}
+
+    def explore() -> None:
+        config = ExternalConfig(time_budget_s=explore_s)
+        hybrid = config.hybrid()
+        job = HybridJob(arm, app, seed, build="external")
+        policy, _ = _policy(job, app, hybrid)
+        env = make_env(url, _settings(hybrid, ARMS[arm], list(login or []), None),
+                       setup_actions=list(login) if login else None)
+        env._browser.proxy = zap.proxy  # noqa: SLF001 - the session's documented option
+        try:
+            if login:
+                check_explorer_signed_in(env, login)
+            left = explore_s - (time.monotonic() - started)
+            box["hunt"] = run_hunt(env, policy, NullMonitor(), budget=UNLIMITED,
+                                   deadline_s=left).to_dict()
+        finally:
+            env.close()
+
+    hung = run_abandoning_after(explore, explore_s + HANG_GRACE_S)
+    navigation = {"front": "katalyze", "arm": arm, "hung": hung}
+    hunt = box.get("hunt") or {}
+    navigation.update({
+        "explore_s": round(time.monotonic() - started, 1),
+        "steps": hunt.get("steps"), "episodes": hunt.get("episodes"),
+        "unique_states": hunt.get("unique_states")})
+    return navigation
 
 
 # -- one run ---------------------------------------------------------------------------
@@ -259,11 +332,20 @@ def run(app_name: str, front: str, seed: int, explore_min: float, scan_min: int,
     navigation["auth"] = bool(login)
     navigation["zap_session"] = session
     left = zap.wait_passive()
+    urls = zap.urls(base)
+    paths = sorted({_path(u) for u in urls})
+    documented = {p for v in app["vulnerabilities"] for p in v["paths"]}
     reached = {
-        "urls": len(zap.urls(base)),
+        "urls": len(urls),
         "messages": zap.messages_count(base),
         "params": len(zap.params(site)),
-        "paths": len({_path(u) for u in zap.urls(base)}),
+        "paths": len(paths),
+        # Descriptive, added after run 45951931563 (both front ends 0 of 60 on bWAPP and
+        # nothing recorded to say which pages either had reached): the site tree itself,
+        # and how many of the paths the documented vulnerabilities sit on it holds.
+        "documented_paths_reached": len(documented & set(paths)),
+        "documented_paths": len(documented),
+        "path_list": paths,
     }
     scan_started = time.monotonic()
     if url != base + "/":
@@ -314,6 +396,15 @@ def main(argv: list[str] | None = None) -> int:
     logger.info("{} {} seed {}: {} of {} detectable found ({} of {} documented)", args.app,
                 args.front, args.seed, s["found_detectable"], s["detectable"], s["found"],
                 s["documented"])
+    if record["navigation"].get("hung"):
+        # The abandoned explorer thread and its browser driver would hold the process
+        # open; the record is written, so leave without waiting for them.
+        import os
+        import sys
+
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(0)
     return 0
 
 

@@ -26,21 +26,21 @@
   "login": [
    {
     "type": "TYPE",
-    "selector": "input[name=username]",
+    "selector": "input[name=\"username\"]",
     "params": {
      "value": "admin"
     }
    },
    {
     "type": "TYPE",
-    "selector": "input[name=password]",
+    "selector": "input[name=\"password\"]",
     "params": {
      "value": "password"
     }
    },
    {
     "type": "CLICK",
-    "selector": "input[name=Login]"
+    "selector": "input[name=\"Login\"]"
    }
   ],
   "logout": "http://dvwa/logout\\.php.*",
@@ -265,21 +265,21 @@
   "login": [
    {
     "type": "TYPE",
-    "selector": "input[name=login]",
+    "id": "login",
     "params": {
      "value": "bee"
     }
    },
    {
     "type": "TYPE",
-    "selector": "input[name=password]",
+    "id": "password",
     "params": {
      "value": "bug"
     }
    },
    {
     "type": "CLICK",
-    "selector": "button[name=form]"
+    "selector": "button[name=\"form\"]"
    }
   ],
   "logout": "http://bwapp/logout\\.php.*",
