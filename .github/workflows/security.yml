@@ -58,7 +58,7 @@ jobs:
         env:
           APPS: "bwapp"
           FRONTS: "katalyze"
-          SEEDS: "0 1"
+          SEEDS: "0 1 2 3"
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import itertools, json, os
