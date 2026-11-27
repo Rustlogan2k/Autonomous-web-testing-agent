@@ -57,8 +57,8 @@ jobs:
       - id: plan
         env:
           APPS: "bwapp"
-          FRONTS: "katalyze zap"
-          SEEDS: "0"
+          FRONTS: "katalyze"
+          SEEDS: "0 1"
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import itertools, json, os
@@ -76,7 +76,7 @@ jobs:
       max-parallel: 20
       matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
     env:
-      EXPLORE_MIN: "3"
+      EXPLORE_MIN: "12"
       SCAN_MIN: "2"
     steps:
       - uses: actions/checkout@v4

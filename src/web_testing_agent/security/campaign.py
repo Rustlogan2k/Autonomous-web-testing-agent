@@ -246,7 +246,13 @@ def run_abandoning_after(fn, timeout_s: float) -> bool:  # noqa: ANN001 - a call
     worker.start()
     worker.join(timeout_s)
     if worker.is_alive():
-        logger.error("the explorer has not returned after {:.0f} s; abandoned", timeout_s)
+        import sys
+        import traceback
+
+        frame = sys._current_frames().get(worker.ident)  # noqa: SLF001 - diagnosis only
+        stack = "".join(traceback.format_stack(frame)) if frame is not None else "?"
+        logger.error("the explorer has not returned after {:.0f} s; abandoned. It was in:\n{}",
+                     timeout_s, stack)
         return True
     if "error" in box:
         raise box["error"]
