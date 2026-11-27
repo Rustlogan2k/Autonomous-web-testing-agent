@@ -71,6 +71,14 @@ def _path(url: str) -> str:
     return urlsplit(url).path or "/"
 
 
+def site_root(url: str) -> str:
+    """The application's origin, without a path: what "init" paths, ZAP's scope, its site
+    tree, its alerts and the active scan are relative to. The start URL can be a page
+    (bWAPP's is /login.php), so it is not a prefix of the application's other pages."""
+    parts = urlsplit(url)
+    return f"{parts.scheme}://{parts.netloc}"
+
+
 def score(alerts: list[dict], vulnerabilities: list[dict]) -> dict:
     """Which documented vulnerabilities the alerts find, and the alerts left over."""
     alerts = [a for a in alerts if a.get("confidence") != "False Positive"]
@@ -132,8 +140,14 @@ def run_macro(page, steps: list[dict]) -> None:  # noqa: ANN001 - playwright Pag
             raise ValueError(f"unsupported macro step {kind}")
 
 
-def browse_through_zap(zap: Zap, url: str, steps: list[dict]) -> str:
-    """Open `url` in a Chromium routed through ZAP, run `steps`, return the final URL."""
+def browse_through_zap(zap: Zap, url: str, steps: list[dict],
+                       check_signed_in: bool = False) -> str:
+    """Open `url` in a Chromium routed through ZAP, run `steps`, return the final URL.
+
+    With `check_signed_in`, `steps` is a sign-in macro and it must work: its first field is
+    on the page before and gone after, or a RuntimeError ends the run. A run whose sign-in
+    failed would explore the sign-in page for its whole budget and still look like a result
+    (it did, on bWAPP, before `site_root`)."""
     from playwright.sync_api import sync_playwright
 
     with sync_playwright() as playwright:
@@ -142,7 +156,16 @@ def browse_through_zap(zap: Zap, url: str, steps: list[dict]) -> str:
         page = context.new_page()
         page.goto(url)
         page.wait_for_load_state("networkidle")
+        first = next((s for s in steps if s["type"] == "TYPE"), None) if check_signed_in else None
+        field = None
+        if first is not None:
+            field = page.locator(first.get("selector") or f"#{first['id']}")
+            if field.count() == 0:
+                raise RuntimeError(f"no sign-in form at {page.url}: "
+                                   f"{page.inner_text('body')[:200]!r}")
         run_macro(page, steps)
+        if field is not None and field.count() > 0:
+            raise RuntimeError(f"the sign-in did not leave the sign-in page ({page.url})")
         final = page.url
         browser.close()
     return final
@@ -200,7 +223,7 @@ def run(app_name: str, front: str, seed: int, explore_min: float, scan_min: int,
         arm: str = "hybrid_final_v5", auth: bool = False) -> dict:
     app = load_app(app_name)
     url = app["url"]
-    base = url.rstrip("/")
+    base = site_root(url)
     site = urlsplit(url).netloc
     if urlsplit(url).port is None:
         site += ":443" if urlsplit(url).scheme == "https" else ":80"
@@ -212,6 +235,9 @@ def run(app_name: str, front: str, seed: int, explore_min: float, scan_min: int,
     version = zap.wait_ready()
     for step in app.get("init") or []:
         browse_through_zap(zap, base + step["path"], step.get("macro") or [])
+    if login:
+        # Before ZAP's session is reset, so this check leaves nothing in its site tree.
+        browse_through_zap(zap, url, login, check_signed_in=True)
     zap.new_session()
     zap.include_in_scope(f"{base}.*")
     if app.get("logout"):
@@ -220,7 +246,7 @@ def run(app_name: str, front: str, seed: int, explore_min: float, scan_min: int,
     session = None
     if front == "zap":
         if login:
-            browse_through_zap(zap, url, login)
+            browse_through_zap(zap, url, login, check_signed_in=True)
             session = zap.activate_latest_session(site)
             if session is None:
                 raise RuntimeError("the sign-in through ZAP left no HTTP session to activate")
@@ -240,7 +266,12 @@ def run(app_name: str, front: str, seed: int, explore_min: float, scan_min: int,
         "paths": len({_path(u) for u in zap.urls(base)}),
     }
     scan_started = time.monotonic()
-    scan = zap.active_scan(url, max_minutes=scan_min, context_id=zap.context_id())
+    if url != base + "/":
+        # The scan starts from the site root and ZAP scans only what its tree holds; a start
+        # page such as /login.php leaves the root unrequested. Identical for both front
+        # ends, and after `reached` was measured.
+        zap.call("core", "action", "accessUrl", url=base + "/", followRedirects="false")
+    scan = zap.active_scan(base + "/", max_minutes=scan_min, context_id=zap.context_id())
     while zap.active_scan_progress(scan) < 100:
         if time.monotonic() - scan_started > scan_min * 60 + 300:
             logger.warning("active scan still running after its budget; stopping")

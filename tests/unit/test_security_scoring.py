@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from web_testing_agent.security.campaign import APPS_FILE, score
+from web_testing_agent.security.campaign import APPS_FILE, score, site_root
 
 VULNS = [
     {"id": "R", "title": "reflected", "cwe": [79], "paths": ["/search.php"], "param": "q",
@@ -58,3 +58,10 @@ def test_the_study_config_is_well_formed():
         for vuln in app["vulnerabilities"]:
             assert vuln["cwe"] and vuln["paths"] and isinstance(vuln["detectable"], bool)
             assert all(p.startswith("/") for p in vuln["paths"])
+
+
+def test_the_site_root_drops_the_start_pages_path():
+    # bWAPP starts on a page; its other pages are not under it.
+    assert site_root("http://bwapp/login.php") == "http://bwapp"
+    assert site_root("http://wp/") == "http://wp"
+    assert site_root("http://dvwa:8080/setup.php?x=1") == "http://dvwa:8080"
