@@ -20,7 +20,8 @@
 #   - Run 45870857071 (both applications): WackoPicko valid. bWAPP invalid for both front
 #     ends: the campaign took its start page (/login.php) as the site root, so bWAPP was
 #     never installed and no sign-in worked (fixed in 2469eb6, disclosed). bWAPP is rerun,
-#     both front ends, unchanged otherwise, after a two-job smoke test that is not scored.
+#     both front ends, unchanged otherwise, after a two-job smoke test that is not scored
+#     (run 45950934713: both front ends signed in; 3-minute budgets).
 #   - Primary comparison: documented detectable vulnerabilities found per run, katalyze
 #     against zap, five runs each (Mann-Whitney U, A12). Secondary: the union over runs;
 #     paths, messages and parameters in ZAP's site tree before the scan; alerts of the
@@ -48,7 +49,7 @@ jobs:
         env:
           APPS: "bwapp"
           FRONTS: "katalyze zap"
-          SEEDS: "0"
+          SEEDS: "0 1 2 3 4"
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import itertools, json, os
@@ -66,8 +67,8 @@ jobs:
       max-parallel: 20
       matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
     env:
-      EXPLORE_MIN: "3"
-      SCAN_MIN: "2"
+      EXPLORE_MIN: "30"
+      SCAN_MIN: "60"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
