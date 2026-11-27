@@ -25,6 +25,20 @@ from .types import CANONICAL_VIEWPORT
 
 logger = get_logger(__name__)
 
+
+def _host_gate(allowed: set[str]) -> Callable:
+    """A route handler that lets requests to `allowed` hosts through and aborts the rest."""
+
+    def gate(route) -> None:  # noqa: ANN001 - playwright Route
+        host = urlparse(route.request.url).hostname or ""
+        if host in allowed:
+            route.continue_()
+        else:
+            route.abort("blockedbyclient")
+
+    return gate
+
+
 DEFAULT_VIEWPORT = dict(CANONICAL_VIEWPORT)
 NAVIGATION_TIMEOUT_MS = 15_000
 #: Attempts at an episode's opening page load before the episode fails.
@@ -175,6 +189,12 @@ class BrowserSession:
         #: Used to put an intercepting scanner (OWASP ZAP) between the tester and the
         #: application; the proxy's own certificate is then accepted for HTTPS.
         self.proxy: str | None = None
+        #: Hosts the browser may request (None: any). Every other request is aborted before
+        #: it leaves the browser. Set by the security study: there the explorer's traffic
+        #: goes through a scanner's proxy, and the application's links to third-party sites
+        #: (bWAPP's footer: Facebook, Twitter, OWASP, ...) would otherwise be fetched
+        #: through it. Off by default, so every other experiment is unchanged.
+        self.allowed_hosts: set[str] | None = None
 
     @property
     def quiet_ms(self) -> int:
@@ -203,6 +223,8 @@ class BrowserSession:
             options.update(proxy={"server": self.proxy}, ignore_https_errors=True)
         self.context = self._browser.new_context(**options)
         self.context.set_default_navigation_timeout(NAVIGATION_TIMEOUT_MS)
+        if self.allowed_hosts is not None:
+            self.context.route("**/*", _host_gate(set(self.allowed_hosts)))
         for script in self.init_scripts:
             self.context.add_init_script(script)
         self.page = self.context.new_page()

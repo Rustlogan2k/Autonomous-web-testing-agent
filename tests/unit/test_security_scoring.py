@@ -145,3 +145,24 @@ def test_a_hung_explorer_is_abandoned_and_an_error_still_raises():
 
     with pytest.raises(RuntimeError, match="sign-in"):
         run_abandoning_after(fail, 5)
+
+
+def test_the_browsers_host_gate_aborts_requests_to_other_hosts():
+    from web_testing_agent.envs.browser_session import _host_gate
+
+    class Route:
+        def __init__(self, url):
+            self.request = type("R", (), {"url": url})()
+            self.outcome = None
+
+        def continue_(self):
+            self.outcome = "continue"
+
+        def abort(self, reason):
+            self.outcome = reason
+
+    gate = _host_gate({"bwapp"})
+    inside, outside = Route("http://bwapp/portal.php?x=1"), Route("https://www.facebook.com/")
+    gate(inside)
+    gate(outside)
+    assert (inside.outcome, outside.outcome) == ("continue", "blockedbyclient")

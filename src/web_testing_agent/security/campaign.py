@@ -251,6 +251,18 @@ def run_abandoning_after(fn, timeout_s: float) -> bool:  # noqa: ANN001 - a call
 
         frame = sys._current_frames().get(worker.ident)  # noqa: SLF001 - diagnosis only
         stack = "".join(traceback.format_stack(frame)) if frame is not None else "?"
+        # Playwright's sync API runs the caller in a greenlet; the thread's own frame is
+        # its event loop, so the suspended greenlets' frames are where the caller waits.
+        try:
+            import gc
+
+            import greenlet
+
+            for g in gc.get_objects():
+                if isinstance(g, greenlet.greenlet) and g.gr_frame is not None:
+                    stack += "--- greenlet\n" + "".join(traceback.format_stack(g.gr_frame))
+        except Exception:  # noqa: BLE001 - diagnosis only
+            pass
         logger.error("the explorer has not returned after {:.0f} s; abandoned. It was in:\n{}",
                      timeout_s, stack)
         return True
@@ -276,6 +288,10 @@ def explore_with_katalyze(zap: Zap, url: str, explore_s: float, arm: str, seed: 
         env = make_env(url, _settings(hybrid, ARMS[arm], list(login or []), None),
                        setup_actions=list(login) if login else None)
         env._browser.proxy = zap.proxy  # noqa: SLF001 - the session's documented option
+        # Only the application: no third-party site is requested through ZAP. Added after
+        # the smoke runs following 9c29ada, whose hung explorers had each just opened and
+        # closed a burst of off-site tabs (bWAPP's footer links); disclosed.
+        env._browser.allowed_hosts = {urlsplit(url).hostname}  # noqa: SLF001
         try:
             if login:
                 check_explorer_signed_in(env, login)
